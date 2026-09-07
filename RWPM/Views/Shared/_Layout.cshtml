@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Paditech CRM 2025</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/RWPM.styles.css" asp-append-version="true" />
+
+    <!-- Use for _LoginParital -->
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="~/lib/flag-icons/css/flag-icons.min.css" />
+
+    <!-- Select2 CSS -->
+    <link href="~/lib/select2/css/select2.min.css" rel="stylesheet" />
+
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="~/lib/daterangepicker/daterangepicker.css" />
+    <!-- Toastr -->
+    <link href="~/lib/toastr/toastr.min.css" rel="stylesheet" />
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <header>
+        <partial name="_NavigationBarPartial" />
+
+    </header>
+
+
+    <div class="px-3 flex-grow-1 mb-4">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="footer border-top mt-auto bg-white shadow-sm">
+        <div class="container d-flex justify-content-between align-items-center flex-wrap text-muted small">
+            <div>
+                &copy; 2025 <strong>RWPM</strong>
+            </div>
+            <div>
+                Version <span class="text-dark">v1.0.1</span>
+            </div>
+        </div>
+    </footer>
+
+
+    <partial name="_AleartMessagePartial" />
+
+    <!-- Global Loading Overlay -->
+    <div id="globalLoading" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+    background-color: rgba(0,0,0,0.5); z-index:9999; text-align:center;">
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);">
+            <div class="spinner-border text-light" style="width: 4rem; height: 4rem;" role="status">
+                <span class="visually-hidden">@SharedResource.Loading...</span>
+            </div>
+            <div style="color: white; margin-top: 1rem;">@SharedResource.LoadingPleaseWait...</div>
+        </div>
+    </div>
+
+    <!-- Loading with progress -->
+    <div id="loadingProgress" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+  background-color: rgba(0,0,0,0.7); z-index:9999; text-align:center; font-family: Arial, sans-serif;">
+        <!-- Centered content container -->
+        <div class="d-flex justify-content-center align-items-center h-100">
+            <div style="background: #333; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+                text-align:center; max-width: 400px; width: 100%; color: white;">
+
+                <!-- Spinner -->
+                <div class="spinner-border text-light" style="width: 5rem; height: 5rem;" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+
+                <!-- Progress bar and message -->
+                <div style="margin-top: 2rem;">
+                    <p style="font-size: 1.1rem;">Please wait while we process your request...</p>
+
+                    <!-- Cancel button (Initially hidden) -->
+                    <button id="loadingProgress_cancelProgressBtn" onclick="cancelProgress()"
+                            style="display:none; margin-top: 1rem; padding: 10px 20px; font-size: 1rem; color: white;
+                    background-color: #f44336; border: none; border-radius: 5px; cursor: pointer;">
+                        Cancel Progress
+                    </button>
+
+                    <!-- Progress bar container -->
+                    <div style="width: 100%; background-color: #f3f3f3; height: 20px; border-radius: 5px; margin-top: 1rem; position: relative;">
+
+                        <!-- Percentage text -->
+                        <span id="loadingProgress_percentText"
+                              style="position: absolute; width: 0%; text-align: center; line-height: 20px; font-size: 0.9rem; color: #333; z-index: 1;">
+                            0%
+                        </span>
+
+                        <!-- Progress bar -->
+                        <div id="loadingProgress_progressBar" style="width: 0%; height: 100%; background-color: #4caf50; border-radius: 5px; z-index: 0;"></div>
+                    </div>
+
+
+                    <!-- Status message -->
+                    <p id="loadingProgress_message" style="margin-top: 10px; font-size: 1rem;"></p>
+                </div>
+            </div>
+        </div>    
+
+       
+        
+    </div>
+
+
+    <!-- Scripts -->
+    <script type="text/javascript" src="~/lib/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Select2 JS (comes after jQuery) -->
+    <script type="text/javascript" src="~/lib/select2/js/select2.min.js"></script>
+
+    <script type="text/javascript" src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+
+    <script type="text/javascript" src="~/js/site.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="~/lib/moment/moment.min.js"></script>
+    <script type="text/javascript" src="~/lib/daterangepicker/daterangepicker.min.js"></script>
+    <script type="text/javascript" src="~/js/signalrBoot.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
