@@ -6,46 +6,47 @@ namespace RWPM.Common.Enums
     public enum AccountRole : byte
     {
         /// <summary>
-        /// Super Admin / HR - Quản lý toàn bộ hệ thống
+        /// Quản trị viên hệ thống (Admin)
         /// </summary>
-        [Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_SuperAdmin")]
-        SuperAdmin = 1,
+        [Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_Admin")]
+        Admin = 1,
+
+        /// <summary>
+        /// Nhân sự (HR) - Quản lý nhân sự, hợp đồng, tài khoản...
+        /// </summary>
+        [Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_HR")]
+        HR = 2,
 
         /// <summary>
         /// Area Manager - Quản lý khu vực
         /// </summary>
         [Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_AreaManager")]
-        AreaManager = 2,
+        AreaManager = 3,
 
         /// <summary>
         /// Store Manager - Quản lý cửa hàng
         /// </summary>
         [Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_StoreManager")]
-        StoreManager = 3,
+        StoreManager = 4,
 
         /// <summary>
         /// Shift Leader - Trưởng ca
         /// </summary>
         [Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_ShiftLeader")]
-        ShiftLeader = 4,
+        ShiftLeader = 5,
 
         /// <summary>
         /// Sales Staff - Nhân viên bán hàng
         /// </summary>
         [Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_SalesStaff")]
-        SalesStaff = 5,
+        SalesStaff = 6,
 
         /// <summary>
         /// Part-time Staff - Nhân viên bán thời gian
         /// </summary>
         [Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_PartTimeStaff")]
-        PartTimeStaff = 6,
+        PartTimeStaff = 7,
 
-        /// <summary>
-        /// Quản trị viên (Alias giữ tương thích với cấu hình admin)
-        /// </summary>
-        [Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_SuperAdmin")]
-        Admin = SuperAdmin
     }
 
     public static class AccountRoleExtensions

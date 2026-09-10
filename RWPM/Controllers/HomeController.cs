@@ -60,7 +60,7 @@ namespace RWPM.Controllers
             return LocalRedirect(returnUrl);
         }
 
-        [Authorize(Roles = "SuperAdmin,Admin")]
+        [Authorize(Roles = "Admin,HR,SuperAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> InitData()

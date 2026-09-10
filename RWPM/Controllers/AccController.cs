@@ -29,7 +29,7 @@ namespace RWPM.Controllers
         }
 
         // GET: Acc
-        [Authorize(Roles = "SuperAdmin,Admin")]
+        [Authorize(Roles = "Admin,HR")]
         [RemoveEmptyQueryString]
         public async Task<IActionResult> Index(AccSearch searchObject)
         {
@@ -49,7 +49,7 @@ namespace RWPM.Controllers
             return View(currentAcc);
         }
 
-        [Authorize(Roles = "SuperAdmin,Admin")]
+        [Authorize(Roles = "Admin,HR")]
         public IActionResult Create()
         {
             return View(new AccCreateVM()
@@ -58,7 +58,7 @@ namespace RWPM.Controllers
             });
         }
 
-        [Authorize(Roles = "SuperAdmin,Admin")]
+        [Authorize(Roles = "Admin,HR")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AccCreateVM viewModel)
@@ -85,7 +85,7 @@ namespace RWPM.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize(Roles = "SuperAdmin,Admin")]
+        [Authorize(Roles = "Admin,HR")]
         public async Task<IActionResult> Edit(string id)
         {
             var category = await _accService.GetByIdAsync(id);
@@ -98,7 +98,7 @@ namespace RWPM.Controllers
             });
         }
 
-        [Authorize(Roles = "SuperAdmin,Admin")]
+        [Authorize(Roles = "Admin,HR")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, AccUpdateVM viewModel)
@@ -127,7 +127,7 @@ namespace RWPM.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize(Roles = "SuperAdmin,Admin")]
+        [Authorize(Roles = "Admin,HR")]
         public async Task<IActionResult> Delete(string id)
         {
             var account = await _accService.GetByIdAsync(id);
@@ -136,7 +136,7 @@ namespace RWPM.Controllers
             return View(new AccCreateVM(account));
         }
 
-        [Authorize(Roles = "SuperAdmin,Admin")]
+        [Authorize(Roles = "Admin,HR")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string username)
@@ -157,7 +157,7 @@ namespace RWPM.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize(Roles = "SuperAdmin,Admin")]
+        [Authorize(Roles = "Admin,HR")]
         public async Task<IActionResult> ChangePasswordAccount(string id)
         {
             var account = await _accService.GetByIdAsync(id);
@@ -231,7 +231,7 @@ namespace RWPM.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [Authorize(Roles = "SuperAdmin,Admin")]
+        [Authorize(Roles = "Admin,HR")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateActiveStatus(string id, [FromBody] AccUpdateActiveStatusVM viewModel)

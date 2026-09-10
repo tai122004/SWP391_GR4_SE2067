@@ -105,6 +105,24 @@ namespace RWPM.Resources.Models {
             }
         }
         /// <summary>
+        ///   Looks up a localized string similar to Admin.
+        /// </summary>
+        public static string Role_Admin {
+            get {
+                return ResourceManager.GetString("Role_Admin", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to HR.
+        /// </summary>
+        public static string Role_HR {
+            get {
+                return ResourceManager.GetString("Role_HR", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Super Admin / HR.
         /// </summary>
         public static string Role_SuperAdmin {

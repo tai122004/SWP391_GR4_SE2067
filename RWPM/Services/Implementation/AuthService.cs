@@ -48,7 +48,7 @@ namespace RWPM.Services.Implementation
                 new Claim(ClaimTypes.Role, account.Role.ToString())
             };
 
-            if (account.Role == AccountRole.SuperAdmin)
+            if (account.Role == AccountRole.Admin)
             {
                 claims.Add(new Claim(ClaimTypes.Role, "Admin"));
             }

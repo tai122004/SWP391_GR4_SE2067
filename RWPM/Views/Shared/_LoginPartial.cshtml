@@ -29,7 +29,7 @@
                 </li>
                 <li><a class="dropdown-item" href="#">...</a></li>
 
-                @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
+                @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin"))
                 {
                     <li>
                         <form asp-controller="Home" asp-action="InitData" method="post" class="m-0 p-0">

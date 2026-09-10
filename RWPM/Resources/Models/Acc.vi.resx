@@ -156,4 +156,10 @@
   <data name="Role_PartTimeStaff" xml:space="preserve">
     <value>Nhân viên bán thời gian</value>
   </data>
+  <data name="Role_Admin" xml:space="preserve">
+    <value>Quản trị viên (Admin)</value>
+  </data>
+  <data name="Role_HR" xml:space="preserve">
+    <value>Nhân sự (HR)</value>
+  </data>
 </root>

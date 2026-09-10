@@ -27,7 +27,7 @@
                     <a class="nav-link text-white" asp-area="" asp-controller="Lot" asp-action="Index">@NavigationBarResource.LotNoManagement</a>
                 </li> *@
                 
-                @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
+                @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin"))
                 {
                     <li class="nav-item">
                         <a class="nav-link text-white" asp-area="" asp-controller="Acc" asp-action="Index">@NavigationBarResource.AccountManagement</a>

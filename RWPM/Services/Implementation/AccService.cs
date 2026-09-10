@@ -321,6 +321,7 @@ namespace RWPM.Services.Implementation
             var data = Enum.GetValues(typeof(AccountRole))
                 .Cast<AccountRole>()
                 .Where(x => x != AccountRole.Admin)
+                .Distinct()
                 .Select(e => new SelectListItem
                 {
                     Text = UIHelper.GetDisplayName(e),
