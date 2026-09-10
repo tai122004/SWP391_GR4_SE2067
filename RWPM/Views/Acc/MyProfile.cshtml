@@ -1,0 +1,29 @@
+﻿@model Acc
+@using AccountModelResource = RWPM.Resources.Models.Acc
+@using RWPM.Models.Entities
+
+@{
+    ViewBag.Title = "Profile";
+}
+
+
+<style>
+    .profile-container {
+        max-width: 600px;
+        margin: 30px auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+    }
+</style>
+
+<div class="profile-container">
+    <h2>@Model.FullName</h2>
+    <p><strong>@AccountModelResource.Role:</strong> @Model.Role.GetDisplayName()</p>
+    <p><strong>Email:</strong> @Model.Email</p>
+    <p><strong>@AccountModelResource.Fullname:</strong> @Model.FullName</p>
+    <p><strong>@SharedResource.CreatedDate:</strong> @Model.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")</p>
+</div>
+
+

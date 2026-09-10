@@ -1,0 +1,321 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Acc_NewPassAndConfirmNewPassAreNotSame" xml:space="preserve">
+    <value>Mật khẩu mới và xác nhận mật khẩu mới không giống nhau.</value>
+  </data>
+  <data name="Acc_NewPassAndOldPassAreSame" xml:space="preserve">
+    <value>Mật khẩu mới và mật khẩu hiện tại đang giống nhau.</value>
+  </data>
+  <data name="Acc_UsernameExists" xml:space="preserve">
+    <value>Tài khoản đã tồn tại.</value>
+  </data>
+  <data name="Acc_CurrentPasswordIsIncorrect" xml:space="preserve">
+    <value>Mật khẩu hiện tại không chính xác.</value>
+  </data>
+  <data name="DeptCat_NotExists" xml:space="preserve">
+    <value>Bộ phận không tồn tại.</value>
+  </data>
+  <data name="DocFlow_NotExists" xml:space="preserve">
+    <value>Luồng xử lý giấy tờ không tồn tại.</value>
+  </data>
+  <data name="Acc_UsernameNotExists" xml:space="preserve">
+    <value>Tài khoản không tồn tại.</value>
+  </data>
+  <data name="Auth_InvalidCredentials" xml:space="preserve">
+    <value>Sai tên đăng nhập hoặc mật khẩu.</value>
+  </data>
+  <data name="Acc_IsLock" xml:space="preserve">
+    <value>Tài khoản của bạn đã bị khóa. Hãy liên hệ quản trị để mở khóa.</value>
+  </data>
+  <data name="Acc_ChangePasswordSuccess" xml:space="preserve">
+    <value>Thay đổi mật khẩu thành công.</value>
+  </data>
+  <data name="DeptCat_CodeExists" xml:space="preserve">
+    <value>Mã bộ phận đã tồn tại.</value>
+  </data>
+  <data name="FactoryCat_Inactive" xml:space="preserve">
+    <value>Nhà máy đã dừng hoạt động.</value>
+  </data>
+  <data name="DeptCat_Delete_HaveAccountUse" xml:space="preserve">
+    <value>Không thể xóa vì bộ phận này đang có tài khoản sử dụng.</value>
+  </data>
+  <data name="DocTypeCat_Delete_HaveDocReqUse" xml:space="preserve">
+    <value>Không thể xóa vì danh mục loại giấy tờ này đã có tài liệu nộp.</value>
+  </data>
+  <data name="DeptCat_Delete_HaveDocTypeCatUse" xml:space="preserve">
+    <value>Không thể xóa vì bộ phận này đang được danh mục loại giấy tờ sử dụng.</value>
+  </data>
+  <data name="DeptCat_Delete_HaveDocFlowDeptUse" xml:space="preserve">
+    <value>Không thể xóa vì bộ phận này đang được luồng xử lý tài liệu (phòng ban) sử dụng.</value>
+  </data>
+  <data name="DocFlow_CodeExists" xml:space="preserve">
+    <value>Mã luồng xử lý giấy tờ đã tồn tại.</value>
+  </data>
+  <data name="DocFlowDept_Exists" xml:space="preserve">
+    <value>Luồng xử lý giấy tờ này đã tồn tại phòng ban này.</value>
+  </data>
+  <data name="DocFlow_Inactive" xml:space="preserve">
+    <value>Luồng xử lý giấy tờ đã dừng hoạt động.</value>
+  </data>
+  <data name="DeptCat_Inactive" xml:space="preserve">
+    <value>Bộ phận đã dừng hoạt động.</value>
+  </data>
+  <data name="DocFlowDeptDtl_ApproverHasChoose" xml:space="preserve">
+    <value>Tài khoản này đã được chọn làm người phê duyệt.</value>
+  </data>
+  <data name="DocFlowDeptDtl_None" xml:space="preserve">
+    <value>Luồng xử lý giấy tờ của bộ phận này không tồn tại bất kỳ người phê duyệt nào.</value>
+  </data>
+  <data name="DocFlowDeptDtl_InvalidOperation_UpdateOrder" xml:space="preserve">
+    <value>Cập nhật thứ tự của danh sách người phê duyệt thất bại. Số người phê duyệt không khớp.</value>
+  </data>
+  <data name="DocFlowDeptDtl_ListNotExists" xml:space="preserve">
+    <value>Luồng xử lý giấy tờ của bộ phận này không tồn tại.</value>
+  </data>
+  <data name="DocGrpCat_NameExists" xml:space="preserve">
+    <value>Tên nhóm giấy tờ đã tồn tại.</value>
+  </data>
+  <data name="DocGrpCat_NotExists" xml:space="preserve">
+    <value>Danh mục nhóm giấy tờ không tồn tại.</value>
+  </data>
+  <data name="DocGrpCat_Delete_HaveDocTypeCat" xml:space="preserve">
+    <value>Không thể xóa vì danh mục nhóm giấy tờ này đang được danh mục loại giấy tờ sử dụng.</value>
+  </data>
+  <data name="DocReq_ApproveSuccessfully" xml:space="preserve">
+    <value>Bạn đã tiến hành phê duyệt thành công.</value>
+  </data>
+  <data name="DocReq_AttachedFileNotExists" xml:space="preserve">
+    <value>(Lỗi server) File đính kèm không tồn tại.</value>
+  </data>
+  <data name="Acc_NotAdminButNotHaveDept" xml:space="preserve">
+    <value>Tài khoản không có bộ phận.</value>
+  </data>
+  <data name="DocReq_AttachedFileRequired" xml:space="preserve">
+    <value>File đính kèm là trường bắt buộc.</value>
+  </data>
+  <data name="DocReq_OnlyForAccountHasDepartment" xml:space="preserve">
+    <value>Chỉ những tài khoản có bộ phận mới được nộp giấy tờ.</value>
+  </data>
+  <data name="DocReq_OnlyForEmployeeHasDepartment" xml:space="preserve">
+    <value>Chỉ những nhân viên có bộ phận mới được nộp giấy tờ.</value>
+  </data>
+  <data name="Employee_NotExists" xml:space="preserve">
+    <value>Nhân viên này không tồn tại.</value>
+  </data>
+  <data name="DeptCat_CodeNotExists" xml:space="preserve">
+    <value>Mã bộ phận không tồn tại.</value>
+  </data>
+  <data name="DocTypeCat_Inactive" xml:space="preserve">
+    <value>Danh mục loại giấy tờ đã dừng hoạt động.</value>
+  </data>
+  <data name="DocFlow_NotSupportCurrrentDepartment" xml:space="preserve">
+    <value>Loại giấy tờ này không hỗ trợ cho bộ phận của người dùng hiện tại.</value>
+  </data>
+  <data name="DocFlow_SenderIsApprover" xml:space="preserve">
+    <value>Không thể nộp giấy tờ này vì bạn là người phê duyệt cho giấy tờ này.</value>
+  </data>
+  <data name="DocReq_UnableToApproveProcesseDoc" xml:space="preserve">
+    <value>Không thể tiến hành phê duyệt tài liệu đã được xử lý.</value>
+  </data>
+  <data name="DocTypeCat_NotExists" xml:space="preserve">
+    <value>Danh mục loại giấy tờ không tồn tại.</value>
+  </data>
+  <data name="DocReq_ThisAccountIsNotTheCurrentApprover" xml:space="preserve">
+    <value>Tài khoản này không phải là người phê duyệt hiện tại cho giấy tờ này.</value>
+  </data>
+  <data name="DocFlow_ApproveStatusNotValid" xml:space="preserve">
+    <value>Trạng thái phê duyệt không hợp lệ.</value>
+  </data>
+  <data name="DocReqRs_NotExists" xml:space="preserve">
+    <value>(Lỗi server): Kết quả phê duyệt của giấy tờ này không tồn tại.</value>
+  </data>
+  <data name="DocReq_NotExists" xml:space="preserve">
+    <value>Giấy tờ nộp không tồn tại.</value>
+  </data>
+  <data name="DocTypeCat_CodeExists" xml:space="preserve">
+    <value>Mã danh mục loại giấy tờ đã tồn tại.</value>
+  </data>
+  <data name="Storage_MaximumUploadFileSize" xml:space="preserve">
+    <value>Kích thước tệp vượt quá giới hạn.</value>
+  </data>
+  <data name="FactoryCat_CodeExists" xml:space="preserve">
+    <value>Mã danh mục nhà máy đã tồn tại.</value>
+  </data>
+  <data name="FactoryCat_NotExists" xml:space="preserve">
+    <value>Danh mục nhà máy không tồn tại.</value>
+  </data>
+  <data name="FactoryCat_Delete_HaveDepartmentUse" xml:space="preserve">
+    <value>Không thể xóa vì nhà máy này đang có bộ phận sử dụng.</value>
+  </data>
+  <data name="LeaveJobReason_TitleExists" xml:space="preserve">
+    <value>Tiêu đề đã tồn tại.</value>
+  </data>
+  <data name="LeaveJobReason_NotExists" xml:space="preserve">
+    <value>Lý do nghỉ việc không tồn tại.</value>
+  </data>
+  <data name="LeaveJobReason_InvalidOperation_UpdateOrder" xml:space="preserve">
+    <value>Cập nhật thứ tự của danh sách lý do nghỉ việc thất bại. Số lý do nghỉ việc không khớp.</value>
+  </data>
+  <data name="LeaveJobReasonDtl_NotExists" xml:space="preserve">
+    <value>Chi tiết lý do nghỉ việc không tồn tại.</value>
+  </data>
+  <data name="DocFlowDeptDtl_KeyExists" xml:space="preserve">
+    <value>Key này đã tồn tại trong luồng xử lý giấy tờ hiện tại.</value>
+  </data>
+  <data name="DocFlowDeptDtl_NotExists" xml:space="preserve">
+    <value>Luồng xử lý giấy tờ của bộ phận hiện tại không tồn tại người phê duyệt này.</value>
+  </data>
+  <data name="DocReq_NotApprover" xml:space="preserve">
+    <value>Phải nhập từ một người kiểm duyệt trở lên</value>
+  </data>
+  <data name="DocReq_CommentRequiredWhenApprove" xml:space="preserve">
+    <value>Bạn phải nhập bình luận khi từ chối phê duyệt này.</value>
+  </data>
+  <data name="NoDataAccess" xml:space="preserve">
+    <value>Bạn không có quyền truy cập dữ liệu.</value>
+  </data>
+  <data name="DocReq_ApproversRequired" xml:space="preserve">
+    <value>Vui lòng chọn người phê duyệt cho tài liệu này.</value>
+  </data>
+  <data name="Acc_Delete_UseAsApprover" xml:space="preserve">
+    <value>Xóa thất bại. Tài khoản này đang là người phê duyệt của luồng phê duyệt tài liệu.</value>
+  </data>
+  <data name="Acc_Delete_IsApproverOfSomeDocReq" xml:space="preserve">
+    <value>Xóa thất bại. Tài khoản này đang là người phê duyệt của tài liệu yêu cầu.</value>
+  </data>
+  <data name="DocReq_AttachedFileMaximumIs10" xml:space="preserve">
+    <value>Số lượng file đính kèm tối đa là 10 file.</value>
+  </data>
+  <data name="DocFlow_Delete_HaveDocTypeCatUse" xml:space="preserve">
+    <value>Không thể xóa vì luồng xử lý giấy tờ này đang được danh mục loại giấy tờ sử dụng.</value>
+  </data>
+  <data name="DocReq_LimitRequestDocument" xml:space="preserve">
+    <value>Bạn không được nộp tài liệu do đã nộp quá nhiều.</value>
+  </data>
+  <data name="Lot_UploadError" xml:space="preserve">
+    <value>Lỗi khi gửi file lên máy chủ.</value>
+  </data>
+  <data name="DayOff_InvalidData" xml:space="preserve">
+    <value>Dữ liệu không hợp lệ!</value>
+  </data>
+  <data name="DayOff_DayOffExists" xml:space="preserve">
+    <value>Ngày nghỉ đã tồn tại.</value>
+  </data>
+</root>

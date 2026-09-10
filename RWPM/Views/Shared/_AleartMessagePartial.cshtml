@@ -1,0 +1,54 @@
+﻿@{
+    var now = DateTime.Now;
+}
+
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055;">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert bg-success text-white rounded shadow-sm p-3 mb-2 position-relative" style="min-width: 300px;">
+            <div class="d-flex justify-content-between">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <span>@TempData["SuccessMessage"]</span>
+                </div>
+                <div class="d-flex flex-column align-items-end">
+                    <button id="btn_close_success" type="button" class="btn-close btn-close-white mt-1" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+            <div>
+                <small class="text-white-50">@now.ToString("dd/MM/yyyy HH:mm:ss")</small>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var closeButton = document.querySelector('#btn_close_success');
+
+                if (closeButton) {
+                    setTimeout(function () {
+                        closeButton.click();
+                    }, 7000);
+                }
+            });
+        </script>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert bg-danger text-white rounded shadow-sm p-3 mb-2 position-relative" style="min-width: 300px;">
+
+            <div class="d-flex justify-content-between">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <span>@TempData["ErrorMessage"]</span>
+                </div>
+                <div class="d-flex flex-column align-items-end">
+                    <button type="button" class="btn-close btn-close-white mt-1" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+            <div>
+                <small class="text-white-50">@now.ToString("dd/MM/yyyy HH:mm:ss")</small>
+            </div>
+        </div>
+    }
+</div>

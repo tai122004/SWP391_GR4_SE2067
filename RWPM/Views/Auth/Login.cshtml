@@ -1,0 +1,108 @@
+﻿@using RWPM.Models.ViewModels.Auth
+@model LoginVM
+@using AuthResource = RWPM.Resources.Shared.Auth
+
+@{
+    Layout = "_UnauthorizeLayout";
+    ViewData["Title"] = "Login";
+}
+
+<div class="login-wrapper d-flex">
+    <!-- LEFT: Login Form -->
+    <div class="login-left d-flex flex-column justify-content-center align-items-center bg-white p-5 w-100 w-md-50">
+        <div class="w-100" style="max-width: 400px;">
+            <div class="d-flex justify-content-end mb-3">
+                @await Html.PartialAsync("_LanguageSelector")
+            </div>
+
+            <div class="text-center mb-4">
+                @* <img src="~/public/icons/Logo_SVWS.jpg" alt="Logo" style="max-width: 120px; height: auto;" /> *@
+                <h3 class="fw-bold text-primary">@AuthResource.Welcome</h3>
+                <p class="text-muted small">@AuthResource.WelcomeDescription</p>
+            </div>
+
+            <form asp-action="Login" method="post" class="needs-validation" novalidate>
+                @Html.AntiForgeryToken()
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Username" class="form-control" placeholder="@AuthResource.UsernamePlaceholder" />
+                    <label asp-for="Username">@AuthResource.Username</label>
+                    <span asp-validation-for="Username" class="text-danger small"></span>
+                </div>
+
+                <div class="form-floating mb-4">
+                    <input asp-for="Password" type="password" class="form-control" placeholder="@AuthResource.PasswordPlaceholder" />
+                    <label asp-for="Password">@AuthResource.Password</label>
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100 rounded-3 shadow-sm py-2">
+                    <i class="bi bi-box-arrow-in-right me-1"></i> @AuthResource.Login
+                </button>
+            </form>
+
+            <div class="text-center mt-4">
+                <a href="#" class="text-decoration-none small text-muted hover-underline">@AuthResource.ForgotPassword</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT: Illustration or Branding -->
+    <div class="login-right d-none d-md-flex w-50 align-items-center justify-content-center text-white position-relative">
+        <div class="overlay"></div>
+        <div class="text-center position-relative px-5">
+            <h2 class="fw-bold mb-3">Welcome to <span class="text-warning">RWPM</span></h2>
+            <p class="lead">@AuthResource.RightPanel_SubDescription</p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<style>
+    .login-wrapper {
+        background-color: gray;
+    }
+
+    .login-left {
+        min-height: 100vh;
+        background: #ffffff;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.05);
+        z-index: 2;
+    }
+
+    .login-right {
+        background: linear-gradient(135deg, #1565c0, #1976d2);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .login-right .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+    .form-floating > label {
+        color: #6c757d;
+    }
+
+    .btn-primary {
+        background-color: #1976d2;
+        border: none;
+        transition: 0.2s;
+    }
+
+        .btn-primary:hover {
+            background-color: #1565c0;
+            transform: translateY(-1px);
+        }
+
+    .hover-underline:hover {
+        text-decoration: underline;
+    }
+
+    
+</style>

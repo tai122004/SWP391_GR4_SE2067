@@ -1,0 +1,41 @@
+﻿@using System.Globalization
+@{
+    var currentCulture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    var currentFlagClass = currentCulture switch
+    {
+        "vi" => "fi fi-vn",
+        "en" => "fi fi-gb",
+        _ => "fi fi-gb" // default English
+    };
+    string returnUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
+}
+
+<ul class="navbar-nav ms-3 bg-light border border-dark">
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle text-black p-1 m-0 d-flex align-items-center" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="@currentFlagClass" style="width: 1.5em; height: 1.5em;"></span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end small" aria-labelledby="languageDropdown" style="min-width: 120px;">
+            <li>
+                <form method="post" asp-controller="Home" asp-action="SetLanguage" class="dropdown-item p-0">
+                    <input type="hidden" name="culture" value="vi" />
+                    <input type="hidden" name="returnUrl" value="@returnUrl" />
+                    <button type="submit" class="btn btn-link text-start w-100 px-3 py-1">
+                        <span class="fi fi-vn m-1" style="width: 1.2em; height: 1.2em;"></span>
+                        Vietnamese
+                    </button>
+                </form>
+            </li>
+            <li>
+                <form method="post" asp-controller="Home" asp-action="SetLanguage" class="dropdown-item p-0">
+                    <input type="hidden" name="culture" value="en" />
+                    <input type="hidden" name="returnUrl" value="@returnUrl" />
+                    <button type="submit" class="btn btn-link text-start w-100 px-3 py-1">
+                        <span class="fi fi-gb m-1" style="width: 1.2em; height: 1.2em;"></span>
+                        English
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </li>
+</ul>

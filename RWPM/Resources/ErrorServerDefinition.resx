@@ -1,0 +1,321 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Acc_NewPassAndConfirmNewPassAreNotSame" xml:space="preserve">
+    <value>New password and confirm new password are not the same.</value>
+  </data>
+  <data name="Acc_NewPassAndOldPassAreSame" xml:space="preserve">
+    <value>New password and old password are the same.</value>
+  </data>
+  <data name="Acc_UsernameExists" xml:space="preserve">
+    <value>Username already exists.</value>
+  </data>
+  <data name="Acc_CurrentPasswordIsIncorrect" xml:space="preserve">
+    <value>Current password is incorrect.</value>
+  </data>
+  <data name="DeptCat_NotExists" xml:space="preserve">
+    <value>Department does not exist.</value>
+  </data>
+  <data name="DocFlow_NotExists" xml:space="preserve">
+    <value>Document processing flow does not exist.</value>
+  </data>
+  <data name="Acc_UsernameNotExists" xml:space="preserve">
+    <value>Username does not exists.</value>
+  </data>
+  <data name="Auth_InvalidCredentials" xml:space="preserve">
+    <value>Invalid username or password.</value>
+  </data>
+  <data name="Acc_IsLock" xml:space="preserve">
+    <value>Your account has been locked. Please contact the administrator to unlock it.</value>
+  </data>
+  <data name="Acc_ChangePasswordSuccess" xml:space="preserve">
+    <value>Password changed successfully.</value>
+  </data>
+  <data name="DeptCat_CodeExists" xml:space="preserve">
+    <value>Department code already exists.</value>
+  </data>
+  <data name="FactoryCat_Inactive" xml:space="preserve">
+    <value>Factory category is inactive.</value>
+  </data>
+  <data name="DeptCat_Delete_HaveAccountUse" xml:space="preserve">
+    <value>Cannot delete because this department is being used by another account.</value>
+  </data>
+  <data name="DocTypeCat_Delete_HaveDocReqUse" xml:space="preserve">
+    <value>Cannot delete because this document type category is being used by another document request.</value>
+  </data>
+  <data name="DeptCat_Delete_HaveDocTypeCatUse" xml:space="preserve">
+    <value>Cannot delete because this department is being used by another document type category.</value>
+  </data>
+  <data name="DeptCat_Delete_HaveDocFlowDeptUse" xml:space="preserve">
+    <value>Cannot delete because this department is being used by another document processing flow department.</value>
+  </data>
+  <data name="DocFlow_CodeExists" xml:space="preserve">
+    <value>Document processing flow code already exists.</value>
+  </data>
+  <data name="DocFlowDept_Exists" xml:space="preserve">
+    <value>This document processing flow already exists this department.</value>
+  </data>
+  <data name="DocFlow_Inactive" xml:space="preserve">
+    <value>Document processing flow is inactive.</value>
+  </data>
+  <data name="DeptCat_Inactive" xml:space="preserve">
+    <value>Department is inactive.</value>
+  </data>
+  <data name="DocFlowDeptDtl_ApproverHasChoose" xml:space="preserve">
+    <value>This account has been choose as approver.</value>
+  </data>
+  <data name="DocFlowDeptDtl_None" xml:space="preserve">
+    <value>Document processing flow of this department does not have any approver.</value>
+  </data>
+  <data name="DocFlowDeptDtl_InvalidOperation_UpdateOrder" xml:space="preserve">
+    <value>Update order of approver list failed. The approver number is not match.</value>
+  </data>
+  <data name="DocFlowDeptDtl_ListNotExists" xml:space="preserve">
+    <value>Document processing flow of this department does not exists.</value>
+  </data>
+  <data name="DocGrpCat_NameExists" xml:space="preserve">
+    <value>Document group name already exists.</value>
+  </data>
+  <data name="DocGrpCat_NotExists" xml:space="preserve">
+    <value>Document group category does not exists.</value>
+  </data>
+  <data name="DocGrpCat_Delete_HaveDocTypeCat" xml:space="preserve">
+    <value>Cannot delete because this document group category is being used by another document type category.</value>
+  </data>
+  <data name="DocReq_ApproveSuccessfully" xml:space="preserve">
+    <value>You have make approve successfully.</value>
+  </data>
+  <data name="DocReq_AttachedFileNotExists" xml:space="preserve">
+    <value>(Server error) Attached file not exists.</value>
+  </data>
+  <data name="Acc_NotAdminButNotHaveDept" xml:space="preserve">
+    <value>Account has no department.</value>
+  </data>
+  <data name="DocReq_AttachedFileRequired" xml:space="preserve">
+    <value>Attach file is required.</value>
+  </data>
+  <data name="DocReq_OnlyForAccountHasDepartment" xml:space="preserve">
+    <value>Only accounts has department can send document.</value>
+  </data>
+  <data name="DocReq_OnlyForEmployeeHasDepartment" xml:space="preserve">
+    <value>Only employees has department can send document.</value>
+  </data>
+  <data name="Employee_NotExists" xml:space="preserve">
+    <value>Employee does not exists.</value>
+  </data>
+  <data name="DeptCat_CodeNotExists" xml:space="preserve">
+    <value>Department code does not exists.</value>
+  </data>
+  <data name="DocTypeCat_Inactive" xml:space="preserve">
+    <value>Document type category is inactive.</value>
+  </data>
+  <data name="DocFlow_NotSupportCurrrentDepartment" xml:space="preserve">
+    <value>This document type is not support for department of current user.</value>
+  </data>
+  <data name="DocFlow_SenderIsApprover" xml:space="preserve">
+    <value>Cannot submit document for which you are the approver.</value>
+  </data>
+  <data name="DocReq_UnableToApproveProcesseDoc" xml:space="preserve">
+    <value>Unable to proceed with approval of processed document.</value>
+  </data>
+  <data name="DocTypeCat_NotExists" xml:space="preserve">
+    <value>Document type category does not exists.</value>
+  </data>
+  <data name="DocReq_ThisAccountIsNotTheCurrentApprover" xml:space="preserve">
+    <value>This account  is not the current approver for this document.</value>
+  </data>
+  <data name="DocFlow_ApproveStatusNotValid" xml:space="preserve">
+    <value>Approve status not valid.</value>
+  </data>
+  <data name="DocReqRs_NotExists" xml:space="preserve">
+    <value>(Server error): Document request result not exists.</value>
+  </data>
+  <data name="DocReq_NotExists" xml:space="preserve">
+    <value>Document request not exists.</value>
+  </data>
+  <data name="DocTypeCat_CodeExists" xml:space="preserve">
+    <value>Document type category code already exists.</value>
+  </data>
+  <data name="Storage_MaximumUploadFileSize" xml:space="preserve">
+    <value>File size exceeded limit.</value>
+  </data>
+  <data name="FactoryCat_CodeExists" xml:space="preserve">
+    <value>Factory category code already exists.</value>
+  </data>
+  <data name="FactoryCat_NotExists" xml:space="preserve">
+    <value>Factory category does not exists.</value>
+  </data>
+  <data name="FactoryCat_Delete_HaveDepartmentUse" xml:space="preserve">
+    <value>Cannot delete because this factory category is being used by another department.</value>
+  </data>
+  <data name="LeaveJobReason_TitleExists" xml:space="preserve">
+    <value>Title already exists.</value>
+  </data>
+  <data name="LeaveJobReason_NotExists" xml:space="preserve">
+    <value>Leave job reason does not exists.</value>
+  </data>
+  <data name="LeaveJobReason_InvalidOperation_UpdateOrder" xml:space="preserve">
+    <value>Update order of leave job reason list failed. The reason number is not match.</value>
+  </data>
+  <data name="LeaveJobReasonDtl_NotExists" xml:space="preserve">
+    <value>Leave job reason detail does not exists.</value>
+  </data>
+  <data name="DocFlowDeptDtl_KeyExists" xml:space="preserve">
+    <value>Key already exists.</value>
+  </data>
+  <data name="DocFlowDeptDtl_NotExists" xml:space="preserve">
+    <value>Current document processing flow of department not exists this approver.</value>
+  </data>
+  <data name="DocReq_NotApprover" xml:space="preserve">
+    <value>Must enter one or more approver</value>
+  </data>
+  <data name="DocReq_CommentRequiredWhenApprove" xml:space="preserve">
+    <value>You must enter a comment when rejecting this document.</value>
+  </data>
+  <data name="NoDataAccess" xml:space="preserve">
+    <value>You do not have access to the data.</value>
+  </data>
+  <data name="DocReq_ApproversRequired" xml:space="preserve">
+    <value>Please select approver for this document.</value>
+  </data>
+  <data name="Acc_Delete_UseAsApprover" xml:space="preserve">
+    <value>Delete failed. This account is an approver of the document processing flow.</value>
+  </data>
+  <data name="Acc_Delete_IsApproverOfSomeDocReq" xml:space="preserve">
+    <value>Delete failed. This account is an approver of the document request.</value>
+  </data>
+  <data name="DocReq_AttachedFileMaximumIs10" xml:space="preserve">
+    <value>The maximum number of attachments is 10 files.</value>
+  </data>
+  <data name="DocFlow_Delete_HaveDocTypeCatUse" xml:space="preserve">
+    <value>Cannot delete because this document flow processing is being used by another document type category.</value>
+  </data>
+  <data name="DocReq_LimitRequestDocument" xml:space="preserve">
+    <value>You were not able to submit documents because you submitted too many.</value>
+  </data>
+  <data name="Lot_UploadError" xml:space="preserve">
+    <value>Error uploading file to server.</value>
+  </data>
+  <data name="DayOff_InvalidData" xml:space="preserve">
+    <value>Invalid data!</value>
+  </data>
+  <data name="DayOff_DayOffExists" xml:space="preserve">
+    <value>Day off already exists.</value>
+  </data>
+</root>

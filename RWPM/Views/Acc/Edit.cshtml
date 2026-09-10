@@ -1,0 +1,75 @@
+﻿@model AccUpdateVM
+
+@using AccountModelResource = RWPM.Resources.Models.Acc
+@using AccountSharedResource = RWPM.Resources.Shared.Acc
+@using RWPM.Common.Enums
+@using RWPM.Models.ViewModels.Acc
+@using RWPM.Resources.Shared
+@{
+    ViewData["Title"] = AccountSharedResource.Update_PageTitle;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 border-4 border-primary border-start rounded-start ps-2">
+    <h4 class="mb-0">
+        <i class="bi bi-person-fill-up me-2"></i> @AccountSharedResource.Update_PageHeader
+    </h4>
+
+    <nav class="d-none d-md-block ms-auto"
+         style="--bs-breadcrumb-divider: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%278%27 height=%278%27%3E%3Cpath d=%27M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z%27 fill=%276c757d%27/%3E%3C/svg%3E');"
+         aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a asp-action="Index">@RWPM.Resources.Shared.Acc.Index_PageHeader</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">@AccountSharedResource.Update_PageHeader</li>
+        </ol>
+    </nav>
+</div>
+
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="Username" />
+
+    <div class="form-group mt-4">
+        <label class="form-label">@AccountModelResource.Username: <strong>@Model.Username</strong></label>
+    </div>
+    <hr />
+
+    <div class="form-group mb-2">
+        <label class="form-label required" asp-for="FullName">@AccountModelResource.Fullname</label>
+        <input class="form-control" asp-for="FullName" class="form-control" placeholder="@AccountSharedResource.Placeholder_FullName" />
+        <span asp-validation-for="FullName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-2">
+        <label class="form-label required" asp-for="Email">Email</label>
+        <input class="form-control" asp-for="Email" class="form-control" placeholder="@AccountSharedResource.Placeholder_Email" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-2">
+        <label class="form-label" asp-for="Role">@AccountModelResource.Role</label>
+        <select asp-for="Role" asp-items="Model.AccountRoleSelectList" class="form-select system-select2">
+        </select>
+        <span asp-validation-for="Role" class="text-danger"></span>
+    </div>
+    <div class="form-group mt-3 text-end">
+        <a asp-action="Index" class="btn btn-secondary me-2">
+            <i class="bi bi-arrow-return-left me-2"></i>@SharedResource.Button_GoBack
+        </a>
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-floppy me-2"></i>@SharedResource.Button_SaveChanges
+        </button>
+    </div>
+    
+</form>
+
+@section Scripts {
+    <script>
+           function togglePassword() {
+            const input = document.getElementById('Password');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+    </script>
+}

@@ -1,0 +1,150 @@
+@model RWPM.Models.ViewModels.Store.StoreListVM
+
+@using StoreModelResource = RWPM.Resources.Models.Store
+@using StoreSharedResource = RWPM.Resources.Shared.Store
+@using RWPM.Resources.Shared
+
+@{
+    ViewData["Title"] = StoreSharedResource.Index_PageTitle;
+}
+
+@Html.AntiForgeryToken()
+
+<div>
+    <div class="mb-3">
+        <h4 class="fw-semibold text-dark d-flex align-items-center">
+            <i class="bi bi-shop me-2"></i>
+            @StoreSharedResource.Index_PageHeader
+        </h4>
+    </div>
+
+    <!-- Search form -->
+    <form asp-action="Index" method="get" class="row g-2 align-items-end mb-2">
+        <div class="col-md-4 col-lg-3">
+            <label class="form-label small" asp-for="Search">@StoreModelResource.Search</label>
+            <input type="text" asp-for="Search" class="form-control form-control-sm" placeholder="🔍 @StoreSharedResource.Placeholder_Search" />
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <label class="form-label small" asp-for="IsActive">@SharedResource.ObjectStatus</label>
+            <select asp-for="IsActive" class="form-select form-select-sm">
+                <option value="">@SharedResource.ObjectStatus_Default</option>
+                <option value="true">@SharedResource.ObjectStatus_IsActive</option>
+                <option value="false">@SharedResource.ObjectStatus_IsInactive</option>
+            </select>
+        </div>
+
+        <div class="col-12">
+            <button type="submit" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-search"></i>
+                @SharedResource.Button_Search
+            </button>
+            <a asp-action="Index" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-x-lg"></i>
+                @SharedResource.Button_Reset
+            </a>
+        </div>
+    </form>
+
+    <!-- Create Button -->
+    <div class="text-end mb-2">
+        <a asp-action="Create" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i> @SharedResource.Button_Create
+        </a>
+    </div>
+
+    <!-- Table Container -->
+    <div style="max-height: 500px; overflow-y: auto;" class="shadow-sm rounded border">
+        <table class="table table-hover align-middle mb-0 table-bordered">
+            <thead class="bg-light" style="position: sticky; top: 0; z-index: 10;">
+                <tr>
+                    <th class="text-nowrap">@StoreModelResource.StoreCode</th>
+                    <th class="text-nowrap">@StoreModelResource.StoreName</th>
+                    <th class="text-nowrap">@StoreModelResource.Address</th>
+                    <th class="text-nowrap">@StoreModelResource.Phone</th>
+                    <th class="text-nowrap text-end">@SharedResource.CreatedDate</th>
+                    <th class="text-nowrap text-center">@StoreModelResource.IsActive</th>
+                    <th class="text-nowrap text-center">@SharedResource.Button_Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.PanigationResponse.Data != null && Model.PanigationResponse.Data.Any())
+                {
+                    foreach (var store in Model.PanigationResponse.Data)
+                    {
+                        <tr>
+                            <td class="fw-semibold text-primary">@store.StoreCode</td>
+                            <td>@store.StoreName</td>
+                            <td>@(string.IsNullOrWhiteSpace(store.Address) ? "-" : store.Address)</td>
+                            <td>@(string.IsNullOrWhiteSpace(store.Phone) ? "-" : store.Phone)</td>
+                            <td class="text-end">@store.CreatedDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="text-center">
+                                <div class="form-check form-switch d-flex justify-content-center">
+                                    <input class="form-check-input active-toggle"
+                                           type="checkbox"
+                                           data-id="@store.StoreId"
+                                           @(store.IsActive ? "checked" : "") />
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <a asp-action="Edit" asp-route-id="@store.StoreId" class="btn btn-sm btn-outline-primary me-1" title="@SharedResource.Button_Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@store.StoreId" class="btn btn-sm btn-outline-danger" title="@SharedResource.Button_Delete">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                            @SharedResource.NoDataFound
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    @await Html.PartialAsync("_PaginationPartial", Model.PanigationResponse.ToPaginationRes(new Dictionary<string, string?>() {
+        { "Search", Model.Search },
+        { "IsActive", Model.IsActive.ToString() }
+    }))
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.active-toggle').change(function () {
+                var checkbox = $(this);
+                var storeId = checkbox.data('id');
+                var isActive = checkbox.is(':checked');
+
+                $.ajax({
+                    url: '/Store/UpdateActiveStatus/' + storeId,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    data: JSON.stringify({
+                        storeId: storeId,
+                        isActive: isActive
+                    }),
+                    success: function () {
+                        toastr.success('Cập nhật trạng thái thành công!');
+                    },
+                    error: function (xhr) {
+                        checkbox.prop('checked', !isActive);
+                        toastr.error('Cập nhật thất bại: ' + (xhr.responseText || 'Đã có lỗi xảy ra.'));
+                    }
+                });
+            });
+        });
+    </script>
+}

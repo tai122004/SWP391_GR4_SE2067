@@ -1,0 +1,215 @@
+﻿@model AccListVM
+
+@using AccountModelResource = RWPM.Resources.Models.Acc
+@using AccountSharedResource = RWPM.Resources.Shared.Acc
+@using Microsoft.AspNetCore.Mvc.Localization
+@using RWPM.Common.Enums
+@using RWPM.Models.Common
+@using RWPM.Models.ViewModels.Acc
+
+@{
+    ViewData["Title"] = AccountSharedResource.Index_PageTitle;
+}
+
+@Html.AntiForgeryToken()
+
+<div>
+    <div class="mb-3">
+        <h4 class="fw-semibold text-dark d-flex align-items-center">
+            <i class="bi bi-person-lines-fill me-2"></i>
+            @AccountSharedResource.Index_PageHeader
+        </h4>
+    </div>
+
+    <!-- Search form -->
+    <form asp-action="Index" method="get" class="row g-2 align-items-end mb-2">
+
+        <div class="col-md-4 col-lg-3">
+            <label class="form-label small" asp-for="Search">@AccountModelResource.Search</label>
+            <input type="text" asp-for="Search" class="form-control form-control-sm" placeholder="🔍 @AccountSharedResource.Placeholder_Search" />
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <label class="form-label small" asp-for="IsActive">@SharedResource.ObjectStatus</label>
+            <select asp-for="IsActive" class="form-select form-select-sm">
+                <option value="">@SharedResource.ObjectStatus_Default</option>
+                <option value="true">@SharedResource.ObjectStatus_IsActive</option>
+                <option value="false">@SharedResource.ObjectStatus_IsInactive</option>
+            </select>
+        </div>
+
+        <div class="col-12">
+            <button type="submit" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-search"></i>
+                @SharedResource.Button_Search
+            </button>
+            <a asp-action="Index" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-x-lg"></i>
+                @SharedResource.Button_Reset
+            </a>
+        </div>
+
+    </form>
+
+
+    <!-- Create Button -->
+    <div class="text-end mb-2">
+        <a asp-action="Create" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i> @SharedResource.Button_Create
+        </a>
+    </div>
+
+    <!-- Scrollable container -->
+    <div style="max-height: 500px; overflow-y: auto;" class="shadow-sm rounded border">
+        <table class="table table-hover align-middle mb-0 table-bordered">
+            <thead class="bg-light" style="position: sticky; top: 0; z-index: 10;">
+                <tr>
+                    <th class="text-nowrap">
+                        @AccountModelResource.Username
+                    </th>
+                    <th class="text-nowrap">
+                        @AccountModelResource.Fullname
+                    </th>
+                    <th class="text-nowrap">
+                        Email
+                    </th>
+                    <th class="text-nowrap text-center">
+                        @AccountModelResource.Role
+                    </th>
+                    <th class="text-nowrap text-end">
+                        @SharedResource.CreatedDate
+                    </th>
+                    <th class="text-nowrap text-end">
+                        @AccountModelResource.LastLogin
+                    </th>
+                    <th class="text-nowrap text-center">
+                        Active
+                    </th>
+                    <th class="text-nowrap text-center">
+                        @SharedResource.Button_Action
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.PanigationResponse.Data != null && Model.PanigationResponse.Data.Any())
+                {
+                    foreach (var category in Model.PanigationResponse.Data)
+                    {
+                        var roleClass = "";
+
+                        switch (category.Role)
+                        {
+                            case AccountRole.HR:
+                                roleClass = "badge badge-pill bg-danger"; break;
+                            case AccountRole.AreaManager:
+                                roleClass = "badge badge-pill bg-primary"; break;
+                            case AccountRole.StoreManager:
+                                roleClass = "badge badge-pill bg-success"; break;
+                            case AccountRole.ShiftLeader:
+                                roleClass = "badge badge-pill bg-warning text-dark"; break;
+                            case AccountRole.SalesStaff:
+                                roleClass = "badge badge-pill bg-info"; break;
+                            case AccountRole.PartTimeStaff:
+                                roleClass = "badge badge-pill bg-secondary"; break;
+                            default:
+                                roleClass = "badge badge-pill bg-secondary"; break;
+                        }
+
+                        <tr>
+                            <td>@category.Username</td>
+                            <td>@category.FullName</td>
+                            <td>@category.Email</td>
+                            <td class="text-center">
+                                <span class="@roleClass">@category.Role.GetDisplayName()</span>
+                            </td>
+                            <td class="text-end">
+                                @(category.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss") )
+                            </td>
+                            <td class="text-end">
+                                @( category.LastLogin?.ToString("dd/MM/yyyy HH:mm:ss") ?? "-")
+                            </td>
+                            <td>
+                                <div class="form-check form-switch d-flex justify-content-center">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           id="isActiveSwitch_@category.Username"
+                                           @(category.IsActive ? "checked" : "")
+                                           onclick="onToggleStatus('@category.Username', this.checked)" />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center flex-wrap gap-2 flex-md-nowrap">
+                                    <a asp-action="Edit"
+                                       asp-route-id="@category.Username"
+                                       class="btn btn-sm btn-outline-warning"
+                                       title="@SharedResource.Button_Edit">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+
+                                    <a asp-action="ChangePasswordAccount"
+                                       asp-route-id="@category.Username"
+                                       class="btn btn-sm btn-outline-primary"
+                                       title="@SharedResource.Button_ChangePassword">
+                                        <i class="bi bi-key"></i>
+                                    </a>
+
+                                    <a asp-action="Delete"
+                                       asp-route-id="@category.Username"
+                                       class="btn btn-sm btn-outline-danger"
+                                       title="@SharedResource.Button_Delete">
+                                        <i class="bi bi-trash"></i>
+									</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-3">
+                            <i class="bi bi-info-circle me-1"></i>
+                            @SharedResource.NoDataFound
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @await Html.PartialAsync("_PaginationPartial", Model.PanigationResponse.ToPaginationRes(new Dictionary<string, string?>() {
+        { "Search", @Model.Search },
+        { "IsActive", @Model.IsActive.ToString()},
+        }))
+</div>
+
+@section Scripts{
+    <script>
+        function onToggleStatus(id, isActive) {
+
+                fetch('Acc/UpdateActiveStatus/'+id, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': MAIN.AUTH.getVertificationToken()
+                    },
+                    body: JSON.stringify({
+                        username: id,
+                        isActive: isActive
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => { throw new Error(text); });
+                    }
+                })
+                .catch(error => {
+                    alert("Error updating status: " + error.message);
+                    // Optional: revert the toggle
+                    document.getElementById("isActiveSwitch_" + id).checked = !isActive;
+                });
+            }
+    </script>
+
+}
+

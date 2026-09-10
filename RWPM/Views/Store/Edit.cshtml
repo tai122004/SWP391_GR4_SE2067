@@ -1,0 +1,73 @@
+@model RWPM.Models.ViewModels.Store.StoreEditVM
+
+@using StoreModelResource = RWPM.Resources.Models.Store
+@using StoreSharedResource = RWPM.Resources.Shared.Store
+@using RWPM.Resources.Shared
+
+@{
+    ViewData["Title"] = StoreSharedResource.Edit_PageTitle;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 border-4 border-primary border-start rounded-start ps-2">
+    <h4 class="mb-0">
+        <i class="bi bi-pencil-square me-2"></i> @StoreSharedResource.Edit_PageHeader
+    </h4>
+
+    <nav class="d-none d-md-block ms-auto"
+         style="--bs-breadcrumb-divider: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%278%27 height=%278%27%3E%3Cpath d=%27M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z%27 fill=%276c757d%27/%3E%3C/svg%3E');"
+         aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a asp-action="Index">@StoreSharedResource.Index_PageHeader</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">@StoreSharedResource.Edit_PageHeader</li>
+        </ol>
+    </nav>
+</div>
+
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="StoreId" />
+
+    <div class="form-group mb-3">
+        <label class="form-label required" asp-for="StoreCode">@StoreModelResource.StoreCode</label>
+        <input class="form-control" asp-for="StoreCode" placeholder="@StoreSharedResource.Placeholder_StoreCode" autocomplete="off" />
+        <span asp-validation-for="StoreCode" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label class="form-label required" asp-for="StoreName">@StoreModelResource.StoreName</label>
+        <input class="form-control" asp-for="StoreName" placeholder="@StoreSharedResource.Placeholder_StoreName" autocomplete="off" />
+        <span asp-validation-for="StoreName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label class="form-label" asp-for="Address">@StoreModelResource.Address</label>
+        <input class="form-control" asp-for="Address" placeholder="@StoreSharedResource.Placeholder_Address" autocomplete="off" />
+        <span asp-validation-for="Address" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label class="form-label" asp-for="Phone">@StoreModelResource.Phone</label>
+        <input class="form-control" asp-for="Phone" placeholder="@StoreSharedResource.Placeholder_Phone" autocomplete="off" />
+        <span asp-validation-for="Phone" class="text-danger"></span>
+    </div>
+
+    <div class="form-check form-switch mb-3">
+        <input class="form-check-input" type="checkbox" asp-for="IsActive" />
+        <label class="form-check-label" asp-for="IsActive">@StoreModelResource.IsActive</label>
+    </div>
+
+    <div class="form-group mt-3 text-end">
+        <a asp-action="Index" class="btn btn-secondary me-2">
+            <i class="bi bi-arrow-return-left me-2"></i>@SharedResource.Button_GoBack
+        </a>
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-floppy me-2"></i>@SharedResource.Button_Edit
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
