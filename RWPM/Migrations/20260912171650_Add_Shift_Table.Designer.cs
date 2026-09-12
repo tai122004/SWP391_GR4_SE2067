@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RWPM.Infrastructure.Data;
 
@@ -11,9 +12,10 @@ using RWPM.Infrastructure.Data;
 namespace RWPM.Migrations
 {
     [DbContext(typeof(DefaultDatabaseContext))]
-    partial class DefaultDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20260912171650_Add_Shift_Table")]
+    partial class Add_Shift_Table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -214,6 +216,9 @@ namespace RWPM.Migrations
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<decimal>("PayRate")
+                        .HasColumnType("decimal(3,1)");
 
                     b.Property<string>("ShiftCode")
                         .IsRequired()

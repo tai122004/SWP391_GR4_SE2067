@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Index_PageTitle" xml:space="preserve">
+    <value>Shift List</value>
+  </data>
+  <data name="Index_PageHeader" xml:space="preserve">
+    <value>Shift List</value>
+  </data>
+  <data name="Create_PageTitle" xml:space="preserve">
+    <value>Create Shift</value>
+  </data>
+  <data name="Create_PageHeader" xml:space="preserve">
+    <value>Create New Shift</value>
+  </data>
+  <data name="Edit_PageTitle" xml:space="preserve">
+    <value>Edit Shift</value>
+  </data>
+  <data name="Edit_PageHeader" xml:space="preserve">
+    <value>Edit Shift</value>
+  </data>
+  <data name="Placeholder_Search" xml:space="preserve">
+    <value>Code, name...</value>
+  </data>
+  <data name="Placeholder_ShiftCode" xml:space="preserve">
+    <value>Enter shift code (e.g. S, C, G)</value>
+  </data>
+  <data name="Placeholder_ShiftName" xml:space="preserve">
+    <value>Enter shift name (e.g. Morning Shift)</value>
+  </data>
+  <data name="Placeholder_Description" xml:space="preserve">
+    <value>Enter description (optional)</value>
+  </data>
+  <data name="SplitShiftSection" xml:space="preserve">
+    <value>Split Shift - Period 2</value>
+  </data>
+</root>

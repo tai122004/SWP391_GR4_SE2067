@@ -1,4 +1,4 @@
-﻿@using NavigationBarResource = RWPM.Resources.Shared.NavigationBarResource
+@using NavigationBarResource = RWPM.Resources.Shared.NavigationBarResource
 
 <style>
     .navbar .nav-link:hover,
@@ -39,6 +39,11 @@
                             <li>
                                 <a class="dropdown-item d-flex align-items-center" asp-area="" asp-controller="Store" asp-action="Index">
                                     <i class="bi bi-shop me-2 text-success"></i> @NavigationBarResource.StoreList
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" asp-area="" asp-controller="Shift" asp-action="Index">
+                                    <i class="bi bi-clock-history me-2 text-info"></i> @NavigationBarResource.ShiftManagement
                                 </a>
                             </li>
                         </ul>

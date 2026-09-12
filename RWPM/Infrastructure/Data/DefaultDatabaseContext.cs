@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using RWPM.Models.Entities;
 
 namespace RWPM.Infrastructure.Data
@@ -48,6 +48,15 @@ namespace RWPM.Infrastructure.Data
             });
             #endregion
 
+            #region Shift
+            modelBuilder.Entity<Shift>(e =>
+            {
+                e.HasIndex(x => x.ShiftCode)
+                 .IsUnique()
+                 .HasDatabaseName("IX_Shift_ShiftCode");
+            });
+            #endregion
+
             #region ImportLog
             modelBuilder.Entity<ImportLog>()
                 .HasOne(x => x.Creator)
@@ -61,6 +70,7 @@ namespace RWPM.Infrastructure.Data
         public DbSet<Store> Store { get; set; } = default!;
         public DbSet<Employee> Employee { get; set; } = default!;
         public DbSet<ImportLog> ImportLog { get; set; } = default!;
+        public DbSet<Shift> Shift { get; set; } = default!;
         //public DbSet<IdCounter> IdCounter { get; set; } = default!;
 
     }
