@@ -1,0 +1,152 @@
+@model RWPM.Models.ViewModels.Shift.ShiftEditVM
+
+@using ShiftModelResource = RWPM.Resources.Models.Shift
+@using ShiftSharedResource = RWPM.Resources.Shared.Shift
+@using RWPM.Resources.Shared
+@using RWPM.Common.Enums
+
+@{
+    ViewData["Title"] = ShiftSharedResource.Edit_PageTitle;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 border-4 border-primary border-start rounded-start ps-2">
+    <h4 class="mb-0">
+        <i class="bi bi-pencil-square me-2"></i> @ShiftSharedResource.Edit_PageHeader
+    </h4>
+
+    <nav class="d-none d-md-block ms-auto"
+         style="--bs-breadcrumb-divider: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%278%27 height=%278%27%3E%3Cpath d=%27M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z%27 fill=%276c757d%27/%3E%3C/svg%3E');"
+         aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a asp-action="Index">@ShiftSharedResource.Index_PageHeader</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">@ShiftSharedResource.Edit_PageHeader</li>
+        </ol>
+    </nav>
+</div>
+
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="ShiftId" />
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                <label class="form-label required" asp-for="ShiftCode">@ShiftModelResource.ShiftCode</label>
+                <input class="form-control" asp-for="ShiftCode" placeholder="@ShiftSharedResource.Placeholder_ShiftCode" autocomplete="off" />
+                <span asp-validation-for="ShiftCode" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                <label class="form-label required" asp-for="ShiftName">@ShiftModelResource.ShiftName</label>
+                <input class="form-control" asp-for="ShiftName" placeholder="@ShiftSharedResource.Placeholder_ShiftName" autocomplete="off" />
+                <span asp-validation-for="ShiftName" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group mb-3">
+                <label class="form-label required" asp-for="Type">@ShiftModelResource.ShiftType</label>
+                <select class="form-select" asp-for="Type" id="shiftTypeSelect">
+                    <option value="">-- Chọn loại ca --</option>
+                    @foreach (var type in Enum.GetValues<ShiftType>())
+                    {
+                        <option value="@((byte)type)">@type.GetDisplayName()</option>
+                    }
+                </select>
+                <span asp-validation-for="Type" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group mb-3">
+                <label class="form-label required" asp-for="StartTime">@ShiftModelResource.StartTime</label>
+                <input class="form-control" asp-for="StartTime" type="time" />
+                <span asp-validation-for="StartTime" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group mb-3">
+                <label class="form-label required" asp-for="EndTime">@ShiftModelResource.EndTime</label>
+                <input class="form-control" asp-for="EndTime" type="time" />
+                <span asp-validation-for="EndTime" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Split Shift Section (Ca Gãy) -->
+    <div id="splitShiftSection" style="display: none;">
+        <div class="alert alert-info py-2 mb-3">
+            <i class="bi bi-info-circle me-1"></i> @ShiftSharedResource.SplitShiftSection
+        </div>
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="form-group mb-3">
+                    <label class="form-label" asp-for="StartTime2">@ShiftModelResource.StartTime2</label>
+                    <input class="form-control" asp-for="StartTime2" type="time" />
+                    <span asp-validation-for="StartTime2" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group mb-3">
+                    <label class="form-label" asp-for="EndTime2">@ShiftModelResource.EndTime2</label>
+                    <input class="form-control" asp-for="EndTime2" type="time" />
+                    <span asp-validation-for="EndTime2" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                <label class="form-label" asp-for="BreakMinutes">@ShiftModelResource.BreakMinutes</label>
+                <input class="form-control" asp-for="BreakMinutes" type="number" min="0" max="120" />
+                <span asp-validation-for="BreakMinutes" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6 d-flex align-items-center">
+            <div class="form-check form-switch mt-2">
+                <input class="form-check-input" type="checkbox" asp-for="IsActive" />
+                <label class="form-check-label" asp-for="IsActive">@ShiftModelResource.IsActive</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group mb-3">
+        <label class="form-label" asp-for="Description">@ShiftModelResource.Description</label>
+        <textarea class="form-control" asp-for="Description" rows="2" placeholder="@ShiftSharedResource.Placeholder_Description"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mt-3 text-end">
+        <a asp-action="Index" class="btn btn-secondary me-2">
+            <i class="bi bi-arrow-return-left me-2"></i>@SharedResource.Button_GoBack
+        </a>
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-floppy me-2"></i>@SharedResource.Button_Edit
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            function toggleSplitSection() {
+                var selectedType = $('#shiftTypeSelect').val();
+                if (selectedType == '@((byte)ShiftType.Split)') {
+                    $('#splitShiftSection').slideDown();
+                } else {
+                    $('#splitShiftSection').slideUp();
+                }
+            }
+
+            $('#shiftTypeSelect').change(toggleSplitSection);
+            toggleSplitSection();
+        });
+    </script>
+}

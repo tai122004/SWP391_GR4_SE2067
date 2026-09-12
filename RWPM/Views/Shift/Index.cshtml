@@ -1,0 +1,157 @@
+@model RWPM.Models.ViewModels.Shift.ShiftListVM
+
+@using ShiftModelResource = RWPM.Resources.Models.Shift
+@using ShiftSharedResource = RWPM.Resources.Shared.Shift
+@using RWPM.Resources.Shared
+@using RWPM.Common.Enums
+@using RWPM.Models.Entities
+
+@{
+    ViewData["Title"] = ShiftSharedResource.Index_PageTitle;
+}
+
+@Html.AntiForgeryToken()
+
+<div>
+    <div class="mb-3">
+        <h4 class="fw-semibold text-dark d-flex align-items-center">
+            <i class="bi bi-clock-history me-2"></i>
+            @ShiftSharedResource.Index_PageHeader
+        </h4>
+    </div>
+
+    <!-- Search form -->
+    <form asp-action="Index" method="get" class="row g-2 align-items-end mb-2">
+        <div class="col-md-4 col-lg-3">
+            <label class="form-label small" asp-for="Search">@ShiftModelResource.Search</label>
+            <input type="text" asp-for="Search" class="form-control form-control-sm" placeholder="🔍 @ShiftSharedResource.Placeholder_Search" />
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <label class="form-label small" asp-for="IsActive">@SharedResource.ObjectStatus</label>
+            <select asp-for="IsActive" class="form-select form-select-sm">
+                <option value="">@SharedResource.ObjectStatus_Default</option>
+                <option value="true">@SharedResource.ObjectStatus_IsActive</option>
+                <option value="false">@SharedResource.ObjectStatus_IsInactive</option>
+            </select>
+        </div>
+
+        <div class="col-12">
+            <button type="submit" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-search"></i>
+                @SharedResource.Button_Search
+            </button>
+            <a asp-action="Index" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-x-lg"></i>
+                @SharedResource.Button_Reset
+            </a>
+        </div>
+    </form>
+
+    <!-- Create Button -->
+    <div class="text-end mb-2">
+        <a asp-action="Create" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i> @SharedResource.Button_Create
+        </a>
+    </div>
+
+    <!-- Table Container -->
+    <div style="max-height: 500px; overflow-y: auto;" class="shadow-sm rounded border">
+        <table class="table table-hover align-middle mb-0 table-bordered">
+            <thead class="bg-light" style="position: sticky; top: 0; z-index: 10;">
+                <tr>
+                    <th class="text-nowrap">@ShiftModelResource.ShiftCode</th>
+                    <th class="text-nowrap">@ShiftModelResource.ShiftName</th>
+                    <th class="text-nowrap">@ShiftModelResource.ShiftType</th>
+                    <th class="text-nowrap">@ShiftModelResource.TimeDisplay</th>
+                    <th class="text-nowrap text-center">@ShiftModelResource.BreakMinutes</th>
+                    <th class="text-nowrap text-end">@SharedResource.CreatedDate</th>
+                    <th class="text-nowrap text-center">@ShiftModelResource.IsActive</th>
+                    <th class="text-nowrap text-center">@SharedResource.Button_Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.PanigationResponse.Data != null && Model.PanigationResponse.Data.Any())
+                {
+                    foreach (var shift in Model.PanigationResponse.Data)
+                    {
+                        var timeDisplay = $"{shift.StartTime:hh\\:mm} - {shift.EndTime:hh\\:mm}";
+                        if (shift.StartTime2.HasValue && shift.EndTime2.HasValue)
+                        {
+                            timeDisplay += $" | {shift.StartTime2.Value:hh\\:mm} - {shift.EndTime2.Value:hh\\:mm}";
+                        }
+
+                        <tr>
+                            <td class="fw-semibold text-primary">@shift.ShiftCode</td>
+                            <td>@shift.GetLocalizedName()</td>
+                            <td>@shift.Type.GetDisplayName()</td>
+                            <td class="font-monospace small">@timeDisplay</td>
+                            <td class="text-center">@(shift.BreakMinutes > 0 ? $"{shift.BreakMinutes}'" : "-")</td>
+                            <td class="text-end">@shift.CreatedDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="text-center">
+                                <div class="form-check form-switch d-flex justify-content-center">
+                                    <input class="form-check-input active-toggle"
+                                           type="checkbox"
+                                           data-id="@shift.ShiftId"
+                                           @(shift.IsActive ? "checked" : "") />
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <a asp-action="Edit" asp-route-id="@shift.ShiftId" class="btn btn-sm btn-outline-primary me-1" title="@SharedResource.Button_Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                            @SharedResource.NoDataFound
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    @await Html.PartialAsync("_PaginationPartial", Model.PanigationResponse.ToPaginationRes(new Dictionary<string, string?>() {
+        { "Search", Model.Search },
+        { "IsActive", Model.IsActive.ToString() }
+    }))
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.active-toggle').change(function () {
+                var checkbox = $(this);
+                var shiftId = checkbox.data('id');
+                var isActive = checkbox.is(':checked');
+
+                $.ajax({
+                    url: '/Shift/UpdateActiveStatus/' + shiftId,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    data: JSON.stringify({
+                        shiftId: shiftId,
+                        isActive: isActive
+                    }),
+                    success: function () {
+                        toastr.success('Cập nhật trạng thái thành công!');
+                    },
+                    error: function (xhr) {
+                        checkbox.prop('checked', !isActive);
+                        toastr.error('Cập nhật thất bại: ' + (xhr.responseText || 'Đã có lỗi xảy ra.'));
+                    }
+                });
+            });
+        });
+    </script>
+}

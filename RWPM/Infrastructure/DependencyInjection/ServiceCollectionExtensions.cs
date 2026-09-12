@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using RWPM.Hubs.Config;
@@ -64,6 +64,7 @@ namespace RWPM.Infrastructure.DependencyInjection
             services.AddScoped<IStoreService, StoreService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IImportLogService, ImportLogService>();
+            services.AddScoped<IShiftService, ShiftService>();
             //services.AddScoped<IIdCounterService, IdCounterService>();
 
             return services;

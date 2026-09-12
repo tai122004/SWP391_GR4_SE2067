@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ShiftCode" xml:space="preserve">
+    <value>Mã ca</value>
+  </data>
+  <data name="ShiftName" xml:space="preserve">
+    <value>Tên ca</value>
+  </data>
+  <data name="ShiftName_S" xml:space="preserve">
+    <value>Ca Sáng</value>
+  </data>
+  <data name="ShiftName_C" xml:space="preserve">
+    <value>Ca Chiều Tối</value>
+  </data>
+  <data name="ShiftName_G" xml:space="preserve">
+    <value>Ca Gãy</value>
+  </data>
+  <data name="ShiftName_HC" xml:space="preserve">
+    <value>Ca Hành Chính</value>
+  </data>
+  <data name="ShiftType" xml:space="preserve">
+    <value>Loại ca</value>
+  </data>
+  <data name="ShiftType_Morning" xml:space="preserve">
+    <value>Ca Sáng</value>
+  </data>
+  <data name="ShiftType_Afternoon" xml:space="preserve">
+    <value>Ca Chiều/Tối</value>
+  </data>
+  <data name="ShiftType_Split" xml:space="preserve">
+    <value>Ca Gãy</value>
+  </data>
+  <data name="ShiftType_FullDay" xml:space="preserve">
+    <value>Ca Hành Chính</value>
+  </data>
+  <data name="StartTime" xml:space="preserve">
+    <value>Giờ bắt đầu</value>
+  </data>
+  <data name="EndTime" xml:space="preserve">
+    <value>Giờ kết thúc</value>
+  </data>
+  <data name="StartTime2" xml:space="preserve">
+    <value>Giờ bắt đầu (Đợt 2)</value>
+  </data>
+  <data name="EndTime2" xml:space="preserve">
+    <value>Giờ kết thúc (Đợt 2)</value>
+  </data>
+  <data name="BreakMinutes" xml:space="preserve">
+    <value>Nghỉ giữa ca (phút)</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Mô tả</value>
+  </data>
+  <data name="IsActive" xml:space="preserve">
+    <value>Trạng thái hoạt động</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Tìm kiếm</value>
+  </data>
+  <data name="TimeDisplay" xml:space="preserve">
+    <value>Khung giờ</value>
+  </data>
+</root>
