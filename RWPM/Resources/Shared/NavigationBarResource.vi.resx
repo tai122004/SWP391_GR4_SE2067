@@ -153,4 +153,10 @@
   <data name="DayOff" xml:space="preserve">
     <value>Ngày nghỉ</value>
   </data>
+  <data name="EmployeeManagement" xml:space="preserve">
+    <value>Quản lý nhân viên</value>
+  </data>
+  <data name="StoreList" xml:space="preserve">
+    <value>Chi nhánh</value>
+  </data>
 </root>

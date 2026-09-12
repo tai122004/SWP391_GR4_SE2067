@@ -42,6 +42,13 @@ namespace RWPM.Infrastructure.DependencyInjection
                     options.AccessDeniedPath = "/Auth/AccessDenied";
                 });
             services.AddAuthorization();
+
+            #region Antiforgery
+            services.AddAntiforgery(options =>
+            {
+                options.HeaderName = "RequestVerificationToken";
+            });
+            #endregion
             #endregion
 
             #region Localization
@@ -54,6 +61,8 @@ namespace RWPM.Infrastructure.DependencyInjection
             services.AddScoped<IFileStorageService, LocalFileSystemStorage>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IAccService, AccService>();
+            services.AddScoped<IStoreService, StoreService>();
+            services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IImportLogService, ImportLogService>();
             //services.AddScoped<IIdCounterService, IdCounterService>();
 

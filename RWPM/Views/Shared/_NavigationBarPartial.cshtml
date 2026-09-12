@@ -19,36 +19,30 @@
         <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
             <ul class="navbar-nav flex-grow-1">
               
-                @* <li class="nav-item">
-                    <a class="nav-link text-white" asp-area="" asp-controller="PO" asp-action="Index">@NavigationBarResource.PurchaseOrder</a>
-                </li>
-                
-                <li class="nav-item">
-                    <a class="nav-link text-white" asp-area="" asp-controller="Lot" asp-action="Index">@NavigationBarResource.LotNoManagement</a>
-                </li> *@
-                
-                @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin"))
+                @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("AreaManager") || User.IsInRole("SuperAdmin"))
                 {
-                    <li class="nav-item">
-                        <a class="nav-link text-white" asp-area="" asp-controller="Acc" asp-action="Index">@NavigationBarResource.AccountManagement</a>
-                    </li>
-
-                    <!-- Dropdown Nav Item -->
-                    @* <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-white" href="#" id="declaredDataDropdown" role="button" data-bs-toggle="dropdown">
-                            @NavigationBarResource.DeclaredData
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="catalogDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-folder2-open me-1"></i> @NavigationBarResource.Categories
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="declaredDataDropdown">
-                            <li><a class="dropdown-item" asp-area="" asp-controller="Wire" asp-action="Index">@NavigationBarResource.Wire</a></li>
-                            <li><a class="dropdown-item" asp-area="" asp-controller="DayOff" asp-action="Index">@NavigationBarResource.DayOff</a></li>
-
-                            <li><hr class="dropdown-divider"></li>
-
-                            <li class="dropdown-header">@NavigationBarResource.OrtherFunctions</li>
-                            <li><a class="dropdown-item">...</a></li>
-                            <li><a class="dropdown-item">...</a></li>
+                        <ul class="dropdown-menu shadow" aria-labelledby="catalogDropdown">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" asp-area="" asp-controller="Acc" asp-action="Index">
+                                    <i class="bi bi-people me-2 text-primary"></i> @NavigationBarResource.AccountManagement
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" asp-area="" asp-controller="Employee" asp-action="Index">
+                                    <i class="bi bi-person-badge me-2 text-warning"></i> @NavigationBarResource.EmployeeManagement
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" asp-area="" asp-controller="Store" asp-action="Index">
+                                    <i class="bi bi-shop me-2 text-success"></i> @NavigationBarResource.StoreList
+                                </a>
+                            </li>
                         </ul>
-                    </li> *@
+                    </li>
                 }
                 
             </ul>

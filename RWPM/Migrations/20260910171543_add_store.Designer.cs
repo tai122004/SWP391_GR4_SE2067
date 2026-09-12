@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RWPM.Infrastructure.Data;
 
@@ -11,9 +12,10 @@ using RWPM.Infrastructure.Data;
 namespace RWPM.Migrations
 {
     [DbContext(typeof(DefaultDatabaseContext))]
-    partial class DefaultDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20260910171543_add_store")]
+    partial class add_store
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -75,65 +77,6 @@ namespace RWPM.Migrations
                         .HasDatabaseName("IX_Acc_Email");
 
                     b.ToTable("Acc");
-                });
-
-            modelBuilder.Entity("RWPM.Models.Entities.Employee", b =>
-                {
-                    b.Property<int>("EmployeeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeId"), 1L, 1);
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasPrecision(0)
-                        .HasColumnType("datetime2(0)");
-
-                    b.Property<string>("EmployeeCode")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("JoinDate")
-                        .HasColumnType("date");
-
-                    b.Property<int>("StoreId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasPrecision(0)
-                        .HasColumnType("datetime2(0)");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.HasKey("EmployeeId");
-
-                    b.HasIndex("EmployeeCode")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Employee_EmployeeCode");
-
-                    b.HasIndex("StoreId");
-
-                    b.HasIndex("Username")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Employee_Username");
-
-                    b.ToTable("Employee");
                 });
 
             modelBuilder.Entity("RWPM.Models.Entities.ImportLog", b =>
@@ -236,25 +179,6 @@ namespace RWPM.Migrations
                         .HasDatabaseName("IX_Store_StoreCode");
 
                     b.ToTable("Store");
-                });
-
-            modelBuilder.Entity("RWPM.Models.Entities.Employee", b =>
-                {
-                    b.HasOne("Store", "Store")
-                        .WithMany()
-                        .HasForeignKey("StoreId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("RWPM.Models.Entities.Acc", "Account")
-                        .WithOne()
-                        .HasForeignKey("RWPM.Models.Entities.Employee", "Username")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Account");
-
-                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("RWPM.Models.Entities.ImportLog", b =>

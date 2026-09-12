@@ -130,9 +130,9 @@ namespace RWPM.Services.Implementation
             //    query = query.Where(c => c.DeptCatId == searchObject.DeptCatId.Value);
             //}
 
-            if (searchObject.IsActive.HasValue)
+            if (searchObject.IsActiveBool.HasValue)
             {
-                query = query.Where(c => c.IsActive == searchObject.IsActive.Value);
+                query = query.Where(c => c.IsActive == searchObject.IsActiveBool.Value);
             }
 
             // III. Load navigation properties if required 

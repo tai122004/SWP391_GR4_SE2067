@@ -117,46 +117,76 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Categories" xml:space="preserve">
-    <value>Categories management</value>
+  <data name="Button_Create" xml:space="preserve">
+    <value>Thêm nhân viên</value>
   </data>
-  <data name="AccountManagement" xml:space="preserve">
-    <value>Account management</value>
+  <data name="Button_Delete" xml:space="preserve">
+    <value>Xóa nhân viên</value>
   </data>
-  <data name="Functions" xml:space="preserve">
-    <value>Functions</value>
+  <data name="Button_Edit" xml:space="preserve">
+    <value>Sửa nhân viên</value>
   </data>
-  <data name="OrtherFunctions" xml:space="preserve">
-    <value>Other functions</value>
+  <data name="Cancel" xml:space="preserve">
+    <value>Hủy</value>
   </data>
-  <data name="ChangePassword" xml:space="preserve">
-    <value>Change password</value>
+  <data name="Confirm_Delete" xml:space="preserve">
+    <value>Xác nhận hủy</value>
   </data>
-  <data name="Home" xml:space="preserve">
-    <value>Home</value>
+  <data name="Create_PageHeader" xml:space="preserve">
+    <value>Thêm mới nhân viên</value>
   </data>
-  <data name="AccountProfile" xml:space="preserve">
-    <value>Account profile</value>
+  <data name="Create_PageTitle" xml:space="preserve">
+    <value>Thêm mới nhân viên</value>
   </data>
-  <data name="LotNoManagement" xml:space="preserve">
-    <value>LotNo Management</value>
+  <data name="Delete_Confirm" xml:space="preserve">
+    <value>Bạn có chắc chắn muốn xóa nhân viên này khỏi hệ thống? Thao tác này không thể hoàn tác</value>
   </data>
-  <data name="PurchaseOrder" xml:space="preserve">
-    <value>Purchase Order</value>
+  <data name="Delete_PageHeader" xml:space="preserve">
+    <value>Xóa nhân viên</value>
   </data>
-  <data name="Wire" xml:space="preserve">
-    <value>Wire</value>
+  <data name="Delete_PageTitle" xml:space="preserve">
+    <value>Xóa nhân viên</value>
   </data>
-  <data name="DeclaredData" xml:space="preserve">
-    <value>Declared data</value>
+  <data name="Edit_PageHeader" xml:space="preserve">
+    <value>Sửa nhân viên</value>
   </data>
-  <data name="DayOff" xml:space="preserve">
-    <value>Day Off</value>
+  <data name="Edit_PageTitle" xml:space="preserve">
+    <value>Sửa nhân viên</value>
   </data>
-  <data name="EmployeeManagement" xml:space="preserve">
-    <value>Employee Management</value>
+  <data name="Index_PageHeader" xml:space="preserve">
+    <value>Quản lý nhân viên</value>
   </data>
-  <data name="StoreList" xml:space="preserve">
-    <value>Store List</value>
+  <data name="Index_PageTitle" xml:space="preserve">
+    <value>Quản lý nhân viên</value>
+  </data>
+  <data name="PlaceHolder_EmployeeCode" xml:space="preserve">
+    <value>Nhập mã nhân viên</value>
+  </data>
+  <data name="Placeholder_Search" xml:space="preserve">
+    <value>Nhập mã nhân viên, họ và tên, tài khoản...</value>
+  </data>
+  <data name="Placeholder_Store" xml:space="preserve">
+    <value>--- Chọn cửa hàng ---</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Tìm kiếm</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Trạng thái</value>
+  </data>
+  <data name="Status_Active" xml:space="preserve">
+    <value>Trạng thái hoạt động</value>
+  </data>
+  <data name="Status_All" xml:space="preserve">
+    <value>Tất cả trạng thái</value>
+  </data>
+  <data name="Status_Inactive" xml:space="preserve">
+    <value>Trạng thái không hoạt động</value>
+  </data>
+  <data name="Store" xml:space="preserve">
+    <value>Cửa hàng</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Cảnh báo</value>
   </data>
 </root>

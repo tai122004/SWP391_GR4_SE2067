@@ -30,11 +30,24 @@
         </div>
 
         <div class="col-md-4 col-lg-3">
-            <label class="form-label small" asp-for="IsActive">@SharedResource.ObjectStatus</label>
-            <select asp-for="IsActive" class="form-select form-select-sm">
-                <option value="">@SharedResource.ObjectStatus_Default</option>
-                <option value="true">@SharedResource.ObjectStatus_IsActive</option>
-                <option value="false">@SharedResource.ObjectStatus_IsInactive</option>
+            <label class="form-label small">@SharedResource.ObjectStatus</label>
+            @{ var _isActiveVal = Model.IsActive; }
+            <select name="IsActive" class="form-select form-select-sm">
+                @if (string.IsNullOrEmpty(_isActiveVal)) {
+                    <option value="" selected>@SharedResource.ObjectStatus_Default</option>
+                } else {
+                    <option value="">@SharedResource.ObjectStatus_Default</option>
+                }
+                @if (_isActiveVal == "true") {
+                    <option value="true" selected>@SharedResource.ObjectStatus_IsActive</option>
+                } else {
+                    <option value="true">@SharedResource.ObjectStatus_IsActive</option>
+                }
+                @if (_isActiveVal == "false") {
+                    <option value="false" selected>@SharedResource.ObjectStatus_IsInactive</option>
+                } else {
+                    <option value="false">@SharedResource.ObjectStatus_IsInactive</option>
+                }
             </select>
         </div>
 
@@ -179,37 +192,34 @@
 
     @await Html.PartialAsync("_PaginationPartial", Model.PanigationResponse.ToPaginationRes(new Dictionary<string, string?>() {
         { "Search", @Model.Search },
-        { "IsActive", @Model.IsActive.ToString()},
+        { "IsActive", Model.IsActive },
         }))
 </div>
 
 @section Scripts{
     <script>
         function onToggleStatus(id, isActive) {
-
-                fetch('Acc/UpdateActiveStatus/'+id, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'RequestVerificationToken': MAIN.AUTH.getVertificationToken()
-                    },
-                    body: JSON.stringify({
-                        username: id,
-                        isActive: isActive
-                    })
+            fetch('/Acc/UpdateActiveStatus/' + id, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                body: JSON.stringify({
+                    username: id,
+                    isActive: isActive
                 })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.text().then(text => { throw new Error(text); });
-                    }
-                })
-                .catch(error => {
-                    alert("Error updating status: " + error.message);
-                    // Optional: revert the toggle
-                    document.getElementById("isActiveSwitch_" + id).checked = !isActive;
-                });
-            }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text); });
+                }
+            })
+            .catch(error => {
+                alert("Loi cap nhat trang thai: " + error.message);
+                document.getElementById("isActiveSwitch_" + id).checked = !isActive;
+            });
+        }
     </script>
 
 }
-

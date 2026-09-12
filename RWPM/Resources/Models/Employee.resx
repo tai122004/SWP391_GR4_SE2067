@@ -117,46 +117,31 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Categories" xml:space="preserve">
-    <value>Categories management</value>
+  <data name="Active" xml:space="preserve">
+    <value>Active</value>
   </data>
-  <data name="AccountManagement" xml:space="preserve">
-    <value>Account management</value>
+  <data name="EmployeeAcc" xml:space="preserve">
+    <value>Account</value>
   </data>
-  <data name="Functions" xml:space="preserve">
-    <value>Functions</value>
+  <data name="EmployeeFullName" xml:space="preserve">
+    <value>Full name</value>
   </data>
-  <data name="OrtherFunctions" xml:space="preserve">
-    <value>Other functions</value>
+  <data name="EmployeeID" xml:space="preserve">
+    <value>EmployeeID</value>
   </data>
-  <data name="ChangePassword" xml:space="preserve">
-    <value>Change password</value>
+  <data name="EmployeeRole" xml:space="preserve">
+    <value>Role</value>
   </data>
-  <data name="Home" xml:space="preserve">
-    <value>Home</value>
+  <data name="StartDate" xml:space="preserve">
+    <value>Start date</value>
   </data>
-  <data name="AccountProfile" xml:space="preserve">
-    <value>Account profile</value>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
   </data>
-  <data name="LotNoManagement" xml:space="preserve">
-    <value>LotNo Management</value>
+  <data name="Store" xml:space="preserve">
+    <value>Store</value>
   </data>
-  <data name="PurchaseOrder" xml:space="preserve">
-    <value>Purchase Order</value>
-  </data>
-  <data name="Wire" xml:space="preserve">
-    <value>Wire</value>
-  </data>
-  <data name="DeclaredData" xml:space="preserve">
-    <value>Declared data</value>
-  </data>
-  <data name="DayOff" xml:space="preserve">
-    <value>Day Off</value>
-  </data>
-  <data name="EmployeeManagement" xml:space="preserve">
-    <value>Employee Management</value>
-  </data>
-  <data name="StoreList" xml:space="preserve">
-    <value>Store List</value>
+  <data name="StoreId_RangeError" xml:space="preserve">
+    <value>Please select a Store.</value>
   </data>
 </root>

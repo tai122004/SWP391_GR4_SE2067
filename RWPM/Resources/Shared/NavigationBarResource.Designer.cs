@@ -115,6 +115,15 @@ namespace RWPM.Resources.Shared {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Employee Management.
+        /// </summary>
+        public static string EmployeeManagement {
+            get {
+                return ResourceManager.GetString("EmployeeManagement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Functions.
         /// </summary>
         public static string Functions {
@@ -156,6 +165,15 @@ namespace RWPM.Resources.Shared {
         public static string PurchaseOrder {
             get {
                 return ResourceManager.GetString("PurchaseOrder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Store List.
+        /// </summary>
+        public static string StoreList {
+            get {
+                return ResourceManager.GetString("StoreList", resourceCulture);
             }
         }
         

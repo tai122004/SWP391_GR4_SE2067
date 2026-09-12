@@ -1,0 +1,77 @@
+﻿@model RWPM.Models.Entities.Employee
+@using RWPM.Common.Helper
+@using RWPM.Resources.Shared
+@using EmployeeModelResource = RWPM.Resources.Models.Employee;
+@using EmployeeSharedResource = RWPM.Resources.Shared.Employee;
+
+@{
+    ViewData["Title"] = EmployeeSharedResource.Delete_PageTitle;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 border-4 border-danger border-start rounded-start ps-2">
+    <h4 class="mb-0 text-danger">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> @EmployeeSharedResource.Delete_PageHeader
+    </h4>
+
+    <nav class="d-none d-md-block ms-auto"
+         style="--bs-breadcrumb-divider: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%278%27 height=%278%27%3E%3Cpath d=%27M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z%27 fill=%276c757d%27/%3E%3C/svg%3E');"
+         aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a asp-action="Index">@EmployeeSharedResource.Index_PageHeader</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">@EmployeeSharedResource.Delete_PageHeader</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="alert alert-warning border-warning d-flex align-items-center mb-4" role="alert">
+    <i class="bi bi-exclamation-circle fs-4 me-3"></i>
+    <div>
+        <strong>@EmployeeSharedResource.Warning:</strong> @EmployeeSharedResource.Delete_Confirm
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">@EmployeeModelResource.EmployeeID</dt>
+            <dd class="col-sm-9 fw-bold text-primary">@Model.EmployeeCode</dd>
+
+            <dt class="col-sm-3">@EmployeeModelResource.EmployeeAcc</dt>
+            <dd class="col-sm-9"><code>@Model.Username</code> @(Model.Account != null ? $"({Model.Account.FullName})" : "")</dd>
+
+            <dt class="col-sm-3">@EmployeeModelResource.Store</dt>
+            <dd class="col-sm-9">@(Model.Store != null ? $"{Model.Store.StoreName} ({Model.Store.StoreCode})" : "-")</dd>
+
+            <dt class="col-sm-3">@EmployeeModelResource.StartDate</dt>
+            <dd class="col-sm-9">@Model.JoinDate.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-3">@EmployeeModelResource.Status</dt>
+            <dd class="col-sm-9">
+                @if (Model.IsActive)
+                {
+                    <span class="badge bg-success">@EmployeeSharedResource.Status_Active</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">@EmployeeSharedResource.Status_Inactive</span>
+                }
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="employeeId" value="@Model.EmployeeId" />
+
+    <div class="text-end">
+        <a asp-action="Index" class="btn btn-secondary me-2">
+            <i class="bi bi-arrow-return-left me-2"></i>@EmployeeSharedResource.Cancel
+        </a>
+        <button type="submit" class="btn btn-danger">
+            <i class="bi bi-trash me-2"></i>@EmployeeSharedResource.Confirm_Delete
+        </button>
+    </div>
+</form>

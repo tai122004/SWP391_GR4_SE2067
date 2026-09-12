@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Create_PageHeader" xml:space="preserve">
+    <value>Thêm Cửa hàng Mới</value>
+  </data>
+  <data name="Create_PageTitle" xml:space="preserve">
+    <value>Thêm Cửa hàng Mới</value>
+  </data>
+  <data name="Delete_PageHeader" xml:space="preserve">
+    <value>Xác nhận Xóa Cửa hàng</value>
+  </data>
+  <data name="Delete_PageTitle" xml:space="preserve">
+    <value>Xác nhận Xóa Cửa hàng</value>
+  </data>
+  <data name="Delete_Warning" xml:space="preserve">
+    <value>Bạn có chắc chắn muốn xóa cửa hàng này khỏi hệ thống? Thao tác này không thể hoàn tác.</value>
+  </data>
+  <data name="Edit_PageHeader" xml:space="preserve">
+    <value>Chỉnh sửa Cửa hàng</value>
+  </data>
+  <data name="Edit_PageTitle" xml:space="preserve">
+    <value>Chỉnh sửa Cửa hàng</value>
+  </data>
+  <data name="Index_PageHeader" xml:space="preserve">
+    <value>Chi Nhánh</value>
+  </data>
+  <data name="Index_PageTitle" xml:space="preserve">
+    <value>Chi Nhánh</value>
+  </data>
+  <data name="Placeholder_Address" xml:space="preserve">
+    <value>Nhập địa chỉ cửa hàng</value>
+  </data>
+  <data name="Placeholder_Phone" xml:space="preserve">
+    <value>Nhập số điện thoại liên hệ</value>
+  </data>
+  <data name="Placeholder_Search" xml:space="preserve">
+    <value>Mã, tên, địa chỉ, SĐT...</value>
+  </data>
+  <data name="Placeholder_StoreCode" xml:space="preserve">
+    <value>Nhập mã cửa hàng (VD: STR001)</value>
+  </data>
+  <data name="Placeholder_StoreName" xml:space="preserve">
+    <value>Nhập tên cửa hàng (VD: Cửa hàng Quận 1)</value>
+  </data>
+</root>
