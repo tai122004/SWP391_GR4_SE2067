@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -317,5 +317,11 @@
   </data>
   <data name="DayOff_DayOffExists" xml:space="preserve">
     <value>Ngày nghỉ đã tồn tại.</value>
+  </data>
+  <data name="StoreCode_Exists" xml:space="preserve">
+    <value>Mã cửa hàng đã tồn tại trong hệ thống.</value>
+  </data>
+  <data name="Store_NotExists" xml:space="preserve">
+    <value>Không tìm thấy cửa hàng.</value>
   </data>
 </root>

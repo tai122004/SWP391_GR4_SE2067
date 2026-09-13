@@ -99,7 +99,7 @@ namespace RWPM.Services.Implementation
 
             if (await ExistsByCodeAsync(entity.StoreCode))
             {
-                throw new ModelValidationException("StoreCode_Exists", $"Mã cửa hàng '{entity.StoreCode}' đã tồn tại trong hệ thống.");
+                throw new ModelValidationException("StoreCode_Exists", entity.StoreCode);
             }
 
             entity.CreatedDate = DateTime.Now;
@@ -119,7 +119,7 @@ namespace RWPM.Services.Implementation
 
             if (await ExistsByCodeAsync(entity.StoreCode, entity.StoreId))
             {
-                throw new ModelValidationException("StoreCode_Exists", $"Mã cửa hàng '{entity.StoreCode}' đã được sử dụng bởi cửa hàng khác.");
+                throw new ModelValidationException("StoreCode_Exists", entity.StoreCode);
             }
 
             existingStore.StoreCode = entity.StoreCode;

@@ -126,7 +126,7 @@
                 var isActive = checkbox.is(':checked');
 
                 $.ajax({
-                    url: '/Store/UpdateActiveStatus/' + storeId,
+                    url: '@Url.Action("UpdateActiveStatus", "Store")/' + storeId,
                     type: 'POST',
                     contentType: 'application/json',
                     headers: {
@@ -137,11 +137,11 @@
                         isActive: isActive
                     }),
                     success: function () {
-                        toastr.success('Cập nhật trạng thái thành công!');
+                        toastr.success('@Html.Raw(SharedResource.Notification_EditedSuccessfully)');
                     },
                     error: function (xhr) {
                         checkbox.prop('checked', !isActive);
-                        toastr.error('Cập nhật thất bại: ' + (xhr.responseText || 'Đã có lỗi xảy ra.'));
+                        toastr.error('@Html.Raw(SharedResource.Notification_UpdateStatusFailed)' + (xhr.responseText || ''));
                     }
                 });
             });

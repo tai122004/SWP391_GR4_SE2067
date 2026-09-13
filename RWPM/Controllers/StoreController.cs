@@ -151,7 +151,7 @@ namespace RWPM.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateActiveStatus(int id, [FromBody] StoreUpdateActiveStatusVM viewModel)
         {
-            if (id != viewModel.StoreId)
+            if (viewModel == null || !viewModel.StoreId.HasValue || id != viewModel.StoreId.Value || !viewModel.IsActive.HasValue)
                 return BadRequest();
 
             if (!ModelState.IsValid)

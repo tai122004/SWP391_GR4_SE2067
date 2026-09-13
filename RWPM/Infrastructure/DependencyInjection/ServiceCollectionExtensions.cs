@@ -17,6 +17,13 @@ namespace RWPM.Infrastructure.DependencyInjection
         {
             services.AddControllers();
 
+            #region Antiforgery
+            services.AddAntiforgery(options =>
+            {
+                options.HeaderName = "RequestVerificationToken";
+            });
+            #endregion
+
             #region Hub
             services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
             services.AddSingleton<IProgressNotificationService, ProgressNotificationService>();

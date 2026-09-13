@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -152,5 +152,8 @@
   </data>
   <data name="DayOff" xml:space="preserve">
     <value>Ngày nghỉ</value>
+  </data>
+  <data name="StoreManagement" xml:space="preserve">
+    <value>Quản lý cửa hàng</value>
   </data>
 </root>
