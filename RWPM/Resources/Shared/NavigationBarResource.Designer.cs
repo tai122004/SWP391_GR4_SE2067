@@ -183,6 +183,11 @@ namespace RWPM.Resources.Shared {
         public static string ShiftManagement {
             get {
                 return ResourceManager.GetString("ShiftManagement", resourceCulture);
+        ///   Looks up a localized string similar to Attendance.
+        /// </summary>
+        public static string Attendance {
+            get {
+                return ResourceManager.GetString("Attendance", resourceCulture);
             }
         }
         

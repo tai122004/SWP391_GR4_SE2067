@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -350,5 +350,71 @@
   </data>
   <data name="NoDataAvailable" xml:space="preserve">
     <value>No data available</value>
+  </data>
+  <data name="Attendance_Title" xml:space="preserve">
+    <value>Attendance &amp; History</value>
+  </data>
+  <data name="Attendance_Today" xml:space="preserve">
+    <value>Today's Attendance</value>
+  </data>
+  <data name="Attendance_Completed" xml:space="preserve">
+    <value>You have completed today's attendance.</value>
+  </data>
+  <data name="Attendance_CheckInTime" xml:space="preserve">
+    <value>Check-in time:</value>
+  </data>
+  <data name="Attendance_CheckOutTime" xml:space="preserve">
+    <value>Check-out time:</value>
+  </data>
+  <data name="Attendance_MyHistory" xml:space="preserve">
+    <value>My attendance history</value>
+  </data>
+  <data name="Attendance_CheckInCol" xml:space="preserve">
+    <value>Check-in Time</value>
+  </data>
+  <data name="Attendance_CheckOutCol" xml:space="preserve">
+    <value>Check-out Time</value>
+  </data>
+  <data name="Attendance_NoData" xml:space="preserve">
+    <value>No attendance data available.</value>
+  </data>
+  <data name="Attendance_AlreadyCheckedIn" xml:space="preserve">
+    <value>You have already checked in today.</value>
+  </data>
+  <data name="Attendance_NotCheckedIn" xml:space="preserve">
+    <value>You haven't checked in today.</value>
+  </data>
+  <data name="Attendance_AlreadyCheckedOut" xml:space="preserve">
+    <value>You have already checked out today.</value>
+  </data>
+  <data name="Attendance_CheckInSuccess" xml:space="preserve">
+    <value>Checked in successfully!</value>
+  </data>
+  <data name="Attendance_CheckOutSuccess" xml:space="preserve">
+    <value>Checked out successfully!</value>
+  </data>
+  <data name="Attendance_BtnCheckIn" xml:space="preserve">
+    <value>CHECK IN</value>
+  </data>
+  <data name="Attendance_BtnCheckOut" xml:space="preserve">
+    <value>CHECK OUT</value>
+  </data>
+  <data name="Attendance_SearchPlaceholder" xml:space="preserve">
+    <value>Search username...</value>
+  </data>
+  <data name="Attendance_EmployeeCol" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="Attendance_AdminNoNeed" xml:space="preserve">
+    <value>Admin accounts do not need to check in.</value>
+  </data>
+  <data name="Attendance_AllHistory" xml:space="preserve">
+    <value>Attendance History</value>
+  </data>
+  <data name="Attendance_AllEmployees" xml:space="preserve">
+    <value>All Employees</value>
+  </data>
+  <data name="Attendance_EmployeeList" xml:space="preserve">
+    <value>Employee List:</value>
   </data>
 </root>

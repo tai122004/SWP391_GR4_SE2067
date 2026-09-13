@@ -64,6 +64,14 @@ namespace RWPM.Infrastructure.Data
                 .HasForeignKey(w => w.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
             #endregion
+
+            #region AttendanceRecord
+            modelBuilder.Entity<AttendanceRecord>()
+                .HasOne(x => x.Account)
+                .WithMany()
+                .HasForeignKey(x => x.Username)
+                .OnDelete(DeleteBehavior.Restrict);
+            #endregion
         }
 
         public DbSet<Acc> Acc { get; set; } = default!;
@@ -71,6 +79,7 @@ namespace RWPM.Infrastructure.Data
         public DbSet<Employee> Employee { get; set; } = default!;
         public DbSet<ImportLog> ImportLog { get; set; } = default!;
         public DbSet<Shift> Shift { get; set; } = default!;
+        public DbSet<AttendanceRecord> AttendanceRecord { get; set; } = default!;
         //public DbSet<IdCounter> IdCounter { get; set; } = default!;
 
     }
