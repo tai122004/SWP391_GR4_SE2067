@@ -18,6 +18,11 @@
         </button>
         <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
             <ul class="navbar-nav flex-grow-1">
+                <li class="nav-item">
+                    <a class="nav-link text-white" asp-area="" asp-controller="Attendance" asp-action="Index">
+                        <i class="bi bi-calendar-check me-1"></i> @NavigationBarResource.Attendance
+                    </a>
+                </li>
               
                 @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("AreaManager") || User.IsInRole("SuperAdmin"))
                 {

@@ -162,4 +162,7 @@
   <data name="ShiftManagement" xml:space="preserve">
     <value>Quản lý ca làm việc</value>
   </data>
+  <data name="Attendance" xml:space="preserve">
+    <value>Chấm công</value>
+  </data>
 </root>

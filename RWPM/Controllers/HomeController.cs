@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Localization;
@@ -25,7 +25,11 @@ namespace RWPM.Controllers
 
         public IActionResult Index()
         {
-            return RedirectToAction("Index", "Acc");
+            if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin"))
+            {
+                return RedirectToAction("Index", "Acc");
+            }
+            return RedirectToAction("Index", "Attendance");
         }
 
         public IActionResult Privacy()

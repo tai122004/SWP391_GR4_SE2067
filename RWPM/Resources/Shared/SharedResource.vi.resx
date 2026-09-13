@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -349,6 +349,78 @@
     <value>--- Chọn năm ---</value>
   </data>
   <data name="NoDataAvailable" xml:space="preserve">
-    <value>Không có dữ liệu</value>
+    <value>Chưa có dữ liệu</value>
+  </data>
+  <data name="Attendance_Title" xml:space="preserve">
+    <value>Chấm công &amp; Lịch sử</value>
+  </data>
+  <data name="Attendance_Today" xml:space="preserve">
+    <value>Chấm công hôm nay</value>
+  </data>
+  <data name="Attendance_Completed" xml:space="preserve">
+    <value>Bạn đã hoàn thành chấm công ngày hôm nay.</value>
+  </data>
+  <data name="Attendance_CheckInTime" xml:space="preserve">
+    <value>Giờ đến:</value>
+  </data>
+  <data name="Attendance_CheckOutTime" xml:space="preserve">
+    <value>Giờ về:</value>
+  </data>
+  <data name="Attendance_MyHistory" xml:space="preserve">
+    <value>Lịch sử chấm công của tôi</value>
+  </data>
+  <data name="Attendance_CheckInCol" xml:space="preserve">
+    <value>Giờ vào làm</value>
+  </data>
+  <data name="Attendance_CheckOutCol" xml:space="preserve">
+    <value>Giờ tan làm</value>
+  </data>
+  <data name="Attendance_NoData" xml:space="preserve">
+    <value>Chưa có dữ liệu chấm công nào.</value>
+  </data>
+  <data name="Attendance_AlreadyCheckedIn" xml:space="preserve">
+    <value>Bạn đã check-in ngày hôm nay rồi.</value>
+  </data>
+  <data name="Attendance_NotCheckedIn" xml:space="preserve">
+    <value>Bạn chưa check-in ngày hôm nay.</value>
+  </data>
+  <data name="Attendance_AlreadyCheckedOut" xml:space="preserve">
+    <value>Bạn đã check-out ngày hôm nay rồi.</value>
+  </data>
+  <data name="Attendance_CheckInSuccess" xml:space="preserve">
+    <value>Vào làm thành công!</value>
+  </data>
+  <data name="Attendance_CheckOutSuccess" xml:space="preserve">
+    <value>Tan làm thành công!</value>
+  </data>
+  <data name="Attendance_BtnCheckIn" xml:space="preserve">
+    <value>VÀO LÀM</value>
+  </data>
+  <data name="Attendance_BtnCheckOut" xml:space="preserve">
+    <value>TAN LÀM</value>
+  </data>
+  <data name="Attendance_SearchPlaceholder" xml:space="preserve">
+    <value>Tìm tên tài khoản...</value>
+  </data>
+  <data name="Attendance_EmployeeCol" xml:space="preserve">
+    <value>Nhân viên</value>
+  </data>
+  <data name="Attendance_AdminNoNeed" xml:space="preserve">
+    <value>Tài khoản Quản trị viên không cần chấm công.</value>
+  </data>
+  <data name="Attendance_AllHistory" xml:space="preserve">
+    <value>Lịch sử chấm công</value>
+  </data>
+  <data name="Attendance_AllEmployees" xml:space="preserve">
+    <value>Tất cả nhân viên</value>
+  </data>
+  <data name="Attendance_EmployeeList" xml:space="preserve">
+    <value>Danh sách nhân viên:</value>
+  </data>
+  <data name="Attendance_TooLate" xml:space="preserve">
+    <value>Bạn đã đến muộn quá 30 phút, không thể chấm công ca này!</value>
+  </data>
+  <data name="Attendance_SelectShift" xml:space="preserve">
+    <value>Chọn ca làm việc</value>
   </data>
 </root>

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RWPM.Infrastructure.Data;
 
@@ -11,9 +12,10 @@ using RWPM.Infrastructure.Data;
 namespace RWPM.Migrations
 {
     [DbContext(typeof(DefaultDatabaseContext))]
-    partial class DefaultDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20260912174001_AddAttendanceRecord")]
+    partial class AddAttendanceRecord
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,16 +96,11 @@ namespace RWPM.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("date");
 
-                    b.Property<int?>("ShiftId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("nvarchar(30)");
 
                     b.HasKey("AttendanceId");
-
-                    b.HasIndex("ShiftId");
 
                     b.HasIndex("Username");
 
@@ -214,76 +211,6 @@ namespace RWPM.Migrations
                     b.ToTable("ImportLog");
                 });
 
-            modelBuilder.Entity("RWPM.Models.Entities.Shift", b =>
-                {
-                    b.Property<int>("ShiftId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ShiftId"), 1L, 1);
-
-                    b.Property<int>("BreakMinutes")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasPrecision(0)
-                        .HasColumnType("datetime2(0)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<TimeSpan>("EndTime")
-                        .HasColumnType("time");
-
-                    b.Property<TimeSpan?>("EndTime2")
-                        .HasColumnType("time");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ShiftCode")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("ShiftName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<TimeSpan>("StartTime")
-                        .HasColumnType("time");
-
-                    b.Property<TimeSpan?>("StartTime2")
-                        .HasColumnType("time");
-
-                    b.Property<byte>("Type")
-                        .HasColumnType("tinyint");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasPrecision(0)
-                        .HasColumnType("datetime2(0)");
-
-                    b.HasKey("ShiftId");
-
-                    b.HasIndex("ShiftCode")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Shift_ShiftCode");
-
-                    b.ToTable("Shift");
-                });
-
             modelBuilder.Entity("Store", b =>
                 {
                     b.Property<int>("StoreId")
@@ -343,10 +270,6 @@ namespace RWPM.Migrations
 
             modelBuilder.Entity("RWPM.Models.Entities.AttendanceRecord", b =>
                 {
-                    b.HasOne("RWPM.Models.Entities.Shift", "Shift")
-                        .WithMany()
-                        .HasForeignKey("ShiftId");
-
                     b.HasOne("RWPM.Models.Entities.Acc", "Account")
                         .WithMany()
                         .HasForeignKey("Username")
@@ -354,8 +277,6 @@ namespace RWPM.Migrations
                         .IsRequired();
 
                     b.Navigation("Account");
-
-                    b.Navigation("Shift");
                 });
 
             modelBuilder.Entity("RWPM.Models.Entities.Employee", b =>
