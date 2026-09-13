@@ -97,7 +97,7 @@ namespace RWPM.Services.Implementation
             entity.ShiftCode = entity.ShiftCode.Trim();
             entity.ShiftName = entity.ShiftName.Trim();
 
-            var existingShift = await GetRequiredByIdAsync(entity.ShiftId);
+            var existingShift = await GetRequiredByIdAsync(entity.ShiftId, new QueryOptions<Shift> { NoTracking = false });
 
             if (await ExistsByCodeAsync(entity.ShiftCode, entity.ShiftId))
             {
@@ -117,13 +117,12 @@ namespace RWPM.Services.Implementation
             existingShift.UpdatedDate = DateTime.Now;
             existingShift.UpdatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor);
 
-            _ctx.Shift.Update(existingShift);
             await _ctx.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Shift entity)
         {
-            var shift = await GetRequiredByIdAsync(entity.ShiftId);
+            var shift = await GetRequiredByIdAsync(entity.ShiftId, new QueryOptions<Shift> { NoTracking = false });
             _ctx.Shift.Remove(shift);
             await _ctx.SaveChangesAsync();
         }
@@ -140,7 +139,7 @@ namespace RWPM.Services.Implementation
 
         public async Task UpdateActiveStatusAsync(int shiftId, bool active)
         {
-            var shift = await GetRequiredByIdAsync(shiftId);
+            var shift = await GetRequiredByIdAsync(shiftId, new QueryOptions<Shift> { NoTracking = false });
             shift.IsActive = active;
             shift.UpdatedDate = DateTime.Now;
             shift.UpdatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor);

@@ -115,7 +115,7 @@ namespace RWPM.Services.Implementation
             entity.StoreCode = entity.StoreCode.Trim();
             entity.StoreName = entity.StoreName.Trim();
 
-            var existingStore = await GetRequiredByIdAsync(entity.StoreId);
+            var existingStore = await GetRequiredByIdAsync(entity.StoreId, new QueryOptions<global::Store> { NoTracking = false });
 
             if (await ExistsByCodeAsync(entity.StoreCode, entity.StoreId))
             {
@@ -130,13 +130,12 @@ namespace RWPM.Services.Implementation
             existingStore.UpdatedDate = DateTime.Now;
             existingStore.UpdatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor);
 
-            _ctx.Store.Update(existingStore);
             await _ctx.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(global::Store entity)
         {
-            var store = await GetRequiredByIdAsync(entity.StoreId);
+            var store = await GetRequiredByIdAsync(entity.StoreId, new QueryOptions<global::Store> { NoTracking = false });
             _ctx.Store.Remove(store);
             await _ctx.SaveChangesAsync();
         }
@@ -153,7 +152,7 @@ namespace RWPM.Services.Implementation
 
         public async Task UpdateActiveStatusAsync(int storeId, bool active)
         {
-            var store = await GetRequiredByIdAsync(storeId);
+            var store = await GetRequiredByIdAsync(storeId, new QueryOptions<global::Store> { NoTracking = false });
             store.IsActive = active;
             store.UpdatedDate = DateTime.Now;
             store.UpdatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor);

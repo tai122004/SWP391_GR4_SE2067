@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Localization;
+using Microsoft.EntityFrameworkCore;
 using RWPM.Hubs;
 using RWPM.Infrastructure.Data;
 using RWPM.Infrastructure.DependencyInjection;
@@ -14,6 +15,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<DefaultDatabaseContext>();
+    await dbContext.Database.MigrateAsync();
     await new AccAdminSeeder().SeedAsync(dbContext);
     await new ShiftSeeder().SeedAsync(dbContext);
 }
