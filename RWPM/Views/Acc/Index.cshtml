@@ -1,4 +1,4 @@
-﻿@model AccListVM
+@model AccListVM
 
 @using AccountModelResource = RWPM.Resources.Models.Acc
 @using AccountSharedResource = RWPM.Resources.Shared.Acc
@@ -114,12 +114,8 @@
                         {
                             case AccountRole.HR:
                                 roleClass = "badge badge-pill bg-danger"; break;
-                            case AccountRole.AreaManager:
-                                roleClass = "badge badge-pill bg-primary"; break;
                             case AccountRole.StoreManager:
                                 roleClass = "badge badge-pill bg-success"; break;
-                            case AccountRole.ShiftLeader:
-                                roleClass = "badge badge-pill bg-warning text-dark"; break;
                             case AccountRole.SalesStaff:
                                 roleClass = "badge badge-pill bg-info"; break;
                             case AccountRole.PartTimeStaff:

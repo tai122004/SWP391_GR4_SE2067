@@ -45,4 +45,13 @@
   <data name="SplitShiftSection" xml:space="preserve">
     <value>Ca Gãy - Đợt 2</value>
   </data>
+  <data name="Delete_PageTitle" xml:space="preserve">
+    <value>Xóa Ca Làm Việc</value>
+  </data>
+  <data name="Delete_PageHeader" xml:space="preserve">
+    <value>Xóa Ca Làm Việc</value>
+  </data>
+  <data name="Delete_Warning" xml:space="preserve">
+    <value>Bạn có chắc chắn muốn xóa ca làm việc này? Hành động này không thể hoàn tác.</value>
+  </data>
 </root>

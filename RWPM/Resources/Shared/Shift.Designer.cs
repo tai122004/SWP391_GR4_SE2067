@@ -106,5 +106,23 @@ namespace RWPM.Resources.Shared {
                 return ResourceManager.GetString("SplitShiftSection", resourceCulture);
             }
         }
+        
+        public static string Delete_PageTitle {
+            get {
+                return ResourceManager.GetString("Delete_PageTitle", resourceCulture);
+            }
+        }
+        
+        public static string Delete_PageHeader {
+            get {
+                return ResourceManager.GetString("Delete_PageHeader", resourceCulture);
+            }
+        }
+        
+        public static string Delete_Warning {
+            get {
+                return ResourceManager.GetString("Delete_Warning", resourceCulture);
+            }
+        }
     }
 }
