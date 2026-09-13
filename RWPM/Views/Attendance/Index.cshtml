@@ -10,163 +10,180 @@
     bool isCompleted = todayRecord != null && todayRecord.CheckOutTime.HasValue;
 }
 
-<div class="container-fluid mt-4">
-    <div class="row">
+<div>
+    <div class="row mt-3">
         <!-- Phần bấm giờ -->
-        <div class="col-md-4 mb-4">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="fas fa-clock"></i> @SharedResource.ResourceManager.GetString("Attendance_Today")</h5>
-                </div>
-                <div class="card-body text-center">
-                    <h2 class="display-6 mb-4">@DateTime.Now.ToString("dd/MM/yyyy")</h2>
-                    
-                    @if (TempData["SuccessMessage"] != null)
-                    {
-                        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
-                    }
-                    @if (TempData["ErrorMessage"] != null)
-                    {
-                        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
-                    }
+        <div class="col-md-4 col-lg-3 mb-4">
+            <div class="mb-3">
+                <h4 class="fw-semibold text-dark d-flex align-items-center">
+                    <i class="bi bi-clock me-2"></i>
+                    @SharedResource.ResourceManager.GetString("Attendance_Today")
+                </h4>
+            </div>
+            
+            <div class="p-3 shadow-sm rounded border bg-white text-center">
+                <h3 class="mb-4 text-primary fw-bold">@DateTime.Now.ToString("dd/MM/yyyy")</h3>
+                
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success small py-2">@TempData["SuccessMessage"]</div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger small py-2">@TempData["ErrorMessage"]</div>
+                }
 
-                    @if (!isAdmin)
+                @if (!isAdmin)
+                {
+                    @if (isCompleted)
                     {
-                        @if (isCompleted)
-                        {
-                            <div class="alert alert-info">
-                                <i class="fas fa-check-circle text-success"></i> @SharedResource.ResourceManager.GetString("Attendance_Completed")
-                                <br />
-                                <strong>@SharedResource.ResourceManager.GetString("Attendance_CheckInTime")</strong> @todayRecord?.CheckInTime?.ToString(@"hh\:mm") <br />
-                                <strong>@SharedResource.ResourceManager.GetString("Attendance_CheckOutTime")</strong> @todayRecord?.CheckOutTime?.ToString(@"hh\:mm")
-                            </div>
-                        }
-                        else
-                        {
-                            <form method="post" class="d-grid gap-3">
-                                @if (canCheckIn)
-                                {
-                                    <select name="shiftId" class="form-select form-select-lg mb-2" required>
-                                        <option value="">-- @SharedResource.ResourceManager.GetString("Attendance_SelectShift") --</option>
-                                        @if (ViewBag.ActiveShifts != null)
-                                        {
-                                            foreach (var shift in (List<RWPM.Models.Entities.Shift>)ViewBag.ActiveShifts)
-                                            {
-                                                <option value="@shift.ShiftId">@shift.ShiftName (@shift.StartTime.ToString(@"hh\:mm") - @shift.EndTime.ToString(@"hh\:mm"))</option>
-                                            }
-                                        }
-                                    </select>
-                                }
-                                <button type="submit" asp-action="CheckIn" class="btn btn-success btn-lg" disabled="@(canCheckIn ? null : "disabled")">
-                                    <i class="fas fa-sign-in-alt"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnCheckIn")
-                                </button>
-                                <button type="submit" asp-action="CheckOut" class="btn btn-danger btn-lg" disabled="@(canCheckOut ? null : "disabled")">
-                                    <i class="fas fa-sign-out-alt"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnCheckOut")
-                                </button>
-                            </form>
-                        }
+                        <div class="alert alert-info small text-start">
+                            <i class="bi bi-check-circle-fill text-success me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_Completed")
+                            <hr class="my-2"/>
+                            <strong>@SharedResource.ResourceManager.GetString("Attendance_CheckInTime")</strong> @todayRecord?.CheckInTime?.ToString(@"hh\:mm") <br />
+                            <strong>@SharedResource.ResourceManager.GetString("Attendance_CheckOutTime")</strong> @todayRecord?.CheckOutTime?.ToString(@"hh\:mm")
+                        </div>
                     }
                     else
                     {
-                        <div class="alert alert-secondary">
-                            <i class="fas fa-info-circle"></i> @SharedResource.ResourceManager.GetString("Attendance_AdminNoNeed")
-                        </div>
-                        
-                        var employees = ViewBag.Employees as List<RWPM.Models.Entities.Acc>;
-                        if (employees != null && employees.Count > 0)
-                        {
-                            <div class="mt-4 text-start">
-                                <h6 class="text-muted fw-bold">@SharedResource.ResourceManager.GetString("Attendance_EmployeeList")</h6>
-                                <div class="list-group list-group-flush shadow-sm border rounded" style="max-height: 400px; overflow-y: auto;">
-                                    <a href="@Url.Action("Index", new { searchQuery = "" })" class="list-group-item list-group-item-action @(string.IsNullOrEmpty(searchQuery) ? "active" : "")">
-                                        <i class="fas fa-users me-2"></i> <strong>@SharedResource.ResourceManager.GetString("Attendance_AllEmployees")</strong>
-                                    </a>
-                                    @foreach(var emp in employees)
+                        <form method="post" class="d-grid gap-2">
+                            @if (canCheckIn)
+                            {
+                                <select name="shiftId" class="form-select form-select-sm mb-2" required>
+                                    <option value="">-- @SharedResource.ResourceManager.GetString("Attendance_SelectShift") --</option>
+                                    @if (ViewBag.ActiveShifts != null)
                                     {
-                                        <a href="@Url.Action("Index", new { searchQuery = emp.Username })" class="list-group-item list-group-item-action @(searchQuery == emp.Username ? "active fw-bold" : "")">
-                                            <i class="fas fa-user me-2"></i> @emp.FullName <small class="text-muted">(@emp.Username)</small>
-                                        </a>
+                                        foreach (var shift in (List<RWPM.Models.Entities.Shift>)ViewBag.ActiveShifts)
+                                        {
+                                            <option value="@shift.ShiftId">@shift.ShiftName (@shift.StartTime.ToString(@"hh\:mm") - @shift.EndTime.ToString(@"hh\:mm"))</option>
+                                        }
                                     }
-                                </div>
-                            </div>
-                        }
+                                </select>
+                            }
+                            <button type="submit" asp-action="CheckIn" class="btn btn-sm btn-outline-success" disabled="@(canCheckIn ? null : "disabled")">
+                                <i class="bi bi-box-arrow-in-right me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnCheckIn")
+                            </button>
+                            <button type="submit" asp-action="CheckOut" class="btn btn-sm btn-outline-danger" disabled="@(canCheckOut ? null : "disabled")">
+                                <i class="bi bi-box-arrow-right me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnCheckOut")
+                            </button>
+                        </form>
                     }
-                </div>
+                }
+                else
+                {
+                    <div class="alert alert-secondary small py-2">
+                        <i class="bi bi-info-circle me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_AdminNoNeed")
+                    </div>
+                    
+                    var employees = ViewBag.Employees as List<RWPM.Models.Entities.Acc>;
+                    if (employees != null && employees.Count > 0)
+                    {
+                        <div class="mt-3 text-start">
+                            <label class="form-label small fw-semibold">@SharedResource.ResourceManager.GetString("Attendance_EmployeeList")</label>
+                            <div class="list-group list-group-flush border rounded small" style="max-height: 300px; overflow-y: auto;">
+                                <a href="@Url.Action("Index", new { searchQuery = "" })" class="list-group-item list-group-item-action py-2 @(string.IsNullOrEmpty(searchQuery) ? "active" : "")">
+                                    <i class="bi bi-people me-2"></i> <strong>@SharedResource.ResourceManager.GetString("Attendance_AllEmployees")</strong>
+                                </a>
+                                @foreach(var emp in employees)
+                                {
+                                    <a href="@Url.Action("Index", new { searchQuery = emp.Username })" class="list-group-item list-group-item-action py-2 @(searchQuery == emp.Username ? "active fw-bold" : "")">
+                                        <i class="bi bi-person me-2"></i> @emp.FullName <span class="text-muted">(@emp.Username)</span>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
             </div>
         </div>
 
         <!-- Phần Lịch sử -->
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        <i class="fas fa-history"></i> 
-                        @(isAdmin ? SharedResource.ResourceManager.GetString("Attendance_AllHistory") : SharedResource.ResourceManager.GetString("Attendance_MyHistory"))
-                    </h5>
-                    @if (isAdmin)
-                    {
-                        <form method="get" class="d-flex" style="max-width: 300px;">
-                            <input type="text" name="searchQuery" value="@searchQuery" class="form-control form-control-sm me-2" placeholder="@SharedResource.ResourceManager.GetString("Attendance_SearchPlaceholder")" />
-                            <button type="submit" class="btn btn-primary btn-sm">@SharedResource.ResourceManager.GetString("Search")</button>
-                        </form>
-                    }
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped mb-0 text-center">
-                            <thead class="table-light">
+        <div class="col-md-8 col-lg-9 mb-4">
+            <div class="mb-3 d-flex justify-content-between align-items-center">
+                <h4 class="fw-semibold text-dark d-flex align-items-center mb-0">
+                    <i class="bi bi-clock-history me-2"></i>
+                    @(isAdmin ? SharedResource.ResourceManager.GetString("Attendance_AllHistory") : SharedResource.ResourceManager.GetString("Attendance_MyHistory"))
+                </h4>
+            </div>
+
+            @if (isAdmin)
+            {
+                <!-- Search form -->
+                <form asp-action="Index" method="get" class="row g-2 align-items-end mb-2">
+                    <div class="col-md-6 col-lg-4">
+                        <label class="form-label small">@SharedResource.ResourceManager.GetString("Search")</label>
+                        <input type="text" name="searchQuery" value="@searchQuery" class="form-control form-control-sm" placeholder="🔍 @SharedResource.ResourceManager.GetString("Attendance_SearchPlaceholder")" />
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-search"></i>
+                            @SharedResource.ResourceManager.GetString("Search")
+                        </button>
+                        <a href="@Url.Action("Index")" class="btn btn-sm btn-outline-danger ms-1">
+                            <i class="bi bi-x-lg"></i>
+                            Xóa tìm kiếm
+                        </a>
+                    </div>
+                </form>
+            }
+
+            <!-- Table Container -->
+            <div style="max-height: 500px; overflow-y: auto;" class="shadow-sm rounded border">
+                <table class="table table-hover align-middle mb-0 table-bordered">
+                    <thead class="bg-light" style="position: sticky; top: 0; z-index: 10;">
+                        <tr>
+                            <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Date")</th>
+                            @if (isAdmin)
+                            {
+                                <th class="text-nowrap">@SharedResource.ResourceManager.GetString("Attendance_EmployeeCol")</th>
+                            }
+                            <th class="text-nowrap text-center">Ca làm việc</th>
+                            <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_CheckInCol")</th>
+                            <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_CheckOutCol")</th>
+                            @if (isAdmin)
+                            {
+                                <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Button_Action")</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
                                 <tr>
-                                    <th>@SharedResource.ResourceManager.GetString("Date")</th>
+                                    <td class="text-center"><strong>@item.Date.ToString("dd/MM/yyyy")</strong></td>
                                     @if (isAdmin)
                                     {
-                                        <th>@SharedResource.ResourceManager.GetString("Attendance_EmployeeCol")</th>
+                                        <td>@item.Username</td>
                                     }
-                                    <th>Ca làm việc</th>
-                                    <th>@SharedResource.ResourceManager.GetString("Attendance_CheckInCol")</th>
-                                    <th>@SharedResource.ResourceManager.GetString("Attendance_CheckOutCol")</th>
+                                    <td class="text-center">@(item.Shift != null ? item.Shift.ShiftName : "-")</td>
+                                    <td class="text-center text-success fw-bold">@(item.CheckInTime.HasValue ? item.CheckInTime.Value.ToString(@"hh\:mm") : "--:--")</td>
+                                    <td class="text-center text-danger fw-bold">@(item.CheckOutTime.HasValue ? item.CheckOutTime.Value.ToString(@"hh\:mm") : "--:--")</td>
                                     @if (isAdmin)
                                     {
-                                        <th>@SharedResource.ResourceManager.GetString("Button_Action")</th>
+                                        <td class="text-center">
+                                            <form method="post" asp-action="Delete" asp-route-id="@item.AttendanceId" onsubmit="return confirm('@SharedResource.ResourceManager.GetString("ConfirmDelete")');" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="@SharedResource.ResourceManager.GetString("Button_Delete")">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
                                     }
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @if (Model != null && Model.Any())
-                                {
-                                    foreach (var item in Model)
-                                    {
-                                        <tr>
-                                            <td><strong>@item.Date.ToString("dd/MM/yyyy")</strong></td>
-                                            @if (isAdmin)
-                                            {
-                                                <td>@item.Username</td>
-                                            }
-                                            <td>@(item.Shift != null ? item.Shift.ShiftName : "-")</td>
-                                            <td class="text-success">@(item.CheckInTime.HasValue ? item.CheckInTime.Value.ToString(@"hh\:mm") : "--:--")</td>
-                                            <td class="text-danger">@(item.CheckOutTime.HasValue ? item.CheckOutTime.Value.ToString(@"hh\:mm") : "--:--")</td>
-                                            @if (isAdmin)
-                                            {
-                                                <td>
-                                                    <form method="post" asp-action="Delete" asp-route-id="@item.AttendanceId" onsubmit="return confirm('@SharedResource.ResourceManager.GetString("ConfirmDelete")');" class="d-inline">
-                                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="@SharedResource.ResourceManager.GetString("Button_Delete")">
-                                                            <i class="bi bi-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                </td>
-                                            }
-                                        </tr>
-                                    }
-                                }
-                                else
-                                {
-                                    <tr>
-                                        <td colspan="@(isAdmin ? 6 : 4)" class="text-muted py-4">@SharedResource.ResourceManager.GetString("Attendance_NoData")</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="@(isAdmin ? 6 : 4)" class="text-center text-muted py-4">
+                                    <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                    @SharedResource.ResourceManager.GetString("Attendance_NoData")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
