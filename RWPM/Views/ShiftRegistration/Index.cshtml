@@ -101,6 +101,7 @@
       </div>
       <div class="modal-body">
           <p><strong>@ShiftRegistrationResource.Employee:</strong> <span id="vEmployee"></span></p>
+          <p><strong>@RWPM.Resources.Models.Employee.Store:</strong> <span id="vStore"></span></p>
           <p><strong>@ShiftRegistrationResource.Shift:</strong> <span id="vShift"></span></p>
           <p><strong>@ShiftRegistrationResource.Time:</strong> <span id="vTime"></span></p>
           <p><strong>@ShiftRegistrationResource.Status:</strong> <span id="vStatus"></span></p>
@@ -174,6 +175,7 @@
                 eventClick: function(info) {
                     var props = info.event.extendedProps;
                     $('#vEmployee').text(props.employeeName);
+                    $('#vStore').text(props.storeName);
                     $('#vShift').text(props.shiftName);
                     $('#vTime').text(info.event.start.toLocaleString() + ' - ' + info.event.end.toLocaleString());
                     $('#vStatus').text(props.statusName);

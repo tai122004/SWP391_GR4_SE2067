@@ -8,6 +8,7 @@ using System.Security.Claims;
 
 using Microsoft.EntityFrameworkCore;
 using RWPM.Infrastructure.Data;
+using RWPM.Models.Entities;
 
 namespace RWPM.Controllers
 {
@@ -29,12 +30,26 @@ namespace RWPM.Controllers
         public IActionResult Index()
         {
             var role = User.FindFirstValue(ClaimTypes.Role);
-            ViewBag.IsManager = role == "Admin" || role == "HR" || role == "AreaManager";
+            var isAdmin = role == "Admin" || role == "HR" || role == "AreaManager";
+            var isStoreManager = role == "StoreManager";
+            
+            ViewBag.IsManager = isAdmin || isStoreManager;
 
             ViewBag.Shifts = _context.Shift.Where(x => x.IsActive).ToList();
-            if (ViewBag.IsManager)
+            
+            if (isAdmin)
             {
                 ViewBag.Employees = _context.Employee.Include(e => e.Account).Where(x => x.IsActive).ToList();
+            }
+            else if (isStoreManager)
+            {
+                var username = User.Identity?.Name;
+                var currentEmployee = _context.Employee.FirstOrDefault(e => e.Username == username);
+                if (currentEmployee != null)
+                {
+                    ViewBag.Employees = _context.Employee.Include(e => e.Account)
+                        .Where(x => x.IsActive && x.StoreId == currentEmployee.StoreId).ToList();
+                }
             }
 
             return View();
@@ -46,9 +61,19 @@ namespace RWPM.Controllers
         {
             int? employeeId = null;
             var role = User.FindFirstValue(ClaimTypes.Role);
-            var isManager = role == "Admin" || role == "HR" || role == "AreaManager";
+            var isAdmin = role == "Admin" || role == "HR" || role == "AreaManager";
+            var isStoreManager = role == "StoreManager";
 
-            if (!isManager)
+            if (isStoreManager)
+            {
+                var username = User.Identity?.Name;
+                var currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
+                if (currentEmployee != null)
+                {
+                    storeId = currentEmployee.StoreId; // Force storeId to the manager's store
+                }
+            }
+            else if (!isAdmin)
             {
                 var username = User.Identity?.Name;
                 if (!string.IsNullOrEmpty(username))
@@ -81,17 +106,37 @@ namespace RWPM.Controllers
             {
                 // If not manager, force the EmployeeId to be the logged in user
                 var role = User.FindFirstValue(ClaimTypes.Role);
-                var isManager = role == "Admin" || role == "HR" || role == "AreaManager";
+                var isAdmin = role == "Admin" || role == "HR" || role == "AreaManager";
+                var isStoreManager = role == "StoreManager";
+                var isManager = isAdmin || isStoreManager;
 
+                Employee employee = null;
                 if (!isManager)
                 {
                     var username = User.Identity?.Name;
-                    var employee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
+                    employee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
                     if (employee == null) return Unauthorized();
                     viewModel.EmployeeId = employee.EmployeeId;
                 }
+                else
+                {
+                    employee = await _context.Employee.FirstOrDefaultAsync(e => e.EmployeeId == viewModel.EmployeeId);
+                    if (employee == null) return BadRequest(new { success = false, message = "Employee not found." });
+                    
+                    // If StoreManager, check if they are trying to assign someone outside their store
+                    if (isStoreManager)
+                    {
+                        var username = User.Identity?.Name;
+                        var currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
+                        if (currentEmployee == null || employee.StoreId != currentEmployee.StoreId)
+                        {
+                            return Forbid();
+                        }
+                    }
+                }
 
                 var entity = viewModel.ToEntity();
+                entity.StoreId = employee.StoreId;
                 entity.CreatedDate = DateTime.Now;
                 entity.CreatedBy = User.Identity?.Name ?? "system";
 
@@ -107,11 +152,25 @@ namespace RWPM.Controllers
         // POST: ShiftRegistration/UpdateStatus
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,HR,AreaManager")]
+        [Authorize(Roles = "Admin,HR,AreaManager,StoreManager")]
         public async Task<IActionResult> UpdateStatus(int id, RegistrationStatus status)
         {
             try
             {
+                var role = User.FindFirstValue(ClaimTypes.Role);
+                if (role == "StoreManager")
+                {
+                    var entity = await _registrationService.GetByIdAsync(id);
+                    if (entity == null) return NotFound();
+                    
+                    var username = User.Identity?.Name;
+                    var currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
+                    if (currentEmployee == null || entity.StoreId != currentEmployee.StoreId)
+                    {
+                        return Forbid();
+                    }
+                }
+                
                 await _registrationService.UpdateStatusAsync(id, status);
                 return Ok(new { success = true });
             }
@@ -132,13 +191,24 @@ namespace RWPM.Controllers
                 if (entity == null) return NotFound();
 
                 var role = User.FindFirstValue(ClaimTypes.Role);
-                var isManager = role == "Admin" || role == "HR" || role == "AreaManager";
+                var isAdmin = role == "Admin" || role == "HR" || role == "AreaManager";
+                var isStoreManager = role == "StoreManager";
+                var isManager = isAdmin || isStoreManager;
 
                 if (!isManager)
                 {
                     var username = User.Identity?.Name;
                     var employee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
                     if (employee == null || entity.EmployeeId != employee.EmployeeId)
+                    {
+                        return Forbid();
+                    }
+                }
+                else if (isStoreManager)
+                {
+                    var username = User.Identity?.Name;
+                    var currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
+                    if (currentEmployee == null || entity.StoreId != currentEmployee.StoreId)
                     {
                         return Forbid();
                     }

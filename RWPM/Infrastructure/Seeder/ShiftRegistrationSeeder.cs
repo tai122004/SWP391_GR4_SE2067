@@ -76,6 +76,7 @@ namespace RWPM.Infrastructure.Seeder
                 {
                     EmployeeId = employee.EmployeeId,
                     ShiftId = shiftToi.ShiftId,
+                    StoreId = employee.StoreId,
                     WorkDate = date13,
                     Status = RegistrationStatus.Approved,
                     Note = "Ca tối ngày 13",
@@ -91,6 +92,7 @@ namespace RWPM.Infrastructure.Seeder
                 {
                     EmployeeId = employee.EmployeeId,
                     ShiftId = shiftSang.ShiftId,
+                    StoreId = employee.StoreId,
                     WorkDate = date14,
                     Status = RegistrationStatus.Pending,
                     Note = "Ca sáng ngày 14",

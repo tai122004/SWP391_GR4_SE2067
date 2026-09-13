@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using RWPM.Common.Attributes;
 
@@ -50,6 +50,7 @@ namespace RWPM.Models.ViewModels.Employee
             entity.EmployeeCode = EmployeeCode.Trim();
             entity.Username = Username.Trim();
             entity.StoreId = StoreId;
+            entity.Store = null!;
             entity.JoinDate = JoinDate.Date;
             entity.IsActive = IsActive;
         }

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RWPM.Common;
 using RWPM.Common.Exceptions;
@@ -141,7 +141,7 @@ namespace RWPM.Services.Implementation
             entity.EmployeeCode = entity.EmployeeCode.Trim();
             entity.Username = entity.Username.Trim();
 
-            var existing = await GetRequiredByIdAsync(entity.EmployeeId);
+            var existing = await GetRequiredByIdAsync(entity.EmployeeId, new QueryOptions<Employee> { NoTracking = false });
 
             if (await ExistsByCodeAsync(entity.EmployeeCode, entity.EmployeeId))
             {
@@ -166,7 +166,7 @@ namespace RWPM.Services.Implementation
             existing.UpdatedDate = DateTime.Now;
             existing.UpdatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor);
 
-            _ctx.Employee.Update(existing);
+            // EF Core tracking will automatically detect changes
             await _ctx.SaveChangesAsync();
         }
 

@@ -21,6 +21,7 @@ namespace RWPM.Services
                 .Include(x => x.Employee)
                 .ThenInclude(e => e.Account)
                 .Include(x => x.Shift)
+                .Include(x => x.Store)
                 .Where(x => x.WorkDate >= start && x.WorkDate <= end);
 
             if (employeeId.HasValue)
@@ -30,7 +31,7 @@ namespace RWPM.Services
 
             if (storeId.HasValue)
             {
-                query = query.Where(x => x.Employee.StoreId == storeId.Value);
+                query = query.Where(x => x.StoreId == storeId.Value);
             }
 
             return await query.ToListAsync();

@@ -16,6 +16,8 @@ namespace RWPM.Models.ViewModels.ShiftRegistration
         // Custom properties
         public int employeeId { get; set; }
         public string employeeName { get; set; } = string.Empty;
+        public int storeId { get; set; }
+        public string storeName { get; set; } = string.Empty;
         public int shiftId { get; set; }
         public string shiftName { get; set; } = string.Empty;
         public int statusId { get; set; }
@@ -37,6 +39,7 @@ namespace RWPM.Models.ViewModels.ShiftRegistration
             var color = GetColorByStatus(entity.Status);
 
             var empName = entity.Employee.Account?.FullName ?? entity.Employee.Username;
+            var storeName = entity.Store?.StoreName ?? string.Empty;
 
             return new ShiftRegistrationEventVM
             {
@@ -49,6 +52,8 @@ namespace RWPM.Models.ViewModels.ShiftRegistration
                 textColor = "#ffffff",
                 employeeId = entity.EmployeeId,
                 employeeName = empName,
+                storeId = entity.StoreId,
+                storeName = storeName,
                 shiftId = entity.ShiftId,
                 shiftName = entity.Shift.GetLocalizedName(),
                 statusId = (int)entity.Status,

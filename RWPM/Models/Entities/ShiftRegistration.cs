@@ -25,8 +25,12 @@ namespace RWPM.Models.Entities
         [MaxLength(255)]
         public string Note { get; set; } = string.Empty;
 
+        [Required]
+        public int StoreId { get; set; }
+
         // Navigation properties
         public Employee Employee { get; set; } = null!;
         public Shift Shift { get; set; } = null!;
+        public Store Store { get; set; } = null!;
     }
 }
