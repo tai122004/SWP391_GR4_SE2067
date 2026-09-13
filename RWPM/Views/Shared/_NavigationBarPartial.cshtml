@@ -1,4 +1,5 @@
 @using NavigationBarResource = RWPM.Resources.Shared.NavigationBarResource
+@using RWPM.Resources.Shared
 
 <style>
     .navbar .nav-link:hover,
@@ -50,6 +51,11 @@
                     </li>
                 }
                 
+                <li class="nav-item">
+                    <a class="nav-link text-white" asp-area="" asp-controller="ShiftRegistration" asp-action="Index">
+                        <i class="bi bi-calendar-check me-1"></i> @ShiftRegistrationResource.ShiftRegistration
+                    </a>
+                </li>
             </ul>
 
             @await Html.PartialAsync("_LanguageSelector")

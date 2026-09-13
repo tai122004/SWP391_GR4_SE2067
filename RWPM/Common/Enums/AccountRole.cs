@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using RWPM.Common.Helper;
 
 namespace RWPM.Common.Enums
@@ -16,6 +16,7 @@ namespace RWPM.Common.Enums
         /// </summary>
         [Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_HR")]
         HR = 2,
+
 
         /// <summary>
         /// Area Manager - Quản lý khu vực

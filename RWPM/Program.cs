@@ -16,6 +16,7 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<DefaultDatabaseContext>();
     await new AccAdminSeeder().SeedAsync(dbContext);
     await new ShiftSeeder().SeedAsync(dbContext);
+    await new ShiftRegistrationSeeder().SeedAsync(dbContext);
 }
 #endregion
 

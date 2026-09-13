@@ -8,6 +8,7 @@ using RWPM.Infrastructure.Data;
 using RWPM.Infrastructure.Storage;
 using RWPM.Services.Abstraction;
 using RWPM.Services.Implementation;
+using RWPM.Services;
 
 namespace RWPM.Infrastructure.DependencyInjection
 {
@@ -65,6 +66,7 @@ namespace RWPM.Infrastructure.DependencyInjection
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IImportLogService, ImportLogService>();
             services.AddScoped<IShiftService, ShiftService>();
+            services.AddScoped<IShiftRegistrationService, ShiftRegistrationService>();
             //services.AddScoped<IIdCounterService, IdCounterService>();
 
             return services;
