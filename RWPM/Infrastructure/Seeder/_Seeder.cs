@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using RWPM.Infrastructure.Data;
 
@@ -25,6 +25,8 @@ namespace RWPM.Infrastructure.Seeder
                     //await new DocGrpCatSeeder().SeedAsync(_ctx);
                     //await new DocTypeCatSeeder().SeedAsync(_ctx);
                     //await new LeaveJobReasonSeeder().SeedAsync(_ctx);
+                    
+                    await new ShiftRegistrationSeeder().SeedAsync(_ctx);
 
                     await transaction.CommitAsync();
                 }

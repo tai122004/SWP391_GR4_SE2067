@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RWPM.Infrastructure.Data;
 
@@ -11,9 +12,10 @@ using RWPM.Infrastructure.Data;
 namespace RWPM.Migrations
 {
     [DbContext(typeof(DefaultDatabaseContext))]
-    partial class DefaultDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20260913061256_AddShiftRegistration")]
+    partial class AddShiftRegistration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -75,39 +77,6 @@ namespace RWPM.Migrations
                         .HasDatabaseName("IX_Acc_Email");
 
                     b.ToTable("Acc");
-                });
-
-            modelBuilder.Entity("RWPM.Models.Entities.AttendanceRecord", b =>
-                {
-                    b.Property<int>("AttendanceId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AttendanceId"), 1L, 1);
-
-                    b.Property<TimeSpan?>("CheckInTime")
-                        .HasColumnType("time");
-
-                    b.Property<TimeSpan?>("CheckOutTime")
-                        .HasColumnType("time");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("date");
-
-                    b.Property<int?>("ShiftId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(30)");
-
-                    b.HasKey("AttendanceId");
-
-                    b.HasIndex("ShiftId");
-
-                    b.HasIndex("Username");
-
-                    b.ToTable("AttendanceRecord");
                 });
 
             modelBuilder.Entity("RWPM.Models.Entities.Employee", b =>
@@ -392,23 +361,6 @@ namespace RWPM.Migrations
                         .HasDatabaseName("IX_Store_StoreCode");
 
                     b.ToTable("Store");
-                });
-
-            modelBuilder.Entity("RWPM.Models.Entities.AttendanceRecord", b =>
-                {
-                    b.HasOne("RWPM.Models.Entities.Shift", "Shift")
-                        .WithMany()
-                        .HasForeignKey("ShiftId");
-
-                    b.HasOne("RWPM.Models.Entities.Acc", "Account")
-                        .WithMany()
-                        .HasForeignKey("Username")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Account");
-
-                    b.Navigation("Shift");
                 });
 
             modelBuilder.Entity("RWPM.Models.Entities.Employee", b =>

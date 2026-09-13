@@ -57,6 +57,25 @@ namespace RWPM.Infrastructure.Data
             });
             #endregion
 
+            #region ShiftRegistration
+            modelBuilder.Entity<ShiftRegistration>(e =>
+            {
+                e.HasIndex(x => new { x.EmployeeId, x.ShiftId, x.WorkDate })
+                 .IsUnique()
+                 .HasDatabaseName("IX_ShiftRegistration_Employee_Shift_Date");
+
+                e.HasOne(x => x.Employee)
+                 .WithMany()
+                 .HasForeignKey(x => x.EmployeeId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+                e.HasOne(x => x.Shift)
+                 .WithMany()
+                 .HasForeignKey(x => x.ShiftId)
+                 .OnDelete(DeleteBehavior.Restrict);
+            });
+            #endregion
+
             #region ImportLog
             modelBuilder.Entity<ImportLog>()
                 .HasOne(x => x.Creator)
@@ -79,7 +98,11 @@ namespace RWPM.Infrastructure.Data
         public DbSet<Employee> Employee { get; set; } = default!;
         public DbSet<ImportLog> ImportLog { get; set; } = default!;
         public DbSet<Shift> Shift { get; set; } = default!;
+
         public DbSet<AttendanceRecord> AttendanceRecord { get; set; } = default!;
+
+        public DbSet<ShiftRegistration> ShiftRegistration { get; set; } = default!;
+
         //public DbSet<IdCounter> IdCounter { get; set; } = default!;
 
     }
