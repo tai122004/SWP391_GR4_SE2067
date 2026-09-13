@@ -162,4 +162,7 @@
   <data name="ShiftManagement" xml:space="preserve">
     <value>Shift Management</value>
   </data>
+  <data name="Attendance" xml:space="preserve">
+    <value>Attendance</value>
+  </data>
 </root>

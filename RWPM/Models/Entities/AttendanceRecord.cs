@@ -24,5 +24,10 @@ namespace RWPM.Models.Entities
 
         [ForeignKey("Username")]
         public virtual Acc Account { get; set; }
+
+        public int? ShiftId { get; set; }
+
+        [ForeignKey("ShiftId")]
+        public virtual Shift? Shift { get; set; }
     }
 }

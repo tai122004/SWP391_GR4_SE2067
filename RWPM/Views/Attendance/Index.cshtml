@@ -44,6 +44,19 @@
                         else
                         {
                             <form method="post" class="d-grid gap-3">
+                                @if (canCheckIn)
+                                {
+                                    <select name="shiftId" class="form-select form-select-lg mb-2" required>
+                                        <option value="">-- @SharedResource.ResourceManager.GetString("Attendance_SelectShift") --</option>
+                                        @if (ViewBag.ActiveShifts != null)
+                                        {
+                                            foreach (var shift in (List<RWPM.Models.Entities.Shift>)ViewBag.ActiveShifts)
+                                            {
+                                                <option value="@shift.ShiftId">@shift.ShiftName (@shift.StartTime.ToString(@"hh\:mm") - @shift.EndTime.ToString(@"hh\:mm"))</option>
+                                            }
+                                        }
+                                    </select>
+                                }
                                 <button type="submit" asp-action="CheckIn" class="btn btn-success btn-lg" disabled="@(canCheckIn ? null : "disabled")">
                                     <i class="fas fa-sign-in-alt"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnCheckIn")
                                 </button>
@@ -108,8 +121,13 @@
                                     {
                                         <th>@SharedResource.ResourceManager.GetString("Attendance_EmployeeCol")</th>
                                     }
+                                    <th>Ca làm việc</th>
                                     <th>@SharedResource.ResourceManager.GetString("Attendance_CheckInCol")</th>
                                     <th>@SharedResource.ResourceManager.GetString("Attendance_CheckOutCol")</th>
+                                    @if (isAdmin)
+                                    {
+                                        <th>@SharedResource.ResourceManager.GetString("Button_Action")</th>
+                                    }
                                 </tr>
                             </thead>
                             <tbody>
@@ -123,15 +141,26 @@
                                             {
                                                 <td>@item.Username</td>
                                             }
+                                            <td>@(item.Shift != null ? item.Shift.ShiftName : "-")</td>
                                             <td class="text-success">@(item.CheckInTime.HasValue ? item.CheckInTime.Value.ToString(@"hh\:mm") : "--:--")</td>
                                             <td class="text-danger">@(item.CheckOutTime.HasValue ? item.CheckOutTime.Value.ToString(@"hh\:mm") : "--:--")</td>
+                                            @if (isAdmin)
+                                            {
+                                                <td>
+                                                    <form method="post" asp-action="Delete" asp-route-id="@item.AttendanceId" onsubmit="return confirm('@SharedResource.ResourceManager.GetString("ConfirmDelete")');" class="d-inline">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="@SharedResource.ResourceManager.GetString("Button_Delete")">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            }
                                         </tr>
                                     }
                                 }
                                 else
                                 {
                                     <tr>
-                                        <td colspan="@(isAdmin ? 4 : 3)" class="text-muted py-4">@SharedResource.ResourceManager.GetString("Attendance_NoData")</td>
+                                        <td colspan="@(isAdmin ? 6 : 4)" class="text-muted py-4">@SharedResource.ResourceManager.GetString("Attendance_NoData")</td>
                                     </tr>
                                 }
                             </tbody>

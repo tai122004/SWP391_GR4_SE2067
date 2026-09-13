@@ -159,12 +159,10 @@
   <data name="StoreList" xml:space="preserve">
     <value>Chi nhánh</value>
   </data>
-<<<<<<< Updated upstream
   <data name="ShiftManagement" xml:space="preserve">
     <value>Quản lý ca làm việc</value>
-=======
+  </data>
   <data name="Attendance" xml:space="preserve">
     <value>Chấm công</value>
->>>>>>> Stashed changes
   </data>
 </root>

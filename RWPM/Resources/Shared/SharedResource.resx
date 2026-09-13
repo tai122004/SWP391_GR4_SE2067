@@ -367,7 +367,13 @@
     <value>Check-out time:</value>
   </data>
   <data name="Attendance_MyHistory" xml:space="preserve">
-    <value>My attendance history</value>
+    <value>My Attendance History</value>
+  </data>
+  <data name="Attendance_TooLate" xml:space="preserve">
+    <value>You are more than 30 minutes late and cannot check-in for this shift!</value>
+  </data>
+  <data name="Attendance_SelectShift" xml:space="preserve">
+    <value>Select shift</value>
   </data>
   <data name="Attendance_CheckInCol" xml:space="preserve">
     <value>Check-in Time</value>

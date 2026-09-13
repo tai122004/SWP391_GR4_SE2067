@@ -6,6 +6,9 @@ using RWPM.Resources.Shared;
 using RWPM.Services.Abstraction;
 using System.Collections.Generic;
 using System.Security.Claims;
+using RWPM.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace RWPM.Controllers
 {
@@ -14,11 +17,13 @@ namespace RWPM.Controllers
     {
         private readonly IAttendanceService _attendanceService;
         private readonly IAccService _accService;
+        private readonly DefaultDatabaseContext _context;
 
-        public AttendanceController(IAttendanceService attendanceService, IAccService accService)
+        public AttendanceController(IAttendanceService attendanceService, IAccService accService, DefaultDatabaseContext context)
         {
             _attendanceService = attendanceService;
             _accService = accService;
+            _context = context;
         }
 
         public async Task<IActionResult> Index(string? searchQuery = null)
@@ -27,6 +32,7 @@ namespace RWPM.Controllers
             if (string.IsNullOrEmpty(username)) return RedirectToAction("Login", "Auth");
 
             ViewBag.TodayRecord = await _attendanceService.GetTodayRecordAsync(username);
+            ViewBag.ActiveShifts = await _context.Set<RWPM.Models.Entities.Shift>().Where(s => s.IsActive).ToListAsync();
             
             bool isAdmin = User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin");
             ViewBag.IsAdmin = isAdmin;
@@ -47,14 +53,14 @@ namespace RWPM.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CheckIn()
+        public async Task<IActionResult> CheckIn(int shiftId)
         {
             var username = User.Identity?.Name;
             if (string.IsNullOrEmpty(username)) return RedirectToAction("Login", "Auth");
 
             try
             {
-                await _attendanceService.CheckInAsync(username);
+                await _attendanceService.CheckInAsync(username, shiftId);
                 TempData["SuccessMessage"] = SharedResource.ResourceManager.GetString("Attendance_CheckInSuccess");
             }
             catch (Exception ex)
@@ -75,6 +81,23 @@ namespace RWPM.Controllers
             {
                 await _attendanceService.CheckOutAsync(username);
                 TempData["SuccessMessage"] = SharedResource.ResourceManager.GetString("Attendance_CheckOutSuccess");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin,HR,SuperAdmin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                await _attendanceService.DeleteRecordAsync(id);
+                TempData["SuccessMessage"] = SharedResource.ResourceManager.GetString("Notification_DeletedSuccessfully");
             }
             catch (Exception ex)
             {

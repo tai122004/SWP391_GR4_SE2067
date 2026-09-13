@@ -6,10 +6,11 @@ namespace RWPM.Services.Abstraction
 {
     public interface IAttendanceService
     {
-        Task<AttendanceRecord?> GetTodayRecordAsync(string username);
-        Task<AttendanceRecord> CheckInAsync(string username);
+        Task<AttendanceRecord?> GetTodayRecordAsync(string username, int? shiftId = null);
+        Task<AttendanceRecord> CheckInAsync(string username, int shiftId);
         Task<AttendanceRecord> CheckOutAsync(string username);
         Task<List<AttendanceRecord>> GetHistoryAsync(string username);
         Task<List<AttendanceRecord>> GetAllHistoryAsync(string? searchQuery = null);
+        Task DeleteRecordAsync(int attendanceId);
     }
 }

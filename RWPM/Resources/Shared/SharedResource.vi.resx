@@ -417,4 +417,10 @@
   <data name="Attendance_EmployeeList" xml:space="preserve">
     <value>Danh sách nhân viên:</value>
   </data>
+  <data name="Attendance_TooLate" xml:space="preserve">
+    <value>Bạn đã đến muộn quá 30 phút, không thể chấm công ca này!</value>
+  </data>
+  <data name="Attendance_SelectShift" xml:space="preserve">
+    <value>Chọn ca làm việc</value>
+  </data>
 </root>
