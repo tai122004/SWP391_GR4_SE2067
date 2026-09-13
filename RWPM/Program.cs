@@ -18,6 +18,7 @@ using (var scope = app.Services.CreateScope())
     await dbContext.Database.MigrateAsync();
     await new AccAdminSeeder().SeedAsync(dbContext);
     await new ShiftSeeder().SeedAsync(dbContext);
+    await new ShiftRegistrationSeeder().SeedAsync(dbContext);
 }
 #endregion
 

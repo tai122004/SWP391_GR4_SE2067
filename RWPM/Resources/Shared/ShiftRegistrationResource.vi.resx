@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ShiftRegistration" xml:space="preserve"><value>Lịch Đăng Ký Ca</value></data>
+  <data name="FilterByEmployeeId" xml:space="preserve"><value>Lọc theo Employee ID...</value></data>
+  <data name="Filter" xml:space="preserve"><value>Lọc</value></data>
+  <data name="RegisterShift" xml:space="preserve"><value>Đăng ký ca làm việc</value></data>
+  <data name="Employee" xml:space="preserve"><value>Nhân viên</value></data>
+  <data name="SelectEmployee" xml:space="preserve"><value>-- Chọn nhân viên --</value></data>
+  <data name="WorkDate" xml:space="preserve"><value>Ngày làm việc</value></data>
+  <data name="Shift" xml:space="preserve"><value>Ca làm việc</value></data>
+  <data name="SelectShift" xml:space="preserve"><value>-- Chọn ca làm việc --</value></data>
+  <data name="Note" xml:space="preserve"><value>Ghi chú</value></data>
+  <data name="Close" xml:space="preserve"><value>Đóng</value></data>
+  <data name="Save" xml:space="preserve"><value>Lưu đăng ký</value></data>
+  <data name="ShiftDetails" xml:space="preserve"><value>Chi tiết ca làm việc</value></data>
+  <data name="Time" xml:space="preserve"><value>Thời gian</value></data>
+  <data name="Status" xml:space="preserve"><value>Trạng thái</value></data>
+  <data name="Approve" xml:space="preserve"><value>Duyệt</value></data>
+  <data name="Reject" xml:space="preserve"><value>Từ chối</value></data>
+  <data name="Cancel" xml:space="preserve"><value>Hủy đăng ký</value></data>
+  <data name="PastDateError" xml:space="preserve"><value>Không thể đăng ký ca cho những ngày trong quá khứ!</value></data>
+  <data name="ConfirmCancel" xml:space="preserve"><value>Bạn có chắc chắn muốn hủy đăng ký này?</value></data>
+  <data name="SuccessStatus" xml:space="preserve"><value>Cập nhật trạng thái thành công!</value></data>
+  <data name="ErrorPrefix" xml:space="preserve"><value>Lỗi: </value></data>
+  <data name="UpdateFailed" xml:space="preserve"><value>Cập nhật thất bại: </value></data>
+</root>

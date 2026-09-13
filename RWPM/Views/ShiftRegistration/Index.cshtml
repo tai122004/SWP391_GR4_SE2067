@@ -1,0 +1,270 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using RWPM.Resources.Shared
+
+@{
+    ViewData["Title"] = ShiftRegistrationResource.ShiftRegistration;
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                    <h6>@ViewData["Title"]</h6>
+                    @if (ViewBag.IsManager)
+                    {
+                        <div class="d-flex">
+                            <input type="number" id="filterEmployeeId" class="form-control form-control-sm me-2" placeholder="@ShiftRegistrationResource.FilterByEmployeeId" />
+                            <button id="btnFilter" class="btn btn-sm btn-primary mb-0">@ShiftRegistrationResource.Filter</button>
+                        </div>
+                    }
+                </div>
+                <div class="card-body px-4 pt-4 pb-2">
+                    <div id="calendar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Create -->
+<div class="modal fade" id="shiftModal" tabindex="-1" aria-labelledby="shiftModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="shiftForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="shiftModalLabel">@ShiftRegistrationResource.RegisterShift</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            @Html.AntiForgeryToken()
+            
+            @if (ViewBag.IsManager)
+            {
+                <div class="mb-3">
+                    <label for="EmployeeId" class="form-label">@ShiftRegistrationResource.Employee</label>
+                    <select class="form-select" id="EmployeeId" name="EmployeeId" required>
+                        <option value="">@ShiftRegistrationResource.SelectEmployee</option>
+                        @if (ViewBag.Employees != null)
+                        {
+                            foreach (var emp in ViewBag.Employees)
+                            {
+                                <option value="@emp.EmployeeId">@emp.EmployeeCode - @(emp.Account?.FullName ?? emp.Username)</option>
+                            }
+                        }
+                    </select>
+                </div>
+            }
+            else
+            {
+                <input type="hidden" id="EmployeeId" name="EmployeeId" value="0" />
+            }
+
+            <div class="mb-3">
+                <label for="WorkDate" class="form-label">@ShiftRegistrationResource.WorkDate</label>
+                <input type="date" class="form-control" id="WorkDate" name="WorkDate" required readonly>
+            </div>
+            <div class="mb-3">
+                <label for="ShiftId" class="form-label">@ShiftRegistrationResource.Shift</label>
+                <select class="form-select" id="ShiftId" name="ShiftId" required>
+                    <option value="">@ShiftRegistrationResource.SelectShift</option>
+                    @if (ViewBag.Shifts != null)
+                    {
+                        foreach (var shift in ViewBag.Shifts)
+                        {
+                            <option value="@shift.ShiftId">@shift.ShiftName (@shift.StartTime.ToString(@"hh\:mm") - @shift.EndTime.ToString(@"hh\:mm"))</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="Note" class="form-label">@ShiftRegistrationResource.Note</label>
+                <textarea class="form-control" id="Note" name="Note" rows="2"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ShiftRegistrationResource.Close</button>
+          <button type="submit" class="btn btn-primary">@ShiftRegistrationResource.Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal View/Approve -->
+<div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="viewModalLabel">@ShiftRegistrationResource.ShiftDetails</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <p><strong>@ShiftRegistrationResource.Employee:</strong> <span id="vEmployee"></span></p>
+          <p><strong>@ShiftRegistrationResource.Shift:</strong> <span id="vShift"></span></p>
+          <p><strong>@ShiftRegistrationResource.Time:</strong> <span id="vTime"></span></p>
+          <p><strong>@ShiftRegistrationResource.Status:</strong> <span id="vStatus"></span></p>
+          <p><strong>@ShiftRegistrationResource.Note:</strong> <span id="vNote"></span></p>
+      </div>
+      <div class="modal-footer">
+        <input type="hidden" id="vRegistrationId" />
+        @if (ViewBag.IsManager)
+        {
+            <button type="button" class="btn btn-success" onclick="updateStatus(1)">@ShiftRegistrationResource.Approve</button>
+            <button type="button" class="btn btn-danger" onclick="updateStatus(2)">@ShiftRegistrationResource.Reject</button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-danger" onclick="deleteRegistration()">@ShiftRegistrationResource.Cancel</button>
+        }
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ShiftRegistrationResource.Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <script>
+        var calendar;
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var currentLang = '@(System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName)';
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: currentLang,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek'
+                },
+                events: function(info, successCallback, failureCallback) {
+                    var empId = document.getElementById('filterEmployeeId')?.value || '';
+                    $.ajax({
+                        url: '/ShiftRegistration/GetEvents',
+                        type: 'GET',
+                        data: {
+                            start: info.startStr,
+                            end: info.endStr,
+                            employeeId: empId
+                        },
+                        success: function(data) {
+                            successCallback(data);
+                        },
+                        error: function() {
+                            failureCallback();
+                        }
+                    });
+                },
+                dateClick: function(info) {
+                    var clickedDate = new Date(info.dateStr);
+                    var today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    if (clickedDate < today) {
+                        alert('@Html.Raw(ShiftRegistrationResource.PastDateError)');
+                        return;
+                    }
+
+                    // Open create modal for this date
+                    $('#WorkDate').val(info.dateStr);
+                    var modal = new bootstrap.Modal(document.getElementById('shiftModal'));
+                    modal.show();
+                },
+                eventClick: function(info) {
+                    var props = info.event.extendedProps;
+                    $('#vEmployee').text(props.employeeName);
+                    $('#vShift').text(props.shiftName);
+                    $('#vTime').text(info.event.start.toLocaleString() + ' - ' + info.event.end.toLocaleString());
+                    $('#vStatus').text(props.statusName);
+                    $('#vNote').text(props.note);
+                    $('#vRegistrationId').val(info.event.id);
+                    
+                    var modal = new bootstrap.Modal(document.getElementById('viewModal'));
+                    modal.show();
+                }
+            });
+            calendar.render();
+
+            $('#btnFilter').click(function() {
+                calendar.refetchEvents();
+            });
+
+            $('#shiftForm').submit(function(e) {
+                e.preventDefault();
+                var data = {
+                    EmployeeId: $('#EmployeeId').val(),
+                    ShiftId: $('#ShiftId').val(),
+                    WorkDate: $('#WorkDate').val(),
+                    Note: $('#Note').val()
+                };
+
+                $.ajax({
+                    url: '/ShiftRegistration/Create',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            $('#shiftModal').modal('hide');
+                            calendar.refetchEvents();
+                            $('#shiftForm')[0].reset();
+                        }
+                    },
+                    error: function(err) {
+                        alert('@Html.Raw(ShiftRegistrationResource.ErrorPrefix)' + (err.responseJSON?.message || err.responseText));
+                    }
+                });
+            });
+        });
+
+        function updateStatus(status) {
+            var id = $('#vRegistrationId').val();
+            $.ajax({
+                url: '/ShiftRegistration/UpdateStatus',
+                type: 'POST',
+                data: {
+                    id: id,
+                    status: status
+                },
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(res) {
+                    if (res.success) {
+                        $('#viewModal').modal('hide');
+                        calendar.refetchEvents();
+                    }
+                },
+                error: function(err) {
+                    alert('Lỗi: ' + (err.responseJSON?.message || err.responseText));
+                }
+            });
+        }
+
+        function deleteRegistration() {
+            if(!confirm('@Html.Raw(ShiftRegistrationResource.ConfirmCancel)')) return;
+            var id = $('#vRegistrationId').val();
+            $.ajax({
+                url: '/ShiftRegistration/Delete',
+                type: 'POST',
+                data: { id: id },
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(res) {
+                    if (res.success) {
+                        $('#viewModal').modal('hide');
+                        calendar.refetchEvents();
+                    }
+                },
+                error: function(err) {
+                    alert('Lỗi: ' + (err.responseJSON?.message || err.responseText));
+                }
+            });
+        }
+    </script>
+}
