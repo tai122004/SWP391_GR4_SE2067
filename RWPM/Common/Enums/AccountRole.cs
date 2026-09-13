@@ -21,8 +21,8 @@ namespace RWPM.Common.Enums
         /// <summary>
         /// Area Manager - Quản lý khu vực
         /// </summary>
-        [Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_AreaManager")]
-        AreaManager = 3,
+        //[Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_AreaManager")]
+        //AreaManager = 3,
 
         /// <summary>
         /// Store Manager - Quản lý cửa hàng
@@ -33,8 +33,8 @@ namespace RWPM.Common.Enums
         /// <summary>
         /// Shift Leader - Trưởng ca
         /// </summary>
-        [Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_ShiftLeader")]
-        ShiftLeader = 5,
+        //[Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_ShiftLeader")]
+        //ShiftLeader = 5,
 
         /// <summary>
         /// Sales Staff - Nhân viên bán hàng
