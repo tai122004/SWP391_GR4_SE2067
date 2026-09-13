@@ -111,6 +111,41 @@ namespace RWPM.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Shift/Delete/5
+        public async Task<IActionResult> Delete(int id)
+        {
+            var shift = await _shiftService.GetByIdAsync(id);
+            if (shift == null)
+                return NotFound();
+
+            return View(shift);
+        }
+
+        // POST: Shift/DeleteConfirmed
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int shiftId)
+        {
+            try
+            {
+                var shift = await _shiftService.GetRequiredByIdAsync(shiftId);
+                await _shiftService.DeleteAsync(shift);
+                AlertHelper.DeleteSuccess(TempData);
+            }
+            catch (ModelValidationException ex)
+            {
+                AlertHelper.AddErrorMessage(TempData, ex.GetErrorString(_localizer));
+                return RedirectToAction(nameof(Delete), new { id = shiftId });
+            }
+            catch (Exception ex)
+            {
+                AlertHelper.AddErrorMessage(TempData, ex.Message);
+                return RedirectToAction(nameof(Delete), new { id = shiftId });
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
         // POST: Shift/UpdateActiveStatus/5
         [HttpPost]
         [ValidateAntiForgeryToken]

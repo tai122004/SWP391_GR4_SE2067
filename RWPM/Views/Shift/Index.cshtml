@@ -100,6 +100,9 @@
                                 <a asp-action="Edit" asp-route-id="@shift.ShiftId" class="btn btn-sm btn-outline-primary me-1" title="@SharedResource.Button_Edit">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
+                                <a asp-action="Delete" asp-route-id="@shift.ShiftId" class="btn btn-sm btn-outline-danger" title="@SharedResource.Button_Delete">
+                                    <i class="bi bi-trash"></i>
+                                </a>
                             </td>
                         </tr>
                     }

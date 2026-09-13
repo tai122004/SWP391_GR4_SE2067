@@ -160,5 +160,53 @@ namespace RWPM.Resources.Models {
                 return ResourceManager.GetString("TimeDisplay", resourceCulture);
             }
         }
+        
+        public static string Invalid_TimeRange {
+            get {
+                return ResourceManager.GetString("Invalid_TimeRange", resourceCulture);
+            }
+        }
+        
+        public static string Invalid_SplitShift_Required {
+            get {
+                return ResourceManager.GetString("Invalid_SplitShift_Required", resourceCulture);
+            }
+        }
+        
+        public static string Invalid_SplitShift_TimeRange {
+            get {
+                return ResourceManager.GetString("Invalid_SplitShift_TimeRange", resourceCulture);
+            }
+        }
+        
+        public static string Invalid_SplitShift_Overlap {
+            get {
+                return ResourceManager.GetString("Invalid_SplitShift_Overlap", resourceCulture);
+            }
+        }
+        
+        public static string Invalid_BreakMinutes {
+            get {
+                return ResourceManager.GetString("Invalid_BreakMinutes", resourceCulture);
+            }
+        }
+        
+        public static string Invalid_MinShiftDuration {
+            get {
+                return ResourceManager.GetString("Invalid_MinShiftDuration", resourceCulture);
+            }
+        }
+        
+        public static string Invalid_MinSplitPeriodDuration {
+            get {
+                return ResourceManager.GetString("Invalid_MinSplitPeriodDuration", resourceCulture);
+            }
+        }
+        
+        public static string Invalid_MaxBreakMinutes {
+            get {
+                return ResourceManager.GetString("Invalid_MaxBreakMinutes", resourceCulture);
+            }
+        }
     }
 }

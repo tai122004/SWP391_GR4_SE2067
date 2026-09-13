@@ -72,4 +72,28 @@
   <data name="TimeDisplay" xml:space="preserve">
     <value>Time Frame</value>
   </data>
+  <data name="Invalid_TimeRange" xml:space="preserve">
+    <value>End time must be greater than start time.</value>
+  </data>
+  <data name="Invalid_SplitShift_Required" xml:space="preserve">
+    <value>Split shift requires period 2 start and end times.</value>
+  </data>
+  <data name="Invalid_SplitShift_TimeRange" xml:space="preserve">
+    <value>Period 2 end time must be greater than period 2 start time.</value>
+  </data>
+  <data name="Invalid_SplitShift_Overlap" xml:space="preserve">
+    <value>Period 2 must start after period 1 ends.</value>
+  </data>
+  <data name="Invalid_BreakMinutes" xml:space="preserve">
+    <value>Break time cannot exceed or equal total shift duration.</value>
+  </data>
+  <data name="Invalid_MinShiftDuration" xml:space="preserve">
+    <value>Shift duration must be at least 2 hours (120 minutes).</value>
+  </data>
+  <data name="Invalid_MinSplitPeriodDuration" xml:space="preserve">
+    <value>Each period of a split shift must be at least 1.5 hours (90 minutes) and total duration must be at least 4 hours.</value>
+  </data>
+  <data name="Invalid_MaxBreakMinutes" xml:space="preserve">
+    <value>Break time must be between 0 and 60 minutes (1 hour).</value>
+  </data>
 </root>

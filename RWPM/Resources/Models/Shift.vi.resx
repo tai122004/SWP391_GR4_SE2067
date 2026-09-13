@@ -72,4 +72,28 @@
   <data name="TimeDisplay" xml:space="preserve">
     <value>Khung giờ</value>
   </data>
+  <data name="Invalid_TimeRange" xml:space="preserve">
+    <value>Giờ kết thúc phải lớn hơn giờ bắt đầu.</value>
+  </data>
+  <data name="Invalid_SplitShift_Required" xml:space="preserve">
+    <value>Ca gãy bắt buộc phải nhập đủ giờ bắt đầu và kết thúc của đợt 2.</value>
+  </data>
+  <data name="Invalid_SplitShift_TimeRange" xml:space="preserve">
+    <value>Giờ kết thúc đợt 2 phải lớn hơn giờ bắt đầu đợt 2.</value>
+  </data>
+  <data name="Invalid_SplitShift_Overlap" xml:space="preserve">
+    <value>Khung giờ đợt 2 phải bắt đầu sau khi đợt 1 kết thúc.</value>
+  </data>
+  <data name="Invalid_BreakMinutes" xml:space="preserve">
+    <value>Thời gian nghỉ không được vượt quá hoặc bằng thời lượng ca làm việc.</value>
+  </data>
+  <data name="Invalid_MinShiftDuration" xml:space="preserve">
+    <value>Thời lượng ca làm việc tối thiểu phải từ 2 tiếng (120 phút) trở lên.</value>
+  </data>
+  <data name="Invalid_MinSplitPeriodDuration" xml:space="preserve">
+    <value>Mỗi đợt của ca gãy phải có thời lượng tối thiểu 1.5 tiếng (90 phút) và tổng ca tối thiểu 4 tiếng.</value>
+  </data>
+  <data name="Invalid_MaxBreakMinutes" xml:space="preserve">
+    <value>Thời gian nghỉ giữa ca phải từ 0 đến 60 phút (1 giờ).</value>
+  </data>
 </root>

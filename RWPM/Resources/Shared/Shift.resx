@@ -45,4 +45,13 @@
   <data name="SplitShiftSection" xml:space="preserve">
     <value>Split Shift - Period 2</value>
   </data>
+  <data name="Delete_PageTitle" xml:space="preserve">
+    <value>Delete Shift</value>
+  </data>
+  <data name="Delete_PageHeader" xml:space="preserve">
+    <value>Delete Shift</value>
+  </data>
+  <data name="Delete_Warning" xml:space="preserve">
+    <value>Are you sure you want to delete this shift? This action cannot be undone.</value>
+  </data>
 </root>
