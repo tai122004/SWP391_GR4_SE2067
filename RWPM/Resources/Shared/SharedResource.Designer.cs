@@ -70,6 +70,222 @@ namespace RWPM.Resources.Shared {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Admin accounts do not need to check in..
+        /// </summary>
+        public static string Attendance_AdminNoNeed {
+            get {
+                return ResourceManager.GetString("Attendance_AdminNoNeed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All Employees.
+        /// </summary>
+        public static string Attendance_AllEmployees {
+            get {
+                return ResourceManager.GetString("Attendance_AllEmployees", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attendance History.
+        /// </summary>
+        public static string Attendance_AllHistory {
+            get {
+                return ResourceManager.GetString("Attendance_AllHistory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have already checked in today..
+        /// </summary>
+        public static string Attendance_AlreadyCheckedIn {
+            get {
+                return ResourceManager.GetString("Attendance_AlreadyCheckedIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have already checked out today..
+        /// </summary>
+        public static string Attendance_AlreadyCheckedOut {
+            get {
+                return ResourceManager.GetString("Attendance_AlreadyCheckedOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CHECK IN.
+        /// </summary>
+        public static string Attendance_BtnCheckIn {
+            get {
+                return ResourceManager.GetString("Attendance_BtnCheckIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CHECK OUT.
+        /// </summary>
+        public static string Attendance_BtnCheckOut {
+            get {
+                return ResourceManager.GetString("Attendance_BtnCheckOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check-in Time.
+        /// </summary>
+        public static string Attendance_CheckInCol {
+            get {
+                return ResourceManager.GetString("Attendance_CheckInCol", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Checked in successfully!.
+        /// </summary>
+        public static string Attendance_CheckInSuccess {
+            get {
+                return ResourceManager.GetString("Attendance_CheckInSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check-in time:.
+        /// </summary>
+        public static string Attendance_CheckInTime {
+            get {
+                return ResourceManager.GetString("Attendance_CheckInTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check-out Time.
+        /// </summary>
+        public static string Attendance_CheckOutCol {
+            get {
+                return ResourceManager.GetString("Attendance_CheckOutCol", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Checked out successfully!.
+        /// </summary>
+        public static string Attendance_CheckOutSuccess {
+            get {
+                return ResourceManager.GetString("Attendance_CheckOutSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check-out time:.
+        /// </summary>
+        public static string Attendance_CheckOutTime {
+            get {
+                return ResourceManager.GetString("Attendance_CheckOutTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have completed today&apos;s attendance..
+        /// </summary>
+        public static string Attendance_Completed {
+            get {
+                return ResourceManager.GetString("Attendance_Completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employee.
+        /// </summary>
+        public static string Attendance_EmployeeCol {
+            get {
+                return ResourceManager.GetString("Attendance_EmployeeCol", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employee List:.
+        /// </summary>
+        public static string Attendance_EmployeeList {
+            get {
+                return ResourceManager.GetString("Attendance_EmployeeList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My Attendance History.
+        /// </summary>
+        public static string Attendance_MyHistory {
+            get {
+                return ResourceManager.GetString("Attendance_MyHistory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No attendance data available..
+        /// </summary>
+        public static string Attendance_NoData {
+            get {
+                return ResourceManager.GetString("Attendance_NoData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You haven&apos;t checked in today..
+        /// </summary>
+        public static string Attendance_NotCheckedIn {
+            get {
+                return ResourceManager.GetString("Attendance_NotCheckedIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search username....
+        /// </summary>
+        public static string Attendance_SearchPlaceholder {
+            get {
+                return ResourceManager.GetString("Attendance_SearchPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select shift.
+        /// </summary>
+        public static string Attendance_SelectShift {
+            get {
+                return ResourceManager.GetString("Attendance_SelectShift", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attendance &amp; History.
+        /// </summary>
+        public static string Attendance_Title {
+            get {
+                return ResourceManager.GetString("Attendance_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Today&apos;s Attendance.
+        /// </summary>
+        public static string Attendance_Today {
+            get {
+                return ResourceManager.GetString("Attendance_Today", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You are more than 30 minutes late and cannot check-in for this shift!.
+        /// </summary>
+        public static string Attendance_TooLate {
+            get {
+                return ResourceManager.GetString("Attendance_TooLate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Action.
         /// </summary>
         public static string Button_Action {
@@ -372,6 +588,15 @@ namespace RWPM.Resources.Shared {
         public static string Dropdown_SelectFactory {
             get {
                 return ResourceManager.GetString("Dropdown_SelectFactory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to --- Select store ---.
+        /// </summary>
+        public static string Dropdown_SelectStore {
+            get {
+                return ResourceManager.GetString("Dropdown_SelectStore", resourceCulture);
             }
         }
         

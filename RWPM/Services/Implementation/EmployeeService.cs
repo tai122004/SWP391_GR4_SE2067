@@ -113,20 +113,7 @@ namespace RWPM.Services.Implementation
             entity.EmployeeCode = entity.EmployeeCode.Trim();
             entity.Username = entity.Username.Trim();
 
-            if (await ExistsByCodeAsync(entity.EmployeeCode))
-            {
-                throw new ModelValidationException("EmployeeCode_Exists", $"Ma nhan vien '{entity.EmployeeCode}' da ton tai trong he thong.");
-            }
-
-            if (await ExistsByUsernameAsync(entity.Username))
-            {
-                throw new ModelValidationException("Username_Exists", $"Tai khoan '{entity.Username}' da duoc lien ket voi mot nhan vien khac.");
-            }
-
-            if (!await _ctx.Store.AnyAsync(s => s.StoreId == entity.StoreId))
-            {
-                throw new ModelValidationException("Store_NotFound", "Cua hang duoc chon khong ton tai.");
-            }
+            await ValidateAsync(entity);
 
             entity.CreatedDate = DateTime.Now;
             entity.CreatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor);
@@ -143,20 +130,7 @@ namespace RWPM.Services.Implementation
 
             var existing = await GetRequiredByIdAsync(entity.EmployeeId, new QueryOptions<Employee> { NoTracking = false });
 
-            if (await ExistsByCodeAsync(entity.EmployeeCode, entity.EmployeeId))
-            {
-                throw new ModelValidationException("EmployeeCode_Exists", $"Ma nhan vien '{entity.EmployeeCode}' da duoc su dung boi nhan vien khac.");
-            }
-
-            if (await ExistsByUsernameAsync(entity.Username, entity.EmployeeId))
-            {
-                throw new ModelValidationException("Username_Exists", $"Tai khoan '{entity.Username}' da duoc lien ket voi nhan vien khac.");
-            }
-
-            if (!await _ctx.Store.AnyAsync(s => s.StoreId == entity.StoreId))
-            {
-                throw new ModelValidationException("Store_NotFound", "Cua hang duoc chon khong ton tai.");
-            }
+            await ValidateAsync(entity, entity.EmployeeId);
 
             existing.EmployeeCode = entity.EmployeeCode;
             existing.Username = entity.Username;
@@ -166,7 +140,6 @@ namespace RWPM.Services.Implementation
             existing.UpdatedDate = DateTime.Now;
             existing.UpdatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor);
 
-            // EF Core tracking will automatically detect changes
             await _ctx.SaveChangesAsync();
         }
 
@@ -204,6 +177,24 @@ namespace RWPM.Services.Implementation
             employee.UpdatedDate = DateTime.Now;
             employee.UpdatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor);
             await _ctx.SaveChangesAsync();
+        }
+
+        private async Task ValidateAsync(Employee entity, int? excludeId = null)
+        {
+            if (await ExistsByCodeAsync(entity.EmployeeCode, excludeId))
+            {
+                throw new ModelValidationException("Employee_CodeExists", entity.EmployeeCode);
+            }
+
+            if (await ExistsByUsernameAsync(entity.Username, excludeId))
+            {
+                throw new ModelValidationException("Username_Exists",entity.Username);
+            }
+
+            if (!await _ctx.Store.AnyAsync(s => s.StoreId == entity.StoreId))
+            {
+                throw new ModelValidationException("Store_NotFound");
+            }
         }
     }
 }

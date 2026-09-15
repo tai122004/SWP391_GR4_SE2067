@@ -42,7 +42,11 @@ namespace RWPM.Services.Implementation
         {
             var data = new List<object>
             {
-                new { Id = 0, Display = "-- Chọn cửa hàng --" }
+                new 
+                { 
+                    Id = 0,
+                    Display = Resources.Shared.SharedResource.Dropdown_SelectStore
+                }
             };
 
             var stores = await _ctx.Store.AsNoTracking()
@@ -115,7 +119,7 @@ namespace RWPM.Services.Implementation
             entity.StoreCode = entity.StoreCode.Trim();
             entity.StoreName = entity.StoreName.Trim();
 
-            var existingStore = await GetRequiredByIdAsync(entity.StoreId, new QueryOptions<global::Store> { NoTracking = false });
+            var existingStore = await GetRequiredByIdAsync(entity.StoreId);
 
             if (await ExistsByCodeAsync(entity.StoreCode, entity.StoreId))
             {
@@ -130,12 +134,13 @@ namespace RWPM.Services.Implementation
             existingStore.UpdatedDate = DateTime.Now;
             existingStore.UpdatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor);
 
+            _ctx.Store.Update(existingStore);
             await _ctx.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(global::Store entity)
         {
-            var store = await GetRequiredByIdAsync(entity.StoreId, new QueryOptions<global::Store> { NoTracking = false });
+            var store = await GetRequiredByIdAsync(entity.StoreId);
             _ctx.Store.Remove(store);
             await _ctx.SaveChangesAsync();
         }
@@ -152,7 +157,7 @@ namespace RWPM.Services.Implementation
 
         public async Task UpdateActiveStatusAsync(int storeId, bool active)
         {
-            var store = await GetRequiredByIdAsync(storeId, new QueryOptions<global::Store> { NoTracking = false });
+            var store = await GetRequiredByIdAsync(storeId);
             store.IsActive = active;
             store.UpdatedDate = DateTime.Now;
             store.UpdatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor);

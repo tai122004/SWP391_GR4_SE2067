@@ -423,4 +423,7 @@
   <data name="Attendance_EmployeeList" xml:space="preserve">
     <value>Employee List:</value>
   </data>
+  <data name="Dropdown_SelectStore" xml:space="preserve">
+    <value>--- Select store ---</value>
+  </data>
 </root>

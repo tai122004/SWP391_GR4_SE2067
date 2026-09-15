@@ -318,4 +318,13 @@
   <data name="DayOff_DayOffExists" xml:space="preserve">
     <value>Day off already exists.</value>
   </data>
+  <data name="Employee_CodeExists" xml:space="preserve">
+    <value>Employee code already exists.</value>
+  </data>
+  <data name="Store_NotFound" xml:space="preserve">
+    <value>Store does not exists.</value>
+  </data>
+  <data name="Username_Exists" xml:space="preserve">
+    <value>Account has been linked.</value>
+  </data>
 </root>
