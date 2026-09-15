@@ -139,7 +139,7 @@
     <value>Trạng thái</value>
   </data>
   <data name="Store" xml:space="preserve">
-    <value>Cửa hàng</value>
+    <value>Chi nhánh</value>
   </data>
   <data name="StoreId_RangeError" xml:space="preserve">
     <value>Vui lòng chọn Cửa hàng.</value>

@@ -556,6 +556,15 @@ namespace RWPM.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Employee code already exists..
+        /// </summary>
+        public static string Employee_CodeExists {
+            get {
+                return ResourceManager.GetString("Employee_CodeExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Employee does not exists..
         /// </summary>
         public static string Employee_NotExists {
@@ -660,6 +669,24 @@ namespace RWPM.Resources {
         public static string Storage_MaximumUploadFileSize {
             get {
                 return ResourceManager.GetString("Storage_MaximumUploadFileSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Store does not exists..
+        /// </summary>
+        public static string Store_NotFound {
+            get {
+                return ResourceManager.GetString("Store_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Account has been linked..
+        /// </summary>
+        public static string Username_Exists {
+            get {
+                return ResourceManager.GetString("Username_Exists", resourceCulture);
             }
         }
     }

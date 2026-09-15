@@ -318,4 +318,13 @@
   <data name="DayOff_DayOffExists" xml:space="preserve">
     <value>Ngày nghỉ đã tồn tại.</value>
   </data>
+  <data name="Employee_CodeExists" xml:space="preserve">
+    <value>Mã nhân viên đã tồn tại.</value>
+  </data>
+  <data name="Store_NotFound" xml:space="preserve">
+    <value>Cửa hàng không tồn tại</value>
+  </data>
+  <data name="Username_Exists" xml:space="preserve">
+    <value>Tài khoản đã được liên kết</value>
+  </data>
 </root>

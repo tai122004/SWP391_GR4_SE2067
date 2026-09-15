@@ -33,6 +33,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Resources\ErrorServerDefinition.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ErrorServerDefinition.resx</DependentUpon>
+    </Compile>
     <Compile Update="Resources\Models\Employee.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -48,9 +53,18 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>NavigationBarResource.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Shared\SharedResource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SharedResource.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Resources\ErrorServerDefinition.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ErrorServerDefinition.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="Resources\Models\Employee.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Employee.Designer.cs</LastGenOutput>
@@ -62,6 +76,10 @@
     <EmbeddedResource Update="Resources\Shared\NavigationBarResource.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>NavigationBarResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Shared\SharedResource.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>SharedResource.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 
