@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -162,5 +162,80 @@
   <data name="ConfirmDelete" xml:space="preserve">
     <value>Bạn có chắc chắn muốn xóa không?
 </value>
+  </data>
+  <data name="Create_SubTitle" xml:space="preserve">
+    <value>Khởi tạo tài khoản hệ thống và tự động tạo hồ sơ nhân viên nếu thuộc chi nhánh cửa hàng</value>
+  </data>
+  <data name="Create_Section_AccountInfo" xml:space="preserve">
+    <value>1. Thông tin cá nhân &amp; Tài khoản</value>
+  </data>
+  <data name="Create_Section_StoreInfo" xml:space="preserve">
+    <value>2. Hồ sơ nhân viên &amp; Cửa hàng làm việc</value>
+  </data>
+  <data name="Create_StoreInfoHint" xml:space="preserve">
+    <value>Tài khoản có vai trò nhân sự cửa hàng sẽ được tự động tạo hồ sơ nhân viên vào danh sách nhân sự của chi nhánh.</value>
+  </data>
+  <data name="Create_UsernameHint" xml:space="preserve">
+    <value>Tự động gợi ý từ Họ tên, có thể tùy chỉnh.</value>
+  </data>
+  <data name="Modal_QuickResetTitle" xml:space="preserve">
+    <value>Cấp lại mật khẩu tài khoản</value>
+  </data>
+  <data name="Modal_QuickResetFor" xml:space="preserve">
+    <value>Đang cấp lại mật khẩu cho:</value>
+  </data>
+  <data name="Modal_QuickResetNewPass" xml:space="preserve">
+    <value>Mật khẩu mới</value>
+  </data>
+  <data name="Modal_QuickResetConfirmPass" xml:space="preserve">
+    <value>Xác nhận mật khẩu</value>
+  </data>
+  <data name="Modal_QuickResetSaveBtn" xml:space="preserve">
+    <value>Lưu mật khẩu mới</value>
+  </data>
+  <data name="Index_SubTitle" xml:space="preserve">
+    <value>Quản lý tài khoản hệ thống và thêm nhân sự mới cho các chi nhánh cửa hàng</value>
+  </data>
+  <data name="Notice_CreatedSuccess" xml:space="preserve">
+    <value>Khởi tạo thành công!</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email liên hệ</value>
+  </data>
+  <data name="Create_GeneratePassHint" xml:space="preserve">
+    <value>Sinh mật khẩu ngẫu nhiên</value>
+  </data>
+  <data name="Button_GenerateRandom" xml:space="preserve">
+    <value>Sinh ngẫu nhiên</value>
+  </data>
+  <data name="Toast_CopiedPassword" xml:space="preserve">
+    <value>Đã sao chép mật khẩu vào clipboard!</value>
+  </data>
+  <data name="Button_Copy" xml:space="preserve">
+    <value>Sao chép</value>
+  </data>
+  <data name="Modal_QuickResetPlaceholderConfirmPass" xml:space="preserve">
+    <value>Nhập lại mật khẩu...</value>
+  </data>
+  <data name="Modal_QuickResetHint" xml:space="preserve">
+    <value>Bấm "Sao chép" để gửi ngay cho nhân sự qua Zalo/Email mà không lo quên mật khẩu.</value>
+  </data>
+  <data name="Toast_CopiedAccountPassword" xml:space="preserve">
+    <value>Đã sao chép tài khoản &amp; mật khẩu!</value>
+  </data>
+  <data name="Err_MinLengthPassword" xml:space="preserve">
+    <value>Mật khẩu mới phải có ít nhất 6 ký tự!</value>
+  </data>
+  <data name="Err_PasswordMismatch" xml:space="preserve">
+    <value>Mật khẩu xác nhận không trùng khớp!</value>
+  </data>
+  <data name="Toast_ResetPasswordSuccess" xml:space="preserve">
+    <value>Đã cấp lại mật khẩu thành công!</value>
+  </data>
+  <data name="Label_Account" xml:space="preserve">
+    <value>Tài khoản</value>
+  </data>
+  <data name="Saving" xml:space="preserve">
+    <value>Đang lưu...</value>
   </data>
 </root>

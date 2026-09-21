@@ -1,85 +1,204 @@
-﻿@model AccCreateVM
+@model AccCreateVM
 
 @using AccountModelResource = RWPM.Resources.Models.Acc
 @using AccountSharedResource = RWPM.Resources.Shared.Acc
+@using EmployeeSharedResource = RWPM.Resources.Shared.Employee
 @using RWPM.Common.Enums
 @using RWPM.Models.ViewModels.Acc
 @using RWPM.Resources.Shared
+
 @{
     ViewData["Title"] = AccountSharedResource.Create_PageTitle;
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3 border-4 border-primary border-start rounded-start ps-2">
-    <h4 class="mb-0">
-        <i class="bi bi-person-fill-add me-2"></i> @AccountSharedResource.Create_PageHeader
-    </h4>
-
-    <nav class="d-none d-md-block ms-auto"
-         style="--bs-breadcrumb-divider: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%278%27 height=%278%27%3E%3Cpath d=%27M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z%27 fill=%276c757d%27/%3E%3C/svg%3E');"
-         aria-label="breadcrumb">
-        <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item">
-                <a asp-action="Index">@RWPM.Resources.Shared.Acc.Index_PageHeader</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">@AccountSharedResource.Create_PageHeader</li>
-        </ol>
-    </nav>
-</div>
-
-<form asp-action="Create" method="post">
-    @Html.AntiForgeryToken()
-
-    <div class="form-group mb-2">
-        <label class="form-label required" asp-for="FullName">@AccountModelResource.Fullname</label>
-        <input class="form-control" asp-for="FullName" class="form-control" placeholder="@AccountSharedResource.Placeholder_FullName" autocomplete="off" />
-        <span asp-validation-for="FullName" class="text-danger"></span>
-    </div>
-
-    <div class="form-group mb-2">
-        <label class="form-label required" asp-for="Email">Email</label>
-        <input class="form-control" asp-for="Email" class="form-control" placeholder="@AccountSharedResource.Placeholder_Email" autocomplete="off" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-
-    <div class="form-group mb-2">
-        <label class="form-label required" asp-for="Username">@AccountModelResource.Username</label>
-        <input class="form-control" asp-for="Username" class="form-control" placeholder="@AccountSharedResource.Placeholder_Username" autocomplete="off" />
-        <span asp-validation-for="Username" class="text-danger"></span>
-    </div>
-    <div class="form-group mb-2">
-        <label class="form-label required" asp-for="Password">@AccountModelResource.Password</label>
-
-        <div class="input-group">
-            <input type="password" class="form-control" asp-for="Password" class="form-control" placeholder="@AccountSharedResource.Placeholder_Password" autocomplete="off" />
-            <div class="input-group-append">
-                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword()">👁️</button>
-            </div>
+<div class="container-fluid px-0" style="max-width: 850px;">
+    <!-- Header with Breadcrumb -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h4 class="fw-bold text-dark d-flex align-items-center mb-1">
+                <i class="bi bi-person-fill-add text-primary me-2"></i> @AccountSharedResource.Create_PageHeader
+            </h4>
+            <div class="text-muted small">@AccountSharedResource.Create_SubTitle</div>
         </div>
 
-        <span asp-validation-for="Password" class="text-danger"></span>
+        <nav aria-label="breadcrumb" class="d-none d-md-block">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a asp-action="Index">@RWPM.Resources.Shared.Acc.Index_PageHeader</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@AccountSharedResource.Create_PageHeader</li>
+            </ol>
+        </nav>
     </div>
-    <div class="form-group mb-2">
-        <label class="form-label" asp-for="Role">@AccountModelResource.Role</label>
-        <select asp-for="Role" asp-items="Model.AccountRoleSelectList" class="form-select system-select2">
-        </select>
-        <span asp-validation-for="Role" class="text-danger"></span>
+
+    <!-- Main Card -->
+    <div class="modern-card p-4">
+        <form asp-action="Create" method="post" id="accCreateForm">
+            @Html.AntiForgeryToken()
+
+            <div class="form-section-title">
+                <i class="bi bi-person-badge text-primary"></i> @AccountSharedResource.Create_Section_AccountInfo
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold small required" asp-for="FullName">@AccountModelResource.Fullname</label>
+                    <input class="form-control" asp-for="FullName" id="accFullName" placeholder="@AccountSharedResource.Placeholder_FullName" autocomplete="off" />
+                    <span asp-validation-for="FullName" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold small required" asp-for="Email">@AccountSharedResource.Email</label>
+                    <input class="form-control" asp-for="Email" placeholder="@AccountSharedResource.Placeholder_Email" autocomplete="off" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold small required" asp-for="Username">@AccountModelResource.Username</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-at"></i></span>
+                        <input class="form-control font-monospace" asp-for="Username" id="accUsername" placeholder="@AccountSharedResource.Placeholder_Username" autocomplete="off" />
+                    </div>
+                    <span asp-validation-for="Username" class="text-danger small"></span>
+                    <small class="text-muted d-block mt-1">@AccountSharedResource.Create_UsernameHint</small>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold small required" asp-for="Role">@AccountModelResource.Role</label>
+                    <select asp-for="Role" asp-items="Model.AccountRoleSelectList" id="accRoleSelect" class="form-select">
+                    </select>
+                    <span asp-validation-for="Role" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-12">
+                    <label class="form-label fw-semibold small required" asp-for="Password">@AccountModelResource.Password</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control font-monospace" asp-for="Password" id="accPassword" placeholder="@AccountSharedResource.Placeholder_Password" autocomplete="off" />
+                        <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('accPassword', 'toggleIcon')" title="Hiện/Ẩn mật khẩu">
+                            <i class="bi bi-eye" id="toggleIcon"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" onclick="generateAndSetPassword()" title="@AccountSharedResource.Create_GeneratePassHint">
+                            <i class="bi bi-dice-5 me-1"></i> @AccountSharedResource.Button_GenerateRandom
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+
+                    <div id="passwordCopyAlert" class="alert alert-light border mt-2 py-2 px-3 small d-none justify-content-between align-items-center">
+                        <span class="text-secondary"><i class="bi bi-key me-1"></i> @AccountModelResource.Password: <strong id="generatedPassText" class="font-monospace text-dark"></strong></span>
+                        <button type="button" class="btn btn-sm btn-outline-dark" onclick="copyToClipboard($('#generatedPassText').text(), '@AccountSharedResource.Toast_CopiedPassword')">
+                            <i class="bi bi-copy me-1"></i> @AccountSharedResource.Button_Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KHỐI THÔNG TIN CỬA HÀNG (TỰ ĐỘNG HIỂN THỊ KHI CHỌN VAI TRÒ LÀM VIỆC TẠI CỬA HÀNG) -->
+            <div id="storeAssignmentSection">
+                <div class="form-section-title mt-4 text-primary">
+                    <i class="bi bi-shop"></i> @AccountSharedResource.Create_Section_StoreInfo
+                </div>
+
+                <div class="alert alert-primary bg-primary bg-opacity-10 border-0 py-2 px-3 small mb-3 text-dark">
+                    <i class="bi bi-info-circle-fill text-primary me-2"></i>
+                    @AccountSharedResource.Create_StoreInfoHint
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold small required" asp-for="EmployeeCode">@EmployeeSharedResource.Column_EmployeeCode</label>
+                        <input class="form-control font-monospace" asp-for="EmployeeCode" id="empCodeInput" placeholder="NV..." autocomplete="off" />
+                        <span asp-validation-for="EmployeeCode" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold small required" asp-for="StoreId">@EmployeeSharedResource.Column_Store</label>
+                        <select class="form-select" asp-for="StoreId" asp-items="Model.StoreSelectList" id="storeSelectInput">
+                            <option value="">@EmployeeSharedResource.Placeholder_Store</option>
+                        </select>
+                        <span asp-validation-for="StoreId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold small required" asp-for="JoinDate">@EmployeeSharedResource.Column_JoinDate</label>
+                        <input class="form-control" type="date" asp-for="JoinDate" />
+                        <span asp-validation-for="JoinDate" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                <a asp-action="Index" class="btn btn-outline-secondary px-3">
+                    <i class="bi bi-arrow-left me-1"></i> @SharedResource.Button_GoBack
+                </a>
+                <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                    <i class="bi bi-check2-circle me-1"></i> @SharedResource.Button_Create
+                </button>
+            </div>
+        </form>
     </div>
-    <div class="form-group mt-3 text-end">
-        <a asp-action="Index" class="btn btn-secondary me-2">
-            <i class="bi bi-arrow-return-left me-2"></i>@SharedResource.Button_GoBack
-        </a>
-        <button type="submit" class="btn btn-primary">
-            <i class="bi bi-floppy me-2"></i>@SharedResource.Button_Create
-        </button>
-    </div>
-    
-</form>
+</div>
 
 @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
     <script>
-           function togglePassword() {
-            const input = document.getElementById('Password');
-            input.type = input.type === 'password' ? 'text' : 'password';
+        let usernameManuallyChanged = false;
+
+        $('#accUsername').on('input', function () {
+            usernameManuallyChanged = $(this).val().trim() !== '';
+        });
+
+        $('#accFullName').on('input', function () {
+            if (!usernameManuallyChanged) {
+                const suggested = generateUsernameFromFullName($(this).val());
+                $('#accUsername').val(suggested);
+            }
+        });
+
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'bi bi-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'bi bi-eye';
+            }
         }
+
+        function generateAndSetPassword() {
+            const pass = generateRandomPassword(8);
+            const input = document.getElementById('accPassword');
+            input.type = 'text';
+            document.getElementById('toggleIcon').className = 'bi bi-eye-slash';
+            $('#accPassword').val(pass);
+            $('#generatedPassText').text(pass);
+            $('#passwordCopyAlert').removeClass('d-none').addClass('d-flex');
+        }
+
+        // Tự động ẩn/hiện thông tin cửa hàng dựa theo Role
+        function updateStoreSectionVisibility() {
+            const roleVal = $('#accRoleSelect').val();
+            // StoreManager = 4, SalesStaff = 6, PartTimeStaff = 7 (hoặc text tương ứng)
+            const isStoreRole = (roleVal == '4' || roleVal == '6' || roleVal == '7' || 
+                                 roleVal == 'StoreManager' || roleVal == 'SalesStaff' || roleVal == 'PartTimeStaff');
+            
+            if (isStoreRole) {
+                $('#storeAssignmentSection').slideDown(200);
+            } else {
+                $('#storeAssignmentSection').slideUp(200);
+            }
+        }
+
+        $('#accRoleSelect').on('change', updateStoreSectionVisibility);
+
+        $(document).ready(function () {
+            if (!$('#accPassword').val()) {
+                generateAndSetPassword();
+            }
+            updateStoreSectionVisibility();
+        });
     </script>
 }
