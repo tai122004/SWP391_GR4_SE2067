@@ -63,6 +63,11 @@ namespace RWPM.Services.Implementation
                 query = query.Where(s => s.IsActive == searchObject.IsActive.Value);
             }
 
+            if (searchObject.IsTemplate.HasValue)
+            {
+                query = query.Where(s => s.IsTemplate == searchObject.IsTemplate.Value);
+            }
+
             query = QueryHelper.ApplyQueryOptions(query, options);
 
             var totalRecords = await query.CountAsync();
@@ -117,6 +122,10 @@ namespace RWPM.Services.Implementation
             existingShift.StartTime2 = entity.StartTime2;
             existingShift.EndTime2 = entity.EndTime2;
             existingShift.BreakMinutes = entity.BreakMinutes;
+            existingShift.GracePeriodMinutes = entity.GracePeriodMinutes;
+            existingShift.EarlyCheckInMinutes = entity.EarlyCheckInMinutes;
+            existingShift.LateThresholdMinutes = entity.LateThresholdMinutes;
+            existingShift.IsTemplate = entity.IsTemplate;
             existingShift.Description = entity.Description?.Trim() ?? string.Empty;
             existingShift.IsActive = entity.IsActive;
             existingShift.UpdatedDate = DateTime.Now;
@@ -186,19 +195,30 @@ namespace RWPM.Services.Implementation
             {
                 throw new ModelValidationException("Invalid_MinShiftDuration", "Thời lượng làm việc thực tế sau khi trừ giờ nghỉ tối thiểu phải từ 2 tiếng trở lên.");
             }
-        }
 
-        public async Task DeleteAsync(Shift entity)
-        {
-            if (await _ctx.ShiftRegistration.AnyAsync(r => r.ShiftId == entity.ShiftId))
+            if (entity.GracePeriodMinutes.HasValue && entity.GracePeriodMinutes.Value < 0)
             {
-                throw new ModelValidationException("Shift_InUse", "Không thể xóa ca làm việc đang được sử dụng trong lịch làm việc/đăng ký ca.");
+                throw new ModelValidationException("Invalid_GracePeriodMinutes", "Thời gian cho phép đi muộn không được nhỏ hơn 0.");
             }
 
-            var shift = await GetRequiredByIdAsync(entity.ShiftId, new QueryOptions<Shift> { NoTracking = false });
-            _ctx.Shift.Remove(shift);
-            await _ctx.SaveChangesAsync();
+            if (entity.EarlyCheckInMinutes.HasValue && entity.EarlyCheckInMinutes.Value < 0)
+            {
+                throw new ModelValidationException("Invalid_EarlyCheckInMinutes", "Thời gian cho phép quẹt thẻ sớm không được nhỏ hơn 0.");
+            }
+
+            if (entity.LateThresholdMinutes.HasValue && entity.LateThresholdMinutes.Value < 0)
+            {
+                throw new ModelValidationException("Invalid_LateThresholdMinutes", "Ngưỡng thời gian vắng mặt không được nhỏ hơn 0.");
+            }
+
+            if (entity.GracePeriodMinutes.HasValue && entity.LateThresholdMinutes.HasValue
+                && entity.GracePeriodMinutes.Value >= entity.LateThresholdMinutes.Value)
+            {
+                throw new ModelValidationException("Invalid_GracePeriodThreshold", "Thời gian cho phép đi muộn phải nhỏ hơn ngưỡng vắng mặt.");
+            }
         }
+
+
 
         public async Task<bool> ExistsByCodeAsync(string shiftCode, int? excludeShiftId = null)
         {

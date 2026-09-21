@@ -68,11 +68,19 @@
                 <label for="ShiftId" class="form-label">@ShiftRegistrationResource.Shift</label>
                 <select class="form-select" id="ShiftId" name="ShiftId" required>
                     <option value="">@ShiftRegistrationResource.SelectShift</option>
-                    @if (ViewBag.Shifts != null)
+                    @{
+                        var shifts = ViewBag.Shifts as IEnumerable<RWPM.Models.Entities.Shift>;
+                    }
+                    @if (shifts != null)
                     {
-                        foreach (var shift in ViewBag.Shifts)
+                        foreach (var shift in shifts)
                         {
-                            <option value="@shift.ShiftId">@shift.ShiftName (@shift.StartTime.ToString(@"hh\:mm") - @shift.EndTime.ToString(@"hh\:mm"))</option>
+                            var timeDisplay = $"{shift.StartTime.ToString(@"hh\:mm")} - {shift.EndTime.ToString(@"hh\:mm")}";
+                            if (shift.StartTime2 != null && shift.EndTime2 != null)
+                            {
+                                timeDisplay += $" | {shift.StartTime2.Value.ToString(@"hh\:mm")} - {shift.EndTime2.Value.ToString(@"hh\:mm")}";
+                            }
+                            <option value="@shift.ShiftId">@shift.ShiftName (@timeDisplay)</option>
                         }
                     }
                 </select>

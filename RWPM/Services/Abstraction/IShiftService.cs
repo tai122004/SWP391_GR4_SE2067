@@ -12,7 +12,6 @@ namespace RWPM.Services.Abstraction
         Task<PaginationRes<Shift>> SearchAsync(ShiftSearch searchObject, QueryOptions<Shift>? options = null);
         Task<Shift> CreateAsync(Shift entity);
         Task UpdateAsync(Shift entity);
-        Task DeleteAsync(Shift entity);
         Task<bool> ExistsByCodeAsync(string shiftCode, int? excludeShiftId = null);
         Task UpdateActiveStatusAsync(int shiftId, bool active);
     }

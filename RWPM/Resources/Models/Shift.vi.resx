@@ -96,4 +96,37 @@
   <data name="Invalid_MaxBreakMinutes" xml:space="preserve">
     <value>Thời gian nghỉ giữa ca phải từ 0 đến 60 phút (1 giờ).</value>
   </data>
+  <data name="GracePeriodMinutes" xml:space="preserve">
+    <value>Cho phép đi muộn (phút)</value>
+  </data>
+  <data name="EarlyCheckInMinutes" xml:space="preserve">
+    <value>Quẹt thẻ trước ca (phút)</value>
+  </data>
+  <data name="LateThresholdMinutes" xml:space="preserve">
+    <value>Ngưỡng vắng mặt (phút)</value>
+  </data>
+  <data name="IsTemplate" xml:space="preserve">
+    <value>Ca chuẩn (Mẫu)</value>
+  </data>
+  <data name="ShiftClassification" xml:space="preserve">
+    <value>Phân loại ca</value>
+  </data>
+  <data name="ShiftType_Overtime" xml:space="preserve">
+    <value>Tăng ca</value>
+  </data>
+  <data name="ShiftType_Flexible" xml:space="preserve">
+    <value>Linh động</value>
+  </data>
+  <data name="Invalid_GracePeriodMinutes" xml:space="preserve">
+    <value>Thời gian cho phép đi muộn không được nhỏ hơn 0.</value>
+  </data>
+  <data name="Invalid_EarlyCheckInMinutes" xml:space="preserve">
+    <value>Thời gian quẹt thẻ trước ca không được nhỏ hơn 0.</value>
+  </data>
+  <data name="Invalid_LateThresholdMinutes" xml:space="preserve">
+    <value>Ngưỡng vắng mặt không được nhỏ hơn 0.</value>
+  </data>
+  <data name="Invalid_GracePeriodThreshold" xml:space="preserve">
+    <value>Thời gian cho phép đi muộn phải nhỏ hơn ngưỡng vắng mặt.</value>
+  </data>
 </root>

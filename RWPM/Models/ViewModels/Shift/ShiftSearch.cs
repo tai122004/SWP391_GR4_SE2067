@@ -6,5 +6,6 @@ namespace RWPM.Models.ViewModels.Shift
     {
         public string? Search { get; set; }
         public bool? IsActive { get; set; }
+        public bool? IsTemplate { get; set; }
     }
 }

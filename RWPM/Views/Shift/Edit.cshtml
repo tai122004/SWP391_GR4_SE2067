@@ -104,22 +104,106 @@
         <div class="col-md-6">
             <div class="form-group mb-3">
                 <label class="form-label" asp-for="BreakMinutes">@ShiftModelResource.BreakMinutes</label>
-                <input class="form-control" asp-for="BreakMinutes" type="number" min="0" max="60" />
+                <div class="input-group">
+                    <input class="form-control" asp-for="BreakMinutes" type="number" min="0" max="60" />
+                    <span class="input-group-text">phút</span>
+                </div>
                 <span asp-validation-for="BreakMinutes" class="text-danger"></span>
             </div>
         </div>
-        <div class="col-md-6 d-flex align-items-center">
-            <div class="form-check form-switch mt-2">
-                <input class="form-check-input" type="checkbox" asp-for="IsActive" />
-                <label class="form-check-label" asp-for="IsActive">@ShiftModelResource.IsActive</label>
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                <label class="form-label" asp-for="Description">@ShiftModelResource.Description</label>
+                <input class="form-control" asp-for="Description" placeholder="@ShiftSharedResource.Placeholder_Description" />
+                <span asp-validation-for="Description" class="text-danger"></span>
             </div>
         </div>
     </div>
 
-    <div class="form-group mb-3">
-        <label class="form-label" asp-for="Description">@ShiftModelResource.Description</label>
-        <textarea class="form-control" asp-for="Description" rows="2" placeholder="@ShiftSharedResource.Placeholder_Description"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
+    <!-- Attendance Policy Section -->
+    <div class="card mb-3 border-light-subtle shadow-sm">
+        <div class="card-header bg-light py-2 d-flex flex-wrap justify-content-between align-items-center">
+            <div>
+                <div class="fw-semibold text-dark d-flex align-items-center">
+                    <i class="bi bi-shield-check text-primary me-2"></i>
+                    @ShiftSharedResource.AttendancePolicy_Title
+                </div>
+                <div class="small text-muted">@ShiftSharedResource.AttendancePolicy_Description</div>
+            </div>
+            <div class="form-check form-switch ms-md-auto mt-2 mt-md-0">
+                <input class="form-check-input" type="checkbox" asp-for="UseDefaultAttendancePolicy" id="useDefaultPolicySwitch" />
+                <label class="form-check-label fw-semibold small text-primary" for="useDefaultPolicySwitch">
+                    @ShiftSharedResource.AttendancePolicy_UseDefault
+                </label>
+            </div>
+        </div>
+        <div class="card-body py-3">
+            <div id="defaultPolicyAlert" class="alert alert-info py-2 px-3 small mb-3 d-flex align-items-center">
+                <i class="bi bi-info-circle-fill me-2 fs-5 text-primary"></i>
+                <div>
+                    @ShiftSharedResource.AttendancePolicy_InheritNotice (Quẹt sớm: <strong>@ShiftDefaults.EarlyCheckInMinutes'</strong>, Đi muộn: <strong>@ShiftDefaults.GracePeriodMinutes'</strong>, Ngưỡng bỏ ca: <strong>@ShiftDefaults.LateThresholdMinutes'</strong>).
+                </div>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="form-label small fw-semibold" asp-for="EarlyCheckInMinutes">
+                            <i class="bi bi-box-arrow-in-right text-success me-1"></i>@ShiftModelResource.EarlyCheckInMinutes
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <input class="form-control" asp-for="EarlyCheckInMinutes" type="number" min="0" max="120" id="earlyCheckInInput" />
+                            <span class="input-group-text">phút</span>
+                        </div>
+                        <span asp-validation-for="EarlyCheckInMinutes" class="text-danger small"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="form-label small fw-semibold" asp-for="GracePeriodMinutes">
+                            <i class="bi bi-hourglass-split text-warning me-1"></i>@ShiftModelResource.GracePeriodMinutes
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <input class="form-control" asp-for="GracePeriodMinutes" type="number" min="0" max="120" id="gracePeriodInput" />
+                            <span class="input-group-text">phút</span>
+                        </div>
+                        <span asp-validation-for="GracePeriodMinutes" class="text-danger small"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="form-label small fw-semibold" asp-for="LateThresholdMinutes">
+                            <i class="bi bi-slash-circle text-danger me-1"></i>@ShiftModelResource.LateThresholdMinutes
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <input class="form-control" asp-for="LateThresholdMinutes" type="number" min="0" max="480" id="lateThresholdInput" />
+                            <span class="input-group-text">phút</span>
+                        </div>
+                        <span asp-validation-for="LateThresholdMinutes" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shift Classification & Status Card -->
+    <div class="card mb-3 border-light-subtle shadow-sm">
+        <div class="card-body py-2 px-3">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="form-check form-switch py-1">
+                        <input class="form-check-input" type="checkbox" asp-for="IsTemplate" id="isTemplateSwitch" />
+                        <label class="form-check-label fw-semibold" for="isTemplateSwitch" asp-for="IsTemplate">@ShiftModelResource.IsTemplate</label>
+                        <div class="form-text small text-muted">@ShiftSharedResource.Shift_IsTemplate_Hint</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-check form-switch py-1">
+                        <input class="form-check-input" type="checkbox" asp-for="IsActive" id="isActiveSwitch" />
+                        <label class="form-check-label fw-semibold" for="isActiveSwitch" asp-for="IsActive">@ShiftModelResource.IsActive</label>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="form-group mt-3 text-end">
@@ -147,6 +231,26 @@
 
             $('#shiftTypeSelect').change(toggleSplitSection);
             toggleSplitSection();
+
+            // Xử lý bật/tắt chính sách chấm công mặc định
+            function updatePolicyState() {
+                var isDefault = $('#useDefaultPolicySwitch').is(':checked');
+                var $inputs = $('#earlyCheckInInput, #gracePeriodInput, #lateThresholdInput');
+
+                if (isDefault) {
+                    $('#defaultPolicyAlert').slideDown();
+                    $inputs.prop('readonly', true).addClass('bg-light text-muted');
+                    $('#earlyCheckInInput').val('@ShiftDefaults.EarlyCheckInMinutes');
+                    $('#gracePeriodInput').val('@ShiftDefaults.GracePeriodMinutes');
+                    $('#lateThresholdInput').val('@ShiftDefaults.LateThresholdMinutes');
+                } else {
+                    $('#defaultPolicyAlert').slideUp();
+                    $inputs.prop('readonly', false).removeClass('bg-light text-muted');
+                }
+            }
+
+            $('#useDefaultPolicySwitch').change(updatePolicyState);
+            updatePolicyState();
         });
     </script>
 }
