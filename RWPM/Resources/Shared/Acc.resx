@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -161,5 +161,80 @@
   </data>
   <data name="ConfirmDelete" xml:space="preserve">
     <value>Are you sure you want to delete this?</value>
+  </data>
+  <data name="Create_SubTitle" xml:space="preserve">
+    <value>Create a system account and automatically generate an employee profile if the role is store-based</value>
+  </data>
+  <data name="Create_Section_AccountInfo" xml:space="preserve">
+    <value>1. Personal Information &amp; Account</value>
+  </data>
+  <data name="Create_Section_StoreInfo" xml:space="preserve">
+    <value>2. Employee Profile &amp; Store Assignment</value>
+  </data>
+  <data name="Create_StoreInfoHint" xml:space="preserve">
+    <value>Store-role accounts will automatically create an employee profile in the branch staff list.</value>
+  </data>
+  <data name="Create_UsernameHint" xml:space="preserve">
+    <value>Auto-suggested from full name, can be customized.</value>
+  </data>
+  <data name="Modal_QuickResetTitle" xml:space="preserve">
+    <value>Reset Account Password</value>
+  </data>
+  <data name="Modal_QuickResetFor" xml:space="preserve">
+    <value>Resetting password for:</value>
+  </data>
+  <data name="Modal_QuickResetNewPass" xml:space="preserve">
+    <value>New Password</value>
+  </data>
+  <data name="Modal_QuickResetConfirmPass" xml:space="preserve">
+    <value>Confirm Password</value>
+  </data>
+  <data name="Modal_QuickResetSaveBtn" xml:space="preserve">
+    <value>Save New Password</value>
+  </data>
+  <data name="Index_SubTitle" xml:space="preserve">
+    <value>Manage system accounts and add new staff for store branches</value>
+  </data>
+  <data name="Notice_CreatedSuccess" xml:space="preserve">
+    <value>Created successfully!</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Contact Email</value>
+  </data>
+  <data name="Create_GeneratePassHint" xml:space="preserve">
+    <value>Generate random secure password</value>
+  </data>
+  <data name="Button_GenerateRandom" xml:space="preserve">
+    <value>Random</value>
+  </data>
+  <data name="Toast_CopiedPassword" xml:space="preserve">
+    <value>Password copied to clipboard!</value>
+  </data>
+  <data name="Button_Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="Modal_QuickResetPlaceholderConfirmPass" xml:space="preserve">
+    <value>Re-enter new password...</value>
+  </data>
+  <data name="Modal_QuickResetHint" xml:space="preserve">
+    <value>Click "Copy" to easily share credentials with the employee via Zalo/Email.</value>
+  </data>
+  <data name="Toast_CopiedAccountPassword" xml:space="preserve">
+    <value>Account &amp; password copied to clipboard!</value>
+  </data>
+  <data name="Err_MinLengthPassword" xml:space="preserve">
+    <value>New password must be at least 6 characters!</value>
+  </data>
+  <data name="Err_PasswordMismatch" xml:space="preserve">
+    <value>Password confirmation does not match!</value>
+  </data>
+  <data name="Toast_ResetPasswordSuccess" xml:space="preserve">
+    <value>Password reset successfully!</value>
+  </data>
+  <data name="Label_Account" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="Saving" xml:space="preserve">
+    <value>Saving...</value>
   </data>
 </root>

@@ -1,75 +1,147 @@
-﻿@model AccUpdateVM
+@model AccUpdateVM
 
 @using AccountModelResource = RWPM.Resources.Models.Acc
 @using AccountSharedResource = RWPM.Resources.Shared.Acc
 @using RWPM.Common.Enums
 @using RWPM.Models.ViewModels.Acc
 @using RWPM.Resources.Shared
+
 @{
     ViewData["Title"] = AccountSharedResource.Update_PageTitle;
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3 border-4 border-primary border-start rounded-start ps-2">
-    <h4 class="mb-0">
-        <i class="bi bi-person-fill-up me-2"></i> @AccountSharedResource.Update_PageHeader
-    </h4>
+<div class="container-fluid px-0" style="max-width: 800px;">
+    <!-- Header with Breadcrumb -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h4 class="fw-bold text-dark d-flex align-items-center mb-1">
+                <i class="bi bi-person-gear text-primary me-2"></i> @AccountSharedResource.Update_PageHeader
+            </h4>
+            <div class="text-muted small">Cập nhật thông tin và vai trò của tài khoản <strong>@Model.Username</strong></div>
+        </div>
 
-    <nav class="d-none d-md-block ms-auto"
-         style="--bs-breadcrumb-divider: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%278%27 height=%278%27%3E%3Cpath d=%27M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z%27 fill=%276c757d%27/%3E%3C/svg%3E');"
-         aria-label="breadcrumb">
-        <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item">
-                <a asp-action="Index">@RWPM.Resources.Shared.Acc.Index_PageHeader</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">@AccountSharedResource.Update_PageHeader</li>
-        </ol>
-    </nav>
+        <nav aria-label="breadcrumb" class="d-none d-md-block">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a asp-action="Index">@RWPM.Resources.Shared.Acc.Index_PageHeader</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@AccountSharedResource.Update_PageHeader</li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Main Card -->
+    <div class="modern-card p-4">
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Username" />
+
+            <!-- Account identity badge -->
+            <div class="d-flex align-items-center p-3 bg-light rounded border mb-4">
+                <div class="avatar-initials avatar-color-0 me-3 fs-5" style="width: 46px; height: 46px;">
+                    @(string.IsNullOrWhiteSpace(Model.FullName) ? "U" : Model.FullName.Substring(0, 1).ToUpper())
+                </div>
+                <div>
+                    <div class="fw-bold fs-6 text-dark">@Model.FullName</div>
+                    <div class="small text-muted font-monospace"><i class="bi bi-at"></i>@Model.Username</div>
+                </div>
+                <div class="ms-auto">
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="openQuickResetPassword('@Model.Username', '@Model.FullName')">
+                        <i class="bi bi-key me-1"></i> Cấp lại mật khẩu
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-section-title">
+                <i class="bi bi-person-badge text-primary"></i> Thông tin cá nhân
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold small required" asp-for="FullName">@AccountModelResource.Fullname</label>
+                    <input class="form-control" asp-for="FullName" placeholder="@AccountSharedResource.Placeholder_FullName" />
+                    <span asp-validation-for="FullName" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold small required" asp-for="Email">Email</label>
+                    <input class="form-control" asp-for="Email" placeholder="@AccountSharedResource.Placeholder_Email" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="form-section-title mt-4">
+                <i class="bi bi-shield-check text-primary"></i> Quyền hạn hệ thống
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold small required" asp-for="Role">@AccountModelResource.Role</label>
+                    <select asp-for="Role" asp-items="Model.AccountRoleSelectList" class="form-select system-select2">
+                    </select>
+                    <span asp-validation-for="Role" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                <a asp-action="Index" class="btn btn-outline-secondary px-3">
+                    <i class="bi bi-arrow-left me-1"></i> @SharedResource.Button_GoBack
+                </a>
+                <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                    <i class="bi bi-floppy me-1"></i> @SharedResource.Button_SaveChanges
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
-<form asp-action="Edit" method="post">
-    @Html.AntiForgeryToken()
+<!-- Modal Đổi Mật Khẩu Nhanh -->
+<div class="modal fade" id="modalQuickResetPassword" tabindex="-1" aria-labelledby="modalQuickResetPasswordLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-primary text-white py-3">
+                <h5 class="modal-title fs-6 d-flex align-items-center" id="modalQuickResetPasswordLabel">
+                    <i class="bi bi-key-fill me-2 fs-5"></i> Cấp lại mật khẩu tài khoản
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <input type="hidden" id="quickResetModal_Username" />
+                
+                <div class="alert alert-info py-2 px-3 small d-flex align-items-center mb-3">
+                    <i class="bi bi-person-check fs-5 me-2"></i>
+                    <div>Đang cấp lại mật khẩu cho: <strong id="quickResetModal_DisplayUser"></strong></div>
+                </div>
 
-    <input type="hidden" asp-for="Username" />
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-secondary">Mật khẩu mới</label>
+                    <div class="input-group">
+                        <input type="text" id="quickResetModal_NewPassword" class="form-control" placeholder="Nhập mật khẩu mới..." autocomplete="off" />
+                        <button class="btn btn-outline-secondary" type="button" onclick="const p = generateRandomPassword(8); $('#quickResetModal_NewPassword').val(p); $('#quickResetModal_ConfirmPassword').val(p); $('#quickResetModal_CopyText').text('Tài khoản: ' + $('#quickResetModal_Username').val() + ' | Mật khẩu: ' + p);" title="Sinh mật khẩu ngẫu nhiên">
+                            <i class="bi bi-dice-5 me-1"></i> Sinh ngẫu nhiên
+                        </button>
+                    </div>
+                </div>
 
-    <div class="form-group mt-4">
-        <label class="form-label">@AccountModelResource.Username: <strong>@Model.Username</strong></label>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-secondary">Xác nhận mật khẩu</label>
+                    <input type="text" id="quickResetModal_ConfirmPassword" class="form-control" placeholder="Nhập lại mật khẩu..." autocomplete="off" />
+                </div>
+
+                <div class="p-3 bg-light rounded border d-flex justify-content-between align-items-center mb-1">
+                    <div class="small text-truncate me-2">
+                        <i class="bi bi-clipboard me-1 text-muted"></i>
+                        <span id="quickResetModal_CopyText" class="text-secondary font-monospace"></span>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-dark text-nowrap" onclick="copyToClipboard($('#quickResetModal_CopyText').text(), 'Đã sao chép tài khoản & mật khẩu!')">
+                        <i class="bi bi-copy me-1"></i> Sao chép
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer bg-light py-2">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+                <button type="button" id="quickResetModal_BtnSubmit" class="btn btn-sm btn-primary" onclick="submitQuickResetPassword()">
+                    <i class="bi bi-check2-circle me-1"></i> Lưu mật khẩu mới
+                </button>
+            </div>
+        </div>
     </div>
-    <hr />
-
-    <div class="form-group mb-2">
-        <label class="form-label required" asp-for="FullName">@AccountModelResource.Fullname</label>
-        <input class="form-control" asp-for="FullName" class="form-control" placeholder="@AccountSharedResource.Placeholder_FullName" />
-        <span asp-validation-for="FullName" class="text-danger"></span>
-    </div>
-
-    <div class="form-group mb-2">
-        <label class="form-label required" asp-for="Email">Email</label>
-        <input class="form-control" asp-for="Email" class="form-control" placeholder="@AccountSharedResource.Placeholder_Email" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-
-    <div class="form-group mb-2">
-        <label class="form-label" asp-for="Role">@AccountModelResource.Role</label>
-        <select asp-for="Role" asp-items="Model.AccountRoleSelectList" class="form-select system-select2">
-        </select>
-        <span asp-validation-for="Role" class="text-danger"></span>
-    </div>
-    <div class="form-group mt-3 text-end">
-        <a asp-action="Index" class="btn btn-secondary me-2">
-            <i class="bi bi-arrow-return-left me-2"></i>@SharedResource.Button_GoBack
-        </a>
-        <button type="submit" class="btn btn-primary">
-            <i class="bi bi-floppy me-2"></i>@SharedResource.Button_SaveChanges
-        </button>
-    </div>
-    
-</form>
-
-@section Scripts {
-    <script>
-           function togglePassword() {
-            const input = document.getElementById('Password');
-            input.type = input.type === 'password' ? 'text' : 'password';
-        }
-    </script>
-}
+</div>

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -188,5 +188,53 @@
   </data>
   <data name="Warning" xml:space="preserve">
     <value>Cảnh báo</value>
+  </data>
+  <data name="NoDataFound" xml:space="preserve">
+    <value>Không tìm thấy nhân viên nào phù hợp với bộ lọc</value>
+  </data>
+  <data name="Modal_DeleteTitle" xml:space="preserve">
+    <value>Xác nhận xóa hồ sơ nhân viên</value>
+  </data>
+  <data name="Modal_DeleteWarning" xml:space="preserve">
+    <value>Bạn đang chuẩn bị xóa vĩnh viễn hồ sơ nhân viên:</value>
+  </data>
+  <data name="Modal_DeleteCannotUndo" xml:space="preserve">
+    <value>Thao tác này không thể hoàn tác. Nếu chỉ muốn tạm khóa, hãy dùng công tắc trạng thái.</value>
+  </data>
+  <data name="Modal_DeleteConfirmBtn" xml:space="preserve">
+    <value>Xác nhận xóa</value>
+  </data>
+  <data name="Index_SubTitle" xml:space="preserve">
+    <value>Danh sách nhân sự phân bổ theo các chi nhánh cửa hàng (Thêm nhân sự mới tại Quản lý tài khoản)</value>
+  </data>
+  <data name="Column_EmployeeCode" xml:space="preserve">
+    <value>Mã nhân viên</value>
+  </data>
+  <data name="Column_Store" xml:space="preserve">
+    <value>Cửa hàng làm việc</value>
+  </data>
+  <data name="Column_JoinDate" xml:space="preserve">
+    <value>Ngày bắt đầu làm việc</value>
+  </data>
+  <data name="Edit_SectionTitle" xml:space="preserve">
+    <value>Thông tin công việc &amp; Cửa hàng</value>
+  </data>
+  <data name="Edit_ActiveLabel" xml:space="preserve">
+    <value>Đang làm việc (Kích hoạt)</value>
+  </data>
+  <data name="Edit_SubTitle" xml:space="preserve">
+    <value>Cập nhật thông tin chi nhánh cửa hàng và ngày làm việc của nhân viên</value>
+  </data>
+  <data name="Th_EmployeeName" xml:space="preserve">
+    <value>Nhân viên / Họ tên</value>
+  </data>
+  <data name="Th_EmployeeIdAccount" xml:space="preserve">
+    <value>Mã NV / Tài khoản</value>
+  </data>
+  <data name="Unassigned" xml:space="preserve">
+    <value>Chưa phân bổ</value>
+  </data>
+  <data name="NoEmail" xml:space="preserve">
+    <value>Chưa có email</value>
   </data>
 </root>

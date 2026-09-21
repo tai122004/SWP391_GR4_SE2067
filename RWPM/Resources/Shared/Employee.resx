@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -188,5 +188,53 @@
   </data>
   <data name="Warning" xml:space="preserve">
     <value>Warning</value>
+  </data>
+  <data name="NoDataFound" xml:space="preserve">
+    <value>No employees found matching the filter</value>
+  </data>
+  <data name="Modal_DeleteTitle" xml:space="preserve">
+    <value>Confirm Delete Employee Record</value>
+  </data>
+  <data name="Modal_DeleteWarning" xml:space="preserve">
+    <value>You are about to permanently delete the employee record:</value>
+  </data>
+  <data name="Modal_DeleteCannotUndo" xml:space="preserve">
+    <value>This action cannot be undone. If you only want to suspend, use the status toggle instead.</value>
+  </data>
+  <data name="Modal_DeleteConfirmBtn" xml:space="preserve">
+    <value>Confirm Delete</value>
+  </data>
+  <data name="Index_SubTitle" xml:space="preserve">
+    <value>List of employees assigned to store branches (Add new staff in Account Management)</value>
+  </data>
+  <data name="Column_EmployeeCode" xml:space="preserve">
+    <value>Employee Code</value>
+  </data>
+  <data name="Column_Store" xml:space="preserve">
+    <value>Store</value>
+  </data>
+  <data name="Column_JoinDate" xml:space="preserve">
+    <value>Start Date</value>
+  </data>
+  <data name="Edit_SectionTitle" xml:space="preserve">
+    <value>Job Information &amp; Store</value>
+  </data>
+  <data name="Edit_ActiveLabel" xml:space="preserve">
+    <value>Currently working (Active)</value>
+  </data>
+  <data name="Edit_SubTitle" xml:space="preserve">
+    <value>Update branch and working date information for the employee</value>
+  </data>
+  <data name="Th_EmployeeName" xml:space="preserve">
+    <value>Employee / Full Name</value>
+  </data>
+  <data name="Th_EmployeeIdAccount" xml:space="preserve">
+    <value>Employee ID / Account</value>
+  </data>
+  <data name="Unassigned" xml:space="preserve">
+    <value>Unassigned</value>
+  </data>
+  <data name="NoEmail" xml:space="preserve">
+    <value>No email</value>
   </data>
 </root>

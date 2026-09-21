@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using RWPM.Common.Attributes;
@@ -18,14 +18,20 @@ namespace RWPM.Controllers
     {
         private readonly IStringLocalizer _localizer;
         private readonly IAccService _accService;
+        private readonly IStoreService _storeService;
+        private readonly IEmployeeService _employeeService;
 
         public AccController( 
             IStringLocalizer<ErrorServerDefinition> localizer,
-            IAccService accService
+            IAccService accService,
+            IStoreService storeService,
+            IEmployeeService employeeService
             )
         {
             _localizer = localizer;
             _accService = accService;
+            _storeService = storeService;
+            _employeeService = employeeService;
         }
 
         // GET: Acc
@@ -50,11 +56,14 @@ namespace RWPM.Controllers
         }
 
         [Authorize(Roles = "Admin,HR")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var storeList = await _storeService.GetSelectListAsync();
             return View(new AccCreateVM()
             {
                 AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync(),
+                StoreSelectList = storeList,
+                EmployeeCode = $"NV{DateTime.Now:yyMMddHHmm}"
             });
         }
 
@@ -63,22 +72,62 @@ namespace RWPM.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AccCreateVM viewModel)
         {
+            var isStoreRole = viewModel.Role == RWPM.Common.Enums.AccountRole.StoreManager ||
+                              viewModel.Role == RWPM.Common.Enums.AccountRole.SalesStaff ||
+                              viewModel.Role == RWPM.Common.Enums.AccountRole.PartTimeStaff;
+
+            if (isStoreRole)
+            {
+                if (!viewModel.StoreId.HasValue || viewModel.StoreId <= 0)
+                {
+                    ModelState.AddModelError(nameof(viewModel.StoreId), "Vui lòng chọn cửa hàng làm việc cho nhân viên này.");
+                }
+                if (string.IsNullOrWhiteSpace(viewModel.EmployeeCode))
+                {
+                    ModelState.AddModelError(nameof(viewModel.EmployeeCode), "Vui lòng nhập mã nhân viên.");
+                }
+            }
+
             if (!ModelState.IsValid)
             {
                 viewModel.AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync();
-
+                viewModel.StoreSelectList = await _storeService.GetSelectListAsync();
                 return View(viewModel);
             }
 
             try
             {
-                await _accService.CreateAsync(viewModel.ToEntity());
+                var createdAcc = await _accService.CreateAsync(viewModel.ToEntity());
+
+                // Nếu là vai trò nhân viên làm việc tại cửa hàng, tự động tạo luôn bản ghi Employee
+                if (isStoreRole && viewModel.StoreId.HasValue)
+                {
+                    var emp = new Employee
+                    {
+                        EmployeeCode = (viewModel.EmployeeCode ?? $"NV{DateTime.Now:yyMMddHHmm}").Trim(),
+                        Username = createdAcc.Username,
+                        StoreId = viewModel.StoreId.Value,
+                        JoinDate = viewModel.JoinDate?.Date ?? DateTime.Today,
+                        IsActive = true
+                    };
+                    await _employeeService.CreateAsync(emp);
+                }
+
                 AlertHelper.CreateSuccess(TempData);
+                TempData["CreatedAccountNotice"] = $"Đã tạo tài khoản: {createdAcc.Username} | Mật khẩu: {viewModel.Password}";
             }
             catch (ModelValidationException ex)
             {
                 AlertHelper.AddErrorMessage(TempData, ex.GetErrorString(_localizer));
                 viewModel.AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync();
+                viewModel.StoreSelectList = await _storeService.GetSelectListAsync();
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                AlertHelper.AddErrorMessage(TempData, ex.Message);
+                viewModel.AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync();
+                viewModel.StoreSelectList = await _storeService.GetSelectListAsync();
                 return View(viewModel);
             }
 
@@ -251,6 +300,39 @@ namespace RWPM.Controllers
             {
                 await _accService.UpdateActiveStatusAsync(viewModel.Username!, viewModel.IsActive!.Value);
                 return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Authorize(Roles = "Admin,HR")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> QuickResetPassword([FromBody] QuickResetPasswordVM request)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = string.Join("; ", ModelState.Values
+                                    .SelectMany(v => v.Errors)
+                                    .Select(e => e.ErrorMessage));
+                return BadRequest(errors);
+            }
+
+            try
+            {
+                await _accService.ChangePasswordForAccountAsync(new ChangePasswordAccDto
+                {
+                    Username = request.Username,
+                    NewPassword = request.NewPassword,
+                    ConfirmPassword = request.ConfirmPassword
+                });
+                return Ok(new { success = true, message = "Đổi mật khẩu thành công!" });
+            }
+            catch (ModelValidationException ex)
+            {
+                return BadRequest(ex.GetErrorString(_localizer));
             }
             catch (Exception ex)
             {
