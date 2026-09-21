@@ -13,196 +13,271 @@
 
 @Html.AntiForgeryToken()
 
-<div>
-    <div class="mb-3">
-        <h4 class="fw-semibold text-dark d-flex align-items-center">
-            <i class="bi bi-person-lines-fill me-2"></i>
-            @AccountSharedResource.Index_PageHeader
-        </h4>
-    </div>
-
-    <!-- Search form -->
-    <form asp-action="Index" method="get" class="row g-2 align-items-end mb-2">
-
-        <div class="col-md-4 col-lg-3">
-            <label class="form-label small" asp-for="Search">@AccountModelResource.Search</label>
-            <input type="text" asp-for="Search" class="form-control form-control-sm" placeholder="🔍 @AccountSharedResource.Placeholder_Search" />
+<div class="container-fluid px-0">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h4 class="fw-bold text-dark d-flex align-items-center mb-1">
+                <i class="bi bi-people-fill text-primary me-2"></i>
+                @AccountSharedResource.Index_PageHeader
+            </h4>
+            <div class="text-muted small">@AccountSharedResource.Index_SubTitle</div>
         </div>
-
-        <div class="col-md-4 col-lg-3">
-            <label class="form-label small">@SharedResource.ObjectStatus</label>
-            @{ var _isActiveVal = Model.IsActive; }
-            <select name="IsActive" class="form-select form-select-sm">
-                @if (string.IsNullOrEmpty(_isActiveVal)) {
-                    <option value="" selected>@SharedResource.ObjectStatus_Default</option>
-                } else {
-                    <option value="">@SharedResource.ObjectStatus_Default</option>
-                }
-                @if (_isActiveVal == "true") {
-                    <option value="true" selected>@SharedResource.ObjectStatus_IsActive</option>
-                } else {
-                    <option value="true">@SharedResource.ObjectStatus_IsActive</option>
-                }
-                @if (_isActiveVal == "false") {
-                    <option value="false" selected>@SharedResource.ObjectStatus_IsInactive</option>
-                } else {
-                    <option value="false">@SharedResource.ObjectStatus_IsInactive</option>
-                }
-            </select>
-        </div>
-
-        <div class="col-12">
-            <button type="submit" class="btn btn-sm btn-outline-secondary">
-                <i class="bi bi-search"></i>
-                @SharedResource.Button_Search
-            </button>
-            <a asp-action="Index" class="btn btn-sm btn-outline-danger">
-                <i class="bi bi-x-lg"></i>
-                @SharedResource.Button_Reset
-            </a>
-        </div>
-
-    </form>
-
-
-    <!-- Create Button -->
-    <div class="text-end mb-2">
-        <a asp-action="Create" class="btn btn-outline-primary btn-sm">
-            <i class="bi bi-plus-lg me-1"></i> @SharedResource.Button_Create
+        <a asp-action="Create" class="btn btn-primary btn-sm px-3 shadow-sm">
+            <i class="bi bi-person-plus-fill me-1"></i> @SharedResource.Button_Create
         </a>
     </div>
 
-    <!-- Scrollable container -->
-    <div style="max-height: 500px; overflow-y: auto;" class="shadow-sm rounded border">
-        <table class="table table-hover align-middle mb-0 table-bordered">
-            <thead class="bg-light" style="position: sticky; top: 0; z-index: 10;">
-                <tr>
-                    <th class="text-nowrap">
-                        @AccountModelResource.Username
-                    </th>
-                    <th class="text-nowrap">
-                        @AccountModelResource.Fullname
-                    </th>
-                    <th class="text-nowrap">
-                        Email
-                    </th>
-                    <th class="text-nowrap text-center">
-                        @AccountModelResource.Role
-                    </th>
-                    <th class="text-nowrap text-end">
-                        @SharedResource.CreatedDate
-                    </th>
-                    <th class="text-nowrap text-end">
-                        @AccountModelResource.LastLogin
-                    </th>
-                    <th class="text-nowrap text-center">
-                        Active
-                    </th>
-                    <th class="text-nowrap text-center">
-                        @SharedResource.Button_Action
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model.PanigationResponse.Data != null && Model.PanigationResponse.Data.Any())
-                {
-                    foreach (var category in Model.PanigationResponse.Data)
+    <!-- Thông báo khi vừa tạo tài khoản/nhân viên mới -->
+    @if (TempData["CreatedAccountNotice"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center justify-content-between p-3 mb-3 shadow-sm" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-check-circle-fill fs-4 text-success me-3"></i>
+                <div>
+            <strong>@AccountSharedResource.Notice_CreatedSuccess</strong>
+                    <div class="small mt-1 text-secondary font-monospace">@TempData["CreatedAccountNotice"]</div>
+                </div>
+            </div>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-success me-2" onclick="copyToClipboard('@TempData["CreatedAccountNotice"]', 'Đã sao chép thông tin tài khoản!')">
+                    <i class="bi bi-copy me-1"></i> Sao chép
+                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    }
+
+
+
+    <!-- Search Toolbar -->
+    <div class="modern-card p-3 mb-3">
+        <form asp-action="Index" method="get" class="row g-2 align-items-center">
+            <div class="col-md-6 col-lg-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                    <input type="text" asp-for="Search" class="form-control border-start-0 ps-0" placeholder="@AccountSharedResource.Placeholder_Search" />
+                </div>
+            </div>
+
+            <div class="col-md-4 col-lg-3">
+                <select name="IsActive" class="form-select form-select-sm">
+                    <option value="" selected="@(string.IsNullOrEmpty(Model.IsActive))">-- @SharedResource.ObjectStatus --</option>
+                    <option value="true" selected="@(Model.IsActive == "true")">@SharedResource.ObjectStatus_IsActive</option>
+                    <option value="false" selected="@(Model.IsActive == "false")">@SharedResource.ObjectStatus_IsInactive</option>
+                </select>
+            </div>
+
+            <div class="col-auto d-flex gap-2">
+                <button type="submit" class="btn btn-sm btn-primary">
+                    <i class="bi bi-funnel me-1"></i> @SharedResource.Button_Search
+                </button>
+                <a asp-action="Index" class="btn btn-sm btn-outline-secondary" title="@SharedResource.Button_Reset">
+                    <i class="bi bi-arrow-clockwise"></i> @SharedResource.Button_Reset
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modern Table Card -->
+    <div class="modern-card overflow-hidden mb-3">
+        <div class="table-responsive">
+            <table class="table modern-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>@AccountModelResource.Fullname / Email</th>
+                        <th>@AccountModelResource.Username</th>
+                        <th class="text-center">@AccountModelResource.Role</th>
+                        <th class="text-end">@SharedResource.CreatedDate</th>
+                        <th class="text-end">@AccountModelResource.LastLogin</th>
+                        <th class="text-center">@SharedResource.ObjectStatus</th>
+                        <th class="text-center">@SharedResource.Button_Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.PanigationResponse.Data != null && Model.PanigationResponse.Data.Any())
                     {
-                        var roleClass = "";
-
-                        switch (category.Role)
+                        foreach (var category in Model.PanigationResponse.Data)
                         {
-                            case AccountRole.HR:
-                                roleClass = "badge badge-pill bg-danger"; break;
-                            case AccountRole.StoreManager:
-                                roleClass = "badge badge-pill bg-success"; break;
-                            case AccountRole.SalesStaff:
-                                roleClass = "badge badge-pill bg-info"; break;
-                            case AccountRole.PartTimeStaff:
-                                roleClass = "badge badge-pill bg-secondary"; break;
-                            default:
-                                roleClass = "badge badge-pill bg-secondary"; break;
+                            var roleBadgeClass = category.Role switch
+                            {
+                                AccountRole.Admin => "bg-danger text-white",
+                                AccountRole.HR => "bg-warning text-dark",
+                                AccountRole.StoreManager => "bg-success text-white",
+                                AccountRole.SalesStaff => "bg-info text-dark",
+                                AccountRole.PartTimeStaff => "bg-secondary text-white",
+                                _ => "bg-secondary text-white"
+                            };
+
+                            var initials = "U";
+                            if (!string.IsNullOrWhiteSpace(category.FullName))
+                            {
+                                var parts = category.FullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                                if (parts.Length > 1)
+                                {
+                                    initials = $"{parts[0][0]}{parts[^1][0]}".ToUpper();
+                                }
+                                else if (parts.Length == 1 && parts[0].Length > 0)
+                                {
+                                    initials = parts[0].Substring(0, Math.Min(2, parts[0].Length)).ToUpper();
+                                }
+                            }
+                            var colorIndex = Math.Abs(category.Username.GetHashCode()) % 6;
+
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-initials avatar-color-@colorIndex me-2">@initials</div>
+                                        <div>
+                                            <div class="fw-semibold text-dark">@category.FullName</div>
+                                            <small class="text-muted"><i class="bi bi-envelope me-1"></i>@(string.IsNullOrEmpty(category.Email) ? "-" : category.Email)</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><code>@category.Username</code></td>
+                                <td class="text-center">
+                                    <span class="badge @roleBadgeClass px-2 py-1 rounded-pill">@category.Role.GetDisplayName()</span>
+                                </td>
+                                <td class="text-end small text-muted">
+                                    @category.CreatedDate.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+                                <td class="text-end small text-muted">
+                                    @(category.LastLogin?.ToString("dd/MM/yyyy HH:mm") ?? "-")
+                                </td>
+                                <td class="text-center">
+                                    <div class="form-check form-switch d-inline-block">
+                                        <input class="form-check-input active-toggle"
+                                               type="checkbox"
+                                               id="isActiveSwitch_@category.Username"
+                                               @(category.IsActive ? "checked" : "")
+                                               onchange="onToggleAccountStatus('@category.Username', this.checked)"
+                                               title="@(category.IsActive ? "Đang hoạt động" : "Đang khóa")" />
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-action-group" role="group">
+                                        <a asp-action="Edit"
+                                           asp-route-id="@category.Username"
+                                           class="btn btn-sm btn-outline-primary"
+                                           title="@SharedResource.Button_Edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-warning"
+                                                onclick="openQuickResetPassword('@category.Username', '@category.FullName')"
+                                                title="@AccountSharedResource.Modal_QuickResetTitle">
+                                            <i class="bi bi-key"></i>
+                                        </button>
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@category.Username"
+                                           class="btn btn-sm btn-outline-danger"
+                                           title="@SharedResource.Button_Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
                         }
-
+                    }
+                    else
+                    {
                         <tr>
-                            <td>@category.Username</td>
-                            <td>@category.FullName</td>
-                            <td>@category.Email</td>
-                            <td class="text-center">
-                                <span class="@roleClass">@category.Role.GetDisplayName()</span>
-                            </td>
-                            <td class="text-end">
-                                @(category.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss") )
-                            </td>
-                            <td class="text-end">
-                                @( category.LastLogin?.ToString("dd/MM/yyyy HH:mm:ss") ?? "-")
-                            </td>
-                            <td>
-                                <div class="form-check form-switch d-flex justify-content-center">
-                                    <input class="form-check-input"
-                                           type="checkbox"
-                                           id="isActiveSwitch_@category.Username"
-                                           @(category.IsActive ? "checked" : "")
-                                           onclick="onToggleStatus('@category.Username', this.checked)" />
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex justify-content-center flex-wrap gap-2 flex-md-nowrap">
-                                    <a asp-action="Edit"
-                                       asp-route-id="@category.Username"
-                                       class="btn btn-sm btn-outline-warning"
-                                       title="@SharedResource.Button_Edit">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-
-                                    <a asp-action="ChangePasswordAccount"
-                                       asp-route-id="@category.Username"
-                                       class="btn btn-sm btn-outline-primary"
-                                       title="@SharedResource.Button_ChangePassword">
-                                        <i class="bi bi-key"></i>
-                                    </a>
-
-                                    <a asp-action="Delete"
-                                       asp-route-id="@category.Username"
-                                       class="btn btn-sm btn-outline-danger"
-                                       title="@SharedResource.Button_Delete">
-                                        <i class="bi bi-trash"></i>
-									</a>
-                                </div>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary"></i>
+                                @SharedResource.NoDataFound
                             </td>
                         </tr>
                     }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="8" class="text-center text-muted py-3">
-                            <i class="bi bi-info-circle me-1"></i>
-                            @SharedResource.NoDataFound
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 
+    <!-- Pagination -->
     @await Html.PartialAsync("_PaginationPartial", Model.PanigationResponse.ToPaginationRes(new Dictionary<string, string?>() {
-        { "Search", @Model.Search },
+        { "Search", Model.Search },
         { "IsActive", Model.IsActive },
-        }))
+    }))
+</div>
+
+<!-- Modal Đổi Mật Khẩu Nhanh -->
+<div class="modal fade" id="modalQuickResetPassword"
+     data-label-account="@AccountSharedResource.Label_Account"
+     data-label-password="@AccountModelResource.Password"
+     data-toast-copied="@AccountSharedResource.Toast_CopiedAccountPassword"
+     data-err-minlen="@AccountSharedResource.Err_MinLengthPassword"
+     data-err-match="@AccountSharedResource.Err_PasswordMismatch"
+     data-text-saving="@AccountSharedResource.Saving"
+     data-toast-success="@AccountSharedResource.Toast_ResetPasswordSuccess"
+     tabindex="-1" aria-labelledby="modalQuickResetPasswordLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-primary text-white py-3">
+                <h5 class="modal-title fs-6 d-flex align-items-center" id="modalQuickResetPasswordLabel">
+                    <i class="bi bi-key-fill me-2 fs-5"></i> @AccountSharedResource.Modal_QuickResetTitle
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <input type="hidden" id="quickResetModal_Username" />
+                
+                <div class="alert alert-info py-2 px-3 small d-flex align-items-center mb-3">
+                    <i class="bi bi-person-check fs-5 me-2"></i>
+                    <div>@AccountSharedResource.Modal_QuickResetFor <strong id="quickResetModal_DisplayUser"></strong></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-secondary">@AccountSharedResource.Modal_QuickResetNewPass</label>
+                    <div class="input-group">
+                        <input type="text" id="quickResetModal_NewPassword" class="form-control" placeholder="@AccountSharedResource.Placeholder_Password" autocomplete="off" />
+                        <button class="btn btn-outline-secondary" type="button" onclick="regenerateQuickResetPassword()" title="@AccountSharedResource.Create_GeneratePassHint">
+                            <i class="bi bi-dice-5 me-1"></i> @AccountSharedResource.Button_GenerateRandom
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-secondary">@AccountSharedResource.Modal_QuickResetConfirmPass</label>
+                    <input type="text" id="quickResetModal_ConfirmPassword" class="form-control" placeholder="@AccountSharedResource.Modal_QuickResetPlaceholderConfirmPass" autocomplete="off" />
+                </div>
+
+                <div class="p-3 bg-light rounded border d-flex justify-content-between align-items-center mb-1">
+                    <div class="small text-truncate me-2">
+                        <i class="bi bi-clipboard me-1 text-muted"></i>
+                        <span id="quickResetModal_CopyText" class="text-secondary font-monospace"></span>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-dark text-nowrap" onclick="copyToClipboard($('#quickResetModal_CopyText').text(), '@AccountSharedResource.Toast_CopiedAccountPassword')">
+                        <i class="bi bi-copy me-1"></i> @AccountSharedResource.Button_Copy
+                    </button>
+                </div>
+                <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>@AccountSharedResource.Modal_QuickResetHint</small>
+            </div>
+            <div class="modal-footer bg-light py-2">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">@SharedResource.Button_Cancel</button>
+                <button type="button" id="quickResetModal_BtnSubmit" class="btn btn-sm btn-primary" onclick="submitQuickResetPassword()">
+                    <i class="bi bi-check2-circle me-1"></i> @AccountSharedResource.Modal_QuickResetSaveBtn
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts{
     <script>
-        function onToggleStatus(id, isActive) {
-            fetch('/Acc/UpdateActiveStatus/' + id, {
+        function onToggleAccountStatus(username, isActive) {
+            const token = $('input[name="__RequestVerificationToken"]').val();
+            const checkbox = document.getElementById("isActiveSwitch_" + username);
+
+            fetch('/Acc/UpdateActiveStatus/' + username, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    'RequestVerificationToken': token
                 },
                 body: JSON.stringify({
-                    username: id,
+                    username: username,
                     isActive: isActive
                 })
             })
@@ -210,12 +285,18 @@
                 if (!response.ok) {
                     return response.text().then(text => { throw new Error(text); });
                 }
+                if (typeof toastr !== 'undefined') {
+                    toastr.success(isActive ? `Đã kích hoạt tài khoản ${username}!` : `Đã tạm khóa tài khoản ${username}!`);
+                }
             })
             .catch(error => {
-                alert("Loi cap nhat trang thai: " + error.message);
-                document.getElementById("isActiveSwitch_" + id).checked = !isActive;
+                if (typeof toastr !== 'undefined') {
+                    toastr.error("Lỗi cập nhật trạng thái: " + error.message);
+                } else {
+                    alert("Lỗi cập nhật trạng thái: " + error.message);
+                }
+                if (checkbox) checkbox.checked = !isActive;
             });
         }
     </script>
-
 }

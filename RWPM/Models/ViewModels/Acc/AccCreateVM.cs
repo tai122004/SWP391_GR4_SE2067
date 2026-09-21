@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using RWPM.Common.Attributes;
 using RWPM.Common;
 using System.ComponentModel.DataAnnotations;
@@ -28,17 +28,30 @@ namespace RWPM.Models.ViewModels.Acc
         [Display(Name = "Role", ResourceType = typeof(Resources.Models.Acc))]
         [RequiredLocalization]
         [EnumDataTypeLocalization(typeof(AccountRole))]
-        public AccountRole Role { get; set; }
+        public AccountRole Role { get; set; } = AccountRole.SalesStaff;
 
-        [Display(Name = "DeptCatId", ResourceType = typeof(Resources.Models.Acc))]
-        [RequiredIntegerSelection]
         public SelectList? AccountRoleSelectList { get; set; }
 
         [RequiredLocalization]
         [EmailAddress(ErrorMessageResourceName = "EmailInvalid", ErrorMessageResourceType = typeof(Resources.Shared.Acc))]
         public string Email { get; set; } = string.Empty;
 
+        // Thông tin hồ sơ nhân viên (khi chọn các vai trò làm việc tại cửa hàng)
+        [Display(Name = "EmployeeID", ResourceType = typeof(Resources.Models.Employee))]
+        [MaxLength(20)]
+        public string? EmployeeCode { get; set; }
+
+        [Display(Name = "Store", ResourceType = typeof(Resources.Models.Employee))]
+        public int? StoreId { get; set; }
+
+        [Display(Name = "StartDate", ResourceType = typeof(Resources.Models.Employee))]
+        [DataType(DataType.Date)]
+        public DateTime? JoinDate { get; set; } = DateTime.Today;
+
+        public SelectList? StoreSelectList { get; set; }
+
         public AccCreateVM() { }
+
         public AccCreateVM(Entities.Acc entity) 
         {
             Username = entity.Username;

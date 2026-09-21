@@ -1,138 +1,180 @@
-﻿@model RWPM.Models.ViewModels.Employee.EmployeeListVM
+@model RWPM.Models.ViewModels.Employee.EmployeeListVM
 @using RWPM.Common.Helper
 @using RWPM.Resources.Shared
 @using EmployeeModelResource = RWPM.Resources.Models.Employee;
 @using EmployeeSharedResource = RWPM.Resources.Shared.Employee;
+
 @{
     ViewData["Title"] = @EmployeeSharedResource.Index_PageTitle;
 }
 
 @Html.AntiForgeryToken()
 
-<div>
+<div class="container-fluid px-0">
+    <!-- Header -->
     <div class="mb-3">
-        <h4 class="fw-semibold text-dark d-flex align-items-center">
-            <i class="bi bi-person-badge me-2"></i>
+        <h4 class="fw-bold text-dark d-flex align-items-center mb-1">
+            <i class="bi bi-person-badge-fill text-primary me-2"></i>
             @EmployeeSharedResource.Index_PageHeader
         </h4>
+        <div class="text-muted small">@EmployeeSharedResource.Index_SubTitle</div>
     </div>
 
-    <!-- Search form -->
-    <form asp-action="Index" method="get" class="row g-2 align-items-end mb-3">
-        <div class="col-md-4 col-lg-3">
-            <label class="form-label small" asp-for="Search">@EmployeeSharedResource.Search</label>
-            <input type="text" asp-for="Search" class="form-control form-control-sm" placeholder="@EmployeeSharedResource.Placeholder_Search" />
-        </div>
 
-        <div class="col-md-4 col-lg-3">
-            <label class="form-label small" asp-for="StoreId">@EmployeeModelResource.Store</label>
-            <select asp-for="StoreId" asp-items="Model.StoreSelectList" class="form-select form-select-sm">
-            </select>
-        </div>
 
-        <div class="col-md-4 col-lg-2">
-            <label class="form-label small">@EmployeeSharedResource.Status</label>
-            <select name="Status" class="form-select form-select-sm">
-                <option value="all" selected="@(Model.Status == "all")">-- @EmployeeSharedResource.Status_All --</option>
-                <option value="active" selected="@(Model.Status == "active")">@EmployeeSharedResource.Status_Active</option>
-                <option value="inactive" selected="@(Model.Status == "inactive")">@EmployeeSharedResource.Status_Inactive</option>
-            </select>
-        </div>
+    <!-- Search Toolbar -->
+    <div class="modern-card p-3 mb-3">
+        <form asp-action="Index" method="get" class="row g-2 align-items-center">
+            <div class="col-md-5 col-lg-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                    <input type="text" asp-for="Search" class="form-control border-start-0 ps-0" placeholder="@EmployeeSharedResource.Placeholder_Search" />
+                </div>
+            </div>
 
-        <div class="col-md-12 col-lg-4 d-flex gap-1">
-            <button type="submit" class="btn btn-sm btn-outline-secondary">
-                <i class="bi bi-search"></i>
-                @SharedResource.Button_Search
-            </button>
-            <a asp-action="Index" class="btn btn-sm btn-outline-danger">
-                <i class="bi bi-x-lg"></i>
-                @SharedResource.Button_Reset
-            </a>
-        </div>
-    </form>
+            <div class="col-md-3 col-lg-3">
+                <select asp-for="StoreId" asp-items="Model.StoreSelectList" class="form-select form-select-sm">
+                </select>
+            </div>
 
-    <!-- Create Button -->
-    <div class="text-end mb-2">
-        <a asp-action="Create" class="btn btn-outline-primary btn-sm">
-            <i class="bi bi-plus-lg me-1"></i> @EmployeeSharedResource.Button_Create
-        </a>
+            <div class="col-md-2 col-lg-2">
+                <select name="Status" class="form-select form-select-sm">
+                    <option value="all" selected="@(Model.Status == "all")">-- @EmployeeSharedResource.Status_All --</option>
+                    <option value="active" selected="@(Model.Status == "active")">@EmployeeSharedResource.Status_Active</option>
+                    <option value="inactive" selected="@(Model.Status == "inactive")">@EmployeeSharedResource.Status_Inactive</option>
+                </select>
+            </div>
+
+            <div class="col-auto d-flex gap-2">
+                <button type="submit" class="btn btn-sm btn-primary">
+                    <i class="bi bi-funnel me-1"></i> @SharedResource.Button_Search
+                </button>
+                <a asp-action="Index" class="btn btn-sm btn-outline-secondary" title="@SharedResource.Button_Reset">
+                    <i class="bi bi-arrow-clockwise"></i> @SharedResource.Button_Reset
+                </a>
+            </div>
+        </form>
     </div>
 
-    <!-- Table Container -->
-    <div style="max-height: 550px; overflow-y: auto;" class="shadow-sm rounded border">
-        <table class="table table-hover align-middle mb-0 table-bordered">
-            <thead class="bg-light" style="position: sticky; top: 0; z-index: 10;">
-                <tr>
-                    <th class="text-nowrap">@EmployeeModelResource.EmployeeID</th>
-                    <th class="text-nowrap">@EmployeeModelResource.EmployeeFullName</th>
-                    <th class="text-nowrap">@EmployeeModelResource.EmployeeAcc</th>
-                    <th class="text-nowrap">@EmployeeModelResource.EmployeeRole</th>
-                    <th class="text-nowrap">@EmployeeModelResource.Store</th>
-                    <th class="text-nowrap text-center">@EmployeeModelResource.StartDate</th>
-                    <th class="text-nowrap text-center">@EmployeeModelResource.Status</th>
-                    <th class="text-nowrap text-center">@SharedResource.Button_Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model.PanigationResponse.Data != null && Model.PanigationResponse.Data.Any())
-                {
-                    foreach (var emp in Model.PanigationResponse.Data)
+    <!-- Table Card -->
+    <div class="modern-card overflow-hidden mb-3">
+        <div class="table-responsive">
+            <table class="table modern-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>@EmployeeSharedResource.Th_EmployeeName</th>
+                        <th>@EmployeeSharedResource.Th_EmployeeIdAccount</th>
+                        <th>@EmployeeModelResource.EmployeeRole</th>
+                        <th>@EmployeeModelResource.Store</th>
+                        <th class="text-center">@EmployeeModelResource.StartDate</th>
+                        <th class="text-center">@EmployeeModelResource.Status</th>
+                        <th class="text-center">@SharedResource.Button_Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.PanigationResponse.Data != null && Model.PanigationResponse.Data.Any())
                     {
-                        <tr id="row-emp-@emp.EmployeeId">
-                            <td class="fw-semibold text-primary">@emp.EmployeeCode</td>
-                            <td class="fw-medium">@(emp.Account?.FullName ?? "-")</td>
-                            <td><code>@emp.Username</code></td>
-                            <td>
-                                @if (emp.Account != null)
+                        foreach (var emp in Model.PanigationResponse.Data)
+                        {
+                            var fullName = emp.Account?.FullName ?? "-";
+                            var email = emp.Account?.Email;
+                            var initials = "NV";
+                            if (!string.IsNullOrWhiteSpace(fullName) && fullName != "-")
+                            {
+                                var parts = fullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                                if (parts.Length > 1)
                                 {
-                                    <span class="badge bg-info text-dark">@UIHelper.GetDisplayName(emp.Account.Role)</span>
+                                    initials = $"{parts[0][0]}{parts[^1][0]}".ToUpper();
                                 }
-                                else
+                                else if (parts.Length == 1 && parts[0].Length > 0)
                                 {
-                                    <span>-</span>
+                                    initials = parts[0].Substring(0, Math.Min(2, parts[0].Length)).ToUpper();
                                 }
-                            </td>
-                            <td>
-                                @if (emp.Store != null)
-                                {
-                                    <span>@emp.Store.StoreName <small class="text-muted">(@emp.Store.StoreCode)</small></span>
-                                }
-                                else
-                                {
-                                    <span>-</span>
-                                }
-                            </td>
-                            <td class="text-center">@emp.JoinDate.ToString("dd/MM/yyyy")</td>
-                            <td class="text-center">
-                                <div class="form-check form-switch d-flex justify-content-center">
-                                    <input class="form-check-input active-toggle"
-                                           type="checkbox"
-                                           data-id="@emp.EmployeeId"
-                                           @(emp.IsActive ? "checked" : "") />
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                <a asp-action="Edit" asp-route-id="@emp.EmployeeId" class="btn btn-sm btn-outline-primary me-1" title="@EmployeeSharedResource.Button_Edit">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-                                <a asp-action="Delete" asp-route-id="@emp.EmployeeId" class="btn btn-sm btn-outline-danger" title="@EmployeeSharedResource.Button_Delete">
-                                    <i class="bi bi-trash"></i>
-                                </a>
+                            }
+                            var colorIndex = Math.Abs(emp.EmployeeId.GetHashCode()) % 6;
+
+                            <tr id="row-emp-@emp.EmployeeId">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-initials avatar-color-@colorIndex me-2">@initials</div>
+                                        <div>
+                                            <div class="fw-semibold text-dark">@fullName</div>
+                                            <small class="text-muted"><i class="bi bi-envelope me-1"></i>@(string.IsNullOrEmpty(email) ? EmployeeSharedResource.NoEmail : email)</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-primary font-monospace">@emp.EmployeeCode</div>
+                                    <small class="text-muted font-monospace"><i class="bi bi-at"></i>@emp.Username</small>
+                                </td>
+                                <td>
+                                    @if (emp.Account != null)
+                                    {
+                                        <span class="badge bg-light text-dark border px-2 py-1">@UIHelper.GetDisplayName(emp.Account.Role)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (emp.Store != null)
+                                    {
+                                        <div class="fw-medium text-dark">
+                                            <i class="bi bi-shop me-1 text-secondary"></i>@emp.Store.StoreName
+                                        </div>
+                                        <small class="text-muted font-monospace">@emp.Store.StoreCode</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">@EmployeeSharedResource.Unassigned</span>
+                                    }
+                                </td>
+                                <td class="text-center small text-muted">
+                                    @emp.JoinDate.ToString("dd/MM/yyyy")
+                                </td>
+                                <td class="text-center">
+                                    <div class="form-check form-switch d-inline-block">
+                                        <input class="form-check-input active-toggle"
+                                               type="checkbox"
+                                               data-id="@emp.EmployeeId"
+                                               data-name="@fullName"
+                                               @(emp.IsActive ? "checked" : "")
+                                               title="@(emp.IsActive ? "Đang làm việc" : "Đang tạm khóa")" />
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-action-group" role="group">
+                                        <a asp-action="Edit"
+                                           asp-route-id="@emp.EmployeeId"
+                                           class="btn btn-sm btn-outline-primary"
+                                           title="@EmployeeSharedResource.Button_Edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger"
+                                                onclick="openDeleteEmployeeModal('@emp.EmployeeId', '@fullName', '@emp.EmployeeCode')"
+                                                title="@EmployeeSharedResource.Button_Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary"></i>
+                                @EmployeeSharedResource.NoDataFound
                             </td>
                         </tr>
                     }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="8" class="text-center text-muted py-4">
-                            <i class="bi bi-inbox fs-3 d-block mb-2"></i>
-                            Không tìm thấy nhân viên nào
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Pagination -->
@@ -143,12 +185,45 @@
     }))
 </div>
 
+<!-- Modal Xác Nhận Xóa Nhân Viên -->
+<div class="modal fade" id="modalDeleteEmployee" tabindex="-1" aria-labelledby="modalDeleteEmployeeLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-danger text-white py-3">
+                <h5 class="modal-title fs-6 d-flex align-items-center" id="modalDeleteEmployeeLabel">
+                    <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i> @EmployeeSharedResource.Modal_DeleteTitle
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <input type="hidden" id="deleteEmp_Id" />
+                <div class="alert alert-warning py-2 px-3 small d-flex align-items-start mb-3">
+                    <i class="bi bi-exclamation-circle-fill text-warning me-2 mt-1 fs-5"></i>
+                    <div>
+                        @EmployeeSharedResource.Modal_DeleteWarning
+                        <div class="mt-1 fw-bold text-dark"><span id="deleteEmp_Name"></span> &nbsp;<code id="deleteEmp_Code" class="text-danger"></code></div>
+                        <div class="text-danger mt-1"><i class="bi bi-info-circle me-1"></i>@EmployeeSharedResource.Modal_DeleteCannotUndo</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light py-2">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">@SharedResource.Button_Cancel</button>
+                <button type="button" id="deleteEmp_BtnConfirm" class="btn btn-sm btn-danger" onclick="confirmDeleteEmployee()">
+                    <i class="bi bi-trash me-1"></i> @EmployeeSharedResource.Modal_DeleteConfirmBtn
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @section Scripts {
     <script>
         $(document).ready(function () {
             $('.active-toggle').change(function () {
                 var checkbox = $(this);
                 var employeeId = checkbox.data('id');
+                var employeeName = checkbox.data('name');
                 var isActive = checkbox.is(':checked');
 
                 $.ajax({
@@ -163,15 +238,51 @@
                         isActive: isActive
                     }),
                     success: function () {
-                        toastr.success('Cap nhat trang thai thanh cong!');
+                        toastr.success(isActive ? `Đã kích hoạt hồ sơ: ${employeeName}` : `Đã tạm khóa hồ sơ: ${employeeName}`);
                     },
                     error: function (xhr) {
                         checkbox.prop('checked', !isActive);
-                        toastr.error('Cap nhat that bai: ' + (xhr.responseText || 'Da co loi xay ra.'));
+                        toastr.error('Cập nhật thất bại: ' + (xhr.responseText || 'Đã có lỗi xảy ra.'));
                     }
                 });
             });
         });
+
+        // Mở modal xác nhận xóa nhân viên
+        function openDeleteEmployeeModal(employeeId, fullName, employeeCode) {
+            $('#deleteEmp_Id').val(employeeId);
+            $('#deleteEmp_Name').text(fullName || 'Nhân viên #' + employeeId);
+            $('#deleteEmp_Code').text(employeeCode || '');
+            const modalEl = document.getElementById('modalDeleteEmployee');
+            if (modalEl) {
+                new bootstrap.Modal(modalEl).show();
+            }
+        }
+
+        // Submit xóa nhân viên qua form ẩn
+        function confirmDeleteEmployee() {
+            const employeeId = $('#deleteEmp_Id').val();
+            const token = $('input[name="__RequestVerificationToken"]').val();
+            const btn = $('#deleteEmp_BtnConfirm');
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Đang xóa...');
+
+            $.ajax({
+                url: '/Employee/DeleteConfirmed',
+                type: 'POST',
+                data: { employeeId: employeeId, __RequestVerificationToken: token },
+                success: function () {
+                    $('#row-emp-' + employeeId).fadeOut(300, function () { $(this).remove(); });
+                    const modalEl = document.getElementById('modalDeleteEmployee');
+                    if (modalEl) { bootstrap.Modal.getInstance(modalEl)?.hide(); }
+                    toastr.success('Đã xóa hồ sơ nhân viên thành công!');
+                },
+                error: function (xhr) {
+                    toastr.error('Xóa thất bại: ' + (xhr.responseText || 'Đã có lỗi xảy ra.'));
+                },
+                complete: function () {
+                    btn.prop('disabled', false).html('<i class="bi bi-trash me-1"></i> Xác nhận xóa');
+                }
+            });
+        }
     </script>
 }
-
