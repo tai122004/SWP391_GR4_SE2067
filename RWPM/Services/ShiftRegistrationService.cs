@@ -37,6 +37,23 @@ namespace RWPM.Services
             return await query.ToListAsync();
         }
 
+        public async Task<List<ShiftRegistration>> GetRequestsAsync(DateTime start, DateTime end, RegistrationStatus? status = null)
+        {
+            var query = _context.ShiftRegistration
+                .Include(x => x.Employee)
+                .ThenInclude(e => e.Account)
+                .Include(x => x.Shift)
+                .Include(x => x.Store)
+                .Where(x => x.WorkDate >= start && x.WorkDate <= end);
+
+            if (status.HasValue)
+            {
+                query = query.Where(x => x.Status == status.Value);
+            }
+
+            return await query.OrderByDescending(x => x.WorkDate).ToListAsync();
+        }
+
         public async Task<ShiftRegistration?> GetByIdAsync(int id)
         {
             return await _context.ShiftRegistration

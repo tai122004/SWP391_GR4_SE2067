@@ -1,0 +1,550 @@
+@using RWPM.Common.Enums
+@model List<RWPM.Models.Entities.ShiftRegistration>
+
+@{
+    ViewData["Title"] = "Yêu cầu và Phê duyệt";
+    var currentStatus = ViewBag.CurrentStatus as int?;
+    int pendingCount = ViewBag.PendingCount ?? 0;
+    int approvedCount = ViewBag.ApprovedCount ?? 0;
+    int rejectedCount = ViewBag.RejectedCount ?? 0;
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0 text-dark fw-bold">Yêu cầu và Phê duyệt</h4>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-success mb-0 bg-white"><i class="fas fa-file-export"></i> Xuất file</button>
+            <button class="btn btn-success mb-0" data-bs-toggle="modal" data-bs-target="#createRequestModal"><i class="fas fa-plus"></i> Tạo yêu cầu</button>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="d-flex gap-2 mb-3">
+                <button class="btn btn-light mb-0 text-muted px-3"><i class="fas fa-sliders-h"></i></button>
+                <div class="dropdown">
+                    <button class="btn btn-light mb-0 dropdown-toggle text-dark" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-list"></i> Tất cả
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Tất cả</a></li>
+                    </ul>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-light mb-0 dropdown-toggle text-dark" type="button" data-bs-toggle="dropdown">
+                        Theo ngày gửi
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Theo ngày gửi</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mb-3 position-relative">
+                <input type="text" class="form-control form-control-sm text-center bg-white" id="dateRangePicker" value="@ViewBag.StartDate ~ @ViewBag.EndDate" readonly style="cursor: pointer;">
+                <i class="far fa-calendar-alt position-absolute text-muted" style="right: 10px; top: 8px;"></i>
+            </div>
+            
+            <div class="mb-3 position-relative">
+                <i class="fas fa-search position-absolute text-muted" style="left: 10px; top: 10px;"></i>
+                <input type="text" class="form-control bg-white ps-4 border-0 shadow-sm" placeholder="Tìm kiếm" style="border-radius: 8px;">
+            </div>
+
+            <div class="nav flex-column nav-pills request-tabs">
+                <a class="nav-link @(currentStatus == 0 ? "active" : "") d-flex justify-content-between align-items-center" href="?status=0&start=@ViewBag.StartDate&end=@ViewBag.EndDate">
+                    <span><i class="fas fa-caret-right me-2 text-muted"></i> Yêu cầu</span>
+                    <span class="@(currentStatus == 0 ? "text-success fw-bold" : "text-muted")">@pendingCount</span>
+                </a>
+                <a class="nav-link @(currentStatus == 1 ? "active" : "") d-flex justify-content-between align-items-center" href="?status=1&start=@ViewBag.StartDate&end=@ViewBag.EndDate">
+                    <span><i class="fas fa-caret-right me-2 text-muted"></i> Chấp thuận</span>
+                    <span class="@(currentStatus == 1 ? "text-success fw-bold" : "text-success")">@approvedCount</span>
+                </a>
+                <a class="nav-link @(currentStatus == 2 ? "active" : "") d-flex justify-content-between align-items-center" href="?status=2&start=@ViewBag.StartDate&end=@ViewBag.EndDate">
+                    <span><i class="fas fa-caret-right me-2 text-muted"></i> Từ chối</span>
+                    <span class="@(currentStatus == 2 ? "text-danger fw-bold" : "text-danger")">@rejectedCount</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="row h-100">
+                <!-- Master List (Left Column) -->
+                <div class="col-md-5 border-end pe-0" style="height: 600px; overflow-y: auto;">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pe-2">
+                        <div></div>
+                        <div class="form-check text-muted small">
+                            <input class="form-check-input" type="checkbox" id="selectAll">
+                            <label class="form-check-label" for="selectAll">Chọn nhiều</label>
+                        </div>
+                    </div>
+
+                    @if (Model == null || !Model.Any())
+                    {
+                        <div class="text-center text-muted mt-5">
+                            <i class="fas fa-inbox fs-2 mb-2" style="color: #dee2e6;"></i>
+                            <p>Không có dữ liệu</p>
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <!-- Item Card -->
+                            <div class="card mb-2 request-card border shadow-sm me-2" style="cursor: pointer; border-radius: 10px;" data-id="@item.ShiftRegistrationId">
+                                <div class="card-body p-3 position-relative">
+                                    <div class="form-check position-absolute" style="top: 15px; right: 15px;">
+                                        <input class="form-check-input" type="checkbox">
+                                    </div>
+                                    <h6 class="fw-bold mb-1 text-dark">Đăng ký ca làm</h6>
+                                    <div class="small mb-1 text-dark"><span class="text-muted">Ca làm:</span> @item.Shift?.ShiftName</div>
+                                    <div class="small mb-1 text-dark"><span class="text-muted">Ngày:</span> @item.WorkDate.ToString("dd/MM/yyyy")</div>
+                                    <div class="small mb-2 text-dark"><span class="text-muted">Người phê duyệt:</span> <span class="text-primary">Admin</span></div>
+                                    <div class="d-flex justify-content-between align-items-end mt-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; font-size: 12px;">
+                                                @((item.Employee?.Account?.FullName ?? item.Employee?.Username ?? "U").Substring(0, 1).ToUpper())
+                                            </div>
+                                            <span class="text-primary fw-bold small">@(item.Employee?.Account?.FullName ?? item.Employee?.Username)</span>
+                                        </div>
+                                        <div class="text-muted" style="font-size: 11px;">
+                                            @item.CreatedDate.ToString("dd/MM/yyyy HH:mm")
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <!-- Detail View (Right Column) -->
+                <div class="col-md-7 ps-4" id="requestDetailPane" style="display: none;">
+                    
+                    <div class="d-flex gap-2 mb-4">
+                        @if (ViewBag.IsManager)
+                        {
+                            <button class="btn btn-success px-4 action-btn" id="btnApproveDetail" onclick="updateSelectedStatus(1)">Chấp thuận</button>
+                            <button class="btn btn-outline-danger px-4 action-btn" id="btnRejectDetail" onclick="updateSelectedStatus(2)">Từ chối</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-outline-danger px-4 action-btn" id="btnDeleteDetail" onclick="deleteSelectedRequest()">Xóa</button>
+                        }
+                    </div>
+                    
+                    <h5 class="fw-bold text-dark mb-4">Đăng ký ca làm</h5>
+
+                    <div class="bg-light p-4 rounded-3 mb-3">
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <div class="text-muted small mb-1">Người yêu cầu:</div>
+                                <div class="text-primary fw-bold" id="detailEmployeeName"></div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-muted small mb-1">Ngày tạo:</div>
+                                <div class="text-dark fw-bold" id="detailCreatedDate"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="text-muted small mb-1">Phòng ban:</div>
+                                <div class="text-dark fw-bold">Nhân sự</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-light p-4 rounded-3">
+                        <div class="row mb-4">
+                            <div class="col-4">
+                                <div class="text-muted small mb-1">Mã đơn</div>
+                                <div class="text-dark fw-bold" id="detailCode"></div>
+                            </div>
+                            <div class="col-4">
+                                <div class="text-muted small mb-1">Người tạo</div>
+                                <div class="text-dark fw-bold" id="detailCreator"></div>
+                            </div>
+                            <div class="col-4">
+                                <div class="text-muted small mb-1">Ca làm</div>
+                                <div class="text-dark fw-bold" id="detailShiftName"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="text-muted small mb-1">Ngày</div>
+                                <div class="text-dark fw-bold" id="detailWorkDate"></div>
+                            </div>
+                            <div class="col-4">
+                                <div class="text-muted small mb-1">Lý do</div>
+                                <div class="text-dark fw-bold" id="detailNote">-</div>
+                            </div>
+                            <div class="col-4">
+                                <div class="text-muted small mb-1">Trạng thái</div>
+                                <div id="detailStatus"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Tạo Yêu Cầu (Main) -->
+<div class="modal fade" id="createRequestModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="border-radius: 12px; border: none;">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold text-dark fs-5">Tạo yêu cầu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-2 px-4 pb-4">
+                
+                <div class="mb-4">
+                    <h6 class="text-primary fw-bold mb-3" style="font-size: 13px;">Lượt chấm công</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-briefcase text-success fs-5"></i><span>Công tác/Ra ngoài</span></div></div>
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-user-clock text-success fs-5"></i><span>Đi muộn về sớm</span></div></div>
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-bed text-success fs-5"></i><span>Nghỉ phép</span></div></div>
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-history text-success fs-5"></i><span>Làm thêm giờ</span></div></div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="text-primary fw-bold mb-3" style="font-size: 13px;">Ca làm</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="far fa-calendar-alt text-warning fs-5"></i><span>Thay đổi giờ vào/ra</span></div></div>
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-hamburger text-warning fs-5"></i><span>Suất ăn</span></div></div>
+                        
+                        <div class="col-md-4">
+                            <!-- Nút mở modal Đăng ký ca -->
+                            <div class="request-type-btn active-btn" onclick="openShiftModal()">
+                                <i class="far fa-calendar-plus text-warning fs-5"></i>
+                                <span>Đăng ký ca làm</span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-exchange-alt text-warning fs-5"></i><span>Đổi ca làm</span></div></div>
+                    </div>
+                </div>
+
+                <div>
+                    <h6 class="text-primary fw-bold mb-3" style="font-size: 13px;">Tài chính</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-money-bill-wave text-primary fs-5"></i><span>Tạm ứng lương</span></div></div>
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-hand-holding-usd text-primary fs-5"></i><span>Tạm ứng - Hoàn ứng</span></div></div>
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-file-invoice-dollar text-primary fs-5"></i><span>Phiếu đề nghị</span></div></div>
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="far fa-credit-card text-primary fs-5"></i><span>Thanh toán</span></div></div>
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-receipt text-primary fs-5"></i><span>Thanh toán chi phí</span></div></div>
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-shopping-cart text-primary fs-5"></i><span>Mua hàng</span></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Đăng Ký Ca Làm (Nested) -->
+<div class="modal fade" id="createShiftRequestModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+            <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
+                <h5 class="modal-title fw-bold text-dark fs-5">Đăng ký ca làm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="shiftRequestForm">
+                    @if (ViewBag.IsManager)
+                    {
+                        <div class="row align-items-center mb-3">
+                            <div class="col-3 text-dark fw-bold small">Nhân viên <span class="text-danger">*</span></div>
+                            <div class="col-9">
+                                <select class="form-select border-success text-success" id="reqEmployeeId" required style="border-radius: 8px;">
+                                    <option value="">Chọn nhân viên</option>
+                                    @if (ViewBag.Employees != null)
+                                    {
+                                        foreach (var emp in ViewBag.Employees)
+                                        {
+                                            <option value="@emp.EmployeeId">@emp.EmployeeCode - @(emp.Account?.FullName ?? emp.Username)</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Cần gán 0 để backend tự lấy theo User.Identity nếu cần -->
+                        <input type="hidden" id="reqEmployeeId" value="0" /> 
+                    }
+
+                    <div class="row align-items-center mb-3">
+                        <div class="col-3 text-dark fw-bold small">Ngày <span class="text-danger">*</span></div>
+                        <div class="col-9 position-relative">
+                            <input type="date" class="form-control" id="reqWorkDate" required style="border-radius: 8px; color: #495057;">
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center mb-4">
+                        <div class="col-3 text-dark fw-bold small">Chọn ca <span class="text-danger">*</span></div>
+                        <div class="col-9">
+                            <select class="form-select" id="reqShiftId" required style="border-radius: 8px; color: #495057; background-color: #f8f9fa;">
+                                <option value="">Chọn ca làm</option>
+                                @if (ViewBag.Shifts != null)
+                                {
+                                    foreach (var shift in ViewBag.Shifts)
+                                    {
+                                        <option value="@shift.ShiftId">@shift.ShiftName (@shift.StartTime.ToString(@"hh\:mm") - @shift.EndTime.ToString(@"hh\:mm"))</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-start mb-4">
+                        <div class="col-3 text-dark fw-bold small mt-2">Ghi chú</div>
+                        <div class="col-9">
+                            <textarea class="form-control" id="reqNote" rows="2" placeholder="Lý do" style="border-radius: 8px; background-color: #f8f9fa;"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-success px-4" style="border-radius: 8px;">Tạo mới</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="antiForgeryForm">
+    @Html.AntiForgeryToken()
+</form>
+
+<style>
+    .request-tabs .nav-link {
+        color: #495057;
+        border-radius: 8px;
+        margin-bottom: 4px;
+        padding: 10px 16px;
+    }
+    .request-tabs .nav-link.active {
+        background-color: #d1e7dd;
+        color: #00b14f;
+    }
+    .request-type-btn {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        background-color: #fff;
+        transition: all 0.2s;
+        height: 100%;
+        color: #343a40;
+    }
+    .active-btn {
+        cursor: pointer;
+    }
+    .active-btn:hover {
+        border-color: #00b14f;
+        box-shadow: 0 4px 12px rgba(0, 177, 79, 0.1);
+        background-color: #f8fffb;
+    }
+    .disabled-btn {
+        opacity: 0.6;
+        cursor: not-allowed;
+        background-color: #f8f9fa;
+    }
+    .request-card:hover {
+        border-color: #00b14f !important;
+        box-shadow: 0 2px 8px rgba(0, 177, 79, 0.15) !important;
+    }
+    .request-card.active-card {
+        border-color: #00b14f !important;
+        background-color: #f8fffb !important;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        // Data populated from model
+        var requestsData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Select(x => new {
+            id = x.ShiftRegistrationId,
+            employeeName = x.Employee?.Account?.FullName ?? x.Employee?.Username ?? "N/A",
+            createdDateStr = x.CreatedDate.ToString("dd/MM/yyyy HH:mm"),
+            shiftName = x.Shift?.ShiftName ?? "",
+            workDateStr = x.WorkDate.ToString("dd/MM/yyyy"),
+            status = (int)x.Status,
+            code = "YCCL" + x.CreatedDate.ToString("yyMMdd") + "-" + x.ShiftRegistrationId.ToString("D3"),
+            note = x.Note
+        })));
+
+        let currentSelectedId = 0;
+
+        $(document).ready(function() {
+            // Date Picker setup
+            if ($.fn.daterangepicker) {
+                $('#dateRangePicker').daterangepicker({
+                    locale: { format: 'YYYY-MM-DD' },
+                    startDate: '@ViewBag.StartDate',
+                    endDate: '@ViewBag.EndDate'
+                }, function(start, end, label) {
+                    var url = new URL(window.location.href);
+                    url.searchParams.set('start', start.format('YYYY-MM-DD'));
+                    url.searchParams.set('end', end.format('YYYY-MM-DD'));
+                    window.location.href = url.toString();
+                });
+            }
+
+            // Card click logic
+            $('.request-card').click(function(e) {
+                // If clicked on checkbox, don't trigger card selection unless needed
+                if($(e.target).is('input[type="checkbox"]')) {
+                    return;
+                }
+                $('.request-card').removeClass('active-card').css('background-color', '#fff');
+                $(this).addClass('active-card');
+                
+                var id = $(this).data('id');
+                showDetail(id);
+            });
+
+            // Select first card by default if any
+            if(requestsData.length > 0) {
+                $('.request-card').first().click();
+            }
+
+            // Form Submit for new Shift Request
+            $('#shiftRequestForm').submit(function(e) {
+                e.preventDefault();
+                var empId = $('#reqEmployeeId').val();
+                if(!empId) empId = "0"; // Handle default or backend logic if needed
+
+                var data = {
+                    EmployeeId: empId,
+                    ShiftId: $('#reqShiftId').val(),
+                    WorkDate: $('#reqWorkDate').val(),
+                    Note: $('#reqNote').val()
+                };
+
+                $.ajax({
+                    url: '/ShiftRegistration/Create',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    headers: {
+                        'RequestVerificationToken': $('#antiForgeryForm input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            $('#createShiftRequestModal').modal('hide');
+                            toastr.success('Tạo ca làm thành công!');
+                            setTimeout(() => window.location.reload(), 1000);
+                        }
+                    },
+                    error: function(err) {
+                        toastr.error('Lỗi: ' + (err.responseJSON?.message || err.responseText || 'Lỗi hệ thống'));
+                    }
+                });
+            });
+        });
+
+        function showDetail(id) {
+            var req = requestsData.find(x => x.id === id);
+            if(req) {
+                currentSelectedId = id;
+                $('#detailEmployeeName').text(req.employeeName);
+                $('#detailCreatedDate').text(req.createdDateStr);
+                $('#detailCode').text(req.code);
+                $('#detailCreator').text(req.employeeName);
+                $('#detailShiftName').text(req.shiftName);
+                $('#detailWorkDate').text(req.workDateStr);
+                $('#detailNote').text(req.note || '-');
+                
+                var statusHtml = '';
+                if(req.status === 0) statusHtml = '<span class="badge bg-warning text-dark">Chờ duyệt</span>';
+                else if(req.status === 1) statusHtml = '<span class="badge bg-success">Đã duyệt</span>';
+                else statusHtml = '<span class="badge bg-danger">Từ chối</span>';
+                $('#detailStatus').html(statusHtml);
+
+                if(req.status === 0) {
+                    $('.action-btn').show();
+                } else {
+                    $('.action-btn').hide();
+                }
+
+                $('#requestDetailPane').fadeIn(200);
+            }
+        }
+
+        function openShiftModal() {
+            // Close first modal
+            $('#createRequestModal').modal('hide');
+            // Reset form
+            $('#shiftRequestForm')[0].reset();
+            // Open second modal
+            setTimeout(() => {
+                var modal = new bootstrap.Modal(document.getElementById('createShiftRequestModal'));
+                modal.show();
+            }, 300); // slight delay to allow first modal to fade out
+        }
+
+        function updateSelectedStatus(status) {
+            if(currentSelectedId === 0) return;
+            var actionStr = status === 1 ? 'duyệt' : 'từ chối';
+            if(!confirm(`Bạn có chắc chắn muốn ${actionStr} yêu cầu này?`)) return;
+
+            $.ajax({
+                url: '/Request/UpdateStatus',
+                type: 'POST',
+                data: {
+                    id: currentSelectedId,
+                    status: status
+                },
+                headers: {
+                    'RequestVerificationToken': $('#antiForgeryForm input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(res) {
+                    if (res.success) {
+                        toastr.success('Cập nhật trạng thái thành công');
+                        setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                        toastr.error('Lỗi: ' + res.message);
+                    }
+                },
+                error: function(err) {
+                    toastr.error('Lỗi hệ thống');
+                }
+            });
+        }
+
+        function deleteSelectedRequest() {
+            // For employee deleting their pending request. 
+            // In ShiftRegistrationController, there might be a delete endpoint. Let's assume /ShiftRegistration/Delete
+            if(currentSelectedId === 0) return;
+            if(!confirm(`Bạn có chắc chắn muốn xóa yêu cầu này?`)) return;
+
+            $.ajax({
+                url: '/ShiftRegistration/Delete',
+                type: 'POST',
+                data: { id: currentSelectedId },
+                headers: {
+                    'RequestVerificationToken': $('#antiForgeryForm input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(res) {
+                    if (res.success) {
+                        toastr.success('Xóa yêu cầu thành công');
+                        setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                        toastr.error('Lỗi: ' + res.message);
+                    }
+                },
+                error: function(err) {
+                    toastr.error('Lỗi hệ thống');
+                }
+            });
+        }
+    </script>
+}

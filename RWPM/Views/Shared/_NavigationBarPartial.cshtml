@@ -61,6 +61,11 @@
                         <i class="bi bi-calendar-check me-1"></i> @ShiftRegistrationResource.ShiftRegistration
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" asp-area="" asp-controller="Request" asp-action="Index">
+                        <i class="bi bi-envelope-open me-1"></i> Yêu cầu
+                    </a>
+                </li>
             </ul>
 
             @await Html.PartialAsync("_LanguageSelector")
