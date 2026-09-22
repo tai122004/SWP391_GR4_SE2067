@@ -30,4 +30,19 @@
   <data name="StoreName" xml:space="preserve">
     <value>Tên cửa hàng</value>
   </data>
+  <data name="MinAllowedDistanceMeters" xml:space="preserve">
+    <value>Khoảng cách tối thiểu (mét)</value>
+  </data>
+  <data name="MinDistanceHelp" xml:space="preserve">
+    <value>Nhập &gt; 0 để bật kiểm tra khoảng cách tối thiểu &amp; chống Fake GPS.</value>
+  </data>
+  <data name="AllowedRadiusMeters" xml:space="preserve">
+    <value>Bán kính tối đa chấm công (mét)</value>
+  </data>
+  <data name="Latitude" xml:space="preserve">
+    <value>Vĩ độ (Latitude)</value>
+  </data>
+  <data name="Longitude" xml:space="preserve">
+    <value>Kinh độ (Longitude)</value>
+  </data>
 </root>

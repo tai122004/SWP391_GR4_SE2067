@@ -53,14 +53,14 @@ namespace RWPM.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CheckIn(int shiftId)
+        public async Task<IActionResult> CheckIn(int shiftId, double? userLatitude = null, double? userLongitude = null)
         {
             var username = User.Identity?.Name;
             if (string.IsNullOrEmpty(username)) return RedirectToAction("Login", "Auth");
 
             try
             {
-                await _attendanceService.CheckInAsync(username, shiftId);
+                await _attendanceService.CheckInAsync(username, shiftId, userLatitude, userLongitude);
                 TempData["SuccessMessage"] = SharedResource.ResourceManager.GetString("Attendance_CheckInSuccess");
             }
             catch (Exception ex)
@@ -72,14 +72,14 @@ namespace RWPM.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CheckOut()
+        public async Task<IActionResult> CheckOut(double? userLatitude = null, double? userLongitude = null)
         {
             var username = User.Identity?.Name;
             if (string.IsNullOrEmpty(username)) return RedirectToAction("Login", "Auth");
 
             try
             {
-                await _attendanceService.CheckOutAsync(username);
+                await _attendanceService.CheckOutAsync(username, userLatitude, userLongitude);
                 TempData["SuccessMessage"] = SharedResource.ResourceManager.GetString("Attendance_CheckOutSuccess");
             }
             catch (Exception ex)

@@ -1,4 +1,4 @@
-﻿using RWPM.Models.Common;
+using RWPM.Models.Common;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -20,6 +20,14 @@ public class Store : AuditableEntity, IActivatable
 
     [MaxLength(20)]
     public string Phone { get; set; } = string.Empty;
+
+    public double? Latitude { get; set; }
+
+    public double? Longitude { get; set; }
+
+    public int MinAllowedDistanceMeters { get; set; } = 0;
+
+    public int AllowedRadiusMeters { get; set; } = 100;
 
     public bool IsActive { get; set; } = true;
 }

@@ -62,6 +62,7 @@
                     <th class="text-nowrap">@StoreModelResource.StoreName</th>
                     <th class="text-nowrap">@StoreModelResource.Address</th>
                     <th class="text-nowrap">@StoreModelResource.Phone</th>
+                    <th class="text-nowrap text-center"><i class="bi bi-geo-alt"></i> Định vị (Kinh/Vĩ - Bán kính)</th>
                     <th class="text-nowrap text-end">@SharedResource.CreatedDate</th>
                     <th class="text-nowrap text-center">@StoreModelResource.IsActive</th>
                     <th class="text-nowrap text-center">@SharedResource.Button_Action</th>
@@ -77,6 +78,34 @@
                             <td>@store.StoreName</td>
                             <td>@(string.IsNullOrWhiteSpace(store.Address) ? "-" : store.Address)</td>
                             <td>@(string.IsNullOrWhiteSpace(store.Phone) ? "-" : store.Phone)</td>
+                            <td class="text-center small">
+                                @if (store.Latitude.HasValue && store.Longitude.HasValue)
+                                {
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle mb-1">
+                                        <i class="bi bi-geo-alt-fill me-1"></i> @store.Latitude.Value.ToString("F4"), @store.Longitude.Value.ToString("F4")
+                                    </span>
+                                    <br />
+                                    <span class="text-muted">
+                                        <i class="bi bi-broadcast me-1"></i> Phạm vi: 
+                                        <strong>
+                                            @if (store.MinAllowedDistanceMeters > 0)
+                                            {
+                                                <span>@store.MinAllowedDistanceMeters m - @store.AllowedRadiusMeters m</span>
+                                            }
+                                            else
+                                            {
+                                                <span>&le; @(store.AllowedRadiusMeters > 0 ? store.AllowedRadiusMeters : 100) m</span>
+                                            }
+                                        </strong>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle">
+                                        <i class="bi bi-exclamation-triangle me-1"></i> Chưa định vị
+                                    </span>
+                                }
+                            </td>
                             <td class="text-end">@store.CreatedDate.ToString("dd/MM/yyyy HH:mm")</td>
                             <td class="text-center">
                                 <div class="form-check form-switch d-flex justify-content-center">
@@ -100,7 +129,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="7" class="text-center text-muted py-4">
+                        <td colspan="8" class="text-center text-muted py-4">
                             <i class="bi bi-inbox fs-3 d-block mb-2"></i>
                             @SharedResource.NoDataFound
                         </td>
@@ -137,11 +166,11 @@
                         isActive: isActive
                     }),
                     success: function () {
-                        toastr.success('Cập nhật trạng thái thành công!');
+                        toastr.success('@StoreSharedResource.StatusUpdateSuccess');
                     },
                     error: function (xhr) {
                         checkbox.prop('checked', !isActive);
-                        toastr.error('Cập nhật thất bại: ' + (xhr.responseText || 'Đã có lỗi xảy ra.'));
+                        toastr.error('@StoreSharedResource.StatusUpdateFailed ' + (xhr.responseText || ''));
                     }
                 });
             });

@@ -30,4 +30,19 @@
   <data name="StoreName" xml:space="preserve">
     <value>Store Name</value>
   </data>
+  <data name="MinAllowedDistanceMeters" xml:space="preserve">
+    <value>Min Attendance Distance (m)</value>
+  </data>
+  <data name="MinDistanceHelp" xml:space="preserve">
+    <value>Enter &gt; 0 to enable minimum distance check &amp; anti-fake GPS.</value>
+  </data>
+  <data name="AllowedRadiusMeters" xml:space="preserve">
+    <value>Max Allowed Radius (m)</value>
+  </data>
+  <data name="Latitude" xml:space="preserve">
+    <value>Latitude</value>
+  </data>
+  <data name="Longitude" xml:space="preserve">
+    <value>Longitude</value>
+  </data>
 </root>

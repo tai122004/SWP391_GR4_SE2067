@@ -177,6 +177,9 @@
   <data name="RegularExpression_PasswordRegex" xml:space="preserve">
     <value>{0} phải có ít nhất 8 ký tự, gồm ít nhất 1 chữ hoa, 1 chữ thường và 1 chữ số.</value>
   </data>
+  <data name="RegularExpression_DigitsOnly" xml:space="preserve">
+    <value>{0} chỉ được nhập các chữ số (0-9).</value>
+  </data>
   <data name="EnumInvalid" xml:space="preserve">
     <value>{0} có giá trị không hợp lệ.</value>
   </data>

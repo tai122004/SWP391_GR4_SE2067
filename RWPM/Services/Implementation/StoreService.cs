@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using RWPM.Common;
 using RWPM.Common.Exceptions;
 using RWPM.Common.Helper;
 using RWPM.Common.Models;
 using RWPM.Infrastructure.Data;
 using RWPM.Models.ViewModels.Store;
+using RWPM.Resources.Shared;
 using RWPM.Services.Abstraction;
 
 namespace RWPM.Services.Implementation
@@ -14,11 +16,16 @@ namespace RWPM.Services.Implementation
     {
         private readonly DefaultDatabaseContext _ctx;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IStringLocalizer<Store> _localizer;
 
-        public StoreService(DefaultDatabaseContext ctx, IHttpContextAccessor httpContextAccessor)
+        public StoreService(
+            DefaultDatabaseContext ctx,
+            IHttpContextAccessor httpContextAccessor,
+            IStringLocalizer<Store> localizer)
         {
             _ctx = ctx;
             _httpContextAccessor = httpContextAccessor;
+            _localizer = localizer;
         }
 
         public async Task<global::Store?> GetByIdAsync(int storeId, QueryOptions<global::Store>? options = null)
@@ -33,20 +40,22 @@ namespace RWPM.Services.Implementation
             var store = await GetByIdAsync(storeId, options);
             if (store == null)
             {
-                throw new KeyNotFoundException($"Không tìm thấy cửa hàng với ID {storeId}.");
+                throw new ModelValidationException("Store_NotExists", $"Không tìm thấy cửa hàng với ID {storeId}.");
             }
             return store;
         }
 
-        public async Task<SelectList> GetSelectListAsync()
+        public async Task<SelectList> GetSelectListAsync(string? defaultOption = null)
         {
+            var defaultDisplay = defaultOption ?? _localizer["Dropdown_SelectStore"].Value;
+            if (string.IsNullOrWhiteSpace(defaultDisplay) || defaultDisplay == "Dropdown_SelectStore")
+            {
+                defaultDisplay = "-- Chọn cửa hàng --";
+            }
+
             var data = new List<object>
             {
-                new 
-                { 
-                    Id = 0,
-                    Display = Resources.Shared.SharedResource.Dropdown_SelectStore
-                }
+                new { Id = 0, Display = defaultDisplay }
             };
 
             var stores = await _ctx.Store.AsNoTracking()
@@ -130,6 +139,10 @@ namespace RWPM.Services.Implementation
             existingStore.StoreName = entity.StoreName;
             existingStore.Address = entity.Address?.Trim() ?? string.Empty;
             existingStore.Phone = entity.Phone?.Trim() ?? string.Empty;
+            existingStore.Latitude = entity.Latitude;
+            existingStore.Longitude = entity.Longitude;
+            existingStore.MinAllowedDistanceMeters = entity.MinAllowedDistanceMeters;
+            existingStore.AllowedRadiusMeters = entity.AllowedRadiusMeters;
             existingStore.IsActive = entity.IsActive;
             existingStore.UpdatedDate = DateTime.Now;
             existingStore.UpdatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor);
@@ -140,7 +153,19 @@ namespace RWPM.Services.Implementation
 
         public async Task DeleteAsync(global::Store entity)
         {
-            var store = await GetRequiredByIdAsync(entity.StoreId);
+            var store = await GetRequiredByIdAsync(entity.StoreId, new QueryOptions<global::Store> { NoTracking = false });
+
+            var hasEmployees = await _ctx.Employee.AnyAsync(e => e.StoreId == entity.StoreId);
+            if (hasEmployees)
+            {
+                throw new ModelValidationException("Store_Delete_HaveEmployeeUse", $"Không thể xóa cửa hàng '{store.StoreName}' vì đang có nhân viên thuộc cửa hàng này.");
+            }
+
+            var hasShiftRegs = await _ctx.ShiftRegistration.AnyAsync(s => s.StoreId == entity.StoreId);
+            if (hasShiftRegs)
+            {
+                throw new ModelValidationException("Store_Delete_HaveShiftRegUse", $"Không thể xóa cửa hàng '{store.StoreName}' vì đã có dữ liệu đăng ký ca thuộc cửa hàng này.");
+            }
             _ctx.Store.Remove(store);
             await _ctx.SaveChangesAsync();
         }

@@ -76,5 +76,35 @@ namespace RWPM.Resources.Models {
                 return ResourceManager.GetString("StoreName", resourceCulture);
             }
         }
+        
+        public static string MinAllowedDistanceMeters {
+            get {
+                return ResourceManager.GetString("MinAllowedDistanceMeters", resourceCulture);
+            }
+        }
+        
+        public static string MinDistanceHelp {
+            get {
+                return ResourceManager.GetString("MinDistanceHelp", resourceCulture);
+            }
+        }
+        
+        public static string AllowedRadiusMeters {
+            get {
+                return ResourceManager.GetString("AllowedRadiusMeters", resourceCulture);
+            }
+        }
+        
+        public static string Latitude {
+            get {
+                return ResourceManager.GetString("Latitude", resourceCulture);
+            }
+        }
+        
+        public static string Longitude {
+            get {
+                return ResourceManager.GetString("Longitude", resourceCulture);
+            }
+        }
     }
 }

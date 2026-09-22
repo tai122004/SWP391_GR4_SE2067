@@ -124,5 +124,95 @@ namespace RWPM.Resources.Shared {
                 return ResourceManager.GetString("Placeholder_StoreName", resourceCulture);
             }
         }
+        
+        public static string StatusUpdateSuccess {
+            get {
+                return ResourceManager.GetString("StatusUpdateSuccess", resourceCulture);
+            }
+        }
+        
+        public static string StatusUpdateFailed {
+            get {
+                return ResourceManager.GetString("StatusUpdateFailed", resourceCulture);
+            }
+        }
+        
+        public static string Dropdown_SelectStore {
+            get {
+                return ResourceManager.GetString("Dropdown_SelectStore", resourceCulture);
+            }
+        }
+        
+        public static string GeoHeader {
+            get {
+                return ResourceManager.GetString("GeoHeader", resourceCulture);
+            }
+        }
+        
+        public static string Placeholder_MapSearch {
+            get {
+                return ResourceManager.GetString("Placeholder_MapSearch", resourceCulture);
+            }
+        }
+        
+        public static string Btn_SearchAddress {
+            get {
+                return ResourceManager.GetString("Btn_SearchAddress", resourceCulture);
+            }
+        }
+        
+        public static string Label_SuggestedLocations {
+            get {
+                return ResourceManager.GetString("Label_SuggestedLocations", resourceCulture);
+            }
+        }
+        
+        public static string Instruction_MapHelp {
+            get {
+                return ResourceManager.GetString("Instruction_MapHelp", resourceCulture);
+            }
+        }
+        
+        public static string Map_GoogleStreets {
+            get {
+                return ResourceManager.GetString("Map_GoogleStreets", resourceCulture);
+            }
+        }
+        
+        public static string Map_GoogleSatellite {
+            get {
+                return ResourceManager.GetString("Map_GoogleSatellite", resourceCulture);
+            }
+        }
+        
+        public static string Map_OSM {
+            get {
+                return ResourceManager.GetString("Map_OSM", resourceCulture);
+            }
+        }
+        
+        public static string Search_Searching {
+            get {
+                return ResourceManager.GetString("Search_Searching", resourceCulture);
+            }
+        }
+        
+        public static string Search_EmptyAlert {
+            get {
+                return ResourceManager.GetString("Search_EmptyAlert", resourceCulture);
+            }
+        }
+        
+        public static string Search_NotFoundAlert {
+            get {
+                return ResourceManager.GetString("Search_NotFoundAlert", resourceCulture);
+            }
+        }
+        
+        public static string Search_ErrorAlert {
+            get {
+                return ResourceManager.GetString("Search_ErrorAlert", resourceCulture);
+            }
+        }
     }
 }

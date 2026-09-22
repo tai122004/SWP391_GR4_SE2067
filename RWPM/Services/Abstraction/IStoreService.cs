@@ -8,7 +8,7 @@ namespace RWPM.Services.Abstraction
     {
         Task<global::Store?> GetByIdAsync(int storeId, QueryOptions<global::Store>? options = null);
         Task<global::Store> GetRequiredByIdAsync(int storeId, QueryOptions<global::Store>? options = null);
-        Task<SelectList> GetSelectListAsync();
+        Task<SelectList> GetSelectListAsync(string? defaultOption = null);
         Task<List<global::Store>> GetAllAsync(QueryOptions<global::Store>? options = null);
         Task<PaginationRes<global::Store>> SearchAsync(StoreSearch searchObject, QueryOptions<global::Store>? options = null);
         Task<global::Store> CreateAsync(global::Store entity);

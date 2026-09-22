@@ -54,4 +54,49 @@
   <data name="Placeholder_StoreName" xml:space="preserve">
     <value>Enter store name (e.g. Store District 1)</value>
   </data>
+  <data name="StatusUpdateSuccess" xml:space="preserve">
+    <value>Status updated successfully!</value>
+  </data>
+  <data name="StatusUpdateFailed" xml:space="preserve">
+    <value>Update status failed:</value>
+  </data>
+  <data name="Dropdown_SelectStore" xml:space="preserve">
+    <value>--- Select store ---</value>
+  </data>
+  <data name="GeoHeader" xml:space="preserve">
+    <value>Branch Geolocation &amp; Attendance Distance</value>
+  </data>
+  <data name="Placeholder_MapSearch" xml:space="preserve">
+    <value>🔍 Enter city / district / street name (e.g. Hanoi, 50 Hoang Quoc Viet...)</value>
+  </data>
+  <data name="Btn_SearchAddress" xml:space="preserve">
+    <value>Search address</value>
+  </data>
+  <data name="Label_SuggestedLocations" xml:space="preserve">
+    <value>Suggested locations:</value>
+  </data>
+  <data name="Instruction_MapHelp" xml:space="preserve">
+    <value>Enter address then click 'Search address', select suggested location or drag marker/click directly on map.</value>
+  </data>
+  <data name="Map_GoogleStreets" xml:space="preserve">
+    <value>🗺️ Google Maps</value>
+  </data>
+  <data name="Map_GoogleSatellite" xml:space="preserve">
+    <value>🛰️ Google Satellite</value>
+  </data>
+  <data name="Map_OSM" xml:space="preserve">
+    <value>🌍 OpenStreetMap</value>
+  </data>
+  <data name="Search_Searching" xml:space="preserve">
+    <value>Searching...</value>
+  </data>
+  <data name="Search_EmptyAlert" xml:space="preserve">
+    <value>Please enter a location or address to search!</value>
+  </data>
+  <data name="Search_NotFoundAlert" xml:space="preserve">
+    <value>Could not find location '{0}'. Please select one of the suggested location buttons below!</value>
+  </data>
+  <data name="Search_ErrorAlert" xml:space="preserve">
+    <value>Unable to search address: {0}\nYou can click directly on the map or select 'Suggested location'.</value>
+  </data>
 </root>

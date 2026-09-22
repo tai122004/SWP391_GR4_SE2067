@@ -54,4 +54,49 @@
   <data name="Placeholder_StoreName" xml:space="preserve">
     <value>Nhập tên cửa hàng (VD: Cửa hàng Quận 1)</value>
   </data>
+  <data name="StatusUpdateSuccess" xml:space="preserve">
+    <value>Cập nhật trạng thái thành công!</value>
+  </data>
+  <data name="StatusUpdateFailed" xml:space="preserve">
+    <value>Cập nhật trạng thái thất bại:</value>
+  </data>
+  <data name="Dropdown_SelectStore" xml:space="preserve">
+    <value>--- Chọn cửa hàng ---</value>
+  </data>
+  <data name="GeoHeader" xml:space="preserve">
+    <value>Định Vị Chi Nhánh &amp; Khoảng Cách Chấm Công</value>
+  </data>
+  <data name="Placeholder_MapSearch" xml:space="preserve">
+    <value>🔍 Nhập tên thành phố / quận huyện / tên đường (VD: Hà Nội, 50 Hoàng Quốc Việt...)</value>
+  </data>
+  <data name="Btn_SearchAddress" xml:space="preserve">
+    <value>Tìm địa chỉ</value>
+  </data>
+  <data name="Label_SuggestedLocations" xml:space="preserve">
+    <value>Vị trí gợi ý:</value>
+  </data>
+  <data name="Instruction_MapHelp" xml:space="preserve">
+    <value>Nhập địa chỉ bấm 'Tìm địa chỉ', chọn vị trí gợi ý hoặc kéo ghim/click trực tiếp trên bản đồ.</value>
+  </data>
+  <data name="Map_GoogleStreets" xml:space="preserve">
+    <value>🗺️ Bản đồ Google</value>
+  </data>
+  <data name="Map_GoogleSatellite" xml:space="preserve">
+    <value>🛰️ Vệ tinh Google</value>
+  </data>
+  <data name="Map_OSM" xml:space="preserve">
+    <value>🌍 OpenStreetMap</value>
+  </data>
+  <data name="Search_Searching" xml:space="preserve">
+    <value>Đang tìm...</value>
+  </data>
+  <data name="Search_EmptyAlert" xml:space="preserve">
+    <value>Vui lòng nhập tên địa điểm hoặc địa chỉ để tìm kiếm!</value>
+  </data>
+  <data name="Search_NotFoundAlert" xml:space="preserve">
+    <value>Không tìm thấy địa điểm '{0}'. Vui lòng chọn một trong các nút vị trí gợi ý ở bên dưới!</value>
+  </data>
+  <data name="Search_ErrorAlert" xml:space="preserve">
+    <value>Không thể tìm kiếm địa chỉ: {0}\nBạn có thể click trực tiếp trên bản đồ hoặc chọn nút 'Vị trí gợi ý'.</value>
+  </data>
 </root>

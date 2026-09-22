@@ -177,6 +177,9 @@
   <data name="RegularExpression_PasswordRegex" xml:space="preserve">
     <value>{0} must be at least 8 characters long, including at least 1 uppercase letter, 1 lowercase letter, and 1 number.</value>
   </data>
+  <data name="RegularExpression_DigitsOnly" xml:space="preserve">
+    <value>{0} must contain only digits (0-9).</value>
+  </data>
   <data name="EnumInvalid" xml:space="preserve">
     <value>{0} has an invalid value.</value>
   </data>

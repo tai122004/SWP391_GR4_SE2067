@@ -8,6 +8,22 @@
     ViewData["Title"] = StoreSharedResource.Create_PageTitle;
 }
 
+<style>
+    .leaflet-container img {
+        max-width: none !important;
+    }
+    .search-suggestions-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 1050;
+        max-height: 250px;
+        overflow-y: auto;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+</style>
+
 <div class="d-flex justify-content-between align-items-center mb-3 border-4 border-primary border-start rounded-start ps-2">
     <h4 class="mb-0">
         <i class="bi bi-shop me-2"></i> @StoreSharedResource.Create_PageHeader
@@ -42,14 +58,66 @@
 
     <div class="form-group mb-3">
         <label class="form-label" asp-for="Address">@StoreModelResource.Address</label>
-        <input class="form-control" asp-for="Address" placeholder="@StoreSharedResource.Placeholder_Address" autocomplete="off" />
+        <input class="form-control" asp-for="Address" id="storeAddress" placeholder="@StoreSharedResource.Placeholder_Address" autocomplete="off" />
         <span asp-validation-for="Address" class="text-danger"></span>
     </div>
 
     <div class="form-group mb-3">
         <label class="form-label" asp-for="Phone">@StoreModelResource.Phone</label>
-        <input class="form-control" asp-for="Phone" placeholder="@StoreSharedResource.Placeholder_Phone" autocomplete="off" />
+        <input class="form-control" asp-for="Phone" type="tel" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="@StoreSharedResource.Placeholder_Phone" autocomplete="off" />
         <span asp-validation-for="Phone" class="text-danger"></span>
+    </div>
+
+    <!-- Hidden inputs for store coordinates (automatically set via map picker) -->
+    <input type="hidden" asp-for="Latitude" id="storeLat" />
+    <input type="hidden" asp-for="Longitude" id="storeLng" />
+
+    <!-- Định vị Chi nhánh & Bán kính Chấm công -->
+    <div class="card mb-3 border-info">
+        <div class="card-header bg-info bg-opacity-10 fw-semibold text-info-emphasis">
+            <i class="bi bi-geo-alt-fill me-1"></i> @StoreSharedResource.GeoHeader
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" asp-for="MinAllowedDistanceMeters">@StoreModelResource.MinAllowedDistanceMeters</label>
+                    <input class="form-control" asp-for="MinAllowedDistanceMeters" id="storeMinDistance" placeholder="0" type="number" min="0" max="10000" />
+                    <small class="text-muted">@StoreModelResource.MinDistanceHelp</small>
+                    <span asp-validation-for="MinAllowedDistanceMeters" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label required" asp-for="AllowedRadiusMeters">@StoreModelResource.AllowedRadiusMeters</label>
+                    <input class="form-control" asp-for="AllowedRadiusMeters" id="storeRadius" placeholder="100" type="number" min="10" max="10000" />
+                    <span asp-validation-for="AllowedRadiusMeters" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row bg-body-tertiary p-2 rounded mb-2 border align-items-center position-relative">
+                <div class="col-12 position-relative">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-primary text-white"><i class="bi bi-search"></i></span>
+                        <input type="text" id="txtAddressSearch" class="form-control" placeholder="@StoreSharedResource.Placeholder_MapSearch" autocomplete="off" />
+                        <button type="button" id="btnSearchAddress" class="btn btn-primary">
+                            <i class="bi bi-geo-alt-fill me-1"></i> @StoreSharedResource.Btn_SearchAddress
+                        </button>
+                    </div>
+                    <div id="searchSuggestionsList" class="list-group search-suggestions-dropdown d-none"></div>
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center gap-1 mb-2">
+                <span class="badge bg-secondary-subtle text-secondary border me-1"><i class="bi bi-lightning-fill text-warning me-1"></i>@StoreSharedResource.Label_SuggestedLocations</span>
+                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="21.0285" data-lng="105.8542">Hà Nội</button>
+                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="21.0465" data-lng="105.7942">Hoàng Quốc Việt (HN)</button>
+                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="21.0130" data-lng="105.5268">Thạch Thất / Hòa Lạc</button>
+                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="10.7769" data-lng="106.7009">TP. Hồ Chí Minh</button>
+                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="16.0544" data-lng="108.2022">Đà Nẵng</button>
+            </div>
+
+            <small class="text-muted d-block mb-2"><i class="bi bi-info-circle me-1"></i> @StoreSharedResource.Instruction_MapHelp</small>
+
+            <div id="storeMap" style="height: 400px; z-index: 1;" class="rounded border shadow-sm"></div>
+        </div>
     </div>
 
     <div class="form-check form-switch mb-3">
@@ -69,4 +137,274 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var defaultLat = 21.025142;
+            var defaultLng = 105.553973;
+
+            var latInput = document.getElementById("storeLat");
+            var lngInput = document.getElementById("storeLng");
+            var mainAddressInput = document.getElementById("storeAddress");
+            var minDistInput = document.getElementById("storeMinDistance");
+            var radiusInput = document.getElementById("storeRadius");
+            var searchInput = document.getElementById("txtAddressSearch");
+            var btnSearch = document.getElementById("btnSearchAddress");
+            var suggestionsList = document.getElementById("searchSuggestionsList");
+
+            function parseCoord(val, defaultVal) {
+                if (val === null || val === undefined || val === '') return defaultVal;
+                if (typeof val === 'number') return val;
+                var str = String(val).replace(',', '.').trim();
+                var num = parseFloat(str);
+                return isNaN(num) ? defaultVal : num;
+            }
+
+            function syncAddressText(text) {
+                if (!text) return;
+                var cleanText = text.trim();
+                if (cleanText.length > 250) cleanText = cleanText.substring(0, 250);
+                if (mainAddressInput) {
+                    mainAddressInput.value = cleanText;
+                }
+                if (searchInput && searchInput.value !== cleanText) {
+                    searchInput.value = cleanText;
+                }
+            }
+
+            // Real-time 2-way typing sync between Address input and Search input
+            if (searchInput) {
+                searchInput.addEventListener("input", function () {
+                    if (mainAddressInput) mainAddressInput.value = this.value;
+                });
+            }
+            if (mainAddressInput) {
+                mainAddressInput.addEventListener("input", function () {
+                    if (searchInput) searchInput.value = this.value;
+                });
+                if (mainAddressInput.value && searchInput) {
+                    searchInput.value = mainAddressInput.value;
+                }
+            }
+
+            var initialLat = parseCoord(latInput ? latInput.value : null, defaultLat);
+            var initialLng = parseCoord(lngInput ? lngInput.value : null, defaultLng);
+            var initialMinDist = parseInt(minDistInput.value) || 0;
+            var initialRadius = parseInt(radiusInput.value) || 100;
+
+            // Ensure hidden lat/lng inputs have values on initial load
+            if (latInput && !latInput.value) latInput.value = initialLat.toFixed(6);
+            if (lngInput && !lngInput.value) lngInput.value = initialLng.toFixed(6);
+
+            // Google Maps Tile Layers
+            var googleStreets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                maxZoom: 20,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                attribution: '&copy; Google Maps'
+            });
+
+            var googleSat = L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+                maxZoom: 20,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                attribution: '&copy; Google Maps Satellite'
+            });
+
+            var osmLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap'
+            });
+
+            var map = L.map('storeMap', {
+                center: [initialLat, initialLng],
+                zoom: 15,
+                layers: [googleStreets]
+            });
+
+            var baseMaps = {
+                "@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Map_GoogleStreets))": googleStreets,
+                "@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Map_GoogleSatellite))": googleSat,
+                "@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Map_OSM))": osmLayer
+            };
+
+            L.control.layers(baseMaps).addTo(map);
+
+            setTimeout(function () {
+                map.invalidateSize();
+            }, 300);
+
+            window.addEventListener('resize', function () {
+                map.invalidateSize();
+            });
+
+            var marker = L.marker([initialLat, initialLng], { draggable: true }).addTo(map);
+
+            var minCircle = L.circle([initialLat, initialLng], {
+                color: '#dc3545',
+                dashArray: '6, 6',
+                fillColor: '#dc3545',
+                fillOpacity: 0.15,
+                radius: initialMinDist
+            }).addTo(map);
+
+            var outerCircle = L.circle([initialLat, initialLng], {
+                color: '#0d6efd',
+                fillColor: '#0d6efd',
+                fillOpacity: 0.1,
+                radius: initialRadius
+            }).addTo(map);
+
+            function updateMap(lat, lng) {
+                lat = parseCoord(lat, defaultLat);
+                lng = parseCoord(lng, defaultLng);
+
+                marker.setLatLng([lat, lng]);
+                minCircle.setLatLng([lat, lng]);
+                outerCircle.setLatLng([lat, lng]);
+                map.panTo([lat, lng]);
+
+                if (latInput) latInput.value = lat.toFixed(6);
+                if (lngInput) lngInput.value = lng.toFixed(6);
+            }
+
+            function reverseGeocode(lat, lng) {
+                var url = "/Store/ReverseGeocode?lat=" + lat + "&lng=" + lng;
+                fetch(url)
+                    .then(function (res) { return res.json(); })
+                    .then(function (data) {
+                        if (data && data.address) {
+                            syncAddressText(data.address);
+                        }
+                    })
+                    .catch(function () {});
+            }
+
+            function updateRadius() {
+                var minD = parseInt(minDistInput.value) || 0;
+                var maxD = parseInt(radiusInput.value) || 100;
+
+                minCircle.setRadius(minD);
+                outerCircle.setRadius(maxD);
+            }
+
+            marker.on('dragend', function (e) {
+                var position = marker.getLatLng();
+                updateMap(position.lat, position.lng);
+                reverseGeocode(position.lat, position.lng);
+            });
+
+            map.on('click', function (e) {
+                updateMap(e.latlng.lat, e.latlng.lng);
+                reverseGeocode(e.latlng.lat, e.latlng.lng);
+            });
+
+            if (latInput) latInput.addEventListener('change', function () { updateMap(latInput.value, lngInput.value); });
+            if (lngInput) lngInput.addEventListener('change', function () { updateMap(latInput.value, lngInput.value); });
+            minDistInput.addEventListener('input', updateRadius);
+            radiusInput.addEventListener('input', updateRadius);
+
+            // Quick location buttons
+            document.querySelectorAll(".btn-quick-loc").forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    var lat = parseFloat(this.getAttribute("data-lat"));
+                    var lng = parseFloat(this.getAttribute("data-lng"));
+                    updateMap(lat, lng);
+                    map.setZoom(16);
+                    syncAddressText(this.innerText.trim());
+                });
+            });
+
+            function renderSuggestions(data) {
+                if (!suggestionsList) return;
+                suggestionsList.innerHTML = "";
+
+                if (!data || data.length === 0) {
+                    suggestionsList.classList.add("d-none");
+                    return;
+                }
+
+                data.forEach(function (item) {
+                    var a = document.createElement("a");
+                    a.href = "#";
+                    a.className = "list-group-item list-group-item-action py-2 px-3 small";
+                    var addrText = item.display_name || item.address || "Địa điểm";
+                    a.innerHTML = '<i class="bi bi-geo-alt-fill text-danger me-2"></i>' + addrText;
+                    a.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        var lat = parseCoord(item.lat, defaultLat);
+                        var lon = parseCoord(item.lon || item.lng, defaultLng);
+                        updateMap(lat, lon);
+                        map.setZoom(16);
+                        suggestionsList.classList.add("d-none");
+                        syncAddressText(addrText);
+                    });
+                    suggestionsList.appendChild(a);
+                });
+
+                suggestionsList.classList.remove("d-none");
+            }
+
+            document.addEventListener("click", function (e) {
+                if (suggestionsList && !e.target.closest("#txtAddressSearch") && !e.target.closest("#searchSuggestionsList")) {
+                    suggestionsList.classList.add("d-none");
+                }
+            });
+
+            function executeAddressSearch(queryText) {
+                var query = queryText || (searchInput ? searchInput.value.trim() : '');
+                if (!query) {
+                    alert("@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Search_EmptyAlert))");
+                    return;
+                }
+
+                if (btnSearch) {
+                    btnSearch.disabled = true;
+                    btnSearch.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> @Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Search_Searching))';
+                }
+
+                var url = "/Store/SearchAddress?query=" + encodeURIComponent(query);
+                fetch(url)
+                    .then(function (res) {
+                        if (!res.ok) throw new Error("Lỗi phản hồi máy chủ (" + res.status + ")");
+                        return res.json();
+                    })
+                    .then(function (data) {
+                        if (btnSearch) {
+                            btnSearch.disabled = false;
+                            btnSearch.innerHTML = '<i class="bi bi-geo-alt-fill me-1"></i> @Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Btn_SearchAddress))';
+                        }
+                        if (data && data.length > 0) {
+                            renderSuggestions(data);
+                            var firstResult = data[0];
+                            var lat = parseCoord(firstResult.lat, defaultLat);
+                            var lon = parseCoord(firstResult.lon || firstResult.lng, defaultLng);
+                            updateMap(lat, lon);
+                            map.setZoom(16);
+                            syncAddressText(firstResult.display_name || query);
+                        } else {
+                            if (suggestionsList) suggestionsList.classList.add("d-none");
+                            alert("@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Search_NotFoundAlert))".replace('{0}', query));
+                        }
+                    })
+                    .catch(function (err) {
+                        if (btnSearch) {
+                            btnSearch.disabled = false;
+                            btnSearch.innerHTML = '<i class="bi bi-geo-alt-fill me-1"></i> @Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Btn_SearchAddress))';
+                        }
+                        if (suggestionsList) suggestionsList.classList.add("d-none");
+                        alert("@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Search_ErrorAlert))".replace('{0}', err.message));
+                    });
+            }
+
+            if (btnSearch && searchInput) {
+                btnSearch.addEventListener("click", function () { executeAddressSearch(); });
+                searchInput.addEventListener("keypress", function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        executeAddressSearch();
+                    }
+                });
+            }
+        });
+    </script>
 }

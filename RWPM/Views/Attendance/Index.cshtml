@@ -46,7 +46,14 @@
                     }
                     else
                     {
-                        <form method="post" class="d-grid gap-2">
+                        <div id="gpsStatus" class="alert alert-info small py-1 mb-2 d-none">
+                            <i class="bi bi-geo-alt spinner-grow spinner-grow-sm me-1"></i> Đang xác định vị trí GPS...
+                        </div>
+
+                        <form id="attendanceForm" method="post" class="d-grid gap-2">
+                            <input type="hidden" name="userLatitude" id="userLatitude" />
+                            <input type="hidden" name="userLongitude" id="userLongitude" />
+
                             @if (canCheckIn)
                             {
                                 <select name="shiftId" class="form-select form-select-sm mb-2" required>
@@ -60,10 +67,10 @@
                                     }
                                 </select>
                             }
-                            <button type="submit" asp-action="CheckIn" class="btn btn-sm btn-outline-success" disabled="@(canCheckIn ? null : "disabled")">
+                            <button type="button" id="btnCheckIn" asp-action="CheckIn" class="btn btn-sm btn-outline-success" disabled="@(canCheckIn ? null : "disabled")">
                                 <i class="bi bi-box-arrow-in-right me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnCheckIn")
                             </button>
-                            <button type="submit" asp-action="CheckOut" class="btn btn-sm btn-outline-danger" disabled="@(canCheckOut ? null : "disabled")">
+                            <button type="button" id="btnCheckOut" asp-action="CheckOut" class="btn btn-sm btn-outline-danger" disabled="@(canCheckOut ? null : "disabled")">
                                 <i class="bi bi-box-arrow-right me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnCheckOut")
                             </button>
                         </form>
@@ -140,6 +147,7 @@
                             <th class="text-nowrap text-center">Ca làm việc</th>
                             <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_CheckInCol")</th>
                             <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_CheckOutCol")</th>
+                            <th class="text-nowrap text-center"><i class="bi bi-geo-alt me-1"></i>Khoảng cách GPS</th>
                             @if (isAdmin)
                             {
                                 <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Button_Action")</th>
@@ -160,6 +168,18 @@
                                     <td class="text-center">@(item.Shift != null ? item.Shift.ShiftName : "-")</td>
                                     <td class="text-center text-success fw-bold">@(item.CheckInTime.HasValue ? item.CheckInTime.Value.ToString(@"hh\:mm") : "--:--")</td>
                                     <td class="text-center text-danger fw-bold">@(item.CheckOutTime.HasValue ? item.CheckOutTime.Value.ToString(@"hh\:mm") : "--:--")</td>
+                                    <td class="text-center small">
+                                        @if (item.DistanceMeters.HasValue)
+                                        {
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                                <i class="bi bi-check-circle me-1"></i> @Math.Round(item.DistanceMeters.Value)m
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
                                     @if (isAdmin)
                                     {
                                         <td class="text-center">
@@ -176,7 +196,7 @@
                         else
                         {
                             <tr>
-                                <td colspan="@(isAdmin ? 6 : 4)" class="text-center text-muted py-4">
+                                <td colspan="@(isAdmin ? 7 : 5)" class="text-center text-muted py-4">
                                     <i class="bi bi-inbox fs-3 d-block mb-2"></i>
                                     @SharedResource.ResourceManager.GetString("Attendance_NoData")
                                 </td>
@@ -188,3 +208,67 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var form = document.getElementById("attendanceForm");
+        var btnCheckIn = document.getElementById("btnCheckIn");
+        var btnCheckOut = document.getElementById("btnCheckOut");
+        var latInput = document.getElementById("userLatitude");
+        var lngInput = document.getElementById("userLongitude");
+        var gpsStatus = document.getElementById("gpsStatus");
+
+        function submitWithGPS(actionName) {
+            if (!form) return;
+
+            // Validate shift selection if CheckIn
+            if (actionName === "CheckIn") {
+                var shiftSelect = form.querySelector('select[name="shiftId"]');
+                if (shiftSelect && !shiftSelect.value) {
+                    alert("Vui lòng chọn Ca làm việc trước khi bấm Check-In!");
+                    return;
+                }
+            }
+
+            if (gpsStatus) gpsStatus.classList.remove("d-none");
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    if (latInput) latInput.value = position.coords.latitude;
+                    if (lngInput) lngInput.value = position.coords.longitude;
+
+                    form.action = "/Attendance/" + actionName;
+                    form.submit();
+                }, function (error) {
+                    if (gpsStatus) gpsStatus.classList.add("d-none");
+                    var errorMsg = "";
+                    if (error.code === 1) { // PERMISSION_DENIED
+                        errorMsg = "BẠN ĐÃ CHẶN QUYỀN VỊ TRÍ TRÊN TRÌNH DUYỆT!\n\nCách bật lại nhanh:\n1. Click vào biểu tượng ổ khóa 🔒 (hoặc 🎛️) góc trái thanh địa chỉ (localhost:7125).\n2. Chuyển mục 'Vị trí (Location)' từ 'Chặn (Block)' sang 'Cho phép (Allow)'.\n3. Nhấn F5 tải lại trang và bấm Check-in lại.";
+                    } else {
+                        errorMsg = "Không thể xác định vị trí GPS (" + error.message + "). Vui lòng bật vị trí thiết bị và thử lại.";
+                    }
+                    alert(errorMsg);
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                });
+            } else {
+                if (gpsStatus) gpsStatus.classList.add("d-none");
+                alert("Trình duyệt của bạn không hỗ trợ Geolocation GPS.");
+            }
+        }
+
+        if (btnCheckIn && !btnCheckIn.disabled) {
+            btnCheckIn.addEventListener("click", function () {
+                submitWithGPS("CheckIn");
+            });
+        }
+
+        if (btnCheckOut && !btnCheckOut.disabled) {
+            btnCheckOut.addEventListener("click", function () {
+                submitWithGPS("CheckOut");
+            });
+        }
+    });
+</script>

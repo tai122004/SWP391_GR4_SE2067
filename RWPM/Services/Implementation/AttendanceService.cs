@@ -1,3 +1,4 @@
+using RWPM.Common.Helper;
 using Microsoft.EntityFrameworkCore;
 using RWPM.Infrastructure.Data;
 using RWPM.Models.Entities;
@@ -35,7 +36,7 @@ namespace RWPM.Services.Implementation
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<AttendanceRecord> CheckInAsync(string username, int shiftId)
+        public async Task<AttendanceRecord> CheckInAsync(string username, int shiftId, double? userLatitude = null, double? userLongitude = null)
         {
             var today = DateTime.Today;
             var record = await GetTodayRecordAsync(username, shiftId);
@@ -68,12 +69,50 @@ namespace RWPM.Services.Implementation
                 throw new Exception(SharedResource.ResourceManager.GetString("Attendance_TooLate"));
             }
 
+            // GeoLocation Validation
+            double? calculatedDistance = null;
+            var employee = await _context.Employee.Include(e => e.Store).FirstOrDefaultAsync(e => e.Username == username);
+            if (employee?.Store != null && employee.Store.Latitude.HasValue && employee.Store.Longitude.HasValue)
+            {
+                if (!userLatitude.HasValue || !userLongitude.HasValue)
+                {
+                    throw new Exception("Không thể xác định vị trí của bạn. Vui lòng bật định vị GPS trên thiết bị để chấm công.");
+                }
+
+                double distance = GeoLocationHelper.CalculateDistanceMeters(
+                    userLatitude.Value, userLongitude.Value, 
+                    employee.Store.Latitude.Value, employee.Store.Longitude.Value);
+
+                // Anti-Fake GPS check (0m or exact database match)
+                if (distance < 0.1 || (Math.Abs(userLatitude.Value - employee.Store.Latitude.Value) < 1e-6 && Math.Abs(userLongitude.Value - employee.Store.Longitude.Value) < 1e-6))
+                {
+                    throw new Exception("Phát hiện vị trí GPS bất thường (0m / Trùng khớp vị trí tĩnh). Vui lòng di chuyển hoặc tắt phần mềm giả lập GPS.");
+                }
+
+                int minDistance = employee.Store.MinAllowedDistanceMeters;
+                if (minDistance > 0 && distance < minDistance)
+                {
+                    throw new Exception($"Vị trí không hợp lệ! Bạn đang cách chi nhánh {employee.Store.StoreName} khoảng {Math.Round(distance)}m (Nhỏ hơn khoảng cách tối thiểu cho phép {minDistance}m).");
+                }
+
+                int allowedRadius = employee.Store.AllowedRadiusMeters > 0 ? employee.Store.AllowedRadiusMeters : 100;
+                if (distance > allowedRadius)
+                {
+                    throw new Exception($"Vị trí không hợp lệ! Bạn đang cách chi nhánh {employee.Store.StoreName} khoảng {Math.Round(distance)}m (Vượt quá bán kính cho phép {allowedRadius}m).");
+                }
+
+                calculatedDistance = distance;
+            }
+
             record = new AttendanceRecord
             {
                 Username = username,
                 Date = today,
                 CheckInTime = now,
-                ShiftId = shiftId
+                ShiftId = shiftId,
+                CheckInLatitude = userLatitude,
+                CheckInLongitude = userLongitude,
+                DistanceMeters = calculatedDistance
             };
 
             _context.AttendanceRecord.Add(record);
@@ -82,7 +121,7 @@ namespace RWPM.Services.Implementation
             return record;
         }
 
-        public async Task<AttendanceRecord> CheckOutAsync(string username)
+        public async Task<AttendanceRecord> CheckOutAsync(string username, double? userLatitude = null, double? userLongitude = null)
         {
             var record = await GetTodayRecordAsync(username);
             
@@ -95,7 +134,42 @@ namespace RWPM.Services.Implementation
                 throw new Exception(SharedResource.ResourceManager.GetString("Attendance_AlreadyCheckedOut"));
             }
 
+            // GeoLocation Validation for CheckOut
+            var employee = await _context.Employee.Include(e => e.Store).FirstOrDefaultAsync(e => e.Username == username);
+            if (employee?.Store != null && employee.Store.Latitude.HasValue && employee.Store.Longitude.HasValue)
+            {
+                if (!userLatitude.HasValue || !userLongitude.HasValue)
+                {
+                    throw new Exception("Không thể xác định vị trí của bạn. Vui lòng bật định vị GPS trên thiết bị để kết thúc ca làm việc.");
+                }
+
+                double distance = GeoLocationHelper.CalculateDistanceMeters(
+                    userLatitude.Value, userLongitude.Value, 
+                    employee.Store.Latitude.Value, employee.Store.Longitude.Value);
+
+                // Anti-Fake GPS check
+                if (distance < 0.1 || (Math.Abs(userLatitude.Value - employee.Store.Latitude.Value) < 1e-6 && Math.Abs(userLongitude.Value - employee.Store.Longitude.Value) < 1e-6))
+                {
+                    throw new Exception("Phát hiện vị trí GPS bất thường (0m / Trùng khớp vị trí tĩnh). Vui lòng di chuyển hoặc tắt phần mềm giả lập GPS.");
+                }
+
+                int minDistance = employee.Store.MinAllowedDistanceMeters;
+                if (minDistance > 0 && distance < minDistance)
+                {
+                    throw new Exception($"Vị trí không hợp lệ! Bạn đang cách chi nhánh {employee.Store.StoreName} khoảng {Math.Round(distance)}m (Nhỏ hơn khoảng cách tối thiểu cho phép {minDistance}m).");
+                }
+
+                int allowedRadius = employee.Store.AllowedRadiusMeters > 0 ? employee.Store.AllowedRadiusMeters : 100;
+                if (distance > allowedRadius)
+                {
+                    throw new Exception($"Vị trí không hợp lệ! Bạn đang cách chi nhánh {employee.Store.StoreName} khoảng {Math.Round(distance)}m (Vượt quá bán kính cho phép {allowedRadius}m).");
+                }
+            }
+
             record.CheckOutTime = DateTime.Now.TimeOfDay;
+            record.CheckOutLatitude = userLatitude;
+            record.CheckOutLongitude = userLongitude;
+
             await _context.SaveChangesAsync();
 
             return record;

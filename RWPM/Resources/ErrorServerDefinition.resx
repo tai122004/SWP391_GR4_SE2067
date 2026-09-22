@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -326,5 +326,17 @@
   </data>
   <data name="Username_Exists" xml:space="preserve">
     <value>Account has been linked.</value>
+  </data>
+  <data name="StoreCode_Exists" xml:space="preserve">
+    <value>Store code already exists.</value>
+  </data>
+  <data name="Store_NotExists" xml:space="preserve">
+    <value>Store does not exist.</value>
+  </data>
+  <data name="Store_Delete_HaveEmployeeUse" xml:space="preserve">
+    <value>Cannot delete store because it is currently assigned to one or more employees.</value>
+  </data>
+  <data name="Store_Delete_HaveShiftRegUse" xml:space="preserve">
+    <value>Cannot delete store because it has associated shift registrations.</value>
   </data>
 </root>

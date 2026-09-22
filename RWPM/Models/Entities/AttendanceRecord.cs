@@ -22,6 +22,16 @@ namespace RWPM.Models.Entities
         
         public TimeSpan? CheckOutTime { get; set; }
 
+        public double? CheckInLatitude { get; set; }
+
+        public double? CheckInLongitude { get; set; }
+
+        public double? CheckOutLatitude { get; set; }
+
+        public double? CheckOutLongitude { get; set; }
+
+        public double? DistanceMeters { get; set; }
+
         [ForeignKey("Username")]
         public virtual Acc Account { get; set; }
 
