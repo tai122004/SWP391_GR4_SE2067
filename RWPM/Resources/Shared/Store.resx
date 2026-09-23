@@ -99,4 +99,13 @@
   <data name="Search_ErrorAlert" xml:space="preserve">
     <value>Unable to search address: {0}\nYou can click directly on the map or select 'Suggested location'.</value>
   </data>
+  <data name="Table_GeoLocation" xml:space="preserve">
+    <value>Location (Lat/Long - Radius)</value>
+  </data>
+  <data name="Range" xml:space="preserve">
+    <value>Range:</value>
+  </data>
+  <data name="NotLocated" xml:space="preserve">
+    <value>Not located</value>
+  </data>
 </root>

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RWPM.Infrastructure.Data;
 
@@ -11,9 +12,10 @@ using RWPM.Infrastructure.Data;
 namespace RWPM.Migrations
 {
     [DbContext(typeof(DefaultDatabaseContext))]
-    partial class DefaultDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20260922163314_AddLocationAndRadiusToStore")]
+    partial class AddLocationAndRadiusToStore
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,7 +76,7 @@ namespace RWPM.Migrations
                     b.HasIndex("Email")
                         .HasDatabaseName("IX_Acc_Email");
 
-                    b.ToTable("Acc", (string)null);
+                    b.ToTable("Acc");
                 });
 
             modelBuilder.Entity("RWPM.Models.Entities.AttendanceRecord", b =>
@@ -91,11 +93,6 @@ namespace RWPM.Migrations
                     b.Property<double?>("CheckInLongitude")
                         .HasColumnType("float");
 
-
-                    b.Property<string>("CheckInPhotoPath")
-                        .HasColumnType("nvarchar(max)");
-
-
                     b.Property<TimeSpan?>("CheckInTime")
                         .HasColumnType("time");
 
@@ -104,11 +101,6 @@ namespace RWPM.Migrations
 
                     b.Property<double?>("CheckOutLongitude")
                         .HasColumnType("float");
-
-
-                    b.Property<string>("CheckOutPhotoPath")
-                        .HasColumnType("nvarchar(max)");
-
 
                     b.Property<TimeSpan?>("CheckOutTime")
                         .HasColumnType("time");
@@ -132,7 +124,7 @@ namespace RWPM.Migrations
 
                     b.HasIndex("Username");
 
-                    b.ToTable("AttendanceRecord", (string)null);
+                    b.ToTable("AttendanceRecord");
                 });
 
             modelBuilder.Entity("RWPM.Models.Entities.Employee", b =>
@@ -191,7 +183,7 @@ namespace RWPM.Migrations
                         .IsUnique()
                         .HasDatabaseName("IX_Employee_Username");
 
-                    b.ToTable("Employee", (string)null);
+                    b.ToTable("Employee");
                 });
 
             modelBuilder.Entity("RWPM.Models.Entities.ImportLog", b =>
@@ -236,7 +228,7 @@ namespace RWPM.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ImportLog", (string)null);
+                    b.ToTable("ImportLog");
                 });
 
             modelBuilder.Entity("RWPM.Models.Entities.Shift", b =>
@@ -264,26 +256,14 @@ namespace RWPM.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int?>("EarlyCheckInMinutes")
-                        .HasColumnType("int");
-
                     b.Property<TimeSpan>("EndTime")
                         .HasColumnType("time");
 
                     b.Property<TimeSpan?>("EndTime2")
                         .HasColumnType("time");
 
-                    b.Property<int?>("GracePeriodMinutes")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
-
-                    b.Property<bool>("IsTemplate")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("LateThresholdMinutes")
-                        .HasColumnType("int");
 
                     b.Property<string>("ShiftCode")
                         .IsRequired()
@@ -318,7 +298,7 @@ namespace RWPM.Migrations
                         .IsUnique()
                         .HasDatabaseName("IX_Shift_ShiftCode");
 
-                    b.ToTable("Shift", (string)null);
+                    b.ToTable("Shift");
                 });
 
             modelBuilder.Entity("RWPM.Models.Entities.ShiftRegistration", b =>
@@ -376,7 +356,7 @@ namespace RWPM.Migrations
                         .IsUnique()
                         .HasDatabaseName("IX_ShiftRegistration_Employee_Shift_Date");
 
-                    b.ToTable("ShiftRegistration", (string)null);
+                    b.ToTable("ShiftRegistration");
                 });
 
             modelBuilder.Entity("Store", b =>
@@ -445,7 +425,7 @@ namespace RWPM.Migrations
                         .IsUnique()
                         .HasDatabaseName("IX_Store_StoreCode");
 
-                    b.ToTable("Store", (string)null);
+                    b.ToTable("Store");
                 });
 
             modelBuilder.Entity("RWPM.Models.Entities.AttendanceRecord", b =>

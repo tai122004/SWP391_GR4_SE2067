@@ -214,5 +214,23 @@ namespace RWPM.Resources.Shared {
                 return ResourceManager.GetString("Search_ErrorAlert", resourceCulture);
             }
         }
+        
+        public static string Table_GeoLocation {
+            get {
+                return ResourceManager.GetString("Table_GeoLocation", resourceCulture);
+            }
+        }
+        
+        public static string Range {
+            get {
+                return ResourceManager.GetString("Range", resourceCulture);
+            }
+        }
+        
+        public static string NotLocated {
+            get {
+                return ResourceManager.GetString("NotLocated", resourceCulture);
+            }
+        }
     }
 }
