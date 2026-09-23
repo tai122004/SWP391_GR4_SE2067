@@ -87,27 +87,15 @@ namespace RWPM.Services.Implementation
                     break;
                 }
 
-                if (s.StartTime2.HasValue)
-                {
-                    var start2Early = s.StartTime2.Value.Subtract(TimeSpan.FromMinutes(eCheckIn));
-                    var start2Late = s.StartTime2.Value.Add(TimeSpan.FromMinutes(lThreshold));
-                    if (now >= start2Early && now <= start2Late)
-                    {
-                        shift = s;
-                        isValid = true;
-                        break;
-                    }
-                }
+            // Xóa StartTime2 vì model đã không còn
             }
 
-            // Nếu không ca nào đang trong khung giờ hợp lệ, chọn ca gần nhất để báo lỗi chính xác
             if (shift == null)
             {
                 shift = registeredShifts.OrderBy(s => Math.Abs((now - s.StartTime).TotalMinutes)).First();
                 
                 int eCheckIn = shift.EarlyCheckInMinutes ?? RWPM.Common.Constants.ShiftDefaults.EarlyCheckInMinutes;
                 int lThreshold = shift.LateThresholdMinutes ?? RWPM.Common.Constants.ShiftDefaults.LateThresholdMinutes;
-                
                 if (now < shift.StartTime.Subtract(TimeSpan.FromMinutes(eCheckIn)))
                 {
                     errorMessage = $"Chưa đến giờ chấm công ca {shift.ShiftName}! Bạn chỉ được phép chấm công trước giờ làm {eCheckIn} phút.";
@@ -126,28 +114,9 @@ namespace RWPM.Services.Implementation
             var record = await GetTodayRecordAsync(username, shift.ShiftId);
             if (record != null)
             {
-                throw new Exception(SharedResource.ResourceManager.GetString("Attendance_AlreadyCheckedIn"));
+                throw new Exception("Bạn đã chấm công vào làm cho ca này rồi!");
             }
 
-            var shift = await _context.Set<RWPM.Models.Entities.Shift>().FindAsync(shiftId);
-            if (shift == null || !shift.IsActive)
-            {
-                throw new Exception("Ca làm việc không tồn tại hoặc đã bị vô hiệu hóa.");
-            }
-
-            var now = DateTime.Now.TimeOfDay;
-            bool isValid = false;
-
-            var lateThreshold = shift.LateThresholdMinutes ?? ShiftDefaults.LateThresholdMinutes;
-            if (now <= shift.StartTime.Add(TimeSpan.FromMinutes(lateThreshold)))
-            {
-                isValid = true;
-            }
-
-            if (!isValid)
-            {
-                throw new Exception(SharedResource.ResourceManager.GetString("Attendance_TooLate"));
-            }
 
             // GeoLocation Validation
             double? calculatedDistance = null;
@@ -212,11 +181,25 @@ namespace RWPM.Services.Implementation
             
             if (record == null)
             {
-                throw new Exception(SharedResource.ResourceManager.GetString("Attendance_NotCheckedIn"));
+                throw new Exception("Bạn chưa chấm công vào làm (hoặc không có ca)!");
             }
             if (record.CheckOutTime.HasValue)
             {
-                throw new Exception(SharedResource.ResourceManager.GetString("Attendance_AlreadyCheckedOut"));
+                throw new Exception("Bạn đã chấm công tan làm cho ca này rồi!");
+            }
+
+            // Time Validation for CheckOut (Early Check-Out)
+            var shift = await _context.Shift.FindAsync(record.ShiftId);
+            if (shift != null)
+            {
+                int earlyCheckOutMinutes = shift.EarlyCheckOutMinutes ?? RWPM.Common.Constants.ShiftDefaults.EarlyCheckOutMinutes;
+                var minCheckOutTime = shift.EndTime.Subtract(TimeSpan.FromMinutes(earlyCheckOutMinutes));
+                var now = DateTime.Now.TimeOfDay;
+
+                if (now < minCheckOutTime)
+                {
+                    throw new Exception($"Chưa đến giờ tan làm! Bạn chỉ được phép chấm công về sớm nhất vào lúc {minCheckOutTime:hh\\:mm} (Sớm tối đa {earlyCheckOutMinutes} phút trước khi kết thúc ca {shift.EndTime:hh\\:mm}).");
+                }
             }
 
             // GeoLocation Validation for CheckOut

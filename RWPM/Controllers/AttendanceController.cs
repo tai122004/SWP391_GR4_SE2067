@@ -56,12 +56,7 @@ namespace RWPM.Controllers
                     var start1Late = s.StartTime.Add(TimeSpan.FromMinutes(lThreshold));
                     
                     bool isExpired = now > start1Late;
-                    if (s.StartTime2.HasValue) 
-                    {
-                        var start2Late = s.StartTime2.Value.Add(TimeSpan.FromMinutes(lThreshold));
-                        if (now <= start2Late) isExpired = false;
-                    }
-                    
+
                     if (!isExpired) {
                         validShifts.Add(s);
                     }
