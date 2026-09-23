@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using RWPM.Resources.Shared;
+using RWPM.Common.Constants;
 
 namespace RWPM.Services.Implementation
 {
@@ -126,6 +127,26 @@ namespace RWPM.Services.Implementation
             if (record != null)
             {
                 throw new Exception(SharedResource.ResourceManager.GetString("Attendance_AlreadyCheckedIn"));
+            }
+
+            var shift = await _context.Set<RWPM.Models.Entities.Shift>().FindAsync(shiftId);
+            if (shift == null || !shift.IsActive)
+            {
+                throw new Exception("Ca làm việc không tồn tại hoặc đã bị vô hiệu hóa.");
+            }
+
+            var now = DateTime.Now.TimeOfDay;
+            bool isValid = false;
+
+            var lateThreshold = shift.LateThresholdMinutes ?? ShiftDefaults.LateThresholdMinutes;
+            if (now <= shift.StartTime.Add(TimeSpan.FromMinutes(lateThreshold)))
+            {
+                isValid = true;
+            }
+
+            if (!isValid)
+            {
+                throw new Exception(SharedResource.ResourceManager.GetString("Attendance_TooLate"));
             }
 
             // GeoLocation Validation

@@ -76,28 +76,7 @@
         </div>
     </div>
 
-    <!-- Split Shift Section (Ca Gãy) -->
-    <div id="splitShiftSection" style="display: none;">
-        <div class="alert alert-info py-2 mb-3">
-            <i class="bi bi-info-circle me-1"></i> @ShiftSharedResource.SplitShiftSection
-        </div>
-        <div class="row">
-            <div class="col-md-4 offset-md-4">
-                <div class="form-group mb-3">
-                    <label class="form-label" asp-for="StartTime2">@ShiftModelResource.StartTime2</label>
-                    <input class="form-control" asp-for="StartTime2" type="time" />
-                    <span asp-validation-for="StartTime2" class="text-danger"></span>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="form-group mb-3">
-                    <label class="form-label" asp-for="EndTime2">@ShiftModelResource.EndTime2</label>
-                    <input class="form-control" asp-for="EndTime2" type="time" />
-                    <span asp-validation-for="EndTime2" class="text-danger"></span>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <div class="row">
         <div class="col-md-6">
@@ -137,14 +116,14 @@
             </div>
         </div>
         <div class="card-body py-3">
-            <div id="defaultPolicyAlert" class="alert alert-info py-2 px-3 small mb-3 d-flex align-items-center">
+            <div id="defaultPolicyAlert" class="alert alert-info py-2 px-3 small mb-3 align-items-center @(Model.UseDefaultAttendancePolicy ? "d-flex" : "d-none")">
                 <i class="bi bi-info-circle-fill me-2 fs-5 text-primary"></i>
                 <div>
-                    @ShiftSharedResource.AttendancePolicy_InheritNotice (Quẹt sớm: <strong>@ShiftDefaults.EarlyCheckInMinutes'</strong>, Đi muộn: <strong>@ShiftDefaults.GracePeriodMinutes'</strong>, Ngưỡng bỏ ca: <strong>@ShiftDefaults.LateThresholdMinutes'</strong>).
+                    @ShiftSharedResource.AttendancePolicy_InheritNotice (Check-in sớm: <strong>@ShiftDefaults.EarlyCheckInMinutes'</strong>, Đi muộn: <strong>@ShiftDefaults.GracePeriodMinutes'</strong>, Check-out sớm: <strong>@ShiftDefaults.EarlyCheckOutMinutes'</strong>, Ngưỡng bỏ ca: <strong>@ShiftDefaults.LateThresholdMinutes'</strong>).
                 </div>
             </div>
             <div class="row g-3">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label class="form-label small fw-semibold" asp-for="EarlyCheckInMinutes">
                             <i class="bi bi-box-arrow-in-right text-success me-1"></i>@ShiftModelResource.EarlyCheckInMinutes
@@ -156,7 +135,7 @@
                         <span asp-validation-for="EarlyCheckInMinutes" class="text-danger small"></span>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label class="form-label small fw-semibold" asp-for="GracePeriodMinutes">
                             <i class="bi bi-hourglass-split text-warning me-1"></i>@ShiftModelResource.GracePeriodMinutes
@@ -168,7 +147,19 @@
                         <span asp-validation-for="GracePeriodMinutes" class="text-danger small"></span>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="form-label small fw-semibold" asp-for="EarlyCheckOutMinutes">
+                            <i class="bi bi-box-arrow-right text-info me-1"></i>@ShiftModelResource.EarlyCheckOutMinutes
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <input class="form-control" asp-for="EarlyCheckOutMinutes" type="number" min="0" max="60" id="earlyCheckOutInput" />
+                            <span class="input-group-text">phút</span>
+                        </div>
+                        <span asp-validation-for="EarlyCheckOutMinutes" class="text-danger small"></span>
+                    </div>
+                </div>
+                <div class="col-md-3">
                     <div class="form-group">
                         <label class="form-label small fw-semibold" asp-for="LateThresholdMinutes">
                             <i class="bi bi-slash-circle text-danger me-1"></i>@ShiftModelResource.LateThresholdMinutes
@@ -235,14 +226,12 @@
                     codePlaceholder: 'VD: C1, C2, C_TOI...',
                     namePlaceholder: 'VD: Ca Chiều Tối 2...'
                 },
-                '@((byte)ShiftType.Split)': {
-                    startTime: '09:00',
-                    endTime: '13:00',
-                    startTime2: '17:00',
-                    endTime2: '22:00',
+                '@((byte)ShiftType.Peak)': {
+                    startTime: '10:00',
+                    endTime: '14:00',
                     breakMinutes: 0,
-                    codePlaceholder: 'VD: G1, G2, G_GAY...',
-                    namePlaceholder: 'VD: Ca Gãy 2...'
+                    codePlaceholder: 'VD: CDT, CDTOI, CAO_DIEM...',
+                    namePlaceholder: 'VD: Ca Cao Điểm Trưa, Ca Cao Điểm Tối...'
                 },
                 '@((byte)ShiftType.FullDay)': {
                     startTime: '08:30',
@@ -267,18 +256,8 @@
                 }
             };
 
-            function toggleSplitVisibility() {
-                var selectedType = $('#shiftTypeSelect').val();
-                if (selectedType == '@((byte)ShiftType.Split)') {
-                    $('#splitShiftSection').slideDown();
-                } else {
-                    $('#splitShiftSection').slideUp();
-                }
-            }
-
             function applyPreset() {
                 var selectedType = $('#shiftTypeSelect').val();
-                toggleSplitVisibility();
 
                 if (shiftPresets[selectedType]) {
                     var preset = shiftPresets[selectedType];
@@ -289,14 +268,6 @@
                     }
                     if (preset.endTime) {
                         $('input[name="EndTime"]').val(preset.endTime);
-                    }
-
-                    if (selectedType == '@((byte)ShiftType.Split)') {
-                        if (preset.startTime2) $('input[name="StartTime2"]').val(preset.startTime2);
-                        if (preset.endTime2) $('input[name="EndTime2"]').val(preset.endTime2);
-                    } else {
-                        $('input[name="StartTime2"]').val('');
-                        $('input[name="EndTime2"]').val('');
                     }
 
                     if (preset.breakMinutes !== undefined) {
@@ -323,25 +294,24 @@
             // Xử lý bật/tắt chính sách chấm công mặc định
             function updatePolicyState() {
                 var isDefault = $('#useDefaultPolicySwitch').is(':checked');
-                var $inputs = $('#earlyCheckInInput, #gracePeriodInput, #lateThresholdInput');
+                var $inputs = $('#earlyCheckInInput, #gracePeriodInput, #earlyCheckOutInput, #lateThresholdInput');
+                var $alert = $('#defaultPolicyAlert');
 
                 if (isDefault) {
-                    $('#defaultPolicyAlert').slideDown();
+                    $alert.removeClass('d-none').addClass('d-flex');
                     $inputs.prop('readonly', true).addClass('bg-light text-muted');
                     $('#earlyCheckInInput').val('@ShiftDefaults.EarlyCheckInMinutes');
                     $('#gracePeriodInput').val('@ShiftDefaults.GracePeriodMinutes');
+                    $('#earlyCheckOutInput').val('@ShiftDefaults.EarlyCheckOutMinutes');
                     $('#lateThresholdInput').val('@ShiftDefaults.LateThresholdMinutes');
                 } else {
-                    $('#defaultPolicyAlert').slideUp();
+                    $alert.removeClass('d-flex').addClass('d-none');
                     $inputs.prop('readonly', false).removeClass('bg-light text-muted');
                 }
             }
 
             $('#useDefaultPolicySwitch').change(updatePolicyState);
             updatePolicyState();
-
-            // Khởi tạo trạng thái ban đầu
-            toggleSplitVisibility();
 
             // Lắng nghe sự kiện khi người dùng chọn loại ca
             $('#shiftTypeSelect').change(applyPreset);
