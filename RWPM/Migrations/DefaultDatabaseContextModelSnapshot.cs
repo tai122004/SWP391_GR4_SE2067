@@ -91,10 +91,8 @@ namespace RWPM.Migrations
                     b.Property<double?>("CheckInLongitude")
                         .HasColumnType("float");
 
-
                     b.Property<string>("CheckInPhotoPath")
                         .HasColumnType("nvarchar(max)");
-
 
                     b.Property<TimeSpan?>("CheckInTime")
                         .HasColumnType("time");
@@ -105,10 +103,8 @@ namespace RWPM.Migrations
                     b.Property<double?>("CheckOutLongitude")
                         .HasColumnType("float");
 
-
                     b.Property<string>("CheckOutPhotoPath")
                         .HasColumnType("nvarchar(max)");
-
 
                     b.Property<TimeSpan?>("CheckOutTime")
                         .HasColumnType("time");
