@@ -32,6 +32,10 @@ namespace RWPM.Models.Entities
 
         public double? DistanceMeters { get; set; }
 
+        public string? CheckInPhotoPath { get; set; }
+
+        public string? CheckOutPhotoPath { get; set; }
+
         [ForeignKey("Username")]
         public virtual Acc Account { get; set; }
 

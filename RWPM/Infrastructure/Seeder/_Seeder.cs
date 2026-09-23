@@ -26,7 +26,7 @@ namespace RWPM.Infrastructure.Seeder
                     //await new DocTypeCatSeeder().SeedAsync(_ctx);
                     //await new LeaveJobReasonSeeder().SeedAsync(_ctx);
                     
-                    await new ShiftRegistrationSeeder().SeedAsync(_ctx);
+                    //await new ShiftRegistrationSeeder().SeedAsync(_ctx);
 
                     await transaction.CommitAsync();
                 }

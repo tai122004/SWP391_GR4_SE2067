@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -8,6 +8,13 @@ namespace RWPM.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<int>(
+                name: "AllowedRadiusMeters",
+                table: "Store",
+                type: "int",
+                nullable: false,
+                defaultValue: 0);
+
             migrationBuilder.AddColumn<double>(
                 name: "Latitude",
                 table: "Store",
@@ -26,13 +33,6 @@ namespace RWPM.Migrations
                 type: "int",
                 nullable: false,
                 defaultValue: 0);
-
-            migrationBuilder.AddColumn<int>(
-                name: "AllowedRadiusMeters",
-                table: "Store",
-                type: "int",
-                nullable: false,
-                defaultValue: 100);
 
             migrationBuilder.AddColumn<double>(
                 name: "CheckInLatitude",
@@ -68,6 +68,10 @@ namespace RWPM.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
+                name: "AllowedRadiusMeters",
+                table: "Store");
+
+            migrationBuilder.DropColumn(
                 name: "Latitude",
                 table: "Store");
 
@@ -76,7 +80,7 @@ namespace RWPM.Migrations
                 table: "Store");
 
             migrationBuilder.DropColumn(
-                name: "AllowedRadiusMeters",
+                name: "MinAllowedDistanceMeters",
                 table: "Store");
 
             migrationBuilder.DropColumn(
