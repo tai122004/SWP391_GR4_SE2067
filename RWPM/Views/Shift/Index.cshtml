@@ -84,10 +84,6 @@
                     foreach (var shift in Model.PanigationResponse.Data)
                     {
                         var timeDisplay = $"{shift.StartTime:hh\\:mm} - {shift.EndTime:hh\\:mm}";
-                        if (shift.StartTime2.HasValue && shift.EndTime2.HasValue)
-                        {
-                            timeDisplay += $" | {shift.StartTime2.Value:hh\\:mm} - {shift.EndTime2.Value:hh\\:mm}";
-                        }
 
                         <tr>
                             <td class="fw-semibold">
@@ -136,6 +132,7 @@
                                         data-break="@(shift.BreakMinutes > 0 ? $"{shift.BreakMinutes} phút" : "Không có")"
                                         data-early="@(shift.EarlyCheckInMinutes.HasValue ? $"{shift.EarlyCheckInMinutes} phút" : $"{ShiftDefaults.EarlyCheckInMinutes} phút (Mặc định)")"
                                         data-grace="@(shift.GracePeriodMinutes.HasValue ? $"{shift.GracePeriodMinutes} phút" : $"{ShiftDefaults.GracePeriodMinutes} phút (Mặc định)")"
+                                        data-earlycheckout="@(shift.EarlyCheckOutMinutes.HasValue ? $"{shift.EarlyCheckOutMinutes} phút" : $"{ShiftDefaults.EarlyCheckOutMinutes} phút (Mặc định)")"
                                         data-late="@(shift.LateThresholdMinutes.HasValue ? $"{shift.LateThresholdMinutes} phút" : $"{ShiftDefaults.LateThresholdMinutes} phút (Mặc định)")"
                                         data-description="@(string.IsNullOrWhiteSpace(shift.Description) ? "Không có mô tả" : shift.Description)"
                                         data-isactive="@shift.IsActive"
@@ -228,15 +225,15 @@
                     </div>
                     <div class="card-body p-3">
                         <div class="row text-center g-2">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="p-2 border rounded bg-success-subtle border-success-subtle h-100">
                                     <div class="small text-success fw-semibold mb-1">
-                                        <i class="bi bi-box-arrow-in-right me-1"></i>Quẹt thẻ trước ca
+                                        <i class="bi bi-box-arrow-in-right me-1"></i>Cho phép Check-in trước ca
                                     </div>
                                     <div class="fw-bold fs-6 text-dark" id="detailEarlyCheckIn"></div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="p-2 border rounded bg-warning-subtle border-warning-subtle h-100">
                                     <div class="small text-warning-emphasis fw-semibold mb-1">
                                         <i class="bi bi-hourglass-split me-1"></i>Cho phép đi muộn
@@ -244,7 +241,15 @@
                                     <div class="fw-bold fs-6 text-dark" id="detailGracePeriod"></div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
+                                <div class="p-2 border rounded bg-info-subtle border-info-subtle h-100">
+                                    <div class="small text-info fw-semibold mb-1">
+                                        <i class="bi bi-box-arrow-right me-1"></i>Cho phép Check-out về sớm
+                                    </div>
+                                    <div class="fw-bold fs-6 text-dark" id="detailEarlyCheckOut"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
                                 <div class="p-2 border rounded bg-danger-subtle border-danger-subtle h-100">
                                     <div class="small text-danger fw-semibold mb-1">
                                         <i class="bi bi-slash-circle me-1"></i>Ngưỡng tính bỏ ca
@@ -287,6 +292,7 @@
                 $('#detailShiftDescription').text(data.description);
                 $('#detailEarlyCheckIn').text(data.early);
                 $('#detailGracePeriod').text(data.grace);
+                $('#detailEarlyCheckOut').text(data.earlycheckout);
                 $('#detailLateThreshold').text(data.late);
                 $('#detailCreatedDate').text(data.created);
                 $('#detailCreatedBy').text(data.createdby || 'Hệ thống');

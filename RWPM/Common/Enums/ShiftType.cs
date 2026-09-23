@@ -18,10 +18,10 @@ namespace RWPM.Common.Enums
         Afternoon = 2,
 
         /// <summary>
-        /// Ca Gãy: 9:00 - 13:00 + 17:00 - 22:00
+        /// Ca Giờ Cao Điểm (Peak Hours): 10:00 - 14:00 hoặc 18:00 - 22:00
         /// </summary>
-        [Display(ResourceType = typeof(Resources.Models.Shift), Name = "ShiftType_Split")]
-        Split = 3,
+        [Display(ResourceType = typeof(Resources.Models.Shift), Name = "ShiftType_Peak")]
+        Peak = 3,
 
         /// <summary>
         /// Ca Hành Chính (Full-time): 8:30 - 17:30

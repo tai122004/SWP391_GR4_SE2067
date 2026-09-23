@@ -42,6 +42,9 @@
   <data name="ShiftType_Split" xml:space="preserve">
     <value>Ca Gãy</value>
   </data>
+  <data name="ShiftType_Peak" xml:space="preserve">
+    <value>Ca Giờ Cao Điểm</value>
+  </data>
   <data name="ShiftType_FullDay" xml:space="preserve">
     <value>Ca Hành Chính</value>
   </data>
@@ -100,7 +103,10 @@
     <value>Cho phép đi muộn (phút)</value>
   </data>
   <data name="EarlyCheckInMinutes" xml:space="preserve">
-    <value>Quẹt thẻ trước ca (phút)</value>
+    <value>Cho phép Check-in trước ca (phút)</value>
+  </data>
+  <data name="EarlyCheckOutMinutes" xml:space="preserve">
+    <value>Cho phép Check-out về sớm (phút)</value>
   </data>
   <data name="LateThresholdMinutes" xml:space="preserve">
     <value>Ngưỡng vắng mặt (phút)</value>
@@ -121,7 +127,7 @@
     <value>Thời gian cho phép đi muộn không được nhỏ hơn 0.</value>
   </data>
   <data name="Invalid_EarlyCheckInMinutes" xml:space="preserve">
-    <value>Thời gian quẹt thẻ trước ca không được nhỏ hơn 0.</value>
+    <value>Thời gian cho phép check-in trước ca không được nhỏ hơn 0.</value>
   </data>
   <data name="Invalid_LateThresholdMinutes" xml:space="preserve">
     <value>Ngưỡng vắng mặt không được nhỏ hơn 0.</value>

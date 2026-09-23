@@ -20,13 +20,9 @@ namespace RWPM.Models.Entities
 
         public ShiftType Type { get; set; }
 
-        //Khung giờ chính 
+        // Khung giờ làm việc
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
-
-        //Khung giờ dành cho Ca Gãy
-        public TimeSpan? StartTime2 { get; set; }
-        public TimeSpan? EndTime2 { get; set; }
 
         public int BreakMinutes { get; set; }
 
@@ -45,6 +41,13 @@ namespace RWPM.Models.Entities
         /// Ví dụ: 15 → ca 08:30, cho phép quẹt thẻ từ 08:15.
         /// </summary>
         public int? EarlyCheckInMinutes { get; set; }
+
+        /// <summary>
+        /// Số phút cho phép quẹt thẻ về sớm trước khi hết ca mà vẫn tính là "Đúng giờ".
+        /// Null = kế thừa cấu hình mặc định từ <see cref="Common.Constants.ShiftDefaults.EarlyCheckOutMinutes"/>.
+        /// Ví dụ: 5 → ca kết thúc 16:00, quẹt thẻ từ 15:55 vẫn được ghi nhận là hoàn thành ca đúng giờ.
+        /// </summary>
+        public int? EarlyCheckOutMinutes { get; set; }
 
         /// <summary>
         /// Số phút tối đa được phép đi muộn trước khi bị tính "Vắng mặt" (Bỏ ca).

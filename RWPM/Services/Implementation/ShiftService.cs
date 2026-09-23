@@ -119,11 +119,10 @@ namespace RWPM.Services.Implementation
             existingShift.Type = entity.Type;
             existingShift.StartTime = entity.StartTime;
             existingShift.EndTime = entity.EndTime;
-            existingShift.StartTime2 = entity.StartTime2;
-            existingShift.EndTime2 = entity.EndTime2;
             existingShift.BreakMinutes = entity.BreakMinutes;
             existingShift.GracePeriodMinutes = entity.GracePeriodMinutes;
             existingShift.EarlyCheckInMinutes = entity.EarlyCheckInMinutes;
+            existingShift.EarlyCheckOutMinutes = entity.EarlyCheckOutMinutes;
             existingShift.LateThresholdMinutes = entity.LateThresholdMinutes;
             existingShift.IsTemplate = entity.IsTemplate;
             existingShift.Description = entity.Description?.Trim() ?? string.Empty;
@@ -149,41 +148,9 @@ namespace RWPM.Services.Implementation
             double period1Minutes = (entity.EndTime - entity.StartTime).TotalMinutes;
             double totalMinutes = period1Minutes;
 
-            if (entity.Type == ShiftType.Split)
+            if (period1Minutes < 120)
             {
-                if (!entity.StartTime2.HasValue || !entity.EndTime2.HasValue)
-                {
-                    throw new ModelValidationException("Invalid_SplitShift_Required", "Ca gãy bắt buộc phải nhập đủ giờ bắt đầu và kết thúc của đợt 2.");
-                }
-
-                if (entity.EndTime2.Value <= entity.StartTime2.Value)
-                {
-                    throw new ModelValidationException("Invalid_SplitShift_TimeRange", "Giờ kết thúc đợt 2 phải lớn hơn giờ bắt đầu đợt 2.");
-                }
-
-                if (entity.StartTime2.Value < entity.EndTime)
-                {
-                    throw new ModelValidationException("Invalid_SplitShift_Overlap", "Khung giờ đợt 2 phải bắt đầu sau khi đợt 1 kết thúc.");
-                }
-
-                double period2Minutes = (entity.EndTime2.Value - entity.StartTime2.Value).TotalMinutes;
-
-                if (period1Minutes < 90 || period2Minutes < 90 || (period1Minutes + period2Minutes) < 240)
-                {
-                    throw new ModelValidationException("Invalid_MinSplitPeriodDuration", "Mỗi đợt của ca gãy phải có thời lượng tối thiểu 1.5 tiếng (90 phút) và tổng ca tối thiểu 4 tiếng.");
-                }
-
-                totalMinutes += period2Minutes;
-            }
-            else
-            {
-                entity.StartTime2 = null;
-                entity.EndTime2 = null;
-
-                if (period1Minutes < 120)
-                {
-                    throw new ModelValidationException("Invalid_MinShiftDuration", "Thời lượng ca làm việc tối thiểu phải từ 2 tiếng (120 phút) trở lên.");
-                }
+                throw new ModelValidationException("Invalid_MinShiftDuration", "Thời lượng ca làm việc tối thiểu phải từ 2 tiếng (120 phút) trở lên.");
             }
 
             if (entity.BreakMinutes > 0 && entity.BreakMinutes >= totalMinutes)
