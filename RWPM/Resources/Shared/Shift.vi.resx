@@ -54,4 +54,31 @@
   <data name="Delete_Warning" xml:space="preserve">
     <value>Bạn có chắc chắn muốn xóa ca làm việc này? Hành động này không thể hoàn tác.</value>
   </data>
+  <data name="AttendancePolicy_Title" xml:space="preserve">
+    <value>Cấu hình Chấm công &amp; Chuyên cần</value>
+  </data>
+  <data name="AttendancePolicy_Description" xml:space="preserve">
+    <value>Cấu hình dung sai quẹt thẻ và tính chuyên cần. Để trống để kế thừa cấu hình chung hệ thống.</value>
+  </data>
+  <data name="Placeholder_DefaultMinutes" xml:space="preserve">
+    <value>Mặc định hệ thống</value>
+  </data>
+  <data name="Badge_Template" xml:space="preserve">
+    <value>Ca chuẩn</value>
+  </data>
+  <data name="Badge_Custom" xml:space="preserve">
+    <value>Ca tùy chỉnh</value>
+  </data>
+  <data name="Filter_AllClassifications" xml:space="preserve">
+    <value>-- Tất cả phân loại --</value>
+  </data>
+  <data name="Shift_IsTemplate_Hint" xml:space="preserve">
+    <value>Bật để lưu thành ca chuẩn dùng trong xếp lịch chung. Tắt nếu đây là ca tùy chỉnh theo sự kiện/nhu cầu riêng.</value>
+  </data>
+  <data name="AttendancePolicy_UseDefault" xml:space="preserve">
+    <value>Áp dụng quy chế mặc định của công ty</value>
+  </data>
+  <data name="AttendancePolicy_InheritNotice" xml:space="preserve">
+    <value>Đang áp dụng theo chính sách chung của công ty. Tắt công tắc nếu muốn tùy chỉnh thông số riêng cho ca này.</value>
+  </data>
 </root>

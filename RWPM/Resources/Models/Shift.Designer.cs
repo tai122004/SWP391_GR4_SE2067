@@ -208,5 +208,71 @@ namespace RWPM.Resources.Models {
                 return ResourceManager.GetString("Invalid_MaxBreakMinutes", resourceCulture);
             }
         }
+        
+        public static string GracePeriodMinutes {
+            get {
+                return ResourceManager.GetString("GracePeriodMinutes", resourceCulture);
+            }
+        }
+        
+        public static string EarlyCheckInMinutes {
+            get {
+                return ResourceManager.GetString("EarlyCheckInMinutes", resourceCulture);
+            }
+        }
+        
+        public static string LateThresholdMinutes {
+            get {
+                return ResourceManager.GetString("LateThresholdMinutes", resourceCulture);
+            }
+        }
+        
+        public static string IsTemplate {
+            get {
+                return ResourceManager.GetString("IsTemplate", resourceCulture);
+            }
+        }
+        
+        public static string ShiftClassification {
+            get {
+                return ResourceManager.GetString("ShiftClassification", resourceCulture);
+            }
+        }
+        
+        public static string ShiftType_Overtime {
+            get {
+                return ResourceManager.GetString("ShiftType_Overtime", resourceCulture);
+            }
+        }
+        
+        public static string ShiftType_Flexible {
+            get {
+                return ResourceManager.GetString("ShiftType_Flexible", resourceCulture);
+            }
+        }
+        
+        public static string Invalid_GracePeriodMinutes {
+            get {
+                return ResourceManager.GetString("Invalid_GracePeriodMinutes", resourceCulture);
+            }
+        }
+        
+        public static string Invalid_EarlyCheckInMinutes {
+            get {
+                return ResourceManager.GetString("Invalid_EarlyCheckInMinutes", resourceCulture);
+            }
+        }
+        
+        public static string Invalid_LateThresholdMinutes {
+            get {
+                return ResourceManager.GetString("Invalid_LateThresholdMinutes", resourceCulture);
+            }
+        }
+        
+        public static string Invalid_GracePeriodThreshold {
+            get {
+                return ResourceManager.GetString("Invalid_GracePeriodThreshold", resourceCulture);
+            }
+        }
     }
 }

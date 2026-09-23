@@ -28,6 +28,18 @@ namespace RWPM.Common.Enums
         /// </summary>
         [Display(ResourceType = typeof(Resources.Models.Shift), Name = "ShiftType_FullDay")]
         FullDay = 4,
+
+        /// <summary>
+        /// Ca Tăng ca (Overtime)
+        /// </summary>
+        [Display(ResourceType = typeof(Resources.Models.Shift), Name = "ShiftType_Overtime")]
+        Overtime = 5,
+
+        /// <summary>
+        /// Ca Linh động (Flexible) - chỉ cần đủ số giờ
+        /// </summary>
+        [Display(ResourceType = typeof(Resources.Models.Shift), Name = "ShiftType_Flexible")]
+        Flexible = 6,
     }
 
     public static class ShiftTypeExtensions

@@ -54,4 +54,31 @@
   <data name="Delete_Warning" xml:space="preserve">
     <value>Are you sure you want to delete this shift? This action cannot be undone.</value>
   </data>
+  <data name="AttendancePolicy_Title" xml:space="preserve">
+    <value>Attendance &amp; Policy Configuration</value>
+  </data>
+  <data name="AttendancePolicy_Description" xml:space="preserve">
+    <value>Configure attendance tolerance rules. Leave blank to inherit system defaults.</value>
+  </data>
+  <data name="Placeholder_DefaultMinutes" xml:space="preserve">
+    <value>System Default</value>
+  </data>
+  <data name="Badge_Template" xml:space="preserve">
+    <value>Standard Shift</value>
+  </data>
+  <data name="Badge_Custom" xml:space="preserve">
+    <value>Custom Shift</value>
+  </data>
+  <data name="Filter_AllClassifications" xml:space="preserve">
+    <value>-- All Classifications --</value>
+  </data>
+  <data name="Shift_IsTemplate_Hint" xml:space="preserve">
+    <value>Enable to make this a standard shift template available for store scheduling.</value>
+  </data>
+  <data name="AttendancePolicy_UseDefault" xml:space="preserve">
+    <value>Apply company default attendance policy</value>
+  </data>
+  <data name="AttendancePolicy_InheritNotice" xml:space="preserve">
+    <value>Currently applying company default policy. Toggle off to customize rules for this shift.</value>
+  </data>
 </root>

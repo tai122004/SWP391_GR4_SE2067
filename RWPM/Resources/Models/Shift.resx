@@ -96,4 +96,37 @@
   <data name="Invalid_MaxBreakMinutes" xml:space="preserve">
     <value>Break time must be between 0 and 60 minutes (1 hour).</value>
   </data>
+  <data name="GracePeriodMinutes" xml:space="preserve">
+    <value>Grace Period (minutes)</value>
+  </data>
+  <data name="EarlyCheckInMinutes" xml:space="preserve">
+    <value>Early Check-in (minutes)</value>
+  </data>
+  <data name="LateThresholdMinutes" xml:space="preserve">
+    <value>Late Threshold (minutes)</value>
+  </data>
+  <data name="IsTemplate" xml:space="preserve">
+    <value>Shift Template</value>
+  </data>
+  <data name="ShiftClassification" xml:space="preserve">
+    <value>Classification</value>
+  </data>
+  <data name="ShiftType_Overtime" xml:space="preserve">
+    <value>Overtime</value>
+  </data>
+  <data name="ShiftType_Flexible" xml:space="preserve">
+    <value>Flexible</value>
+  </data>
+  <data name="Invalid_GracePeriodMinutes" xml:space="preserve">
+    <value>Grace period must be non-negative.</value>
+  </data>
+  <data name="Invalid_EarlyCheckInMinutes" xml:space="preserve">
+    <value>Early check-in time must be non-negative.</value>
+  </data>
+  <data name="Invalid_LateThresholdMinutes" xml:space="preserve">
+    <value>Late threshold must be non-negative.</value>
+  </data>
+  <data name="Invalid_GracePeriodThreshold" xml:space="preserve">
+    <value>Grace period must be less than late threshold.</value>
+  </data>
 </root>
