@@ -62,7 +62,7 @@
                     <th class="text-nowrap">@StoreModelResource.StoreName</th>
                     <th class="text-nowrap">@StoreModelResource.Address</th>
                     <th class="text-nowrap">@StoreModelResource.Phone</th>
-                    <th class="text-nowrap text-center"><i class="bi bi-geo-alt"></i> Định vị (Kinh/Vĩ - Bán kính)</th>
+                    <th class="text-nowrap text-center"><i class="bi bi-geo-alt"></i> @StoreSharedResource.Table_GeoLocation</th>
                     <th class="text-nowrap text-end">@SharedResource.CreatedDate</th>
                     <th class="text-nowrap text-center">@StoreModelResource.IsActive</th>
                     <th class="text-nowrap text-center">@SharedResource.Button_Action</th>
@@ -86,7 +86,7 @@
                                     </span>
                                     <br />
                                     <span class="text-muted">
-                                        <i class="bi bi-broadcast me-1"></i> Phạm vi: 
+                                        <i class="bi bi-broadcast me-1"></i> @StoreSharedResource.Range 
                                         <strong>
                                             @if (store.MinAllowedDistanceMeters > 0)
                                             {
@@ -102,7 +102,7 @@
                                 else
                                 {
                                     <span class="badge bg-warning-subtle text-warning border border-warning-subtle">
-                                        <i class="bi bi-exclamation-triangle me-1"></i> Chưa định vị
+                                        <i class="bi bi-exclamation-triangle me-1"></i> @StoreSharedResource.NotLocated
                                     </span>
                                 }
                             </td>

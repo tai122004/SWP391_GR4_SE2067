@@ -99,4 +99,13 @@
   <data name="Search_ErrorAlert" xml:space="preserve">
     <value>Không thể tìm kiếm địa chỉ: {0}\nBạn có thể click trực tiếp trên bản đồ hoặc chọn nút 'Vị trí gợi ý'.</value>
   </data>
+  <data name="Table_GeoLocation" xml:space="preserve">
+    <value>Định vị (Kinh/Vĩ - Bán kính)</value>
+  </data>
+  <data name="Range" xml:space="preserve">
+    <value>Phạm vi:</value>
+  </data>
+  <data name="NotLocated" xml:space="preserve">
+    <value>Chưa định vị</value>
+  </data>
 </root>

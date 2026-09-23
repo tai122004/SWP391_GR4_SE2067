@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RWPM.Infrastructure.Data;
 
@@ -11,9 +12,10 @@ using RWPM.Infrastructure.Data;
 namespace RWPM.Migrations
 {
     [DbContext(typeof(DefaultDatabaseContext))]
-    partial class DefaultDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20260921074750_UpgradeShiftEntity")]
+    partial class UpgradeShiftEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -85,29 +87,14 @@ namespace RWPM.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AttendanceId"), 1L, 1);
 
-                    b.Property<double?>("CheckInLatitude")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("CheckInLongitude")
-                        .HasColumnType("float");
-
                     b.Property<TimeSpan?>("CheckInTime")
                         .HasColumnType("time");
-
-                    b.Property<double?>("CheckOutLatitude")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("CheckOutLongitude")
-                        .HasColumnType("float");
 
                     b.Property<TimeSpan?>("CheckOutTime")
                         .HasColumnType("time");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("date");
-
-                    b.Property<double?>("DistanceMeters")
-                        .HasColumnType("float");
 
                     b.Property<int?>("ShiftId")
                         .HasColumnType("int");
@@ -382,9 +369,6 @@ namespace RWPM.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("AllowedRadiusMeters")
-                        .HasColumnType("int");
-
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(30)
@@ -396,15 +380,6 @@ namespace RWPM.Migrations
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
-
-                    b.Property<double?>("Latitude")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("Longitude")
-                        .HasColumnType("float");
-
-                    b.Property<int>("MinAllowedDistanceMeters")
-                        .HasColumnType("int");
 
                     b.Property<string>("Phone")
                         .IsRequired()
