@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RWPM.Infrastructure.Data;
 
@@ -11,9 +12,10 @@ using RWPM.Infrastructure.Data;
 namespace RWPM.Migrations
 {
     [DbContext(typeof(DefaultDatabaseContext))]
-    partial class DefaultDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20260923012401_Add_GPS_Columns_To_AttendanceRecord")]
+    partial class Add_GPS_Columns_To_AttendanceRecord
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -257,10 +259,10 @@ namespace RWPM.Migrations
                     b.Property<int?>("EarlyCheckInMinutes")
                         .HasColumnType("int");
 
-                    b.Property<int?>("EarlyCheckOutMinutes")
-                        .HasColumnType("int");
-
                     b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan?>("EndTime2")
                         .HasColumnType("time");
 
                     b.Property<int?>("GracePeriodMinutes")
@@ -286,6 +288,9 @@ namespace RWPM.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan?>("StartTime2")
                         .HasColumnType("time");
 
                     b.Property<byte>("Type")

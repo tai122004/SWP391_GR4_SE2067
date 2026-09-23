@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using RWPM.Resources.Shared;
+using RWPM.Common.Constants;
 
 namespace RWPM.Services.Implementation
 {
@@ -55,11 +56,8 @@ namespace RWPM.Services.Implementation
             var now = DateTime.Now.TimeOfDay;
             bool isValid = false;
 
-            if (now <= shift.StartTime.Add(TimeSpan.FromMinutes(30)))
-            {
-                isValid = true;
-            }
-            else if (shift.StartTime2.HasValue && now <= shift.StartTime2.Value.Add(TimeSpan.FromMinutes(30)) && now >= shift.StartTime2.Value.Subtract(TimeSpan.FromHours(2)))
+            var lateThreshold = shift.LateThresholdMinutes ?? ShiftDefaults.LateThresholdMinutes;
+            if (now <= shift.StartTime.Add(TimeSpan.FromMinutes(lateThreshold)))
             {
                 isValid = true;
             }

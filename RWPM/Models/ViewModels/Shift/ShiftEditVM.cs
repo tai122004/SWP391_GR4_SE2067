@@ -32,12 +32,6 @@ namespace RWPM.Models.ViewModels.Shift
         [Required]
         public TimeSpan EndTime { get; set; }
 
-        [Display(Name = "StartTime2", ResourceType = typeof(Resources.Models.Shift))]
-        public TimeSpan? StartTime2 { get; set; }
-
-        [Display(Name = "EndTime2", ResourceType = typeof(Resources.Models.Shift))]
-        public TimeSpan? EndTime2 { get; set; }
-
         [Display(Name = "BreakMinutes", ResourceType = typeof(Resources.Models.Shift))]
         [Range(0, 60, ErrorMessageResourceType = typeof(Resources.Models.Shift), ErrorMessageResourceName = "Invalid_MaxBreakMinutes")]
         public int BreakMinutes { get; set; }
@@ -55,6 +49,10 @@ namespace RWPM.Models.ViewModels.Shift
         [Display(Name = "EarlyCheckInMinutes", ResourceType = typeof(Resources.Models.Shift))]
         [Range(0, 120)]
         public int? EarlyCheckInMinutes { get; set; }
+
+        [Display(Name = "EarlyCheckOutMinutes", ResourceType = typeof(Resources.Models.Shift))]
+        [Range(0, 60)]
+        public int? EarlyCheckOutMinutes { get; set; }
 
         [Display(Name = "LateThresholdMinutes", ResourceType = typeof(Resources.Models.Shift))]
         [Range(0, 480)]
@@ -76,16 +74,16 @@ namespace RWPM.Models.ViewModels.Shift
             Type = entity.Type;
             StartTime = entity.StartTime;
             EndTime = entity.EndTime;
-            StartTime2 = entity.StartTime2;
-            EndTime2 = entity.EndTime2;
             BreakMinutes = entity.BreakMinutes;
             
             UseDefaultAttendancePolicy = !entity.GracePeriodMinutes.HasValue 
                                       && !entity.EarlyCheckInMinutes.HasValue 
+                                      && !entity.EarlyCheckOutMinutes.HasValue
                                       && !entity.LateThresholdMinutes.HasValue;
 
             GracePeriodMinutes = entity.GracePeriodMinutes ?? ShiftDefaults.GracePeriodMinutes;
             EarlyCheckInMinutes = entity.EarlyCheckInMinutes ?? ShiftDefaults.EarlyCheckInMinutes;
+            EarlyCheckOutMinutes = entity.EarlyCheckOutMinutes ?? ShiftDefaults.EarlyCheckOutMinutes;
             LateThresholdMinutes = entity.LateThresholdMinutes ?? ShiftDefaults.LateThresholdMinutes;
 
             IsTemplate = entity.IsTemplate;
@@ -103,38 +101,9 @@ namespace RWPM.Models.ViewModels.Shift
             double period1Minutes = (EndTime > StartTime) ? (EndTime - StartTime).TotalMinutes : 0;
             double totalMinutes = period1Minutes;
 
-            if (Type == ShiftType.Split)
+            if (period1Minutes > 0 && period1Minutes < 120)
             {
-                if (!StartTime2.HasValue || !EndTime2.HasValue)
-                {
-                    yield return new ValidationResult(Resources.Models.Shift.Invalid_SplitShift_Required, new[] { nameof(StartTime2), nameof(EndTime2) });
-                }
-                else
-                {
-                    if (EndTime2.Value <= StartTime2.Value)
-                    {
-                        yield return new ValidationResult(Resources.Models.Shift.Invalid_SplitShift_TimeRange, new[] { nameof(EndTime2) });
-                    }
-                    if (StartTime2.Value < EndTime)
-                    {
-                        yield return new ValidationResult(Resources.Models.Shift.Invalid_SplitShift_Overlap, new[] { nameof(StartTime2) });
-                    }
-
-                    double period2Minutes = (EndTime2.Value > StartTime2.Value) ? (EndTime2.Value - StartTime2.Value).TotalMinutes : 0;
-                    totalMinutes += period2Minutes;
-
-                    if (period1Minutes > 0 && period2Minutes > 0 && (period1Minutes < 90 || period2Minutes < 90 || totalMinutes < 240))
-                    {
-                        yield return new ValidationResult(Resources.Models.Shift.Invalid_MinSplitPeriodDuration, new[] { nameof(StartTime), nameof(EndTime), nameof(StartTime2), nameof(EndTime2) });
-                    }
-                }
-            }
-            else
-            {
-                if (period1Minutes > 0 && period1Minutes < 120)
-                {
-                    yield return new ValidationResult(Resources.Models.Shift.Invalid_MinShiftDuration, new[] { nameof(EndTime) });
-                }
+                yield return new ValidationResult(Resources.Models.Shift.Invalid_MinShiftDuration, new[] { nameof(EndTime) });
             }
 
             if (BreakMinutes > 60)
@@ -146,7 +115,7 @@ namespace RWPM.Models.ViewModels.Shift
             {
                 yield return new ValidationResult(Resources.Models.Shift.Invalid_BreakMinutes, new[] { nameof(BreakMinutes) });
             }
-            else if (totalMinutes > 0 && (totalMinutes - BreakMinutes) < 120 && Type != ShiftType.Split)
+            else if (totalMinutes > 0 && (totalMinutes - BreakMinutes) < 120)
             {
                 yield return new ValidationResult(Resources.Models.Shift.Invalid_MinShiftDuration, new[] { nameof(EndTime) });
             }
@@ -159,17 +128,15 @@ namespace RWPM.Models.ViewModels.Shift
 
         public void ApplyToEntity(Entities.Shift entity)
         {
-            var isSplit = Type == ShiftType.Split;
             entity.ShiftCode = ShiftCode.Trim();
             entity.ShiftName = ShiftName.Trim();
             entity.Type = Type;
             entity.StartTime = StartTime;
             entity.EndTime = EndTime;
-            entity.StartTime2 = isSplit ? StartTime2 : null;
-            entity.EndTime2 = isSplit ? EndTime2 : null;
             entity.BreakMinutes = BreakMinutes;
             entity.GracePeriodMinutes = UseDefaultAttendancePolicy ? null : GracePeriodMinutes;
             entity.EarlyCheckInMinutes = UseDefaultAttendancePolicy ? null : EarlyCheckInMinutes;
+            entity.EarlyCheckOutMinutes = UseDefaultAttendancePolicy ? null : EarlyCheckOutMinutes;
             entity.LateThresholdMinutes = UseDefaultAttendancePolicy ? null : LateThresholdMinutes;
             entity.IsTemplate = IsTemplate;
             entity.Description = Description?.Trim() ?? string.Empty;

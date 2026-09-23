@@ -101,6 +101,12 @@ namespace RWPM.Resources.Models {
             }
         }
         
+        public static string ShiftType_Peak {
+            get {
+                return ResourceManager.GetString("ShiftType_Peak", resourceCulture);
+            }
+        }
+        
         public static string ShiftType_FullDay {
             get {
                 return ResourceManager.GetString("ShiftType_FullDay", resourceCulture);
@@ -218,6 +224,12 @@ namespace RWPM.Resources.Models {
         public static string EarlyCheckInMinutes {
             get {
                 return ResourceManager.GetString("EarlyCheckInMinutes", resourceCulture);
+            }
+        }
+        
+        public static string EarlyCheckOutMinutes {
+            get {
+                return ResourceManager.GetString("EarlyCheckOutMinutes", resourceCulture);
             }
         }
         

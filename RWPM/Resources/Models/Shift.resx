@@ -42,6 +42,9 @@
   <data name="ShiftType_Split" xml:space="preserve">
     <value>Split</value>
   </data>
+  <data name="ShiftType_Peak" xml:space="preserve">
+    <value>Peak Hours Shift</value>
+  </data>
   <data name="ShiftType_FullDay" xml:space="preserve">
     <value>Full Day</value>
   </data>
@@ -100,7 +103,10 @@
     <value>Grace Period (minutes)</value>
   </data>
   <data name="EarlyCheckInMinutes" xml:space="preserve">
-    <value>Early Check-in (minutes)</value>
+    <value>Allowed Early Check-in (minutes)</value>
+  </data>
+  <data name="EarlyCheckOutMinutes" xml:space="preserve">
+    <value>Allowed Early Check-out (minutes)</value>
   </data>
   <data name="LateThresholdMinutes" xml:space="preserve">
     <value>Late Threshold (minutes)</value>
