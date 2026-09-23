@@ -32,10 +32,47 @@ namespace RWPM.Controllers
             if (string.IsNullOrEmpty(username)) return RedirectToAction("Login", "Auth");
 
             ViewBag.TodayRecord = await _attendanceService.GetTodayRecordAsync(username);
-            ViewBag.ActiveShifts = await _context.Set<RWPM.Models.Entities.Shift>().Where(s => s.IsActive).ToListAsync();
-            
             bool isAdmin = User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin");
             ViewBag.IsAdmin = isAdmin;
+
+            var today = DateTime.Today;
+            var employee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
+            if (employee != null)
+            {
+                var registeredShiftIds = await _context.Set<ShiftRegistration>()
+                    .Where(sr => sr.EmployeeId == employee.EmployeeId && sr.WorkDate == today && sr.Status == RWPM.Common.Enums.RegistrationStatus.Approved)
+                    .Select(sr => sr.ShiftId)
+                    .ToListAsync();
+
+                var allTodayShifts = await _context.Set<RWPM.Models.Entities.Shift>()
+                    .Where(s => s.IsActive && registeredShiftIds.Contains(s.ShiftId))
+                    .ToListAsync();
+                    
+                var now = DateTime.Now.TimeOfDay;
+                var validShifts = new List<RWPM.Models.Entities.Shift>();
+                foreach(var s in allTodayShifts)
+                {
+                    int lThreshold = s.LateThresholdMinutes ?? RWPM.Common.Constants.ShiftDefaults.LateThresholdMinutes;
+                    var start1Late = s.StartTime.Add(TimeSpan.FromMinutes(lThreshold));
+                    
+                    bool isExpired = now > start1Late;
+                    if (s.StartTime2.HasValue) 
+                    {
+                        var start2Late = s.StartTime2.Value.Add(TimeSpan.FromMinutes(lThreshold));
+                        if (now <= start2Late) isExpired = false;
+                    }
+                    
+                    if (!isExpired) {
+                        validShifts.Add(s);
+                    }
+                }
+                ViewBag.ActiveShifts = validShifts;
+            }
+            else
+            {
+                ViewBag.ActiveShifts = new List<RWPM.Models.Entities.Shift>();
+            }
+            
             ViewBag.SearchQuery = searchQuery;
 
             List<AttendanceRecord> history;
@@ -53,14 +90,14 @@ namespace RWPM.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CheckIn(int shiftId, double? userLatitude = null, double? userLongitude = null)
+        public async Task<IActionResult> CheckIn(double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
         {
             var username = User.Identity?.Name;
             if (string.IsNullOrEmpty(username)) return RedirectToAction("Login", "Auth");
 
             try
             {
-                await _attendanceService.CheckInAsync(username, shiftId, userLatitude, userLongitude);
+                await _attendanceService.CheckInAsync(username, userLatitude, userLongitude, photo);
                 TempData["SuccessMessage"] = SharedResource.ResourceManager.GetString("Attendance_CheckInSuccess");
             }
             catch (Exception ex)
@@ -72,14 +109,14 @@ namespace RWPM.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CheckOut(double? userLatitude = null, double? userLongitude = null)
+        public async Task<IActionResult> CheckOut(double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
         {
             var username = User.Identity?.Name;
             if (string.IsNullOrEmpty(username)) return RedirectToAction("Login", "Auth");
 
             try
             {
-                await _attendanceService.CheckOutAsync(username, userLatitude, userLongitude);
+                await _attendanceService.CheckOutAsync(username, userLatitude, userLongitude, photo);
                 TempData["SuccessMessage"] = SharedResource.ResourceManager.GetString("Attendance_CheckOutSuccess");
             }
             catch (Exception ex)

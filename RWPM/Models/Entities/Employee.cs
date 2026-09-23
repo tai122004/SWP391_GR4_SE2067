@@ -1,4 +1,4 @@
-﻿using RWPM.Models.Common;
+using RWPM.Models.Common;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -23,6 +23,8 @@ namespace RWPM.Models.Entities
         public DateTime JoinDate { get; set; }
 
         public bool IsActive { get; set; } = true;
+
+
 
         public Acc Account { get; set; } = null!;
         public Store Store { get; set; } = null!;
