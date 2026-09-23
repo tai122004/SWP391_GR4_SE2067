@@ -2,6 +2,8 @@ using RWPM.Common.Attributes;
 using RWPM.Common.Enums;
 using System.ComponentModel.DataAnnotations;
 
+using RWPM.Common.Constants;
+
 namespace RWPM.Models.ViewModels.Shift
 {
     public class ShiftEditVM : IValidatableObject
@@ -44,6 +46,23 @@ namespace RWPM.Models.ViewModels.Shift
         [MaxLengthLocalized(255)]
         public string? Description { get; set; }
 
+        public bool UseDefaultAttendancePolicy { get; set; } = true;
+
+        [Display(Name = "GracePeriodMinutes", ResourceType = typeof(Resources.Models.Shift))]
+        [Range(0, 120)]
+        public int? GracePeriodMinutes { get; set; }
+
+        [Display(Name = "EarlyCheckInMinutes", ResourceType = typeof(Resources.Models.Shift))]
+        [Range(0, 120)]
+        public int? EarlyCheckInMinutes { get; set; }
+
+        [Display(Name = "LateThresholdMinutes", ResourceType = typeof(Resources.Models.Shift))]
+        [Range(0, 480)]
+        public int? LateThresholdMinutes { get; set; }
+
+        [Display(Name = "IsTemplate", ResourceType = typeof(Resources.Models.Shift))]
+        public bool IsTemplate { get; set; } = true;
+
         [Display(Name = "IsActive", ResourceType = typeof(Resources.Models.Shift))]
         public bool IsActive { get; set; } = true;
 
@@ -60,6 +79,16 @@ namespace RWPM.Models.ViewModels.Shift
             StartTime2 = entity.StartTime2;
             EndTime2 = entity.EndTime2;
             BreakMinutes = entity.BreakMinutes;
+            
+            UseDefaultAttendancePolicy = !entity.GracePeriodMinutes.HasValue 
+                                      && !entity.EarlyCheckInMinutes.HasValue 
+                                      && !entity.LateThresholdMinutes.HasValue;
+
+            GracePeriodMinutes = entity.GracePeriodMinutes ?? ShiftDefaults.GracePeriodMinutes;
+            EarlyCheckInMinutes = entity.EarlyCheckInMinutes ?? ShiftDefaults.EarlyCheckInMinutes;
+            LateThresholdMinutes = entity.LateThresholdMinutes ?? ShiftDefaults.LateThresholdMinutes;
+
+            IsTemplate = entity.IsTemplate;
             Description = entity.Description;
             IsActive = entity.IsActive;
         }
@@ -121,6 +150,11 @@ namespace RWPM.Models.ViewModels.Shift
             {
                 yield return new ValidationResult(Resources.Models.Shift.Invalid_MinShiftDuration, new[] { nameof(EndTime) });
             }
+
+            if (GracePeriodMinutes.HasValue && LateThresholdMinutes.HasValue && GracePeriodMinutes.Value >= LateThresholdMinutes.Value)
+            {
+                yield return new ValidationResult(Resources.Models.Shift.Invalid_GracePeriodThreshold, new[] { nameof(GracePeriodMinutes), nameof(LateThresholdMinutes) });
+            }
         }
 
         public void ApplyToEntity(Entities.Shift entity)
@@ -134,7 +168,11 @@ namespace RWPM.Models.ViewModels.Shift
             entity.StartTime2 = isSplit ? StartTime2 : null;
             entity.EndTime2 = isSplit ? EndTime2 : null;
             entity.BreakMinutes = BreakMinutes;
-            Description = Description?.Trim() ?? string.Empty;
+            entity.GracePeriodMinutes = UseDefaultAttendancePolicy ? null : GracePeriodMinutes;
+            entity.EarlyCheckInMinutes = UseDefaultAttendancePolicy ? null : EarlyCheckInMinutes;
+            entity.LateThresholdMinutes = UseDefaultAttendancePolicy ? null : LateThresholdMinutes;
+            entity.IsTemplate = IsTemplate;
+            entity.Description = Description?.Trim() ?? string.Empty;
             entity.IsActive = IsActive;
         }
     }

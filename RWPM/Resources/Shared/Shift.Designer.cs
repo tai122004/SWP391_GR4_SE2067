@@ -124,5 +124,59 @@ namespace RWPM.Resources.Shared {
                 return ResourceManager.GetString("Delete_Warning", resourceCulture);
             }
         }
+        
+        public static string AttendancePolicy_Title {
+            get {
+                return ResourceManager.GetString("AttendancePolicy_Title", resourceCulture);
+            }
+        }
+        
+        public static string AttendancePolicy_Description {
+            get {
+                return ResourceManager.GetString("AttendancePolicy_Description", resourceCulture);
+            }
+        }
+        
+        public static string Placeholder_DefaultMinutes {
+            get {
+                return ResourceManager.GetString("Placeholder_DefaultMinutes", resourceCulture);
+            }
+        }
+        
+        public static string Badge_Template {
+            get {
+                return ResourceManager.GetString("Badge_Template", resourceCulture);
+            }
+        }
+        
+        public static string Badge_Custom {
+            get {
+                return ResourceManager.GetString("Badge_Custom", resourceCulture);
+            }
+        }
+        
+        public static string Filter_AllClassifications {
+            get {
+                return ResourceManager.GetString("Filter_AllClassifications", resourceCulture);
+            }
+        }
+        
+        public static string Shift_IsTemplate_Hint {
+            get {
+                return ResourceManager.GetString("Shift_IsTemplate_Hint", resourceCulture);
+            }
+        }
+        
+        public static string AttendancePolicy_UseDefault {
+            get {
+                return ResourceManager.GetString("AttendancePolicy_UseDefault", resourceCulture);
+            }
+        }
+        
+        public static string AttendancePolicy_InheritNotice {
+            get {
+                return ResourceManager.GetString("AttendancePolicy_InheritNotice", resourceCulture);
+            }
+        }
     }
 }

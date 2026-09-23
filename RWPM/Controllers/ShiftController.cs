@@ -111,38 +111,20 @@ namespace RWPM.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Shift/Delete/5
-        public async Task<IActionResult> Delete(int id)
+        // GET: Shift/Delete/5 (Chính sách Bảo toàn dữ liệu - Không hỗ trợ xóa cứng)
+        [HttpGet]
+        public IActionResult Delete(int id)
         {
-            var shift = await _shiftService.GetByIdAsync(id);
-            if (shift == null)
-                return NotFound();
-
-            return View(shift);
+            AlertHelper.AddErrorMessage(TempData, "Hệ thống áp dụng chính sách Bảo toàn dữ liệu (Soft Delete). Ca làm việc không hỗ trợ xóa vĩnh viễn khỏi hệ thống, vui lòng gạt tắt công tắc Trạng thái sang 'Ngừng hoạt động'.");
+            return RedirectToAction(nameof(Index));
         }
 
-        // POST: Shift/DeleteConfirmed
+        // POST: Shift/DeleteConfirmed (Chính sách Bảo toàn dữ liệu - Chặn xóa cứng)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int shiftId)
+        public IActionResult DeleteConfirmed(int shiftId)
         {
-            try
-            {
-                var shift = await _shiftService.GetRequiredByIdAsync(shiftId);
-                await _shiftService.DeleteAsync(shift);
-                AlertHelper.DeleteSuccess(TempData);
-            }
-            catch (ModelValidationException ex)
-            {
-                AlertHelper.AddErrorMessage(TempData, ex.GetErrorString(_localizer));
-                return RedirectToAction(nameof(Delete), new { id = shiftId });
-            }
-            catch (Exception ex)
-            {
-                AlertHelper.AddErrorMessage(TempData, ex.Message);
-                return RedirectToAction(nameof(Delete), new { id = shiftId });
-            }
-
+            AlertHelper.AddErrorMessage(TempData, "Hệ thống áp dụng chính sách Bảo toàn dữ liệu (Soft Delete). Ca làm việc không hỗ trợ xóa vĩnh viễn khỏi hệ thống, vui lòng gạt tắt công tắc Trạng thái sang 'Ngừng hoạt động'.");
             return RedirectToAction(nameof(Index));
         }
 
