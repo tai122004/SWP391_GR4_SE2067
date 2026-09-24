@@ -135,4 +135,10 @@
   <data name="Invalid_GracePeriodThreshold" xml:space="preserve">
     <value>Grace period must be less than late threshold.</value>
   </data>
+  <data name="StoreId" xml:space="preserve">
+    <value>Applied Branch</value>
+  </data>
+  <data name="StoreId_Required" xml:space="preserve">
+    <value>Please select an applied branch for branch-specific shift.</value>
+  </data>
 </root>

@@ -45,6 +45,16 @@
             </select>
         </div>
 
+        @if (Model.StoreSelectList != null)
+        {
+            <div class="col-md-4 col-lg-3">
+                <label class="form-label small" asp-for="StoreId">@ShiftModelResource.StoreId</label>
+                <select asp-for="StoreId" class="form-select form-select-sm" asp-items="Model.StoreSelectList">
+                    <option value="">@ShiftSharedResource.Filter_AllStores</option>
+                </select>
+            </div>
+        }
+
         <div class="col-12">
             <button type="submit" class="btn btn-sm btn-outline-secondary">
                 <i class="bi bi-search"></i>
@@ -71,11 +81,12 @@
                 <tr>
                     <th class="text-nowrap" style="width: 120px;">@ShiftModelResource.ShiftCode</th>
                     <th class="text-nowrap">@ShiftModelResource.ShiftName</th>
-                    <th class="text-nowrap" style="width: 140px;">@ShiftModelResource.ShiftType</th>
-                    <th class="text-nowrap text-center" style="width: 140px;">@ShiftModelResource.ShiftClassification</th>
-                    <th class="text-nowrap text-center" style="width: 170px;">@ShiftModelResource.TimeDisplay</th>
-                    <th class="text-nowrap text-center" style="width: 110px;">@ShiftModelResource.IsActive</th>
-                    <th class="text-nowrap text-center" style="width: 130px;">@SharedResource.Button_Action</th>
+                    <th class="text-nowrap" style="width: 130px;">@ShiftModelResource.ShiftType</th>
+                    <th class="text-nowrap text-center" style="width: 130px;">@ShiftModelResource.ShiftClassification</th>
+                    <th class="text-nowrap text-center" style="width: 150px;">@ShiftSharedResource.Scope_Title</th>
+                    <th class="text-nowrap text-center" style="width: 150px;">@ShiftModelResource.TimeDisplay</th>
+                    <th class="text-nowrap text-center" style="width: 100px;">@ShiftModelResource.IsActive</th>
+                    <th class="text-nowrap text-center" style="width: 120px;">@SharedResource.Button_Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -109,6 +120,20 @@
                                     </span>
                                 }
                             </td>
+                            <td class="text-center">
+                                @if (shift.IsTemplate || !shift.StoreId.HasValue)
+                                {
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                        <i class="bi bi-globe me-1"></i>@ShiftSharedResource.Scope_AllStores
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-info-subtle text-info border border-info-subtle" title="@(shift.Store?.Address ?? "")">
+                                        <i class="bi bi-shop me-1"></i>@(shift.Store?.StoreName ?? $"CN #{shift.StoreId}")
+                                    </span>
+                                }
+                            </td>
                             <td class="text-center font-monospace">
                                 <span class="badge bg-light text-dark border font-monospace px-2 py-1">@timeDisplay</span>
                             </td>
@@ -128,6 +153,8 @@
                                         data-name="@shift.GetLocalizedName()"
                                         data-type="@shift.Type.GetDisplayName()"
                                         data-istemplate="@shift.IsTemplate"
+                                        data-storeid="@shift.StoreId"
+                                        data-store="@(shift.IsTemplate || !shift.StoreId.HasValue ? ShiftSharedResource.Scope_AllStores : (shift.Store?.StoreName ?? $"Chi nhánh #{shift.StoreId}"))"
                                         data-time="@timeDisplay"
                                         data-break="@(shift.BreakMinutes > 0 ? $"{shift.BreakMinutes} phút" : "Không có")"
                                         data-early="@(shift.EarlyCheckInMinutes.HasValue ? $"{shift.EarlyCheckInMinutes} phút" : $"{ShiftDefaults.EarlyCheckInMinutes} phút (Mặc định)")"
@@ -165,7 +192,8 @@
     @await Html.PartialAsync("_PaginationPartial", Model.PanigationResponse.ToPaginationRes(new Dictionary<string, string?>() {
         { "Search", Model.Search },
         { "IsActive", Model.IsActive.ToString() },
-        { "IsTemplate", Model.IsTemplate?.ToString() }
+        { "IsTemplate", Model.IsTemplate?.ToString() },
+        { "StoreId", Model.StoreId?.ToString() }
     }))
 </div>
 
@@ -203,8 +231,9 @@
                     <div class="col-md-6">
                         <div class="border rounded p-3 h-100 bg-light-subtle">
                             <div class="small text-muted mb-1"><i class="bi bi-tag me-1"></i>Phân loại & Trạng thái:</div>
-                            <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
                                 <span id="detailShiftTemplateBadge"></span>
+                                <span id="detailShiftStoreBadge"></span>
                                 <span id="detailShiftActiveBadge"></span>
                             </div>
                             <div class="small text-muted">
@@ -302,6 +331,12 @@
                     $('#detailShiftTemplateBadge').html('<span class="badge bg-success-subtle text-success border border-success-subtle"><i class="bi bi-star-fill me-1"></i>@ShiftSharedResource.Badge_Template</span>');
                 } else {
                     $('#detailShiftTemplateBadge').html('<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle"><i class="bi bi-gear-fill me-1"></i>@ShiftSharedResource.Badge_Custom</span>');
+                }
+
+                if (data.istemplate === 'True' || data.istemplate === true || !data.storeid) {
+                    $('#detailShiftStoreBadge').html('<span class="badge bg-primary-subtle text-primary border border-primary-subtle"><i class="bi bi-globe me-1"></i>@ShiftSharedResource.Scope_AllStores</span>');
+                } else {
+                    $('#detailShiftStoreBadge').html('<span class="badge bg-info-subtle text-info border border-info-subtle"><i class="bi bi-shop me-1"></i>' + data.store + '</span>');
                 }
 
                 if (data.isactive === 'True' || data.isactive === true) {

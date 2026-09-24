@@ -135,4 +135,10 @@
   <data name="Invalid_GracePeriodThreshold" xml:space="preserve">
     <value>Thời gian cho phép đi muộn phải nhỏ hơn ngưỡng vắng mặt.</value>
   </data>
+  <data name="StoreId" xml:space="preserve">
+    <value>Chi nhánh áp dụng</value>
+  </data>
+  <data name="StoreId_Required" xml:space="preserve">
+    <value>Vui lòng chọn chi nhánh áp dụng cho ca riêng.</value>
+  </data>
 </root>

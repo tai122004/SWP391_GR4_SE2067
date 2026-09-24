@@ -60,6 +60,9 @@ namespace RWPM.Models.ViewModels.Shift
         [Display(Name = "IsTemplate", ResourceType = typeof(Resources.Models.Shift))]
         public bool IsTemplate { get; set; } = true;
 
+        [Display(Name = "StoreId", ResourceType = typeof(Resources.Models.Shift))]
+        public int? StoreId { get; set; }
+
         [Display(Name = "IsActive", ResourceType = typeof(Resources.Models.Shift))]
         public bool IsActive { get; set; } = true;
 
@@ -98,6 +101,11 @@ namespace RWPM.Models.ViewModels.Shift
             {
                 yield return new ValidationResult(Resources.Models.Shift.Invalid_GracePeriodThreshold, new[] { nameof(GracePeriodMinutes), nameof(LateThresholdMinutes) });
             }
+
+            if (!IsTemplate && !StoreId.HasValue)
+            {
+                yield return new ValidationResult(Resources.Models.Shift.StoreId_Required, new[] { nameof(StoreId) });
+            }
         }
 
         public Entities.Shift ToEntity()
@@ -115,6 +123,7 @@ namespace RWPM.Models.ViewModels.Shift
                 EarlyCheckOutMinutes = UseDefaultAttendancePolicy ? null : EarlyCheckOutMinutes,
                 LateThresholdMinutes = UseDefaultAttendancePolicy ? null : LateThresholdMinutes,
                 IsTemplate = IsTemplate,
+                StoreId = IsTemplate ? null : StoreId,
                 Description = Description?.Trim() ?? string.Empty,
                 IsActive = IsActive
             };

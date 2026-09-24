@@ -73,7 +73,16 @@
     <value>-- Tất cả phân loại --</value>
   </data>
   <data name="Shift_IsTemplate_Hint" xml:space="preserve">
-    <value>Bật để lưu thành ca chuẩn dùng trong xếp lịch chung. Tắt nếu đây là ca tùy chỉnh theo sự kiện/nhu cầu riêng.</value>
+    <value>Bật để áp dụng chung cho tất cả chi nhánh toàn hệ thống. Tắt để chọn chi nhánh áp dụng riêng cho ca này.</value>
+  </data>
+  <data name="Scope_Title" xml:space="preserve">
+    <value>Phạm vi áp dụng</value>
+  </data>
+  <data name="Scope_AllStores" xml:space="preserve">
+    <value>Toàn hệ thống</value>
+  </data>
+  <data name="Filter_AllStores" xml:space="preserve">
+    <value>-- Tất cả chi nhánh --</value>
   </data>
   <data name="AttendancePolicy_UseDefault" xml:space="preserve">
     <value>Áp dụng quy chế mặc định của công ty</value>

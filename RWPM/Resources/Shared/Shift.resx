@@ -73,7 +73,16 @@
     <value>-- All Classifications --</value>
   </data>
   <data name="Shift_IsTemplate_Hint" xml:space="preserve">
-    <value>Enable to make this a standard shift template available for store scheduling.</value>
+    <value>Turn on to apply to all branches company-wide. Turn off to specify a particular branch for this shift.</value>
+  </data>
+  <data name="Scope_Title" xml:space="preserve">
+    <value>Scope</value>
+  </data>
+  <data name="Scope_AllStores" xml:space="preserve">
+    <value>All Branches</value>
+  </data>
+  <data name="Filter_AllStores" xml:space="preserve">
+    <value>-- All Branches --</value>
   </data>
   <data name="AttendancePolicy_UseDefault" xml:space="preserve">
     <value>Apply company default attendance policy</value>

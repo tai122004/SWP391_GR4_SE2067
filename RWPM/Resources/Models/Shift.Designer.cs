@@ -286,5 +286,17 @@ namespace RWPM.Resources.Models {
                 return ResourceManager.GetString("Invalid_GracePeriodThreshold", resourceCulture);
             }
         }
+        
+        public static string StoreId {
+            get {
+                return ResourceManager.GetString("StoreId", resourceCulture);
+            }
+        }
+        
+        public static string StoreId_Required {
+            get {
+                return ResourceManager.GetString("StoreId_Required", resourceCulture);
+            }
+        }
     }
 }

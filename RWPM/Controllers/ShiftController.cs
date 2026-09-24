@@ -15,13 +15,16 @@ namespace RWPM.Controllers
     {
         private readonly IStringLocalizer _localizer;
         private readonly IShiftService _shiftService;
+        private readonly IStoreService _storeService;
 
         public ShiftController(
             IStringLocalizer<ErrorServerDefinition> localizer,
-            IShiftService shiftService)
+            IShiftService shiftService,
+            IStoreService storeService)
         {
             _localizer = localizer;
             _shiftService = shiftService;
+            _storeService = storeService;
         }
 
         // GET: Shift
@@ -29,12 +32,14 @@ namespace RWPM.Controllers
         public async Task<IActionResult> Index(ShiftSearch searchObject)
         {
             var result = await _shiftService.SearchAsync(searchObject);
-            return View(new ShiftListVM(result, searchObject));
+            var storeSelectList = await _storeService.GetSelectListAsync();
+            return View(new ShiftListVM(result, searchObject, storeSelectList));
         }
 
         // GET: Shift/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            ViewBag.StoreList = await _storeService.GetSelectListAsync();
             return View(new ShiftCreateVM());
         }
 
@@ -45,6 +50,7 @@ namespace RWPM.Controllers
         {
             if (!ModelState.IsValid)
             {
+                ViewBag.StoreList = await _storeService.GetSelectListAsync();
                 return View(viewModel);
             }
 
@@ -56,11 +62,13 @@ namespace RWPM.Controllers
             catch (ModelValidationException ex)
             {
                 AlertHelper.AddErrorMessage(TempData, ex.GetErrorString(_localizer));
+                ViewBag.StoreList = await _storeService.GetSelectListAsync();
                 return View(viewModel);
             }
             catch (Exception ex)
             {
                 AlertHelper.AddErrorMessage(TempData, ex.Message);
+                ViewBag.StoreList = await _storeService.GetSelectListAsync();
                 return View(viewModel);
             }
 
@@ -74,6 +82,7 @@ namespace RWPM.Controllers
             if (shift == null)
                 return NotFound();
 
+            ViewBag.StoreList = await _storeService.GetSelectListAsync();
             return View(new ShiftEditVM(shift));
         }
 
@@ -87,6 +96,7 @@ namespace RWPM.Controllers
 
             if (!ModelState.IsValid)
             {
+                ViewBag.StoreList = await _storeService.GetSelectListAsync();
                 return View(viewModel);
             }
 
@@ -100,11 +110,13 @@ namespace RWPM.Controllers
             catch (ModelValidationException ex)
             {
                 AlertHelper.AddErrorMessage(TempData, ex.GetErrorString(_localizer));
+                ViewBag.StoreList = await _storeService.GetSelectListAsync();
                 return View(viewModel);
             }
             catch (Exception ex)
             {
                 AlertHelper.AddErrorMessage(TempData, ex.Message);
+                ViewBag.StoreList = await _storeService.GetSelectListAsync();
                 return View(viewModel);
             }
 
