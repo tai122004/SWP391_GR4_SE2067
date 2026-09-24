@@ -178,5 +178,23 @@ namespace RWPM.Resources.Shared {
                 return ResourceManager.GetString("AttendancePolicy_InheritNotice", resourceCulture);
             }
         }
+        
+        public static string Scope_Title {
+            get {
+                return ResourceManager.GetString("Scope_Title", resourceCulture);
+            }
+        }
+        
+        public static string Scope_AllStores {
+            get {
+                return ResourceManager.GetString("Scope_AllStores", resourceCulture);
+            }
+        }
+        
+        public static string Filter_AllStores {
+            get {
+                return ResourceManager.GetString("Filter_AllStores", resourceCulture);
+            }
+        }
     }
 }

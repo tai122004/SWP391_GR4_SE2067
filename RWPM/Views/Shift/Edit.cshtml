@@ -186,6 +186,16 @@
                         <label class="form-check-label fw-semibold" for="isTemplateSwitch" asp-for="IsTemplate">@ShiftModelResource.IsTemplate</label>
                         <div class="form-text small text-muted">@ShiftSharedResource.Shift_IsTemplate_Hint</div>
                     </div>
+                    <!-- Khối chọn Chi nhánh khi tắt ca chuẩn (Ca riêng cho chi nhánh) -->
+                    <div id="storeSelectContainer" class="mt-2 pt-2 border-top @(Model.IsTemplate ? "d-none" : "")">
+                        <label class="form-label small fw-semibold text-primary" asp-for="StoreId">
+                            <i class="bi bi-shop me-1"></i>@ShiftModelResource.StoreId <span class="text-danger">*</span>
+                        </label>
+                        <select asp-for="StoreId" class="form-select form-select-sm" id="storeSelect" asp-items="@ViewBag.StoreList">
+                            <option value="">-- @ShiftModelResource.StoreId --</option>
+                        </select>
+                        <span asp-validation-for="StoreId" class="text-danger small"></span>
+                    </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-check form-switch py-1">
@@ -232,6 +242,21 @@
 
             $('#useDefaultPolicySwitch').change(updatePolicyState);
             updatePolicyState();
+
+            // Xử lý bật/tắt ca chuẩn (toàn hệ thống vs chi nhánh riêng)
+            function updateTemplateState() {
+                var isTemplate = $('#isTemplateSwitch').is(':checked');
+                var $container = $('#storeSelectContainer');
+                if (isTemplate) {
+                    $container.slideUp(200, function () {
+                        $(this).addClass('d-none').removeAttr('style');
+                    });
+                    $('#storeSelect').val('');
+                } else {
+                    $container.removeClass('d-none').hide().slideDown(200);
+                }
+            }
+            $('#isTemplateSwitch').change(updateTemplateState);
         });
     </script>
 }

@@ -35,7 +35,27 @@ namespace RWPM.Controllers
             
             ViewBag.IsManager = isAdmin || isStoreManager;
 
-            ViewBag.Shifts = _context.Shift.Where(x => x.IsActive).ToList();
+            int? userStoreId = null;
+            if (!isAdmin)
+            {
+                var username = User.Identity?.Name;
+                var currentEmployee = _context.Employee.FirstOrDefault(e => e.Username == username);
+                if (currentEmployee != null)
+                {
+                    userStoreId = currentEmployee.StoreId;
+                }
+            }
+
+            if (userStoreId.HasValue)
+            {
+                ViewBag.Shifts = _context.Shift
+                    .Where(x => x.IsActive && (x.StoreId == null || x.StoreId == userStoreId.Value))
+                    .ToList();
+            }
+            else
+            {
+                ViewBag.Shifts = _context.Shift.Where(x => x.IsActive).ToList();
+            }
             
             if (isAdmin)
             {
@@ -43,12 +63,10 @@ namespace RWPM.Controllers
             }
             else if (isStoreManager)
             {
-                var username = User.Identity?.Name;
-                var currentEmployee = _context.Employee.FirstOrDefault(e => e.Username == username);
-                if (currentEmployee != null)
+                if (userStoreId.HasValue)
                 {
                     ViewBag.Employees = _context.Employee.Include(e => e.Account)
-                        .Where(x => x.IsActive && x.StoreId == currentEmployee.StoreId).ToList();
+                        .Where(x => x.IsActive && x.StoreId == userStoreId.Value).ToList();
                 }
             }
 
@@ -133,6 +151,16 @@ namespace RWPM.Controllers
                             return Forbid();
                         }
                     }
+                }
+
+                var shift = await _context.Shift.FirstOrDefaultAsync(s => s.ShiftId == viewModel.ShiftId);
+                if (shift == null || !shift.IsActive)
+                {
+                    return BadRequest(new { success = false, message = "Ca làm việc không tồn tại hoặc đã ngừng hoạt động." });
+                }
+                if (shift.StoreId.HasValue && shift.StoreId.Value != employee.StoreId)
+                {
+                    return BadRequest(new { success = false, message = "Ca làm việc này không áp dụng cho chi nhánh của nhân viên." });
                 }
 
                 var entity = viewModel.ToEntity();

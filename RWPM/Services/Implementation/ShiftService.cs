@@ -24,7 +24,7 @@ namespace RWPM.Services.Implementation
 
         public async Task<Shift?> GetByIdAsync(int shiftId, QueryOptions<Shift>? options = null)
         {
-            var query = _ctx.Shift.Where(x => x.ShiftId == shiftId);
+            var query = _ctx.Shift.Include(x => x.Store).Where(x => x.ShiftId == shiftId);
             query = QueryHelper.ApplyQueryOptions(query, options);
             return await query.FirstOrDefaultAsync();
         }
@@ -41,14 +41,14 @@ namespace RWPM.Services.Implementation
 
         public async Task<List<Shift>> GetAllAsync(QueryOptions<Shift>? options = null)
         {
-            var query = _ctx.Shift.AsQueryable();
+            var query = _ctx.Shift.Include(x => x.Store).AsQueryable();
             query = QueryHelper.ApplyQueryOptions(query, options);
             return await query.ToListAsync();
         }
 
         public async Task<PaginationRes<Shift>> SearchAsync(ShiftSearch searchObject, QueryOptions<Shift>? options = null)
         {
-            var query = _ctx.Shift.AsQueryable();
+            var query = _ctx.Shift.Include(s => s.Store).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchObject.Search))
             {
@@ -66,6 +66,11 @@ namespace RWPM.Services.Implementation
             if (searchObject.IsTemplate.HasValue)
             {
                 query = query.Where(s => s.IsTemplate == searchObject.IsTemplate.Value);
+            }
+
+            if (searchObject.StoreId.HasValue)
+            {
+                query = query.Where(s => s.StoreId == searchObject.StoreId.Value);
             }
 
             query = QueryHelper.ApplyQueryOptions(query, options);
@@ -125,6 +130,7 @@ namespace RWPM.Services.Implementation
             existingShift.EarlyCheckOutMinutes = entity.EarlyCheckOutMinutes;
             existingShift.LateThresholdMinutes = entity.LateThresholdMinutes;
             existingShift.IsTemplate = entity.IsTemplate;
+            existingShift.StoreId = entity.StoreId;
             existingShift.Description = entity.Description?.Trim() ?? string.Empty;
             existingShift.IsActive = entity.IsActive;
             existingShift.UpdatedDate = DateTime.Now;

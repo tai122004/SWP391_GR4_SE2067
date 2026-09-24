@@ -54,6 +54,11 @@ namespace RWPM.Infrastructure.Data
                 e.HasIndex(x => x.ShiftCode)
                  .IsUnique()
                  .HasDatabaseName("IX_Shift_ShiftCode");
+
+                e.HasOne(x => x.Store)
+                 .WithMany()
+                 .HasForeignKey(x => x.StoreId)
+                 .OnDelete(DeleteBehavior.Restrict);
             });
             #endregion
 

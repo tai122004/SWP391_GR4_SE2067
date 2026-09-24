@@ -60,9 +60,17 @@ namespace RWPM.Models.Entities
 
         /// <summary>
         /// true = Ca mẫu (Template) dùng chung cho toàn hệ thống.
-        /// false = Ca tùy chỉnh (Custom) cho sự kiện đặc biệt.
+        /// false = Ca tùy chỉnh (Custom) cho sự kiện đặc biệt hoặc chi nhánh riêng.
         /// </summary>
         public bool IsTemplate { get; set; } = true;
+
+        /// <summary>
+        /// null = Áp dụng toàn hệ thống (mọi chi nhánh).
+        /// Có giá trị = Ca riêng của chi nhánh tương ứng.
+        /// </summary>
+        public int? StoreId { get; set; }
+
+        public Store? Store { get; set; }
 
         [MaxLength(255)]
         public string Description { get; set; } = string.Empty;

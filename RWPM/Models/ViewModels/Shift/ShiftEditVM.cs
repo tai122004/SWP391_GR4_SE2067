@@ -61,6 +61,9 @@ namespace RWPM.Models.ViewModels.Shift
         [Display(Name = "IsTemplate", ResourceType = typeof(Resources.Models.Shift))]
         public bool IsTemplate { get; set; } = true;
 
+        [Display(Name = "StoreId", ResourceType = typeof(Resources.Models.Shift))]
+        public int? StoreId { get; set; }
+
         [Display(Name = "IsActive", ResourceType = typeof(Resources.Models.Shift))]
         public bool IsActive { get; set; } = true;
 
@@ -87,6 +90,7 @@ namespace RWPM.Models.ViewModels.Shift
             LateThresholdMinutes = entity.LateThresholdMinutes ?? ShiftDefaults.LateThresholdMinutes;
 
             IsTemplate = entity.IsTemplate;
+            StoreId = entity.StoreId;
             Description = entity.Description;
             IsActive = entity.IsActive;
         }
@@ -124,6 +128,11 @@ namespace RWPM.Models.ViewModels.Shift
             {
                 yield return new ValidationResult(Resources.Models.Shift.Invalid_GracePeriodThreshold, new[] { nameof(GracePeriodMinutes), nameof(LateThresholdMinutes) });
             }
+
+            if (!IsTemplate && !StoreId.HasValue)
+            {
+                yield return new ValidationResult(Resources.Models.Shift.StoreId_Required, new[] { nameof(StoreId) });
+            }
         }
 
         public void ApplyToEntity(Entities.Shift entity)
@@ -139,6 +148,7 @@ namespace RWPM.Models.ViewModels.Shift
             entity.EarlyCheckOutMinutes = UseDefaultAttendancePolicy ? null : EarlyCheckOutMinutes;
             entity.LateThresholdMinutes = UseDefaultAttendancePolicy ? null : LateThresholdMinutes;
             entity.IsTemplate = IsTemplate;
+            entity.StoreId = IsTemplate ? null : StoreId;
             entity.Description = Description?.Trim() ?? string.Empty;
             entity.IsActive = IsActive;
         }

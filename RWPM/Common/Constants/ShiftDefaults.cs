@@ -26,7 +26,7 @@ namespace RWPM.Common.Constants
         /// Mặc định: 5 phút.
         /// Ví dụ: Ca kết thúc 16:00, quẹt thẻ từ 15:55 vẫn được ghi nhận là hoàn thành ca đúng giờ.
         /// </summary>
-        public const int EarlyCheckOutMinutes = 5;
+        public const int EarlyCheckOutMinutes = 15;
 
         /// <summary>
         /// Số phút tối đa được phép đi muộn trước khi hệ thống đánh dấu là "Vắng mặt" (Bỏ ca).
