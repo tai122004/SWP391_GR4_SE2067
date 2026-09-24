@@ -95,7 +95,7 @@
                             <div class="modern-card mb-2 request-card me-2" style="cursor: pointer;" data-id="@item.ShiftRegistrationId">
                                 <div class="card-body p-3 position-relative">
                                     <div class="form-check position-absolute" style="top: 15px; right: 15px;">
-                                        <input class="form-check-input" type="checkbox">
+                                        <input class="form-check-input request-checkbox" type="checkbox" value="@item.ShiftRegistrationId">
                                     </div>
                                     <h6 class="fw-bold mb-1 text-dark">Đăng ký ca làm</h6>
                                     <div class="small mb-1 text-dark"><span class="text-muted">Ca làm:</span> @item.Shift?.ShiftName</div>
@@ -182,6 +182,24 @@
                                 <div class="text-muted small mb-1">Trạng thái</div>
                                 <div id="detailStatus"></div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bulk Action View (Right Column) -->
+                <div class="col-md-7 ps-4" id="bulkActionPane" style="display: none;">
+                    <div class="d-flex flex-column justify-content-center h-100 bg-light rounded-3 p-5 text-center" style="min-height: 500px;">
+                        <div class="mb-4">
+                            <i class="fas fa-layer-group text-primary" style="opacity: 0.8; font-size: 64px;"></i>
+                        </div>
+                        <h4 class="fw-bold text-dark mb-2">Đang chọn <span id="bulkSelectedCount" class="text-primary">0</span> yêu cầu</h4>
+                        <p class="text-muted mb-4">Bạn có thể thao tác hàng loạt cho các yêu cầu đã chọn.</p>
+                        <div class="d-flex gap-3 justify-content-center">
+                            @if (ViewBag.IsManager)
+                            {
+                                <button class="btn btn-success px-4" onclick="updateBulkStatus(1)"><i class="fas fa-check me-2"></i>Chấp thuận tất cả</button>
+                                <button class="btn btn-outline-danger px-4" onclick="updateBulkStatus(2)"><i class="fas fa-times me-2"></i>Từ chối tất cả</button>
+                            }
                         </div>
                     </div>
                 </div>
@@ -416,6 +434,22 @@
                 $('.request-card').first().click();
             }
 
+            // Checkbox logic
+            $('#selectAll').change(function() {
+                $('.request-checkbox').prop('checked', $(this).prop('checked'));
+                checkBulkAction();
+            });
+
+            $('.request-checkbox').change(function(e) {
+                // If all are checked, check selectAll
+                if ($('.request-checkbox:checked').length === $('.request-checkbox').length) {
+                    $('#selectAll').prop('checked', true);
+                } else {
+                    $('#selectAll').prop('checked', false);
+                }
+                checkBulkAction();
+            });
+
             // Form Submit for new Shift Request
             $('#shiftRequestForm').submit(function(e) {
                 e.preventDefault();
@@ -536,6 +570,58 @@
                 success: function(res) {
                     if (res.success) {
                         toastr.success('Xóa yêu cầu thành công');
+                        setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                        toastr.error('Lỗi: ' + res.message);
+                    }
+                },
+                error: function(err) {
+                    toastr.error('Lỗi hệ thống');
+                }
+            });
+        }
+
+        function checkBulkAction() {
+            var selectedCount = $('.request-checkbox:checked').length;
+            if (selectedCount > 0) {
+                $('#requestDetailPane').hide();
+                $('#bulkSelectedCount').text(selectedCount);
+                $('#bulkActionPane').fadeIn(200);
+            } else {
+                $('#bulkActionPane').hide();
+                if (currentSelectedId !== 0) {
+                    $('#requestDetailPane').fadeIn(200);
+                }
+            }
+        }
+
+        function updateBulkStatus(status) {
+            var selectedIds = [];
+            $('.request-checkbox:checked').each(function() {
+                selectedIds.push(parseInt($(this).val()));
+            });
+
+            if (selectedIds.length === 0) return;
+            
+            var actionStr = status === 1 ? 'chấp thuận' : 'từ chối';
+            if(!confirm(`Bạn có chắc chắn muốn ${actionStr} ${selectedIds.length} yêu cầu này?`)) return;
+
+            var data = {
+                Ids: selectedIds,
+                Status: status
+            };
+
+            $.ajax({
+                url: '/Request/UpdateBulkStatus',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                headers: {
+                    'RequestVerificationToken': $('#antiForgeryForm input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(res) {
+                    if (res.success) {
+                        toastr.success('Thao tác hàng loạt thành công');
                         setTimeout(() => window.location.reload(), 1000);
                     } else {
                         toastr.error('Lỗi: ' + res.message);

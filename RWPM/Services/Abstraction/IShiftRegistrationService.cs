@@ -12,5 +12,7 @@ namespace RWPM.Services.Abstraction
         Task<ShiftRegistration> UpdateAsync(ShiftRegistration entity);
         Task DeleteAsync(int id);
         Task UpdateStatusAsync(int id, RegistrationStatus status);
+        Task UpdateBulkStatusAsync(List<int> ids, RegistrationStatus status);
+        Task SyncWeeklyRegistrationAsync(int employeeId, int storeId, DateTime startOfWeek, List<ShiftRegistration> desiredRegistrations);
     }
 }

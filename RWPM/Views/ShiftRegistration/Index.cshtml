@@ -81,10 +81,18 @@
                         <!-- Right side controls -->
                         <div class="d-flex align-items-center gap-2">
                             <button class="tanca-btn" onclick="fetchEvents()" title="Làm mới"><i class="fas fa-sync-alt"></i></button>
-                            <button class="tanca-btn" title="Cảnh báo"><i class="fas fa-exclamation-triangle"></i></button>
-                            <button class="tanca-btn" title="Công cụ"><i class="fas fa-tools"></i></button>
-                            <button class="tanca-btn" title="Cài đặt"><i class="fas fa-cog"></i></button>
-                            <button class="btn btn-sm btn-success mb-0 ms-2" onclick="openCreateModal(new Date())" style="border-radius: 8px; padding: 8px 16px;">Tạo ca làm</button>
+                            @if (ViewBag.IsManager)
+                            {
+                                <button class="tanca-btn" title="Cảnh báo"><i class="fas fa-exclamation-triangle"></i></button>
+                                <button class="tanca-btn" title="Công cụ"><i class="fas fa-tools"></i></button>
+                                <button class="tanca-btn" title="Cài đặt"><i class="fas fa-cog"></i></button>
+                                <button class="btn btn-sm btn-success mb-0 ms-2" onclick="openCreateModal(new Date())" style="border-radius: 8px; padding: 8px 16px;">Tạo ca làm</button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-sm btn-outline-primary mb-0 ms-2" onclick="copyPreviousWeek()" style="border-radius: 8px; padding: 8px 16px;"><i class="fas fa-copy"></i> Sao chép tuần trước</button>
+                                <button class="btn btn-sm btn-success mb-0 ms-2" onclick="syncWeeklySchedule()" style="border-radius: 8px; padding: 8px 16px;"><i class="fas fa-save"></i> Đăng ký tuần</button>
+                            }
                         </div>
                     </div>
                 </div>
@@ -396,8 +404,22 @@
 
         let employeesList = [];
         let wpCurrentMonth = new Date();
+        let isManager = @((ViewBag.IsManager == true).ToString().ToLower());
+        let shiftsList = [];
 
         document.addEventListener('DOMContentLoaded', function() {
+            @if (ViewBag.Shifts != null)
+            {
+                <text>
+                shiftsList = [
+                    @foreach (var s in ViewBag.Shifts)
+                    {
+                        @:{ id: '@s.ShiftId', name: '@s.ShiftName' },
+                    }
+                ];
+                </text>
+            }
+            
             // Initialize employees list from ViewBag
             @if (ViewBag.Employees != null)
             {
@@ -577,17 +599,30 @@
         }
 
         function renderHeader() {
-            let tr = '<th class="emp-col"><div class="input-group input-group-sm"><span class="input-group-text bg-transparent border-0"><i class="fas fa-search"></i></span><input type="text" class="form-control border-0 bg-transparent ps-1" placeholder="Tìm kiếm" onkeyup="filterEmployeesLocally(this.value)"></div></th>';
-            
-            let tempDate = new Date(currentWeekStart);
-            let days = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
-            
-            for (let i = 0; i < 7; i++) {
-                let dateStr = tempDate.getDate() + '/' + (tempDate.getMonth() + 1);
-                tr += `<th>${days[i]} ${dateStr}</th>`;
-                tempDate.setDate(tempDate.getDate() + 1);
+            if (isManager) {
+                let tr = '<th class="emp-col"><div class="input-group input-group-sm"><span class="input-group-text bg-transparent border-0"><i class="fas fa-search"></i></span><input type="text" class="form-control border-0 bg-transparent ps-1" placeholder="Tìm kiếm" onkeyup="filterEmployeesLocally(this.value)"></div></th>';
+                
+                let tempDate = new Date(currentWeekStart);
+                let days = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+                
+                for (let i = 0; i < 7; i++) {
+                    let dateStr = tempDate.getDate() + '/' + (tempDate.getMonth() + 1);
+                    tr += `<th>${days[i]} ${dateStr}</th>`;
+                    tempDate.setDate(tempDate.getDate() + 1);
+                }
+                $('#gridHeaderRow').html(tr);
+            } else {
+                let tr = '<th class="emp-col" style="text-align: center; vertical-align: middle;">Ca làm việc</th>';
+                let tempDate = new Date(currentWeekStart);
+                let days = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+                
+                for (let i = 0; i < 7; i++) {
+                    let dateStr = tempDate.getDate() + '/' + (tempDate.getMonth() + 1);
+                    tr += `<th>${days[i]} ${dateStr}</th>`;
+                    tempDate.setDate(tempDate.getDate() + 1);
+                }
+                $('#gridHeaderRow').html(tr);
             }
-            $('#gridHeaderRow').html(tr);
         }
 
         function filterEmployeesLocally(text) {
@@ -633,82 +668,236 @@
         function renderGrid(events) {
             let tbody = '';
             
-            // Filter employees to render based on dropdown
-            var selectedEmpId = $('#filterEmployeeId').val();
-            var empsToRender = employeesList;
-            
-            // If standard user, extract from events if employeesList is empty
-            if (employeesList.length === 1 && employeesList[0].id === 'me') {
-                let uniqueEmps = {};
-                events.forEach(e => {
-                    if (!uniqueEmps[e.employeeId]) {
-                        uniqueEmps[e.employeeId] = { id: e.employeeId, name: e.employeeName };
-                    }
-                });
-                empsToRender = Object.values(uniqueEmps);
-                if (empsToRender.length === 0) empsToRender = [{ id: '', name: 'Bạn chưa có ca làm' }];
-            } else if (selectedEmpId) {
-                empsToRender = employeesList.filter(e => e.id == selectedEmpId);
-            }
-
-            empsToRender.forEach(emp => {
-                tbody += `<tr>`;
+            if (isManager) {
+                // Filter employees to render based on dropdown
+                var selectedEmpId = $('#filterEmployeeId').val();
+                var empsToRender = employeesList;
                 
-                // Employee Column
-                let empInitial = emp.name.charAt(0).toUpperCase();
-                tbody += `
-                    <td class="emp-col">
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="avatar avatar-sm bg-secondary text-white rounded-circle d-flex justify-content-center align-items-center" style="width: 32px; height: 32px; font-size: 14px;">
-                                ${empInitial}
-                            </div>
-                            <div>
-                                <h6 class="mb-0 text-sm">${emp.name}</h6>
-                            </div>
-                            <i class="fas fa-check-circle text-success ms-auto" style="font-size: 12px;"></i>
-                        </div>
-                    </td>
-                `;
-
-                // Days Columns
-                let tempDate = new Date(currentWeekStart);
-                for (let i = 0; i < 7; i++) {
-                    let cellDateStr = getISODateString(tempDate);
-                    
-                    // Find event for this employee and date
-                    let dayEvent = events.find(e => {
-                        let eDate = e.start.split('T')[0];
-                        return (e.employeeId == emp.id || !emp.id) && eDate === cellDateStr;
+                // If standard user, extract from events if employeesList is empty
+                if (employeesList.length === 1 && employeesList[0].id === 'me') {
+                    let uniqueEmps = {};
+                    events.forEach(e => {
+                        if (!uniqueEmps[e.employeeId]) {
+                            uniqueEmps[e.employeeId] = { id: e.employeeId, name: e.employeeName };
+                        }
                     });
+                    empsToRender = Object.values(uniqueEmps);
+                    if (empsToRender.length === 0) empsToRender = [{ id: '', name: 'Bạn chưa có ca làm' }];
+                } else if (selectedEmpId) {
+                    empsToRender = employeesList.filter(e => e.id == selectedEmpId);
+                }
 
-                    if (dayEvent) {
-                        let eJson = JSON.stringify(dayEvent).replace(/'/g, "&#39;");
-                        tbody += `
-                            <td class="shift-cell" onclick='openViewModal(${eJson})'>
-                                <div class="shift-filled">
-                                    <div class="shift-name">${dayEvent.title}</div>
-                                    <div class="shift-time">(-:- - -:-)</div>
+                empsToRender.forEach(emp => {
+                    tbody += `<tr>`;
+                    
+                    // Employee Column
+                    let empInitial = emp.name.charAt(0).toUpperCase();
+                    tbody += `
+                        <td class="emp-col">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="avatar avatar-sm bg-secondary text-white rounded-circle d-flex justify-content-center align-items-center" style="width: 32px; height: 32px; font-size: 14px;">
+                                    ${empInitial}
                                 </div>
-                            </td>
-                        `;
-                    } else {
-                        // Empty slot
-                        tbody += `
-                            <td class="shift-cell" onclick="openCreateModal(new Date('${cellDateStr}'), '${emp.id}')">
-                                <div class="shift-empty">
-                                    <div class="shift-empty-box"><i class="fas fa-plus"></i></div>
+                                <div>
+                                    <h6 class="mb-0 text-sm">${emp.name}</h6>
                                 </div>
-                            </td>
-                        `;
+                                <i class="fas fa-check-circle text-success ms-auto" style="font-size: 12px;"></i>
+                            </div>
+                        </td>
+                    `;
+
+                    // Days Columns
+                    let tempDate = new Date(currentWeekStart);
+                    for (let i = 0; i < 7; i++) {
+                        let cellDateStr = getISODateString(tempDate);
+                        
+                        // Find event for this employee and date
+                        let dayEvent = events.find(e => {
+                            let eDate = e.start.split('T')[0];
+                            return (e.employeeId == emp.id || !emp.id) && eDate === cellDateStr;
+                        });
+
+                        if (dayEvent) {
+                            let eJson = JSON.stringify(dayEvent).replace(/'/g, "&#39;");
+                            tbody += `
+                                <td class="shift-cell" onclick='openViewModal(${eJson})'>
+                                    <div class="shift-filled">
+                                        <div class="shift-name">${dayEvent.title}</div>
+                                        <div class="shift-time">(-:- - -:-)</div>
+                                    </div>
+                                </td>
+                            `;
+                        } else {
+                            // Empty slot
+                            tbody += `
+                                <td class="shift-cell" onclick="openCreateModal(new Date('${cellDateStr}'), '${emp.id}')">
+                                    <div class="shift-empty">
+                                        <div class="shift-empty-box"><i class="fas fa-plus"></i></div>
+                                    </div>
+                                </td>
+                            `;
+                        }
+                        
+                        tempDate.setDate(tempDate.getDate() + 1);
                     }
                     
-                    tempDate.setDate(tempDate.getDate() + 1);
-                }
-                
-                tbody += `</tr>`;
-            });
+                    tbody += `</tr>`;
+                });
+            } else {
+                shiftsList.forEach(shift => {
+                    tbody += `<tr>`;
+                    tbody += `<td class="emp-col"><h6 class="mb-0 text-sm text-center">${shift.name}</h6></td>`;
+                    
+                    let tempDate = new Date(currentWeekStart);
+                    for (let i = 0; i < 7; i++) {
+                        let cellDateStr = getISODateString(tempDate);
+                        
+                        let dayEvent = events.find(e => {
+                            let eDate = e.start.split('T')[0];
+                            return e.shiftId == shift.id && eDate === cellDateStr;
+                        });
+
+                        if (dayEvent) {
+                            let isApproved = dayEvent.statusName !== "Pending";
+                            let disabled = isApproved ? "disabled" : "";
+                            let label = isApproved ? "<br><small class='text-success fw-bold'>Đã duyệt</small>" : "<br><small class='text-warning'>Chờ duyệt</small>";
+                            let titleStr = isApproved ? "Ca này đã được duyệt, bạn không thể thay đổi." : "";
+                            tbody += `
+                                <td class="shift-cell" style="text-align: center; vertical-align: middle;" title="${titleStr}">
+                                    <input type="checkbox" class="form-check-input weekly-shift-cb" style="width: 22px; height: 22px; cursor: pointer; border-color: #00b14f;" 
+                                        value="${shift.id}_${cellDateStr}" checked ${disabled}>
+                                    ${label}
+                                </td>
+                            `;
+                        } else {
+                            // Empty slot check
+                            // Check if date is in the past
+                            let today = new Date();
+                            today.setHours(0,0,0,0);
+                            let cellDateObj = new Date(tempDate);
+                            let disabled = cellDateObj < today ? "disabled" : "";
+                            let label = cellDateObj < today ? "<br><small class='text-muted'>Quá hạn</small>" : "";
+                            let titleStr = cellDateObj < today ? "Không thể đăng ký ca trong quá khứ." : "";
+
+                            tbody += `
+                                <td class="shift-cell" style="text-align: center; vertical-align: middle;" title="${titleStr}">
+                                    <input type="checkbox" class="form-check-input weekly-shift-cb" style="width: 22px; height: 22px; cursor: pointer; border-color: #adb5bd;" 
+                                        value="${shift.id}_${cellDateStr}" ${disabled}>
+                                    ${label}
+                                </td>
+                            `;
+                        }
+                        tempDate.setDate(tempDate.getDate() + 1);
+                    }
+                    tbody += `</tr>`;
+                });
+            }
             
             $('#gridBody').html(tbody);
+        }
+
+        function syncWeeklySchedule() {
+            var token = $('input[name="__RequestVerificationToken"]').val();
+            var registrations = [];
+            
+            $('.weekly-shift-cb:checked:not(:disabled)').each(function() {
+                var parts = $(this).val().split('_');
+                registrations.push({
+                    EmployeeId: 0,
+                    ShiftId: parseInt(parts[0]),
+                    WorkDate: parts[1],
+                    Note: ""
+                });
+            });
+
+            // If there are disabled checkboxes that are checked (approved shifts), we also need to include them
+            // so they don't get deleted by the sync API.
+            $('.weekly-shift-cb:checked:disabled').each(function() {
+                var parts = $(this).val().split('_');
+                registrations.push({
+                    EmployeeId: 0,
+                    ShiftId: parseInt(parts[0]),
+                    WorkDate: parts[1],
+                    Note: ""
+                });
+            });
+
+            var data = {
+                StartOfWeek: getISODateString(currentWeekStart),
+                Registrations: registrations
+            };
+
+            $.ajax({
+                url: '/ShiftRegistration/SyncWeekly',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                headers: {
+                    'RequestVerificationToken': token
+                },
+                success: function(res) {
+                    if (res.success) {
+                        alert('Đăng ký tuần thành công!');
+                        fetchEvents();
+                    }
+                },
+                error: function(err) {
+                    alert('Lỗi: ' + (err.responseJSON?.message || err.responseText || 'Lỗi hệ thống'));
+                }
+            });
+        }
+
+        function copyPreviousWeek() {
+            let prevWeekStart = new Date(currentWeekStart);
+            prevWeekStart.setDate(prevWeekStart.getDate() - 7);
+            
+            let startStr = getISODateString(prevWeekStart);
+            let endStr = new Date(prevWeekStart);
+            endStr.setDate(endStr.getDate() + 7);
+            
+            $.ajax({
+                url: '/ShiftRegistration/GetEvents',
+                type: 'GET',
+                data: {
+                    start: startStr,
+                    end: getISODateString(endStr),
+                    employeeId: '' // self
+                },
+                success: function(events) {
+                    if (events.length === 0) {
+                        alert('Không có ca làm việc nào trong tuần trước để sao chép.');
+                        return;
+                    }
+                    
+                    // Uncheck all non-disabled first
+                    $('.weekly-shift-cb:not(:disabled)').prop('checked', false);
+                    
+                    let today = new Date();
+                    today.setHours(0,0,0,0);
+                    let checkedCount = 0;
+
+                    events.forEach(e => {
+                        // Offset by +7 days
+                        let eDate = new Date(e.start.split('T')[0]);
+                        eDate.setDate(eDate.getDate() + 7);
+                        let targetDateStr = getISODateString(eDate);
+                        
+                        if (eDate >= today) {
+                            let cb = $(`.weekly-shift-cb[value="${e.shiftId}_${targetDateStr}"]`);
+                            if (cb.length > 0 && !cb.prop('disabled')) {
+                                cb.prop('checked', true);
+                                cb.css('border-color', '#00b14f');
+                                checkedCount++;
+                            }
+                        }
+                    });
+
+                    alert(`Đã sao chép ${checkedCount} ca hợp lệ. Vui lòng bấm 'Đăng ký tuần' để lưu lại.`);
+                },
+                error: function() {
+                    alert('Lỗi tải dữ liệu tuần trước');
+                }
+            });
         }
 
         function filterShifts(text) {

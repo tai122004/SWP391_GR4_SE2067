@@ -222,5 +222,42 @@ namespace RWPM.Controllers
                 return BadRequest(new { success = false, message = ex.Message });
             }
         }
+        // POST: ShiftRegistration/SyncWeekly
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SyncWeekly([FromBody] SyncWeeklyRegistrationVM viewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var role = User.FindFirstValue(ClaimTypes.Role);
+                var isAdmin = role == "Admin" || role == "HR" || role == "AreaManager";
+                var isStoreManager = role == "StoreManager";
+                var isManager = isAdmin || isStoreManager;
+
+                if (isManager)
+                {
+                    return BadRequest(new { success = false, message = "Only employees can sync their weekly schedule." });
+                }
+
+                var username = User.Identity?.Name;
+                var employee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
+                if (employee == null) return Unauthorized();
+
+                var entities = viewModel.Registrations.Select(x => x.ToEntity()).ToList();
+                
+                await _registrationService.SyncWeeklyRegistrationAsync(employee.EmployeeId, employee.StoreId, viewModel.StartOfWeek, entities);
+
+                return Ok(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
     }
 }
