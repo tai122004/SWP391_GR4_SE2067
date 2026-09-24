@@ -16,10 +16,12 @@ namespace RWPM.Services.Implementation
     public class AttendanceService : IAttendanceService
     {
         private readonly DefaultDatabaseContext _context;
+        private readonly Microsoft.AspNetCore.Hosting.IWebHostEnvironment _env;
 
-        public AttendanceService(DefaultDatabaseContext context)
+        public AttendanceService(DefaultDatabaseContext context, Microsoft.AspNetCore.Hosting.IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         public async Task<AttendanceRecord?> GetTodayRecordAsync(string username, int? shiftId = null)
@@ -37,39 +39,87 @@ namespace RWPM.Services.Implementation
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<AttendanceRecord> CheckInAsync(string username, int shiftId, double? userLatitude = null, double? userLongitude = null)
+        public async Task<AttendanceRecord> CheckInAsync(string username, double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
         {
-            var today = DateTime.Today;
-            var record = await GetTodayRecordAsync(username, shiftId);
-            
-            if (record != null)
+            if (photo == null || photo.Length == 0)
             {
-                throw new Exception(SharedResource.ResourceManager.GetString("Attendance_AlreadyCheckedIn"));
+                throw new Exception("Bắt buộc phải chụp ảnh khi chấm công vào làm!");
             }
 
-            var shift = await _context.Set<RWPM.Models.Entities.Shift>().FindAsync(shiftId);
-            if (shift == null || !shift.IsActive)
+            var today = DateTime.Today;
+
+            var employee = await _context.Employee.Include(e => e.Store).FirstOrDefaultAsync(e => e.Username == username);
+            if (employee == null)
             {
-                throw new Exception("Ca làm việc không tồn tại hoặc đã bị vô hiệu hóa.");
+                throw new Exception("Tài khoản của bạn chưa được liên kết với hồ sơ nhân viên.");
+            }
+
+            // Lấy danh sách các ca đã đăng ký và được duyệt trong ngày
+            var registeredShifts = await _context.Set<ShiftRegistration>()
+                .Include(sr => sr.Shift)
+                .Where(sr => sr.EmployeeId == employee.EmployeeId && sr.WorkDate == today && sr.Status == RWPM.Common.Enums.RegistrationStatus.Approved && sr.Shift.IsActive)
+                .Select(sr => sr.Shift)
+                .ToListAsync();
+
+            if (!registeredShifts.Any())
+            {
+                throw new Exception("Bạn không có lịch làm việc (đã được duyệt) trong hôm nay!");
             }
 
             var now = DateTime.Now.TimeOfDay;
+            RWPM.Models.Entities.Shift shift = null;
             bool isValid = false;
+            string errorMessage = "Không nằm trong thời gian cho phép chấm công.";
 
-            var lateThreshold = shift.LateThresholdMinutes ?? ShiftDefaults.LateThresholdMinutes;
-            if (now <= shift.StartTime.Add(TimeSpan.FromMinutes(lateThreshold)))
+            // Tìm ca phù hợp nhất với giờ hiện tại
+            foreach (var s in registeredShifts)
             {
-                isValid = true;
+                int eCheckIn = s.EarlyCheckInMinutes ?? RWPM.Common.Constants.ShiftDefaults.EarlyCheckInMinutes;
+                int lThreshold = s.LateThresholdMinutes ?? RWPM.Common.Constants.ShiftDefaults.LateThresholdMinutes;
+
+                var start1Early = s.StartTime.Subtract(TimeSpan.FromMinutes(eCheckIn));
+                var start1Late = s.StartTime.Add(TimeSpan.FromMinutes(lThreshold));
+
+                if (now >= start1Early && now <= start1Late)
+                {
+                    shift = s;
+                    isValid = true;
+                    break;
+                }
+
+            // Xóa StartTime2 vì model đã không còn
+            }
+
+            if (shift == null)
+            {
+                shift = registeredShifts.OrderBy(s => Math.Abs((now - s.StartTime).TotalMinutes)).First();
+                
+                int eCheckIn = shift.EarlyCheckInMinutes ?? RWPM.Common.Constants.ShiftDefaults.EarlyCheckInMinutes;
+                int lThreshold = shift.LateThresholdMinutes ?? RWPM.Common.Constants.ShiftDefaults.LateThresholdMinutes;
+                if (now < shift.StartTime.Subtract(TimeSpan.FromMinutes(eCheckIn)))
+                {
+                    errorMessage = $"Chưa đến giờ chấm công ca {shift.ShiftName}! Bạn chỉ được phép chấm công trước giờ làm {eCheckIn} phút.";
+                }
+                else
+                {
+                    errorMessage = $"Bạn đã đến quá muộn cho ca {shift.ShiftName}! Hệ thống chỉ cho phép đi muộn tối đa {lThreshold} phút.";
+                }
             }
 
             if (!isValid)
             {
-                throw new Exception(SharedResource.ResourceManager.GetString("Attendance_TooLate"));
+                throw new Exception(errorMessage);
             }
+
+            var record = await GetTodayRecordAsync(username, shift.ShiftId);
+            if (record != null)
+            {
+                throw new Exception("Bạn đã chấm công vào làm cho ca này rồi!");
+            }
+
 
             // GeoLocation Validation
             double? calculatedDistance = null;
-            var employee = await _context.Employee.Include(e => e.Store).FirstOrDefaultAsync(e => e.Username == username);
             if (employee?.Store != null && employee.Store.Latitude.HasValue && employee.Store.Longitude.HasValue)
             {
                 if (!userLatitude.HasValue || !userLongitude.HasValue)
@@ -93,7 +143,7 @@ namespace RWPM.Services.Implementation
                     throw new Exception($"Vị trí không hợp lệ! Bạn đang cách chi nhánh {employee.Store.StoreName} khoảng {Math.Round(distance)}m (Nhỏ hơn khoảng cách tối thiểu cho phép {minDistance}m).");
                 }
 
-                int allowedRadius = employee.Store.AllowedRadiusMeters > 0 ? employee.Store.AllowedRadiusMeters : 100;
+                int allowedRadius = employee.Store.AllowedRadiusMeters > 0 ? employee.Store.AllowedRadiusMeters : 50;
                 if (distance > allowedRadius)
                 {
                     throw new Exception($"Vị trí không hợp lệ! Bạn đang cách chi nhánh {employee.Store.StoreName} khoảng {Math.Round(distance)}m (Vượt quá bán kính cho phép {allowedRadius}m).");
@@ -107,10 +157,11 @@ namespace RWPM.Services.Implementation
                 Username = username,
                 Date = today,
                 CheckInTime = now,
-                ShiftId = shiftId,
+                ShiftId = shift.ShiftId,
                 CheckInLatitude = userLatitude,
                 CheckInLongitude = userLongitude,
-                DistanceMeters = calculatedDistance
+                DistanceMeters = calculatedDistance,
+                CheckInPhotoPath = await SavePhotoAsync(photo, username, "CheckIn")
             };
 
             _context.AttendanceRecord.Add(record);
@@ -119,17 +170,36 @@ namespace RWPM.Services.Implementation
             return record;
         }
 
-        public async Task<AttendanceRecord> CheckOutAsync(string username, double? userLatitude = null, double? userLongitude = null)
+        public async Task<AttendanceRecord> CheckOutAsync(string username, double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
         {
+            if (photo == null || photo.Length == 0)
+            {
+                throw new Exception("Bắt buộc phải chụp ảnh khi chấm công tan làm!");
+            }
+
             var record = await GetTodayRecordAsync(username);
             
             if (record == null)
             {
-                throw new Exception(SharedResource.ResourceManager.GetString("Attendance_NotCheckedIn"));
+                throw new Exception("Bạn chưa chấm công vào làm (hoặc không có ca)!");
             }
             if (record.CheckOutTime.HasValue)
             {
-                throw new Exception(SharedResource.ResourceManager.GetString("Attendance_AlreadyCheckedOut"));
+                throw new Exception("Bạn đã chấm công tan làm cho ca này rồi!");
+            }
+
+            // Time Validation for CheckOut (Early Check-Out)
+            var shift = await _context.Shift.FindAsync(record.ShiftId);
+            if (shift != null)
+            {
+                int earlyCheckOutMinutes = shift.EarlyCheckOutMinutes ?? RWPM.Common.Constants.ShiftDefaults.EarlyCheckOutMinutes;
+                var minCheckOutTime = shift.EndTime.Subtract(TimeSpan.FromMinutes(earlyCheckOutMinutes));
+                var now = DateTime.Now.TimeOfDay;
+
+                if (now < minCheckOutTime)
+                {
+                    throw new Exception($"Chưa đến giờ tan làm! Bạn chỉ được phép chấm công về sớm nhất vào lúc {minCheckOutTime:hh\\:mm} (Sớm tối đa {earlyCheckOutMinutes} phút trước khi kết thúc ca {shift.EndTime:hh\\:mm}).");
+                }
             }
 
             // GeoLocation Validation for CheckOut
@@ -157,7 +227,7 @@ namespace RWPM.Services.Implementation
                     throw new Exception($"Vị trí không hợp lệ! Bạn đang cách chi nhánh {employee.Store.StoreName} khoảng {Math.Round(distance)}m (Nhỏ hơn khoảng cách tối thiểu cho phép {minDistance}m).");
                 }
 
-                int allowedRadius = employee.Store.AllowedRadiusMeters > 0 ? employee.Store.AllowedRadiusMeters : 100;
+                int allowedRadius = employee.Store.AllowedRadiusMeters > 0 ? employee.Store.AllowedRadiusMeters : 50;
                 if (distance > allowedRadius)
                 {
                     throw new Exception($"Vị trí không hợp lệ! Bạn đang cách chi nhánh {employee.Store.StoreName} khoảng {Math.Round(distance)}m (Vượt quá bán kính cho phép {allowedRadius}m).");
@@ -167,6 +237,7 @@ namespace RWPM.Services.Implementation
             record.CheckOutTime = DateTime.Now.TimeOfDay;
             record.CheckOutLatitude = userLatitude;
             record.CheckOutLongitude = userLongitude;
+            record.CheckOutPhotoPath = await SavePhotoAsync(photo, username, "CheckOut");
 
             await _context.SaveChangesAsync();
 
@@ -200,6 +271,25 @@ namespace RWPM.Services.Implementation
                 _context.AttendanceRecord.Remove(record);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        private async Task<string> SavePhotoAsync(Microsoft.AspNetCore.Http.IFormFile photo, string username, string type)
+        {
+            var uploadsFolder = System.IO.Path.Combine(_env.WebRootPath, "images", "attendance");
+            if (!System.IO.Directory.Exists(uploadsFolder))
+            {
+                System.IO.Directory.CreateDirectory(uploadsFolder);
+            }
+
+            var uniqueFileName = $"{username}_{DateTime.Now:yyyyMMdd_HHmmss}_{type}_{Guid.NewGuid().ToString().Substring(0, 4)}{System.IO.Path.GetExtension(photo.FileName)}";
+            var filePath = System.IO.Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var fileStream = new System.IO.FileStream(filePath, System.IO.FileMode.Create))
+            {
+                await photo.CopyToAsync(fileStream);
+            }
+
+            return $"/images/attendance/{uniqueFileName}";
         }
     }
 }
