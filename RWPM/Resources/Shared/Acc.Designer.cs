@@ -419,5 +419,67 @@ namespace RWPM.Resources.Shared {
                 return ResourceManager.GetString("Saving", resourceCulture);
             }
         }
+
+        public static string Excel_Action => ResourceManager.GetString("Excel_Action", resourceCulture);
+        public static string Excel_DownloadTemplate => ResourceManager.GetString("Excel_DownloadTemplate", resourceCulture);
+        public static string Excel_Import => ResourceManager.GetString("Excel_Import", resourceCulture);
+        public static string Excel_ImportTitle => ResourceManager.GetString("Excel_ImportTitle", resourceCulture);
+        public static string Excel_SelectFile => ResourceManager.GetString("Excel_SelectFile", resourceCulture);
+        public static string Excel_UploadAndImport => ResourceManager.GetString("Excel_UploadAndImport", resourceCulture);
+        public static string Excel_TemplateNote => ResourceManager.GetString("Excel_TemplateNote", resourceCulture);
+        public static string Excel_Close => ResourceManager.GetString("Excel_Close", resourceCulture);
+        public static string Excel_Btn_Preview => ResourceManager.GetString("Excel_Btn_Preview", resourceCulture);
+        public static string Excel_Btn_Back => ResourceManager.GetString("Excel_Btn_Back", resourceCulture);
+        public static string Excel_Btn_Confirm => ResourceManager.GetString("Excel_Btn_Confirm", resourceCulture);
+        public static string Excel_Summary_Total => ResourceManager.GetString("Excel_Summary_Total", resourceCulture);
+        public static string Excel_Summary_Valid => ResourceManager.GetString("Excel_Summary_Valid", resourceCulture);
+        public static string Excel_Summary_Invalid => ResourceManager.GetString("Excel_Summary_Invalid", resourceCulture);
+        public static string Excel_Status_Valid => ResourceManager.GetString("Excel_Status_Valid", resourceCulture);
+        public static string Excel_Col_Row => ResourceManager.GetString("Excel_Col_Row", resourceCulture);
+        public static string Excel_Col_Status => ResourceManager.GetString("Excel_Col_Status", resourceCulture);
+        public static string Excel_Col_Username => ResourceManager.GetString("Excel_Col_Username", resourceCulture);
+        public static string Excel_Col_FullName => ResourceManager.GetString("Excel_Col_FullName", resourceCulture);
+        public static string Excel_Col_Role => ResourceManager.GetString("Excel_Col_Role", resourceCulture);
+        public static string Excel_Col_Store => ResourceManager.GetString("Excel_Col_Store", resourceCulture);
+        public static string Excel_Col_EmpCode => ResourceManager.GetString("Excel_Col_EmpCode", resourceCulture);
+        public static string Excel_Col_Errors => ResourceManager.GetString("Excel_Col_Errors", resourceCulture);
+        public static string Excel_Status_Invalid => ResourceManager.GetString("Excel_Status_Invalid", resourceCulture);
+        public static string Excel_Preview_Warning_HasErrors => ResourceManager.GetString("Excel_Preview_Warning_HasErrors", resourceCulture);
+        public static string Excel_Preview_All_Valid => ResourceManager.GetString("Excel_Preview_All_Valid", resourceCulture);
+        public static string Excel_Preview_No_Valid => ResourceManager.GetString("Excel_Preview_No_Valid", resourceCulture);
+        public static string Excel_Btn_Verifying => ResourceManager.GetString("Excel_Btn_Verifying", resourceCulture);
+        public static string Excel_Btn_Saving => ResourceManager.GetString("Excel_Btn_Saving", resourceCulture);
+        public static string Excel_Step1_Note => ResourceManager.GetString("Excel_Step1_Note", resourceCulture);
+
+        public static string Profile_PageTitle => ResourceManager.GetString("Profile_PageTitle", resourceCulture);
+        public static string Profile_PageSubTitle => ResourceManager.GetString("Profile_PageSubTitle", resourceCulture);
+        public static string Profile_ChangePassword => ResourceManager.GetString("Profile_ChangePassword", resourceCulture);
+        public static string Profile_Back => ResourceManager.GetString("Profile_Back", resourceCulture);
+        public static string Profile_Section_JobInfo => ResourceManager.GetString("Profile_Section_JobInfo", resourceCulture);
+        public static string Profile_Store => ResourceManager.GetString("Profile_Store", resourceCulture);
+        public static string Profile_StoreUnassigned => ResourceManager.GetString("Profile_StoreUnassigned", resourceCulture);
+        public static string Profile_Role => ResourceManager.GetString("Profile_Role", resourceCulture);
+        public static string Profile_EmploymentType => ResourceManager.GetString("Profile_EmploymentType", resourceCulture);
+        public static string Profile_FullTime => ResourceManager.GetString("Profile_FullTime", resourceCulture);
+        public static string Profile_PartTime => ResourceManager.GetString("Profile_PartTime", resourceCulture);
+        public static string Profile_HourlyRate => ResourceManager.GetString("Profile_HourlyRate", resourceCulture);
+        public static string Profile_BaseSalary => ResourceManager.GetString("Profile_BaseSalary", resourceCulture);
+        public static string Profile_LeaveBalance => ResourceManager.GetString("Profile_LeaveBalance", resourceCulture);
+        public static string Profile_Days => ResourceManager.GetString("Profile_Days", resourceCulture);
+        public static string Profile_Section_PersonalInfo => ResourceManager.GetString("Profile_Section_PersonalInfo", resourceCulture);
+        public static string Profile_CitizenId => ResourceManager.GetString("Profile_CitizenId", resourceCulture);
+        public static string Profile_NotUpdated => ResourceManager.GetString("Profile_NotUpdated", resourceCulture);
+        public static string Profile_DateOfBirth => ResourceManager.GetString("Profile_DateOfBirth", resourceCulture);
+        public static string Profile_Gender => ResourceManager.GetString("Profile_Gender", resourceCulture);
+        public static string Profile_Phone => ResourceManager.GetString("Profile_Phone", resourceCulture);
+        public static string Profile_Email => ResourceManager.GetString("Profile_Email", resourceCulture);
+        public static string Profile_JoinDate => ResourceManager.GetString("Profile_JoinDate", resourceCulture);
+        public static string Profile_Section_SystemInfo => ResourceManager.GetString("Profile_Section_SystemInfo", resourceCulture);
+        public static string Profile_AccountStatus => ResourceManager.GetString("Profile_AccountStatus", resourceCulture);
+        public static string Profile_StatusActive => ResourceManager.GetString("Profile_StatusActive", resourceCulture);
+        public static string Profile_StatusLocked => ResourceManager.GetString("Profile_StatusLocked", resourceCulture);
+        public static string Profile_LastLogin => ResourceManager.GetString("Profile_LastLogin", resourceCulture);
+        public static string Profile_NoData => ResourceManager.GetString("Profile_NoData", resourceCulture);
+        public static string Profile_CreatedDate => ResourceManager.GetString("Profile_CreatedDate", resourceCulture);
     }
 }

@@ -59,76 +59,90 @@
             <table class="table modern-table align-middle mb-0">
                 <thead>
                     <tr>
-                    <th class="text-nowrap">@StoreModelResource.StoreCode</th>
-                    <th class="text-nowrap">@StoreModelResource.StoreName</th>
-                    <th class="text-nowrap">@StoreModelResource.Address</th>
-                    <th class="text-nowrap">@StoreModelResource.Phone</th>
-                    <th class="text-nowrap text-center"><i class="bi bi-geo-alt"></i> @StoreSharedResource.Table_GeoLocation</th>
-                    <th class="text-nowrap text-end">@SharedResource.CreatedDate</th>
-                    <th class="text-nowrap text-center">@StoreModelResource.IsActive</th>
-                    <th class="text-nowrap text-center">@SharedResource.Button_Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model.PanigationResponse.Data != null && Model.PanigationResponse.Data.Any())
-                {
-                    foreach (var store in Model.PanigationResponse.Data)
+                        <th class="text-nowrap">@StoreModelResource.StoreCode</th>
+                        <th class="text-nowrap">@StoreModelResource.StoreName</th>
+                        <th class="text-nowrap"><i class="bi bi-person-badge text-primary me-1"></i>Quản lý</th>
+                        <th class="text-nowrap">@StoreModelResource.Address</th>
+                        <th class="text-nowrap">@StoreModelResource.Phone</th>
+                        <th class="text-nowrap text-center"><i class="bi bi-geo-alt"></i> GPS & Bán kính</th>
+                        <th class="text-nowrap text-center">@StoreModelResource.IsActive</th>
+                        <th class="text-nowrap text-center">@SharedResource.Button_Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.PanigationResponse.Data != null && Model.PanigationResponse.Data.Any())
                     {
-                        <tr>
-                            <td class="fw-semibold text-primary">@store.StoreCode</td>
-                            <td>@store.StoreName</td>
-                            <td>@(string.IsNullOrWhiteSpace(store.Address) ? "-" : store.Address)</td>
-                            <td>@(string.IsNullOrWhiteSpace(store.Phone) ? "-" : store.Phone)</td>
-                            <td class="text-center small">
-                                @if (store.Latitude.HasValue && store.Longitude.HasValue)
-                                {
-                                    <span class="badge bg-success-subtle text-success border border-success-subtle mb-1">
-                                        <i class="bi bi-geo-alt-fill me-1"></i> @store.Latitude.Value.ToString("F4"), @store.Longitude.Value.ToString("F4")
-                                    </span>
-                                    <br />
-                                    <span class="text-muted">
-                                        <i class="bi bi-broadcast me-1"></i> @StoreSharedResource.Range 
-                                        <strong>
-                                            @if (store.MinAllowedDistanceMeters > 0)
-                                            {
-                                                <span>@store.MinAllowedDistanceMeters m - @store.AllowedRadiusMeters m</span>
-                                            }
-                                            else
-                                            {
-                                                <span>&le; @(store.AllowedRadiusMeters > 0 ? store.AllowedRadiusMeters : 100) m</span>
-                                            }
-                                        </strong>
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle">
-                                        <i class="bi bi-exclamation-triangle me-1"></i> @StoreSharedResource.NotLocated
-                                    </span>
-                                }
-                            </td>
-                            <td class="text-center text-muted small">@store.CreatedDate.ToString("dd/MM/yyyy")</td>
-                            <td class="text-center">
-                                <div class="form-check form-switch d-flex justify-content-center">
-                                    <input class="form-check-input active-toggle"
-                                           type="checkbox"
-                                           data-id="@store.StoreId"
-                                           @(store.IsActive ? "checked" : "") />
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                <div class="btn-group btn-action-group" role="group">
-                                    <a asp-action="Edit" asp-route-id="@store.StoreId" class="btn btn-sm btn-outline-primary" title="@SharedResource.Button_Edit">
-                                        <i class="bi bi-pencil-square"></i>
+                        foreach (var store in Model.PanigationResponse.Data)
+                        {
+                            <tr>
+                                <td class="fw-semibold text-primary">
+                                    <a asp-action="Details" asp-route-id="@store.StoreId" class="text-decoration-none text-primary fw-bold">
+                                        @store.StoreCode
                                     </a>
-                                    <a asp-action="Delete" asp-route-id="@store.StoreId" class="btn btn-sm btn-outline-danger" title="@SharedResource.Button_Delete">
-                                        <i class="bi bi-trash"></i>
+                                </td>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@store.StoreId" class="text-decoration-none text-dark fw-bold">
+                                        @store.StoreName
                                     </a>
-                                </div>
-                            </td>
-                        </tr>
+                                    @if (store.OpeningTime.HasValue && store.ClosingTime.HasValue)
+                                    {
+                                        <div class="small text-muted">
+                                            <i class="bi bi-clock me-1 text-info"></i>@store.OpeningTime.Value.ToString(@"hh\:mm") - @store.ClosingTime.Value.ToString(@"hh\:mm")
+                                        </div>
+                                    }
+                                </td>
+                                <td>
+                                    @if (store.Manager != null && store.Manager.Account != null)
+                                    {
+                                        <span class="badge bg-info-subtle text-info border border-info-subtle">
+                                            <i class="bi bi-person-circle me-1"></i>@store.Manager.Account.FullName
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">Chưa chỉ định</span>
+                                    }
+                                </td>
+                                <td>@(string.IsNullOrWhiteSpace(store.Address) ? "-" : store.Address)</td>
+                                <td>@(string.IsNullOrWhiteSpace(store.Phone) ? "-" : store.Phone)</td>
+                                <td class="text-center small">
+                                    @if (store.Latitude.HasValue && store.Longitude.HasValue)
+                                    {
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle mb-1">
+                                            <i class="bi bi-geo-alt-fill me-1"></i> Bán kính &le; @(store.AllowedRadiusMeters > 0 ? store.AllowedRadiusMeters : 100)m
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle mb-1">
+                                            <i class="bi bi-exclamation-triangle me-1"></i> Chưa có GPS
+                                        </span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <div class="form-check form-switch d-flex justify-content-center">
+                                        <input class="form-check-input active-toggle"
+                                               type="checkbox"
+                                               data-id="@store.StoreId"
+                                               @(store.IsActive ? "checked" : "") />
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-action-group" role="group">
+                                        <a asp-action="Details" asp-route-id="@store.StoreId" class="btn btn-sm btn-outline-info" title="Xem Chi tiết & Dashboard">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@store.StoreId" class="btn btn-sm btn-outline-primary" title="@SharedResource.Button_Edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@store.StoreId" class="btn btn-sm btn-outline-danger" title="@SharedResource.Button_Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
                     }
-                }
                 else
                 {
                     <tr>

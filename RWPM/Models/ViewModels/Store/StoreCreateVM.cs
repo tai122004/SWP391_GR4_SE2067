@@ -43,6 +43,15 @@ namespace RWPM.Models.ViewModels.Store
         [Display(Name = "IsActive", ResourceType = typeof(Resources.Models.Store))]
         public bool IsActive { get; set; } = true;
 
+        [Display(Name = "Quản lý chi nhánh")]
+        public int? ManagerId { get; set; }
+
+        [Display(Name = "Giờ mở cửa")]
+        public TimeSpan? OpeningTime { get; set; }
+
+        [Display(Name = "Giờ đóng cửa")]
+        public TimeSpan? ClosingTime { get; set; }
+
         public StoreCreateVM() { }
 
         public static double? ParseCoord(string? val, double min, double max)
@@ -71,7 +80,10 @@ namespace RWPM.Models.ViewModels.Store
                 Longitude = lng,
                 MinAllowedDistanceMeters = MinAllowedDistanceMeters >= 0 ? MinAllowedDistanceMeters : 0,
                 AllowedRadiusMeters = AllowedRadiusMeters >= 10 ? AllowedRadiusMeters : 100,
-                IsActive = IsActive
+                IsActive = IsActive,
+                ManagerId = ManagerId,
+                OpeningTime = OpeningTime,
+                ClosingTime = ClosingTime
             };
         }
     }

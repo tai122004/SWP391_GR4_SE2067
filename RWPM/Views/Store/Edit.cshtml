@@ -69,6 +69,36 @@
         <span asp-validation-for="Phone" class="text-danger"></span>
     </div>
 
+    <!-- Nâng cấp chuẩn Tanca: Quản lý chi nhánh & Giờ hoạt động & Wi-Fi Chấm công -->
+    <div class="card mb-3 border-primary">
+        <div class="card-header bg-primary bg-opacity-10 fw-semibold text-primary">
+            <i class="bi bi-shield-check me-1"></i> Cấu Hình Quản Lý & Phương Thức Chấm Công Chi Nhánh
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" asp-for="ManagerId">Quản lý / Trưởng Chi nhánh</label>
+                    <select class="form-select" asp-for="ManagerId" asp-items="ViewBag.ManagerSelectList">
+                        <option value="">-- Chọn Quản lý Chi nhánh --</option>
+                    </select>
+                    <span asp-validation-for="ManagerId" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" asp-for="OpeningTime">Giờ mở cửa chi nhánh</label>
+                    <input class="form-control" asp-for="OpeningTime" type="time" />
+                    <span asp-validation-for="OpeningTime" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" asp-for="ClosingTime">Giờ đóng cửa chi nhánh</label>
+                    <input class="form-control" asp-for="ClosingTime" type="time" />
+                    <span asp-validation-for="ClosingTime" class="text-danger"></span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <!-- Hidden inputs for store coordinates (automatically set via map picker) -->
     <input type="hidden" asp-for="Latitude" id="storeLat" />
     <input type="hidden" asp-for="Longitude" id="storeLng" />

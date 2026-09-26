@@ -237,4 +237,148 @@
   <data name="NoEmail" xml:space="preserve">
     <value>No email</value>
   </data>
+  <data name="ExportExcel" xml:space="preserve">
+    <value>Export Excel</value>
+  </data>
+  <data name="Stat_TotalEmployees" xml:space="preserve">
+    <value>Total Workforce</value>
+  </data>
+  <data name="Stat_Active" xml:space="preserve">
+    <value>Active Staff</value>
+  </data>
+  <data name="Stat_FullTime" xml:space="preserve">
+    <value>Full-time</value>
+  </data>
+  <data name="Stat_PartTime" xml:space="preserve">
+    <value>Part-time</value>
+  </data>
+  <data name="Stat_Probation" xml:space="preserve">
+    <value>Probation</value>
+  </data>
+  <data name="Modal_ResignTitle" xml:space="preserve">
+    <value>Employee Offboarding / Resignation</value>
+  </data>
+  <data name="Modal_ResignNotice" xml:space="preserve">
+    <value>This will mark the employee as Resigned, deactivate account access, and cancel future scheduled shifts.</value>
+  </data>
+  <data name="Button_Resign" xml:space="preserve">
+    <value>Offboard / Resign</value>
+  </data>
+  <data name="Resign_Success" xml:space="preserve">
+    <value>Employee has been offboarded successfully.</value>
+  </data>
+  <data name="Section_PersonalInfo" xml:space="preserve">
+    <value>Personal &amp; Contact Details</value>
+  </data>
+  <data name="Section_JobInfo" xml:space="preserve">
+    <value>Job &amp; Store Assignment</value>
+  </data>
+  <data name="Section_Compensation" xml:space="preserve">
+    <value>Compensation &amp; Leave Policy</value>
+  </data>
+  <data name="Badge_FullTime" xml:space="preserve">
+    <value>Full-time</value>
+  </data>
+  <data name="Badge_PartTime" xml:space="preserve">
+    <value>Part-time</value>
+  </data>
+  <data name="Badge_Intern" xml:space="preserve">
+    <value>Intern</value>
+  </data>
+  <data name="Badge_Resigned" xml:space="preserve">
+    <value>Resigned</value>
+  </data>
+  <data name="Badge_Probation" xml:space="preserve">
+    <value>Probation</value>
+  </data>
+  <data name="Excel_Action" xml:space="preserve">
+    <value>Excel</value>
+  </data>
+  <data name="Excel_DownloadTemplate" xml:space="preserve">
+    <value>Download Excel Template</value>
+  </data>
+  <data name="Excel_Import" xml:space="preserve">
+    <value>Import from Excel</value>
+  </data>
+  <data name="Excel_ImportTitle" xml:space="preserve">
+    <value>Import Employees from Excel</value>
+  </data>
+  <data name="Excel_SelectFile" xml:space="preserve">
+    <value>Select Excel file (.xlsx)</value>
+  </data>
+  <data name="Excel_UploadAndImport" xml:space="preserve">
+    <value>Start Import</value>
+  </data>
+  <data name="Excel_TemplateNote" xml:space="preserve">
+    <value>Please download the template to ensure correct column format. Default password after import will be: Aa@123456</value>
+  </data>
+  <data name="Excel_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Excel_Btn_Preview" xml:space="preserve">
+    <value>Verify Data</value>
+  </data>
+  <data name="Excel_Btn_Back" xml:space="preserve">
+    <value>Choose Another File</value>
+  </data>
+  <data name="Excel_Btn_Confirm" xml:space="preserve">
+    <value>Confirm &amp; Save to System</value>
+  </data>
+  <data name="Excel_Summary_Total" xml:space="preserve">
+    <value>Total:</value>
+  </data>
+  <data name="Excel_Summary_Valid" xml:space="preserve">
+    <value>Valid:</value>
+  </data>
+  <data name="Excel_Summary_Invalid" xml:space="preserve">
+    <value>Errors / Duplicates:</value>
+  </data>
+  <data name="Excel_Status_Valid" xml:space="preserve">
+    <value>Valid</value>
+  </data>
+  <data name="Excel_Col_Row" xml:space="preserve">
+    <value>Row</value>
+  </data>
+  <data name="Excel_Col_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Excel_Col_Username" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="Excel_Col_FullName" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="Excel_Col_Role" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="Excel_Col_Store" xml:space="preserve">
+    <value>Store</value>
+  </data>
+  <data name="Excel_Col_EmpCode" xml:space="preserve">
+    <value>Emp Code</value>
+  </data>
+  <data name="Excel_Col_Errors" xml:space="preserve">
+    <value>Verification Details</value>
+  </data>
+  <data name="Excel_Status_Invalid" xml:space="preserve">
+    <value>Invalid / Duplicate</value>
+  </data>
+  <data name="Excel_Preview_Warning_HasErrors" xml:space="preserve">
+    <value>Some rows contain errors or duplicates (highlighted in red). Only valid rows (green) will be saved to the system.</value>
+  </data>
+  <data name="Excel_Preview_All_Valid" xml:space="preserve">
+    <value>All rows are valid and ready to be imported into the system.</value>
+  </data>
+  <data name="Excel_Preview_No_Valid" xml:space="preserve">
+    <value>No valid rows found to import. Please check your Excel file.</value>
+  </data>
+  <data name="Excel_Btn_Verifying" xml:space="preserve">
+    <value>Checking data...</value>
+  </data>
+  <data name="Excel_Btn_Saving" xml:space="preserve">
+    <value>Saving to system...</value>
+  </data>
+  <data name="Excel_Step1_Note" xml:space="preserve">
+    <value>Please ensure the Excel file matches the template structure. Default account password after import will be: Aa@123456</value>
+  </data>
 </root>

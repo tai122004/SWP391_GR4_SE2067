@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RWPM.Common;
@@ -53,6 +53,10 @@ namespace RWPM.Services.Implementation
                 FullName = entity.FullName.Trim(),
                 Role = entity.Role,
                 Email = entity.Email,
+                PhoneNumber = entity.PhoneNumber,
+                DateOfBirth = entity.DateOfBirth,
+                Gender = entity.Gender,
+                AvatarUrl = entity.AvatarUrl,
 
                 CreatedDate = DateTime.Now,
                 CreatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor),
@@ -179,6 +183,13 @@ namespace RWPM.Services.Implementation
             updateEntity.FullName = entity.FullName.Trim();
             updateEntity.Role = entity.Role;
             updateEntity.Email = entity.Email;
+            updateEntity.PhoneNumber = entity.PhoneNumber;
+            updateEntity.DateOfBirth = entity.DateOfBirth;
+            updateEntity.Gender = entity.Gender;
+            if (!string.IsNullOrEmpty(entity.AvatarUrl))
+            {
+                updateEntity.AvatarUrl = entity.AvatarUrl;
+            }
             updateEntity.UpdatedDate = DateTime.Now;
             updateEntity.UpdatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor);
 

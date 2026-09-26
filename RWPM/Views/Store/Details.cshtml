@@ -1,0 +1,404 @@
+@model RWPM.Models.ViewModels.Store.StoreDetailsVM
+
+@{
+    ViewData["Title"] = $"Chi tiết Chi nhánh - {Model.Store.StoreName}";
+    var store = Model.Store;
+}
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<div class="container-fluid px-0">
+    <!-- Header Page -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+        <div>
+            <h4 class="fw-bold text-dark d-flex align-items-center mb-1">
+                <i class="bi bi-shop text-primary me-2"></i>
+                Chi tiết Chi nhánh: <span class="text-primary ms-2">@store.StoreName (@store.StoreCode)</span>
+            </h4>
+            <div class="text-muted small">
+                <i class="bi bi-geo-alt me-1"></i>@(string.IsNullOrWhiteSpace(store.Address) ? "Chưa cập nhật địa chỉ" : store.Address)
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Edit" asp-route-id="@store.StoreId" class="btn btn-primary btn-sm px-3 shadow-sm">
+                <i class="bi bi-pencil-square me-1"></i> Chỉnh sửa
+            </a>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm px-3">
+                <i class="bi bi-arrow-left me-1"></i> Quay lại
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 bg-primary text-white p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small text-white-50 fw-semibold text-uppercase">Trưởng Chi Nhánh</div>
+                        <div class="fs-5 fw-bold mt-1">
+                            @(store.Manager?.Account?.FullName ?? "Chưa chỉ định")
+                        </div>
+                    </div>
+                    <div class="bg-white bg-opacity-25 rounded-circle p-3 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-person-badge fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 bg-success text-white p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small text-white-50 fw-semibold text-uppercase">Nhân Sự Thuộc Chi Nhánh</div>
+                        <div class="fs-3 fw-bold mt-1">@Model.TotalEmployees <span class="fs-6 fw-normal text-white-50">người</span></div>
+                    </div>
+                    <div class="bg-white bg-opacity-25 rounded-circle p-3 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-people-fill fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 bg-info text-white p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small text-white-50 fw-semibold text-uppercase">Điểm Danh Hôm Nay</div>
+                        <div class="fs-3 fw-bold mt-1">@Model.TodayPresentCount <span class="fs-6 fw-normal text-white-50">lượt</span></div>
+                    </div>
+                    <div class="bg-white bg-opacity-25 rounded-circle p-3 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-calendar-check-fill fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 bg-warning text-dark p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small text-dark-50 fw-semibold text-uppercase">Giờ Hoạt Động</div>
+                        <div class="fs-5 fw-bold mt-1">
+                            @if (store.OpeningTime.HasValue && store.ClosingTime.HasValue)
+                            {
+                                <span>@store.OpeningTime.Value.ToString(@"hh\:mm") - @store.ClosingTime.Value.ToString(@"hh\:mm")</span>
+                            }
+                            else
+                            {
+                                <span>Cả ngày</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="bg-dark bg-opacity-10 rounded-circle p-3 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-clock-history fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs modern-tabs mb-3" id="storeTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-item nav-link active fw-bold" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
+                <i class="bi bi-info-circle me-1"></i> Thông Tin & Bản Đồ GPS
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-item nav-link fw-bold" id="employee-tab" data-bs-toggle="tab" data-bs-target="#employee" type="button" role="tab">
+                <i class="bi bi-people me-1"></i> Danh Sách Nhân Viên (@Model.TotalEmployees)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-item nav-link fw-bold" id="shift-tab" data-bs-toggle="tab" data-bs-target="#shift" type="button" role="tab">
+                <i class="bi bi-calendar-range me-1"></i> Ca Làm Việc Áp Dụng (@Model.ActiveShiftsCount)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-item nav-link fw-bold" id="attendance-tab" data-bs-toggle="tab" data-bs-target="#attendance" type="button" role="tab">
+                <i class="bi bi-journal-check me-1"></i> Điểm Danh Hôm Nay (@Model.TodayPresentCount)
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Contents -->
+    <div class="tab-content" id="storeTabContent">
+        <!-- TAB 1: General Info & Map -->
+        <div class="tab-pane fade show active" id="info" role="tabpanel">
+            <div class="row g-3">
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm rounded-3 h-100 p-3">
+                        <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                            <i class="bi bi-card-checklist text-primary me-2"></i> Cấu Hình Chi Nhánh
+                        </h5>
+                        <table class="table table-borderless align-middle mb-0">
+                            <tbody>
+                                <tr>
+                                    <td class="text-muted fw-semibold" style="width: 40%;">Mã Chi Nhánh:</td>
+                                    <td class="fw-bold text-primary">@store.StoreCode</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted fw-semibold">Tên Chi Nhánh:</td>
+                                    <td class="fw-bold">@store.StoreName</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted fw-semibold">Số Điện Thoại:</td>
+                                    <td>@(string.IsNullOrWhiteSpace(store.Phone) ? "-" : store.Phone)</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted fw-semibold">Quản Lý Phụ Trách:</td>
+                                    <td>
+                                        @if (store.Manager != null && store.Manager.Account != null)
+                                        {
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                                <i class="bi bi-person-fill me-1"></i>@store.Manager.Account.FullName (@store.Manager.EmployeeCode)
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Chưa chỉ định</span>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted fw-semibold">Bán Kính Chấm Công GPS:</td>
+                                    <td>
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                            <i class="bi bi-broadcast me-1"></i> Cho phép &le; @store.AllowedRadiusMeters mét
+                                        </span>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="text-muted fw-semibold">Trạng Thái Chi Nhánh:</td>
+                                    <td>
+                                        @if (store.IsActive)
+                                        {
+                                            <span class="badge bg-success">Đang hoạt động</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Đã tạm dừng</span>
+                                        }
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm rounded-3 h-100 p-3">
+                        <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                            <i class="bi bi-geo-alt-fill text-danger me-2"></i> Định Vị Bản Đồ GPS
+                        </h5>
+                        @if (store.Latitude.HasValue && store.Longitude.HasValue)
+                        {
+                            <div id="detailsMap" style="height: 280px;" class="rounded border"></div>
+                            <div class="small text-muted mt-2 d-flex justify-content-between">
+                                <span><i class="bi bi-pin-map-fill text-danger me-1"></i> Tọa độ: @store.Latitude.Value.ToString("F6"), @store.Longitude.Value.ToString("F6")</span>
+                                <span class="badge bg-light text-dark border">Bán kính: @store.AllowedRadiusMeters m</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning text-center my-auto">
+                                <i class="bi bi-exclamation-triangle fs-3 d-block mb-2"></i>
+                                Cửa hàng này chưa được thả ghim tọa độ GPS.
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: Employees List -->
+        <div class="tab-pane fade" id="employee" role="tabpanel">
+            <div class="card border-0 shadow-sm rounded-3 p-3">
+                <div class="table-responsive">
+                    <table class="table modern-table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Mã NV</th>
+                                <th>Họ và Tên</th>
+                                <th>Email</th>
+                                <th>Số điện thoại</th>
+                                <th>Loại hợp đồng</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Employees.Any())
+                            {
+                                foreach (var emp in Model.Employees)
+                                {
+                                    <tr>
+                                        <td class="fw-bold text-primary">@emp.EmployeeCode</td>
+                                        <td class="fw-semibold">@(emp.Account?.FullName ?? emp.Username)</td>
+                                        <td>@(emp.Account?.Email ?? "-")</td>
+                                        <td>@(emp.Account?.PhoneNumber ?? "-")</td>
+                                        <td>
+                                            <span class="badge bg-light text-dark border">@emp.EmploymentType</span>
+                                        </td>
+                                        <td>
+                                            @if (emp.IsActive)
+                                            {
+                                                <span class="badge bg-success-subtle text-success border border-success-subtle">Đang làm việc</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Đã nghỉ việc</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">Chưa có nhân viên nào thuộc chi nhánh này.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: Shifts List -->
+        <div class="tab-pane fade" id="shift" role="tabpanel">
+            <div class="card border-0 shadow-sm rounded-3 p-3">
+                <div class="table-responsive">
+                    <table class="table modern-table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Mã Ca</th>
+                                <th>Tên Ca Làm Việc</th>
+                                <th>Khung Giờ</th>
+                                <th>Phút Nghỉ Giữa Ca</th>
+                                <th>Phạm Vi Phân Ca</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Shifts.Any())
+                            {
+                                foreach (var shift in Model.Shifts)
+                                {
+                                    <tr>
+                                        <td class="fw-bold text-primary">@shift.ShiftCode</td>
+                                        <td>@shift.ShiftName</td>
+                                        <td class="fw-semibold text-info-emphasis">
+                                            <i class="bi bi-clock me-1"></i>@shift.StartTime.ToString(@"hh\:mm") - @shift.EndTime.ToString(@"hh\:mm")
+                                        </td>
+                                        <td>@shift.BreakMinutes phút</td>
+                                        <td>
+                                            @if (shift.IsTemplate)
+                                            {
+                                                <span class="badge bg-info-subtle text-info border border-info-subtle">Ca mẫu toàn hệ thống</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Ca riêng chi nhánh</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-4">Chưa có ca làm việc nào được thiết lập.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: Today Attendance -->
+        <div class="tab-pane fade" id="attendance" role="tabpanel">
+            <div class="card border-0 shadow-sm rounded-3 p-3">
+                <div class="table-responsive">
+                    <table class="table modern-table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Tài khoản</th>
+                                <th>Giờ Check-in</th>
+                                <th>Giờ Check-out</th>
+                                <th>Khoảng Cách GPS</th>
+                                <th>Trạng Thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.TodayAttendanceRecords.Any())
+                            {
+                                foreach (var rec in Model.TodayAttendanceRecords)
+                                {
+                                    <tr>
+                                        <td class="fw-bold">@rec.Username</td>
+                                        <td class="text-success fw-bold">
+                                            @(rec.CheckInTime.HasValue ? rec.CheckInTime.Value.ToString(@"hh\:mm\:ss") : "-")
+                                        </td>
+                                        <td class="text-danger fw-bold">
+                                            @(rec.CheckOutTime.HasValue ? rec.CheckOutTime.Value.ToString(@"hh\:mm\:ss") : "-")
+                                        </td>
+                                        <td>
+                                            @(rec.DistanceMeters.HasValue ? $"{Math.Round(rec.DistanceMeters.Value, 1)}m" : "-")
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                                <i class="bi bi-check-circle me-1"></i>Hợp lệ
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-4">
+                                        <i class="bi bi-calendar-x fs-3 d-block mb-2 text-warning"></i>
+                                        Hôm nay chưa có lượt chấm công nào tại chi nhánh này.
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @if (store.Latitude.HasValue && store.Longitude.HasValue)
+    {
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                var lat = @store.Latitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                var lng = @store.Longitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                var radius = @(store.AllowedRadiusMeters > 0 ? store.AllowedRadiusMeters : 100);
+
+                var map = L.map('detailsMap').setView([lat, lng], 16);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; OpenStreetMap'
+                }).addTo(map);
+
+                L.marker([lat, lng]).addTo(map)
+                    .bindPopup("<b>@store.StoreName</b><br>@store.Address").openPopup();
+
+                L.circle([lat, lng], {
+                    color: '#198754',
+                    fillColor: '#198754',
+                    fillOpacity: 0.15,
+                    radius: radius
+                }).addTo(map);
+            });
+        </script>
+    }
+}

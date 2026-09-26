@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -8,61 +8,52 @@ namespace RWPM.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "AllowedRadiusMeters",
-                table: "Store",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
+            migrationBuilder.Sql(@"
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[Store]') AND name = 'AllowedRadiusMeters')
+                BEGIN
+                    ALTER TABLE [Store] ADD [AllowedRadiusMeters] int NOT NULL DEFAULT 0;
+                END
 
-            migrationBuilder.AddColumn<double>(
-                name: "Latitude",
-                table: "Store",
-                type: "float",
-                nullable: true);
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[Store]') AND name = 'Latitude')
+                BEGIN
+                    ALTER TABLE [Store] ADD [Latitude] float NULL;
+                END
 
-            migrationBuilder.AddColumn<double>(
-                name: "Longitude",
-                table: "Store",
-                type: "float",
-                nullable: true);
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[Store]') AND name = 'Longitude')
+                BEGIN
+                    ALTER TABLE [Store] ADD [Longitude] float NULL;
+                END
 
-            migrationBuilder.AddColumn<int>(
-                name: "MinAllowedDistanceMeters",
-                table: "Store",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[Store]') AND name = 'MinAllowedDistanceMeters')
+                BEGIN
+                    ALTER TABLE [Store] ADD [MinAllowedDistanceMeters] int NOT NULL DEFAULT 0;
+                END
 
-            migrationBuilder.AddColumn<double>(
-                name: "CheckInLatitude",
-                table: "AttendanceRecord",
-                type: "float",
-                nullable: true);
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[AttendanceRecord]') AND name = 'CheckInLatitude')
+                BEGIN
+                    ALTER TABLE [AttendanceRecord] ADD [CheckInLatitude] float NULL;
+                END
 
-            migrationBuilder.AddColumn<double>(
-                name: "CheckInLongitude",
-                table: "AttendanceRecord",
-                type: "float",
-                nullable: true);
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[AttendanceRecord]') AND name = 'CheckInLongitude')
+                BEGIN
+                    ALTER TABLE [AttendanceRecord] ADD [CheckInLongitude] float NULL;
+                END
 
-            migrationBuilder.AddColumn<double>(
-                name: "CheckOutLatitude",
-                table: "AttendanceRecord",
-                type: "float",
-                nullable: true);
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[AttendanceRecord]') AND name = 'CheckOutLatitude')
+                BEGIN
+                    ALTER TABLE [AttendanceRecord] ADD [CheckOutLatitude] float NULL;
+                END
 
-            migrationBuilder.AddColumn<double>(
-                name: "CheckOutLongitude",
-                table: "AttendanceRecord",
-                type: "float",
-                nullable: true);
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[AttendanceRecord]') AND name = 'CheckOutLongitude')
+                BEGIN
+                    ALTER TABLE [AttendanceRecord] ADD [CheckOutLongitude] float NULL;
+                END
 
-            migrationBuilder.AddColumn<double>(
-                name: "DistanceMeters",
-                table: "AttendanceRecord",
-                type: "float",
-                nullable: true);
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[AttendanceRecord]') AND name = 'DistanceMeters')
+                BEGIN
+                    ALTER TABLE [AttendanceRecord] ADD [DistanceMeters] float NULL;
+                END
+            ");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

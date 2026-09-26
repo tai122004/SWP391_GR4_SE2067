@@ -419,5 +419,93 @@ namespace RWPM.Resources.Shared {
                 return ResourceManager.GetString("NoEmail", resourceCulture);
             }
         }
+
+        public static string Create_SubTitle {
+            get { return ResourceManager.GetString("Create_SubTitle", resourceCulture); }
+        }
+        public static string ExportExcel {
+            get { return ResourceManager.GetString("ExportExcel", resourceCulture); }
+        }
+        public static string Stat_TotalEmployees {
+            get { return ResourceManager.GetString("Stat_TotalEmployees", resourceCulture); }
+        }
+        public static string Stat_Active {
+            get { return ResourceManager.GetString("Stat_Active", resourceCulture); }
+        }
+        public static string Stat_FullTime {
+            get { return ResourceManager.GetString("Stat_FullTime", resourceCulture); }
+        }
+        public static string Stat_PartTime {
+            get { return ResourceManager.GetString("Stat_PartTime", resourceCulture); }
+        }
+        public static string Stat_Probation {
+            get { return ResourceManager.GetString("Stat_Probation", resourceCulture); }
+        }
+        public static string Modal_ResignTitle {
+            get { return ResourceManager.GetString("Modal_ResignTitle", resourceCulture); }
+        }
+        public static string Modal_ResignNotice {
+            get { return ResourceManager.GetString("Modal_ResignNotice", resourceCulture); }
+        }
+        public static string Button_Resign {
+            get { return ResourceManager.GetString("Button_Resign", resourceCulture); }
+        }
+        public static string Resign_Success {
+            get { return ResourceManager.GetString("Resign_Success", resourceCulture); }
+        }
+        public static string Section_PersonalInfo {
+            get { return ResourceManager.GetString("Section_PersonalInfo", resourceCulture); }
+        }
+        public static string Section_JobInfo {
+            get { return ResourceManager.GetString("Section_JobInfo", resourceCulture); }
+        }
+        public static string Section_Compensation {
+            get { return ResourceManager.GetString("Section_Compensation", resourceCulture); }
+        }
+        public static string Badge_FullTime {
+            get { return ResourceManager.GetString("Badge_FullTime", resourceCulture); }
+        }
+        public static string Badge_PartTime {
+            get { return ResourceManager.GetString("Badge_PartTime", resourceCulture); }
+        }
+        public static string Badge_Intern {
+            get { return ResourceManager.GetString("Badge_Intern", resourceCulture); }
+        }
+        public static string Badge_Resigned {
+            get { return ResourceManager.GetString("Badge_Resigned", resourceCulture); }
+        }
+        public static string Badge_Probation {
+            get { return ResourceManager.GetString("Badge_Probation", resourceCulture); }
+        }
+        public static string Excel_Action => ResourceManager.GetString("Excel_Action", resourceCulture);
+        public static string Excel_DownloadTemplate => ResourceManager.GetString("Excel_DownloadTemplate", resourceCulture);
+        public static string Excel_Import => ResourceManager.GetString("Excel_Import", resourceCulture);
+        public static string Excel_ImportTitle => ResourceManager.GetString("Excel_ImportTitle", resourceCulture);
+        public static string Excel_SelectFile => ResourceManager.GetString("Excel_SelectFile", resourceCulture);
+        public static string Excel_UploadAndImport => ResourceManager.GetString("Excel_UploadAndImport", resourceCulture);
+        public static string Excel_TemplateNote => ResourceManager.GetString("Excel_TemplateNote", resourceCulture);
+        public static string Excel_Close => ResourceManager.GetString("Excel_Close", resourceCulture);
+        public static string Excel_Btn_Preview => ResourceManager.GetString("Excel_Btn_Preview", resourceCulture);
+        public static string Excel_Btn_Back => ResourceManager.GetString("Excel_Btn_Back", resourceCulture);
+        public static string Excel_Btn_Confirm => ResourceManager.GetString("Excel_Btn_Confirm", resourceCulture);
+        public static string Excel_Summary_Total => ResourceManager.GetString("Excel_Summary_Total", resourceCulture);
+        public static string Excel_Summary_Valid => ResourceManager.GetString("Excel_Summary_Valid", resourceCulture);
+        public static string Excel_Summary_Invalid => ResourceManager.GetString("Excel_Summary_Invalid", resourceCulture);
+        public static string Excel_Status_Valid => ResourceManager.GetString("Excel_Status_Valid", resourceCulture);
+        public static string Excel_Col_Row => ResourceManager.GetString("Excel_Col_Row", resourceCulture);
+        public static string Excel_Col_Status => ResourceManager.GetString("Excel_Col_Status", resourceCulture);
+        public static string Excel_Col_Username => ResourceManager.GetString("Excel_Col_Username", resourceCulture);
+        public static string Excel_Col_FullName => ResourceManager.GetString("Excel_Col_FullName", resourceCulture);
+        public static string Excel_Col_Role => ResourceManager.GetString("Excel_Col_Role", resourceCulture);
+        public static string Excel_Col_Store => ResourceManager.GetString("Excel_Col_Store", resourceCulture);
+        public static string Excel_Col_EmpCode => ResourceManager.GetString("Excel_Col_EmpCode", resourceCulture);
+        public static string Excel_Col_Errors => ResourceManager.GetString("Excel_Col_Errors", resourceCulture);
+        public static string Excel_Status_Invalid => ResourceManager.GetString("Excel_Status_Invalid", resourceCulture);
+        public static string Excel_Preview_Warning_HasErrors => ResourceManager.GetString("Excel_Preview_Warning_HasErrors", resourceCulture);
+        public static string Excel_Preview_All_Valid => ResourceManager.GetString("Excel_Preview_All_Valid", resourceCulture);
+        public static string Excel_Preview_No_Valid => ResourceManager.GetString("Excel_Preview_No_Valid", resourceCulture);
+        public static string Excel_Btn_Verifying => ResourceManager.GetString("Excel_Btn_Verifying", resourceCulture);
+        public static string Excel_Btn_Saving => ResourceManager.GetString("Excel_Btn_Saving", resourceCulture);
+        public static string Excel_Step1_Note => ResourceManager.GetString("Excel_Step1_Note", resourceCulture);
     }
 }

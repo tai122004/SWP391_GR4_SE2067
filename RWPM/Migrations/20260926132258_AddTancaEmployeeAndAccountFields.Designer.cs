@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RWPM.Infrastructure.Data;
 
@@ -11,9 +12,10 @@ using RWPM.Infrastructure.Data;
 namespace RWPM.Migrations
 {
     [DbContext(typeof(DefaultDatabaseContext))]
-    partial class DefaultDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20260926132258_AddTancaEmployeeAndAccountFields")]
+    partial class AddTancaEmployeeAndAccountFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -188,6 +190,10 @@ namespace RWPM.Migrations
 
                     b.Property<DateTime>("JoinDate")
                         .HasColumnType("date");
+
+                    b.Property<string>("Position")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime?>("ResignDate")
                         .HasColumnType("date");
@@ -433,9 +439,6 @@ namespace RWPM.Migrations
                     b.Property<int>("AllowedRadiusMeters")
                         .HasColumnType("int");
 
-                    b.Property<TimeSpan?>("ClosingTime")
-                        .HasColumnType("time");
-
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(30)
@@ -454,14 +457,8 @@ namespace RWPM.Migrations
                     b.Property<double?>("Longitude")
                         .HasColumnType("float");
 
-                    b.Property<int?>("ManagerId")
-                        .HasColumnType("int");
-
                     b.Property<int>("MinAllowedDistanceMeters")
                         .HasColumnType("int");
-
-                    b.Property<TimeSpan?>("OpeningTime")
-                        .HasColumnType("time");
 
                     b.Property<string>("Phone")
                         .IsRequired()
@@ -487,8 +484,6 @@ namespace RWPM.Migrations
                         .HasColumnType("datetime2(0)");
 
                     b.HasKey("StoreId");
-
-                    b.HasIndex("ManagerId");
 
                     b.HasIndex("StoreCode")
                         .IsUnique()
@@ -579,16 +574,6 @@ namespace RWPM.Migrations
                     b.Navigation("Shift");
 
                     b.Navigation("Store");
-                });
-
-            modelBuilder.Entity("Store", b =>
-                {
-                    b.HasOne("RWPM.Models.Entities.Employee", "Manager")
-                        .WithMany()
-                        .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Manager");
                 });
 #pragma warning restore 612, 618
         }

@@ -30,7 +30,10 @@ namespace RWPM.Services.Implementation
 
         public async Task<global::Store?> GetByIdAsync(int storeId, QueryOptions<global::Store>? options = null)
         {
-            var query = _ctx.Store.Where(x => x.StoreId == storeId);
+            var query = _ctx.Store
+                .Include(x => x.Manager)
+                .ThenInclude(m => m!.Account)
+                .Where(x => x.StoreId == storeId);
             query = QueryHelper.ApplyQueryOptions(query, options);
             return await query.FirstOrDefaultAsync();
         }
@@ -77,7 +80,10 @@ namespace RWPM.Services.Implementation
 
         public async Task<PaginationRes<global::Store>> SearchAsync(StoreSearch searchObject, QueryOptions<global::Store>? options = null)
         {
-            var query = _ctx.Store.AsQueryable();
+            var query = _ctx.Store
+                .Include(x => x.Manager)
+                .ThenInclude(m => m!.Account)
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchObject.Search))
             {
@@ -144,6 +150,10 @@ namespace RWPM.Services.Implementation
             existingStore.MinAllowedDistanceMeters = entity.MinAllowedDistanceMeters;
             existingStore.AllowedRadiusMeters = entity.AllowedRadiusMeters;
             existingStore.IsActive = entity.IsActive;
+            existingStore.ManagerId = entity.ManagerId;
+            existingStore.OpeningTime = entity.OpeningTime;
+            existingStore.ClosingTime = entity.ClosingTime;
+
             existingStore.UpdatedDate = DateTime.Now;
             existingStore.UpdatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor);
 
@@ -187,6 +197,41 @@ namespace RWPM.Services.Implementation
             store.UpdatedDate = DateTime.Now;
             store.UpdatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor);
             await _ctx.SaveChangesAsync();
+        }
+
+        public async Task<StoreDetailsVM?> GetDetailsAsync(int storeId)
+        {
+            var store = await _ctx.Store.AsNoTracking()
+                .Include(x => x.Manager)
+                .ThenInclude(m => m!.Account)
+                .FirstOrDefaultAsync(x => x.StoreId == storeId);
+
+            if (store == null) return null;
+
+            var employees = await _ctx.Employee.AsNoTracking()
+                .Include(e => e.Account)
+                .Where(e => e.StoreId == storeId)
+                .OrderBy(e => e.EmployeeCode)
+                .ToListAsync();
+
+            var shifts = await _ctx.Shift.AsNoTracking()
+                .Where(s => s.StoreId == storeId || s.IsTemplate)
+                .OrderBy(s => s.ShiftCode)
+                .ToListAsync();
+
+            var today = DateTime.Today;
+            var usernames = employees.Select(e => e.Username).ToList();
+            var todayRecords = await _ctx.AttendanceRecord.AsNoTracking()
+                .Where(a => a.Date == today && usernames.Contains(a.Username))
+                .ToListAsync();
+
+            return new StoreDetailsVM
+            {
+                Store = store,
+                Employees = employees,
+                Shifts = shifts,
+                TodayAttendanceRecords = todayRecords
+            };
         }
     }
 }

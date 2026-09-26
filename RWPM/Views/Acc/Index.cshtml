@@ -23,9 +23,31 @@
             </h4>
             <div class="text-muted small">@AccountSharedResource.Index_SubTitle</div>
         </div>
-        <a asp-action="Create" class="btn btn-primary btn-sm px-3 shadow-sm">
-            <i class="bi bi-person-plus-fill me-1"></i> @SharedResource.Button_Create
-        </a>
+        <div class="d-flex gap-2">
+            <!-- Dropdown Excel -->
+            <div class="dropdown">
+                <button class="btn btn-outline-success btn-sm dropdown-toggle shadow-sm px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-file-earmark-excel me-1"></i> @AccountSharedResource.Excel_Action
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow">
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" asp-action="DownloadTemplate">
+                            <i class="bi bi-file-earmark-arrow-down text-primary me-2 fs-6"></i> @AccountSharedResource.Excel_DownloadTemplate
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#importExcelModal">
+                            <i class="bi bi-file-earmark-arrow-up text-success me-2 fs-6"></i> @AccountSharedResource.Excel_Import
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <a asp-action="Create" class="btn btn-primary btn-sm px-3 shadow-sm">
+                <i class="bi bi-person-plus-fill me-1"></i> @SharedResource.Button_Create
+            </a>
+        </div>
     </div>
 
     <!-- Thông báo khi vừa tạo tài khoản/nhân viên mới -->
@@ -105,7 +127,6 @@
                                 AccountRole.HR => "bg-warning text-dark",
                                 AccountRole.StoreManager => "bg-success text-white",
                                 AccountRole.SalesStaff => "bg-info text-dark",
-                                AccountRole.PartTimeStaff => "bg-secondary text-white",
                                 _ => "bg-secondary text-white"
                             };
 
@@ -264,8 +285,296 @@
     </div>
 </div>
 
+<!-- Modal Import Excel (2 bước: Chọn file -> Xem trước & Kiểm tra -> Chấp thuận) -->
+<div class="modal fade" id="importExcelModal" tabindex="-1" aria-labelledby="importExcelModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-light py-3 border-bottom">
+                <h5 class="modal-title fw-bold text-dark d-flex align-items-center" id="importExcelModalLabel">
+                    <i class="bi bi-file-earmark-excel-fill text-success me-2 fs-5"></i> @AccountSharedResource.Excel_ImportTitle
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body p-4">
+                <!-- BƯỚC 1: Chọn file Excel -->
+                <div id="accImportStep1">
+                    <div class="alert alert-info py-2 px-3 small mb-3 d-flex align-items-center">
+                        <i class="bi bi-info-circle-fill me-2 fs-5 flex-shrink-0"></i>
+                        <span>@AccountSharedResource.Excel_Step1_Note</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small required">@AccountSharedResource.Excel_SelectFile</label>
+                        <input type="file" id="accImportFileInput" class="form-control form-control-lg" accept=".xlsx" />
+                        <div class="form-text small mt-1">Định dạng hỗ trợ: .xlsx (Microsoft Excel)</div>
+                    </div>
+
+                    <div id="accImportStep1Error" class="alert alert-danger py-2 px-3 small d-none"></div>
+                </div>
+
+                <!-- BƯỚC 2: Xem trước dữ liệu & Kiểm tra trùng lặp -->
+                <div id="accImportStep2" class="d-none">
+                    <!-- Thống kê kết quả kiểm tra -->
+                    <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between p-3 bg-light rounded border mb-3">
+                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                            <span class="badge bg-secondary px-3 py-2 fs-6">
+                                <i class="bi bi-list-ol me-1"></i> @AccountSharedResource.Excel_Summary_Total <strong id="accPreviewTotal" class="ms-1">0</strong>
+                            </span>
+                            <span class="badge bg-success px-3 py-2 fs-6">
+                                <i class="bi bi-check-circle me-1"></i> @AccountSharedResource.Excel_Summary_Valid <strong id="accPreviewValid" class="ms-1">0</strong>
+                            </span>
+                            <span class="badge bg-danger px-3 py-2 fs-6">
+                                <i class="bi bi-exclamation-octagon me-1"></i> @AccountSharedResource.Excel_Summary_Invalid <strong id="accPreviewInvalid" class="ms-1">0</strong>
+                            </span>
+                        </div>
+                        <div class="small text-muted">
+                            <i class="bi bi-shield-check text-primary me-1"></i> Dữ liệu được kiểm tra tự động trước khi lưu
+                        </div>
+                    </div>
+
+                    <!-- Cảnh báo nếu có dòng lỗi / trùng -->
+                    <div id="accPreviewWarning" class="alert alert-warning py-2 px-3 small mb-3 d-none">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i> @AccountSharedResource.Excel_Preview_Warning_HasErrors
+                    </div>
+                    <div id="accPreviewSuccessNotice" class="alert alert-success py-2 px-3 small mb-3 d-none">
+                        <i class="bi bi-check-circle-fill me-1"></i> @AccountSharedResource.Excel_Preview_All_Valid
+                    </div>
+                    <div id="accPreviewDangerNotice" class="alert alert-danger py-2 px-3 small mb-3 d-none">
+                        <i class="bi bi-x-circle-fill me-1"></i> @AccountSharedResource.Excel_Preview_No_Valid
+                    </div>
+
+                    <!-- Bảng Preview dữ liệu -->
+                    <div class="table-responsive border rounded" style="max-height: 420px; overflow-y: auto;">
+                        <table class="table table-sm table-hover table-bordered align-middle mb-0 text-nowrap">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th class="text-center" style="width: 50px;">@AccountSharedResource.Excel_Col_Row</th>
+                                    <th class="text-center" style="width: 120px;">@AccountSharedResource.Excel_Col_Status</th>
+                                    <th>@AccountSharedResource.Excel_Col_Username</th>
+                                    <th>@AccountSharedResource.Excel_Col_FullName</th>
+                                    <th>Email</th>
+                                    <th>Số ĐT</th>
+                                    <th>@AccountSharedResource.Excel_Col_Role</th>
+                                    <th>@AccountSharedResource.Excel_Col_Store</th>
+                                    <th>@AccountSharedResource.Excel_Col_EmpCode</th>
+                                    <th style="min-width: 260px;">@AccountSharedResource.Excel_Col_Errors</th>
+                                </tr>
+                            </thead>
+                            <tbody id="accPreviewTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer bg-light py-2 border-top">
+                <!-- Footer buttons cho Bước 1 -->
+                <div id="accStep1Footer" class="d-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">@AccountSharedResource.Excel_Close</button>
+                    <button type="button" id="accBtnPreview" class="btn btn-sm btn-primary px-3" onclick="previewAccImport()">
+                        <i class="bi bi-search me-1"></i> @AccountSharedResource.Excel_Btn_Preview
+                    </button>
+                </div>
+
+                <!-- Footer buttons cho Bước 2 -->
+                <div id="accStep2Footer" class="d-flex gap-2 d-none">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="backToAccStep1()">
+                        <i class="bi bi-arrow-left me-1"></i> @AccountSharedResource.Excel_Btn_Back
+                    </button>
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">@AccountSharedResource.Excel_Close</button>
+                    <button type="button" id="accBtnConfirm" class="btn btn-sm btn-success px-3 fw-bold" onclick="confirmAccImport()">
+                        <i class="bi bi-check2-circle me-1"></i> @AccountSharedResource.Excel_Btn_Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts{
     <script>
+        let currentAccImportToken = '';
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function previewAccImport() {
+            const fileInput = document.getElementById('accImportFileInput');
+            const errBox = $('#accImportStep1Error');
+            errBox.addClass('d-none').text('');
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                errBox.removeClass('d-none').text('Vui lòng chọn một file Excel (.xlsx).');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            if (!file.name.toLowerCase().endsWith('.xlsx')) {
+                errBox.removeClass('d-none').text('Chỉ chấp nhận file định dạng Excel (.xlsx).');
+                return;
+            }
+
+            const btn = $('#accBtnPreview');
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> @AccountSharedResource.Excel_Btn_Verifying');
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const token = $('input[name="__RequestVerificationToken"]').first().val();
+
+            fetch('/Acc/PreviewImportExcel', {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': token
+                },
+                body: formData
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (!res.success) {
+                    errBox.removeClass('d-none').text(res.message || 'Lỗi khi kiểm tra file Excel.');
+                    return;
+                }
+
+                const data = res.data;
+                currentAccImportToken = data.importToken;
+
+                $('#accPreviewTotal').text(data.totalRows);
+                $('#accPreviewValid').text(data.validCount);
+                $('#accPreviewInvalid').text(data.invalidCount);
+
+                $('#accPreviewWarning').addClass('d-none');
+                $('#accPreviewSuccessNotice').addClass('d-none');
+                $('#accPreviewDangerNotice').addClass('d-none');
+
+                if (data.validCount === 0) {
+                    $('#accPreviewDangerNotice').removeClass('d-none');
+                    $('#accBtnConfirm').prop('disabled', true);
+                } else if (data.invalidCount > 0) {
+                    $('#accPreviewWarning').removeClass('d-none');
+                    $('#accBtnConfirm').prop('disabled', false);
+                } else {
+                    $('#accPreviewSuccessNotice').removeClass('d-none');
+                    $('#accBtnConfirm').prop('disabled', false);
+                }
+
+                const tbody = $('#accPreviewTableBody');
+                tbody.empty();
+
+                (data.rows || []).forEach(row => {
+                    const tr = $('<tr>');
+                    if (row.isValid) {
+                        tr.addClass('table-success bg-opacity-10');
+                    } else {
+                        tr.addClass('table-danger bg-opacity-10');
+                    }
+
+                    const statusBadge = row.isValid
+                        ? `<span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>@AccountSharedResource.Excel_Status_Valid</span>`
+                        : `<span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>@AccountSharedResource.Excel_Status_Invalid</span>`;
+
+                    const errHtml = row.isValid
+                        ? `<span class="text-success small"><i class="bi bi-check2 me-1"></i>Sẵn sàng nhập</span>`
+                        : `<span class="text-danger small fw-semibold"><i class="bi bi-exclamation-circle me-1"></i>${escapeHtml(row.errorMessage || '')}</span>`;
+
+                    tr.html(`
+                        <td class="text-center fw-bold text-muted">${row.rowNum}</td>
+                        <td class="text-center">${statusBadge}</td>
+                        <td class="fw-semibold text-dark">${escapeHtml(row.username)}</td>
+                        <td>${escapeHtml(row.fullName)}</td>
+                        <td class="small text-muted">${escapeHtml(row.email)}</td>
+                        <td class="small text-muted">${escapeHtml(row.phone || '')}</td>
+                        <td><span class="badge bg-primary bg-opacity-75">${escapeHtml(row.roleDisplay)}</span></td>
+                        <td><span class="badge bg-secondary bg-opacity-75">${escapeHtml(row.storeDisplay)}</span></td>
+                        <td class="small fw-semibold text-secondary">${escapeHtml(row.empCode)}</td>
+                        <td>${errHtml}</td>
+                    `);
+
+                    tbody.append(tr);
+                });
+
+                $('#accImportStep1').addClass('d-none');
+                $('#accImportStep2').removeClass('d-none');
+                $('#accStep1Footer').addClass('d-none');
+                $('#accStep2Footer').removeClass('d-none');
+            })
+            .catch(err => {
+                errBox.removeClass('d-none').text('Lỗi kết nối máy chủ: ' + err.message);
+            })
+            .finally(() => {
+                btn.prop('disabled', false).html('<i class="bi bi-search me-1"></i> @AccountSharedResource.Excel_Btn_Preview');
+            });
+        }
+
+        function backToAccStep1() {
+            $('#accImportStep2').addClass('d-none');
+            $('#accImportStep1').removeClass('d-none');
+            $('#accStep2Footer').addClass('d-none');
+            $('#accStep1Footer').removeClass('d-none');
+        }
+
+        function confirmAccImport() {
+            if (!currentAccImportToken) return;
+
+            const btn = $('#accBtnConfirm');
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> @AccountSharedResource.Excel_Btn_Saving');
+
+            const token = $('input[name="__RequestVerificationToken"]').first().val();
+
+            fetch('/Acc/ConfirmImportExcel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token
+                },
+                body: JSON.stringify({ importToken: currentAccImportToken })
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    if (typeof toastr !== 'undefined') {
+                        toastr.success(res.message);
+                    }
+                    const modalEl = document.getElementById('importExcelModal');
+                    if (modalEl) {
+                        bootstrap.Modal.getInstance(modalEl)?.hide();
+                    }
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 800);
+                } else {
+                    if (typeof toastr !== 'undefined') {
+                        toastr.error(res.message || 'Lưu dữ liệu thất bại.');
+                    } else {
+                        alert(res.message || 'Lưu dữ liệu thất bại.');
+                    }
+                    btn.prop('disabled', false).html('<i class="bi bi-check2-circle me-1"></i> @AccountSharedResource.Excel_Btn_Confirm');
+                }
+            })
+            .catch(err => {
+                if (typeof toastr !== 'undefined') {
+                    toastr.error('Lỗi khi lưu: ' + err.message);
+                } else {
+                    alert('Lỗi khi lưu: ' + err.message);
+                }
+                btn.prop('disabled', false).html('<i class="bi bi-check2-circle me-1"></i> @AccountSharedResource.Excel_Btn_Confirm');
+            });
+        }
+
+        $('#importExcelModal').on('hidden.bs.modal', function () {
+            backToAccStep1();
+            $('#accImportFileInput').val('');
+            $('#accImportStep1Error').addClass('d-none').text('');
+        });
+
         function onToggleAccountStatus(username, isActive) {
             const token = $('input[name="__RequestVerificationToken"]').val();
             const checkbox = document.getElementById("isActiveSwitch_" + username);

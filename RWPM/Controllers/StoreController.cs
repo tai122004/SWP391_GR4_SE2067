@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using RWPM.Common;
 using RWPM.Common.Attributes;
@@ -15,13 +16,34 @@ namespace RWPM.Controllers
     {
         private readonly IStringLocalizer _localizer;
         private readonly IStoreService _storeService;
+        private readonly RWPM.Infrastructure.Data.DefaultDatabaseContext _ctx;
 
         public StoreController(
             IStringLocalizer<ErrorServerDefinition> localizer,
-            IStoreService storeService)
+            IStoreService storeService,
+            RWPM.Infrastructure.Data.DefaultDatabaseContext ctx)
         {
             _localizer = localizer;
             _storeService = storeService;
+            _ctx = ctx;
+        }
+
+        private async Task PopulateManagerSelectListAsync(int? selectedId = null)
+        {
+            var employees = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync(
+                _ctx.Employee
+                    .AsNoTracking()
+                    .Include(e => e.Account)
+                    .Where(e => e.IsActive)
+                    .OrderBy(e => e.Account.FullName)
+                    .Select(e => new
+                    {
+                        Id = e.EmployeeId,
+                        Name = e.Account != null ? $"{e.Account.FullName} ({e.EmployeeCode})" : e.EmployeeCode
+                    })
+            );
+
+            ViewBag.ManagerSelectList = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(employees, "Id", "Name", selectedId);
         }
 
         // GET: Store
@@ -32,9 +54,20 @@ namespace RWPM.Controllers
             return View(new StoreListVM(result, searchObject));
         }
 
-        // GET: Store/Create
-        public IActionResult Create()
+        // GET: Store/Details/5
+        public async Task<IActionResult> Details(int id)
         {
+            var details = await _storeService.GetDetailsAsync(id);
+            if (details == null)
+                return NotFound();
+
+            return View(details);
+        }
+
+        // GET: Store/Create
+        public async Task<IActionResult> Create()
+        {
+            await PopulateManagerSelectListAsync();
             return View(new StoreCreateVM());
         }
 
@@ -47,6 +80,7 @@ namespace RWPM.Controllers
             {
                 var errorMsg = string.Join(" | ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
                 AlertHelper.AddErrorMessage(TempData, "Vui lòng kiểm tra lại thông tin nhập: " + errorMsg);
+                await PopulateManagerSelectListAsync(viewModel.ManagerId);
                 return View(viewModel);
             }
 
@@ -58,11 +92,13 @@ namespace RWPM.Controllers
             catch (ModelValidationException ex)
             {
                 AlertHelper.AddErrorMessage(TempData, ex.GetErrorString(_localizer));
+                await PopulateManagerSelectListAsync(viewModel.ManagerId);
                 return View(viewModel);
             }
             catch (Exception ex)
             {
                 AlertHelper.AddErrorMessage(TempData, ex.Message);
+                await PopulateManagerSelectListAsync(viewModel.ManagerId);
                 return View(viewModel);
             }
 
@@ -76,6 +112,7 @@ namespace RWPM.Controllers
             if (store == null)
                 return NotFound();
 
+            await PopulateManagerSelectListAsync(store.ManagerId);
             return View(new StoreEditVM(store));
         }
 
@@ -91,6 +128,7 @@ namespace RWPM.Controllers
             {
                 var errorMsg = string.Join(" | ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
                 AlertHelper.AddErrorMessage(TempData, "Vui lòng kiểm tra lại thông tin nhập: " + errorMsg);
+                await PopulateManagerSelectListAsync(viewModel.ManagerId);
                 return View(viewModel);
             }
 
@@ -104,11 +142,13 @@ namespace RWPM.Controllers
             catch (ModelValidationException ex)
             {
                 AlertHelper.AddErrorMessage(TempData, ex.GetErrorString(_localizer));
+                await PopulateManagerSelectListAsync(viewModel.ManagerId);
                 return View(viewModel);
             }
             catch (Exception ex)
             {
                 AlertHelper.AddErrorMessage(TempData, ex.Message);
+                await PopulateManagerSelectListAsync(viewModel.ManagerId);
                 return View(viewModel);
             }
 

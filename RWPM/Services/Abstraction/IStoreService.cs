@@ -16,5 +16,6 @@ namespace RWPM.Services.Abstraction
         Task DeleteAsync(global::Store entity);
         Task<bool> ExistsByCodeAsync(string storeCode, int? excludeStoreId = null);
         Task UpdateActiveStatusAsync(int storeId, bool active);
+        Task<StoreDetailsVM?> GetDetailsAsync(int storeId);
     }
 }

@@ -237,4 +237,148 @@
   <data name="NoEmail" xml:space="preserve">
     <value>Chưa có email</value>
   </data>
+  <data name="ExportExcel" xml:space="preserve">
+    <value>Xuất file Excel</value>
+  </data>
+  <data name="Stat_TotalEmployees" xml:space="preserve">
+    <value>Tổng nhân sự</value>
+  </data>
+  <data name="Stat_Active" xml:space="preserve">
+    <value>Đang làm việc</value>
+  </data>
+  <data name="Stat_FullTime" xml:space="preserve">
+    <value>Chính thức (Full-time)</value>
+  </data>
+  <data name="Stat_PartTime" xml:space="preserve">
+    <value>Bán thời gian (Part-time)</value>
+  </data>
+  <data name="Stat_Probation" xml:space="preserve">
+    <value>Đang thử việc</value>
+  </data>
+  <data name="Modal_ResignTitle" xml:space="preserve">
+    <value>Xử lý thôi việc nhân viên</value>
+  </data>
+  <data name="Modal_ResignNotice" xml:space="preserve">
+    <value>Thao tác này sẽ chuyển trạng thái sang Đã thôi việc, tự động khóa tài khoản và hủy toàn bộ các ca làm việc trong tương lai.</value>
+  </data>
+  <data name="Button_Resign" xml:space="preserve">
+    <value>Thôi việc</value>
+  </data>
+  <data name="Resign_Success" xml:space="preserve">
+    <value>Đã ghi nhận thôi việc cho nhân viên thành công.</value>
+  </data>
+  <data name="Section_PersonalInfo" xml:space="preserve">
+    <value>Thông tin cá nhân &amp; Liên hệ</value>
+  </data>
+  <data name="Section_JobInfo" xml:space="preserve">
+    <value>Thông tin công việc &amp; Phân bổ chi nhánh</value>
+  </data>
+  <data name="Section_Compensation" xml:space="preserve">
+    <value>Chế độ lương &amp; Ngày phép</value>
+  </data>
+  <data name="Badge_FullTime" xml:space="preserve">
+    <value>Full-time</value>
+  </data>
+  <data name="Badge_PartTime" xml:space="preserve">
+    <value>Part-time</value>
+  </data>
+  <data name="Badge_Intern" xml:space="preserve">
+    <value>Thực tập</value>
+  </data>
+  <data name="Badge_Resigned" xml:space="preserve">
+    <value>Đã thôi việc</value>
+  </data>
+  <data name="Badge_Probation" xml:space="preserve">
+    <value>Thử việc</value>
+  </data>
+  <data name="Excel_Action" xml:space="preserve">
+    <value>Excel</value>
+  </data>
+  <data name="Excel_DownloadTemplate" xml:space="preserve">
+    <value>Tải file mẫu Excel</value>
+  </data>
+  <data name="Excel_Import" xml:space="preserve">
+    <value>Nhập từ Excel</value>
+  </data>
+  <data name="Excel_ImportTitle" xml:space="preserve">
+    <value>Nhập danh sách nhân viên từ Excel</value>
+  </data>
+  <data name="Excel_SelectFile" xml:space="preserve">
+    <value>Chọn file Excel (.xlsx)</value>
+  </data>
+  <data name="Excel_UploadAndImport" xml:space="preserve">
+    <value>Bắt đầu nhập dữ liệu</value>
+  </data>
+  <data name="Excel_TemplateNote" xml:space="preserve">
+    <value>Vui lòng tải file mẫu để nhập đúng cấu trúc cột. Mật khẩu mặc định sau khi nhập là: Aa@123456</value>
+  </data>
+  <data name="Excel_Close" xml:space="preserve">
+    <value>Đóng</value>
+  </data>
+  <data name="Excel_Btn_Preview" xml:space="preserve">
+    <value>Kiểm tra dữ liệu</value>
+  </data>
+  <data name="Excel_Btn_Back" xml:space="preserve">
+    <value>Chọn file khác</value>
+  </data>
+  <data name="Excel_Btn_Confirm" xml:space="preserve">
+    <value>Chấp thuận &amp; Lưu vào hệ thống</value>
+  </data>
+  <data name="Excel_Summary_Total" xml:space="preserve">
+    <value>Tổng số:</value>
+  </data>
+  <data name="Excel_Summary_Valid" xml:space="preserve">
+    <value>Hợp lệ:</value>
+  </data>
+  <data name="Excel_Summary_Invalid" xml:space="preserve">
+    <value>Lỗi / Trùng:</value>
+  </data>
+  <data name="Excel_Status_Valid" xml:space="preserve">
+    <value>Hợp lệ</value>
+  </data>
+  <data name="Excel_Col_Row" xml:space="preserve">
+    <value>Dòng</value>
+  </data>
+  <data name="Excel_Col_Status" xml:space="preserve">
+    <value>Trạng thái</value>
+  </data>
+  <data name="Excel_Col_Username" xml:space="preserve">
+    <value>Tên đăng nhập</value>
+  </data>
+  <data name="Excel_Col_FullName" xml:space="preserve">
+    <value>Họ và tên</value>
+  </data>
+  <data name="Excel_Col_Role" xml:space="preserve">
+    <value>Vai trò</value>
+  </data>
+  <data name="Excel_Col_Store" xml:space="preserve">
+    <value>Cửa hàng</value>
+  </data>
+  <data name="Excel_Col_EmpCode" xml:space="preserve">
+    <value>Mã NV</value>
+  </data>
+  <data name="Excel_Col_Errors" xml:space="preserve">
+    <value>Chi tiết kiểm tra</value>
+  </data>
+  <data name="Excel_Status_Invalid" xml:space="preserve">
+    <value>Lỗi / Trùng lặp</value>
+  </data>
+  <data name="Excel_Preview_Warning_HasErrors" xml:space="preserve">
+    <value>Phát hiện một số dòng dữ liệu có lỗi hoặc bị trùng lặp (màu đỏ). Khi bạn nhấn Chấp thuận, hệ thống sẽ CHỈ LƯU các dòng hợp lệ (màu xanh).</value>
+  </data>
+  <data name="Excel_Preview_All_Valid" xml:space="preserve">
+    <value>Toàn bộ dữ liệu đều hợp lệ và sẵn sàng lưu vào hệ thống.</value>
+  </data>
+  <data name="Excel_Preview_No_Valid" xml:space="preserve">
+    <value>Không có dòng dữ liệu hợp lệ nào để nhập. Vui lòng kiểm tra lại file Excel của bạn.</value>
+  </data>
+  <data name="Excel_Btn_Verifying" xml:space="preserve">
+    <value>Đang kiểm tra dữ liệu...</value>
+  </data>
+  <data name="Excel_Btn_Saving" xml:space="preserve">
+    <value>Đang lưu vào hệ thống...</value>
+  </data>
+  <data name="Excel_Step1_Note" xml:space="preserve">
+    <value>Vui lòng đảm bảo file theo đúng cấu trúc cột. Mật khẩu mặc định sau khi nhập là: Aa@123456</value>
+  </data>
 </root>

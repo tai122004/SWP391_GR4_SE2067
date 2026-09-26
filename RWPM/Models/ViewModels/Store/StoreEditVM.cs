@@ -45,6 +45,15 @@ namespace RWPM.Models.ViewModels.Store
         [Display(Name = "IsActive", ResourceType = typeof(Resources.Models.Store))]
         public bool IsActive { get; set; } = true;
 
+        [Display(Name = "Quản lý chi nhánh")]
+        public int? ManagerId { get; set; }
+
+        [Display(Name = "Giờ mở cửa")]
+        public TimeSpan? OpeningTime { get; set; }
+
+        [Display(Name = "Giờ đóng cửa")]
+        public TimeSpan? ClosingTime { get; set; }
+
         public StoreEditVM() { }
 
         public StoreEditVM(global::Store entity)
@@ -59,6 +68,9 @@ namespace RWPM.Models.ViewModels.Store
             MinAllowedDistanceMeters = entity.MinAllowedDistanceMeters >= 0 ? entity.MinAllowedDistanceMeters : 0;
             AllowedRadiusMeters = entity.AllowedRadiusMeters >= 10 ? entity.AllowedRadiusMeters : 100;
             IsActive = entity.IsActive;
+            ManagerId = entity.ManagerId;
+            OpeningTime = entity.OpeningTime;
+            ClosingTime = entity.ClosingTime;
         }
 
         public void ApplyToEntity(global::Store entity)
@@ -72,6 +84,9 @@ namespace RWPM.Models.ViewModels.Store
             entity.MinAllowedDistanceMeters = MinAllowedDistanceMeters >= 0 ? MinAllowedDistanceMeters : 0;
             entity.AllowedRadiusMeters = AllowedRadiusMeters >= 10 ? AllowedRadiusMeters : 100;
             entity.IsActive = IsActive;
+            entity.ManagerId = ManagerId;
+            entity.OpeningTime = OpeningTime;
+            entity.ClosingTime = ClosingTime;
         }
     }
 }

@@ -17,6 +17,7 @@ namespace RWPM.Infrastructure.DependencyInjection
         public static IServiceCollection RegisterServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddControllers();
+            services.AddMemoryCache();
 
             #region Hub
             services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();

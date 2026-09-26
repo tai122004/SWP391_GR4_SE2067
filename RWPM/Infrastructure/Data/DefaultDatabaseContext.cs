@@ -19,10 +19,17 @@ namespace RWPM.Infrastructure.Data
             #endregion
 
             #region Store
-            modelBuilder.Entity<Store>()
-                .HasIndex(i => i.StoreCode)
-                .IsUnique()
-                .HasDatabaseName("IX_Store_StoreCode");
+            modelBuilder.Entity<Store>(e =>
+            {
+                e.HasIndex(i => i.StoreCode)
+                 .IsUnique()
+                 .HasDatabaseName("IX_Store_StoreCode");
+
+                e.HasOne(x => x.Manager)
+                 .WithMany()
+                 .HasForeignKey(x => x.ManagerId)
+                 .OnDelete(DeleteBehavior.SetNull);
+            });
             #endregion
 
             #region Employee

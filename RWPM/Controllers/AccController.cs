@@ -11,6 +11,9 @@ using RWPM.Models.ViewModels.Acc.ChangePasswordAcc;
 using RWPM.Services.Abstraction;
 using RWPM.Common.Models;
 using RWPM.Common.Exceptions;
+using RWPM.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using RWPM.Models.ViewModels.Employee;
 
 namespace RWPM.Controllers
 {
@@ -20,18 +23,21 @@ namespace RWPM.Controllers
         private readonly IAccService _accService;
         private readonly IStoreService _storeService;
         private readonly IEmployeeService _employeeService;
+        private readonly DefaultDatabaseContext _context;
 
         public AccController( 
             IStringLocalizer<ErrorServerDefinition> localizer,
             IAccService accService,
             IStoreService storeService,
-            IEmployeeService employeeService
+            IEmployeeService employeeService,
+            DefaultDatabaseContext context
             )
         {
             _localizer = localizer;
             _accService = accService;
             _storeService = storeService;
             _employeeService = employeeService;
+            _context = context;
         }
 
         // GET: Acc
@@ -44,13 +50,116 @@ namespace RWPM.Controllers
             return View(new AccListVM(result, searchObject));
         }
 
+        [Authorize(Roles = "Admin,HR")]
+        [HttpGet]
+        public async Task<IActionResult> DownloadTemplate()
+        {
+            var fileBytes = await _employeeService.GenerateImportTemplateAsync();
+            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Mau_Nhap_Nhan_Vien_{DateTime.Now:yyyyMMdd}.xlsx");
+        }
+
+        [Authorize(Roles = "Admin,HR")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ImportExcel(IFormFile? file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                AlertHelper.AddErrorMessage(TempData, "Vui lòng chọn một file Excel (.xlsx) hợp lệ.");
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (!Path.GetExtension(file.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
+            {
+                AlertHelper.AddErrorMessage(TempData, "Hệ thống chỉ hỗ trợ file định dạng Excel (.xlsx).");
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                using var stream = file.OpenReadStream();
+                var result = await _employeeService.ImportFromExcelAsync(stream, User.Identity?.Name ?? "system");
+
+                if (result.SuccessCount > 0 && result.FailureCount == 0)
+                {
+                    AlertHelper.AddSuccessMessage(TempData, $"Nhập thành công {result.SuccessCount}/{result.TotalRows} nhân viên từ file Excel!");
+                }
+                else if (result.SuccessCount > 0 && result.FailureCount > 0)
+                {
+                    AlertHelper.AddWarningMessage(TempData, $"Nhập thành công {result.SuccessCount} nhân viên. Bỏ qua {result.FailureCount} dòng lỗi. Chi tiết: {string.Join(" | ", result.ErrorMessages.Take(3))}");
+                }
+                else
+                {
+                    AlertHelper.AddErrorMessage(TempData, $"Nhập thất bại. {string.Join(" | ", result.ErrorMessages.Take(5))}");
+                }
+            }
+            catch (Exception ex)
+            {
+                AlertHelper.AddErrorMessage(TempData, $"Lỗi khi xử lý file Excel: {ex.Message}");
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [Authorize(Roles = "Admin,HR")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PreviewImportExcel(IFormFile? file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return Json(new { success = false, message = "Vui lòng chọn một file Excel (.xlsx) hợp lệ." });
+            }
+
+            if (!Path.GetExtension(file.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
+            {
+                return Json(new { success = false, message = "Hệ thống chỉ hỗ trợ file định dạng Excel (.xlsx)." });
+            }
+
+            try
+            {
+                using var stream = file.OpenReadStream();
+                var preview = await _employeeService.PreviewImportFromExcelAsync(stream);
+                return Json(new { success = true, data = preview });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [Authorize(Roles = "Admin,HR")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmImportExcel([FromBody] ConfirmImportRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request?.ImportToken))
+            {
+                return Json(new { success = false, message = "Mã phiên nhập không hợp lệ hoặc đã hết hạn." });
+            }
+
+            try
+            {
+                var count = await _employeeService.ConfirmImportAsync(request.ImportToken, User.Identity?.Name ?? "system");
+                return Json(new { success = true, count = count, message = $"Nhập thành công {count} nhân viên vào hệ thống!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
         [Authorize]
         public async Task<IActionResult> MyProfile()
         {
-            var currentAcc = await _accService.GetByIdAsync(AccountHelper.GetCurrentUsername(HttpContext.User), new QueryOptions<Acc>());
+            var username = AccountHelper.GetCurrentUsername(HttpContext.User);
+            var currentAcc = await _accService.GetByIdAsync(username, new QueryOptions<Acc>());
 
             if (currentAcc == null)
                 return NotFound();
+
+            var currentEmp = await _context.Employee.Include(e => e.Store).FirstOrDefaultAsync(e => e.Username == username);
+            ViewBag.Employee = currentEmp;
 
             return View(currentAcc);
         }
@@ -73,8 +182,7 @@ namespace RWPM.Controllers
         public async Task<IActionResult> Create(AccCreateVM viewModel)
         {
             var isStoreRole = viewModel.Role == RWPM.Common.Enums.AccountRole.StoreManager ||
-                              viewModel.Role == RWPM.Common.Enums.AccountRole.SalesStaff ||
-                              viewModel.Role == RWPM.Common.Enums.AccountRole.PartTimeStaff;
+                              viewModel.Role == RWPM.Common.Enums.AccountRole.SalesStaff;
 
             if (isStoreRole)
             {
@@ -108,6 +216,8 @@ namespace RWPM.Controllers
                         Username = createdAcc.Username,
                         StoreId = viewModel.StoreId.Value,
                         JoinDate = viewModel.JoinDate?.Date ?? DateTime.Today,
+                        EmploymentType = viewModel.EmploymentType,
+                        HourlyRate = viewModel.HourlyRate,
                         IsActive = true
                     };
                     await _employeeService.CreateAsync(emp);

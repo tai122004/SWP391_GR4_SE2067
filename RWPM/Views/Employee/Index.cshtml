@@ -1,29 +1,134 @@
 @model RWPM.Models.ViewModels.Employee.EmployeeListVM
 @using RWPM.Common.Helper
+@using RWPM.Common.Enums
 @using RWPM.Resources.Shared
 @using EmployeeModelResource = RWPM.Resources.Models.Employee;
 @using EmployeeSharedResource = RWPM.Resources.Shared.Employee;
 
 @{
     ViewData["Title"] = @EmployeeSharedResource.Index_PageTitle;
+    var stats = ViewBag.Statistics as RWPM.Models.ViewModels.Employee.EmployeeStatisticsDto;
+    bool isStoreManager = ViewBag.IsStoreManager ?? false;
+    bool canManage = User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin");
 }
 
 @Html.AntiForgeryToken()
 
 <div class="container-fluid px-0">
     <!-- Header -->
-    <div class="mb-3">
-        <h4 class="fw-bold text-dark d-flex align-items-center mb-1">
-            <i class="bi bi-person-badge-fill text-primary me-2"></i>
-            @EmployeeSharedResource.Index_PageHeader
-        </h4>
-        <div class="text-muted small">@EmployeeSharedResource.Index_SubTitle</div>
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div>
+            <h4 class="fw-bold text-dark d-flex align-items-center mb-1">
+                <i class="bi bi-person-badge-fill text-primary me-2"></i>
+                @EmployeeSharedResource.Index_PageHeader
+            </h4>
+            <div class="text-muted small">@EmployeeSharedResource.Index_SubTitle</div>
+        </div>
+        <div class="d-flex gap-2">
+            <!-- Dropdown Excel -->
+            <div class="dropdown">
+                <button class="btn btn-outline-success btn-sm dropdown-toggle shadow-sm d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-file-earmark-excel-fill text-success me-1 fs-6"></i> @EmployeeSharedResource.Excel_Action
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow">
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center"
+                           asp-action="ExportExcel"
+                           asp-route-Search="@Model.Search"
+                           asp-route-StoreId="@Model.StoreId"
+                           asp-route-Status="@Model.Status">
+                            <i class="bi bi-file-earmark-arrow-down text-success me-2 fs-6"></i> @EmployeeSharedResource.ExportExcel
+                        </a>
+                    </li>
+                    @if (canManage)
+                    {
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center" asp-action="DownloadTemplate">
+                                <i class="bi bi-download text-primary me-2 fs-6"></i> @EmployeeSharedResource.Excel_DownloadTemplate
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#importExcelModal">
+                                <i class="bi bi-file-earmark-arrow-up text-primary me-2 fs-6"></i> @EmployeeSharedResource.Excel_Import
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+
+            @if (canManage)
+            {
+                <a asp-controller="Acc" asp-action="Create" class="btn btn-primary btn-sm shadow-sm d-flex align-items-center">
+                    <i class="bi bi-person-plus-fill me-1"></i> @EmployeeSharedResource.Button_Create
+                </a>
+            }
+        </div>
     </div>
 
-
+    <!-- Tanca-Style HR Metric Cards -->
+    @if (stats != null)
+    {
+        <div class="row g-3 mb-3">
+            <div class="col-6 col-md-3">
+                <div class="modern-card p-3 border-start border-primary border-4 shadow-sm h-100">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted small fw-semibold text-uppercase">@EmployeeSharedResource.Stat_TotalEmployees</div>
+                            <div class="fs-4 fw-bold text-dark mt-1">@stats.TotalEmployees</div>
+                        </div>
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-2 text-primary">
+                            <i class="bi bi-people fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="modern-card p-3 border-start border-success border-4 shadow-sm h-100">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted small fw-semibold text-uppercase">@EmployeeSharedResource.Stat_Active</div>
+                            <div class="fs-4 fw-bold text-success mt-1">@stats.ActiveEmployees</div>
+                        </div>
+                        <div class="rounded-circle bg-success bg-opacity-10 p-2 text-success">
+                            <i class="bi bi-person-check fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="modern-card p-3 border-start border-info border-4 shadow-sm h-100">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted small fw-semibold text-uppercase">@EmployeeSharedResource.Stat_FullTime / @EmployeeSharedResource.Stat_PartTime</div>
+                            <div class="fs-4 fw-bold text-dark mt-1">
+                                <span class="text-primary">@stats.FullTimeCount</span> <span class="text-muted fs-6">/</span> <span class="text-warning">@stats.PartTimeCount</span>
+                            </div>
+                        </div>
+                        <div class="rounded-circle bg-info bg-opacity-10 p-2 text-info">
+                            <i class="bi bi-briefcase fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="modern-card p-3 border-start border-warning border-4 shadow-sm h-100">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted small fw-semibold text-uppercase">@EmployeeSharedResource.Stat_Probation</div>
+                            <div class="fs-4 fw-bold text-warning mt-1">@stats.ProbationCount</div>
+                        </div>
+                        <div class="rounded-circle bg-warning bg-opacity-10 p-2 text-warning">
+                            <i class="bi bi-hourglass-split fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 
     <!-- Search Toolbar -->
-    <div class="modern-card p-3 mb-3">
+    <div class="modern-card p-3 mb-3 shadow-sm">
         <form asp-action="Index" method="get" class="row g-2 align-items-center">
             <div class="col-md-5 col-lg-4">
                 <div class="input-group input-group-sm">
@@ -32,10 +137,13 @@
                 </div>
             </div>
 
-            <div class="col-md-3 col-lg-3">
-                <select asp-for="StoreId" asp-items="Model.StoreSelectList" class="form-select form-select-sm">
-                </select>
-            </div>
+            @if (!isStoreManager)
+            {
+                <div class="col-md-3 col-lg-3">
+                    <select asp-for="StoreId" asp-items="Model.StoreSelectList" class="form-select form-select-sm">
+                    </select>
+                </div>
+            }
 
             <div class="col-md-2 col-lg-2">
                 <select name="Status" class="form-select form-select-sm">
@@ -57,17 +165,19 @@
     </div>
 
     <!-- Table Card -->
-    <div class="modern-card overflow-hidden mb-3">
+    <div class="modern-card overflow-hidden mb-3 shadow-sm">
         <div class="table-responsive">
             <table class="table modern-table align-middle mb-0">
-                <thead>
+                <thead class="table-light">
                     <tr>
                         <th>@EmployeeSharedResource.Th_EmployeeName</th>
                         <th>@EmployeeSharedResource.Th_EmployeeIdAccount</th>
                         <th>@EmployeeModelResource.EmployeeRole</th>
+                        <th>@EmployeeModelResource.EmploymentType</th>
                         <th>@EmployeeModelResource.Store</th>
+                        <th class="text-center">@EmployeeModelResource.EmploymentStatus</th>
                         <th class="text-center">@EmployeeModelResource.StartDate</th>
-                        <th class="text-center">@EmployeeModelResource.Status</th>
+                        <th class="text-center">@EmployeeModelResource.Active</th>
                         <th class="text-center">@SharedResource.Button_Action</th>
                     </tr>
                 </thead>
@@ -78,6 +188,7 @@
                         {
                             var fullName = emp.Account?.FullName ?? "-";
                             var email = emp.Account?.Email;
+                            var phone = emp.Account?.PhoneNumber;
                             var initials = "NV";
                             if (!string.IsNullOrWhiteSpace(fullName) && fullName != "-")
                             {
@@ -93,13 +204,22 @@
                             }
                             var colorIndex = Math.Abs(emp.EmployeeId.GetHashCode()) % 6;
 
-                            <tr id="row-emp-@emp.EmployeeId">
+                            <tr id="row-emp-@emp.EmployeeId" class="@(emp.Status == EmploymentStatus.Resigned ? "table-light text-muted opacity-75" : "")">
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <div class="avatar-initials avatar-color-@colorIndex me-2">@initials</div>
+                                        <div class="avatar-initials avatar-color-@colorIndex me-2 flex-shrink-0">@initials</div>
                                         <div>
                                             <div class="fw-semibold text-dark">@fullName</div>
-                                            <small class="text-muted"><i class="bi bi-envelope me-1"></i>@(string.IsNullOrEmpty(email) ? EmployeeSharedResource.NoEmail : email)</small>
+                                            <div class="d-flex align-items-center gap-2 small text-muted">
+                                                @if (!string.IsNullOrEmpty(phone))
+                                                {
+                                                    <span><i class="bi bi-telephone me-1"></i>@phone</span>
+                                                }
+                                                @if (!string.IsNullOrEmpty(email))
+                                                {
+                                                    <span><i class="bi bi-envelope me-1"></i>@email</span>
+                                                }
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
@@ -110,7 +230,9 @@
                                 <td>
                                     @if (emp.Account != null)
                                     {
-                                        <span class="badge bg-light text-dark border px-2 py-1">@UIHelper.GetDisplayName(emp.Account.Role)</span>
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary border px-2 py-1">
+                                            <i class="bi bi-person-badge me-1"></i>@UIHelper.GetDisplayName(emp.Account.Role)
+                                        </span>
                                     }
                                     else
                                     {
@@ -118,16 +240,61 @@
                                     }
                                 </td>
                                 <td>
+                                    @if (emp.EmploymentType == EmploymentType.FullTime)
+                                    {
+                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-2 py-1">
+                                            @EmployeeSharedResource.Badge_FullTime
+                                        </span>
+                                    }
+                                    else if (emp.EmploymentType == EmploymentType.PartTime)
+                                    {
+                                        <span class="badge bg-warning bg-opacity-10 text-dark border border-warning px-2 py-1">
+                                            @EmployeeSharedResource.Badge_PartTime
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-info bg-opacity-10 text-info border border-info px-2 py-1">
+                                            @EmployeeSharedResource.Badge_Intern
+                                        </span>
+                                    }
+                                </td>
+                                <td>
                                     @if (emp.Store != null)
                                     {
-                                        <div class="fw-medium text-dark">
+                                        <div class="fw-medium text-dark small">
                                             <i class="bi bi-shop me-1 text-secondary"></i>@emp.Store.StoreName
                                         </div>
-                                        <small class="text-muted font-monospace">@emp.Store.StoreCode</small>
                                     }
                                     else
                                     {
                                         <span class="text-muted small">@EmployeeSharedResource.Unassigned</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (emp.Status == EmploymentStatus.Official)
+                                    {
+                                        <span class="badge bg-success-subtle text-success px-2 py-1">
+                                            <i class="bi bi-check-circle me-1"></i>@UIHelper.GetDisplayName(emp.Status)
+                                        </span>
+                                    }
+                                    else if (emp.Status == EmploymentStatus.Probation)
+                                    {
+                                        <span class="badge bg-warning-subtle text-warning px-2 py-1">
+                                            <i class="bi bi-hourglass me-1"></i>@UIHelper.GetDisplayName(emp.Status)
+                                        </span>
+                                    }
+                                    else if (emp.Status == EmploymentStatus.Resigned)
+                                    {
+                                        <span class="badge bg-danger-subtle text-danger px-2 py-1" title="@emp.ResignReason">
+                                            <i class="bi bi-x-circle me-1"></i>@EmployeeSharedResource.Badge_Resigned
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary-subtle text-secondary px-2 py-1">
+                                            @UIHelper.GetDisplayName(emp.Status)
+                                        </span>
                                     }
                                 </td>
                                 <td class="text-center small text-muted">
@@ -140,6 +307,7 @@
                                                data-id="@emp.EmployeeId"
                                                data-name="@fullName"
                                                @(emp.IsActive ? "checked" : "")
+                                               @(emp.Status == EmploymentStatus.Resigned ? "disabled" : "")
                                                title="@(emp.IsActive ? "Đang làm việc" : "Đang tạm khóa")" />
                                     </div>
                                 </td>
@@ -152,12 +320,25 @@
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
 
-                                        <button type="button"
-                                                class="btn btn-sm btn-outline-danger"
-                                                onclick="openDeleteEmployeeModal('@emp.EmployeeId', '@fullName', '@emp.EmployeeCode')"
-                                                title="@EmployeeSharedResource.Button_Delete">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                        @if (emp.Status != EmploymentStatus.Resigned)
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-warning text-dark"
+                                                    onclick="openResignEmployeeModal('@emp.EmployeeId', '@fullName', '@emp.EmployeeCode')"
+                                                    title="@EmployeeSharedResource.Button_Resign">
+                                                <i class="bi bi-box-arrow-right"></i>
+                                            </button>
+                                        }
+
+                                        @if (canManage)
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    onclick="openDeleteEmployeeModal('@emp.EmployeeId', '@fullName', '@emp.EmployeeCode')"
+                                                    title="@EmployeeSharedResource.Button_Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        }
                                     </div>
                                 </td>
                             </tr>
@@ -166,7 +347,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-4">
+                            <td colspan="9" class="text-center text-muted py-4">
                                 <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary"></i>
                                 @EmployeeSharedResource.NoDataFound
                             </td>
@@ -183,6 +364,47 @@
         { "StoreId", Model.StoreId?.ToString() },
         { "Status", Model.Status }
     }))
+</div>
+
+<!-- Modal Xử lý thôi việc nhân viên (Offboarding) -->
+<div class="modal fade" id="modalResignEmployee" tabindex="-1" aria-labelledby="modalResignEmployeeLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0">
+            <form asp-action="Resign" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="resignEmp_Id" name="employeeId" />
+                <div class="modal-header bg-warning text-dark py-3">
+                    <h5 class="modal-title fs-6 fw-bold d-flex align-items-center" id="modalResignEmployeeLabel">
+                        <i class="bi bi-box-arrow-right me-2 fs-5"></i> @EmployeeSharedResource.Modal_ResignTitle
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-warning py-2 px-3 small d-flex align-items-start mb-3">
+                        <i class="bi bi-exclamation-triangle-fill text-warning me-2 mt-1 fs-5"></i>
+                        <div>
+                            @EmployeeSharedResource.Modal_ResignNotice
+                            <div class="mt-1 fw-bold text-dark"><span id="resignEmp_Name"></span> &nbsp;<code id="resignEmp_Code" class="text-danger"></code></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">@EmployeeModelResource.ResignDate</label>
+                        <input type="date" name="resignDate" class="form-control form-control-sm" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-semibold">@EmployeeModelResource.ResignReason</label>
+                        <textarea name="resignReason" class="form-control form-control-sm" rows="3" placeholder="Nhập lý do thôi việc (ví dụ: chuyển chỗ ở, hết hạn hợp đồng...)"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light py-2">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">@SharedResource.Button_Cancel</button>
+                    <button type="submit" class="btn btn-sm btn-warning fw-semibold">
+                        <i class="bi bi-check-circle me-1"></i> @EmployeeSharedResource.Button_Resign
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <!-- Modal Xác Nhận Xóa Nhân Viên -->
@@ -216,6 +438,112 @@
     </div>
 </div>
 
+<!-- Modal Import Excel (2 bước: Chọn file -> Xem trước & Kiểm tra -> Chấp thuận) -->
+<div class="modal fade" id="importExcelModal" tabindex="-1" aria-labelledby="importExcelModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-light py-3 border-bottom">
+                <h5 class="modal-title fw-bold text-dark d-flex align-items-center" id="importExcelModalLabel">
+                    <i class="bi bi-file-earmark-excel-fill text-success me-2 fs-5"></i> @EmployeeSharedResource.Excel_ImportTitle
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body p-4">
+                <!-- BƯỚC 1: Chọn file Excel -->
+                <div id="empImportStep1">
+                    <div class="alert alert-info py-2 px-3 small mb-3 d-flex align-items-center">
+                        <i class="bi bi-info-circle-fill me-2 fs-5 flex-shrink-0"></i>
+                        <span>@EmployeeSharedResource.Excel_Step1_Note</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small required">@EmployeeSharedResource.Excel_SelectFile</label>
+                        <input type="file" id="empImportFileInput" class="form-control form-control-lg" accept=".xlsx" />
+                        <div class="form-text small mt-1">Định dạng hỗ trợ: .xlsx (Microsoft Excel)</div>
+                    </div>
+
+                    <div id="empImportStep1Error" class="alert alert-danger py-2 px-3 small d-none"></div>
+                </div>
+
+                <!-- BƯỚC 2: Xem trước dữ liệu & Kiểm tra trùng lặp -->
+                <div id="empImportStep2" class="d-none">
+                    <!-- Thống kê kết quả kiểm tra -->
+                    <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between p-3 bg-light rounded border mb-3">
+                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                            <span class="badge bg-secondary px-3 py-2 fs-6">
+                                <i class="bi bi-list-ol me-1"></i> @EmployeeSharedResource.Excel_Summary_Total <strong id="empPreviewTotal" class="ms-1">0</strong>
+                            </span>
+                            <span class="badge bg-success px-3 py-2 fs-6">
+                                <i class="bi bi-check-circle me-1"></i> @EmployeeSharedResource.Excel_Summary_Valid <strong id="empPreviewValid" class="ms-1">0</strong>
+                            </span>
+                            <span class="badge bg-danger px-3 py-2 fs-6">
+                                <i class="bi bi-exclamation-octagon me-1"></i> @EmployeeSharedResource.Excel_Summary_Invalid <strong id="empPreviewInvalid" class="ms-1">0</strong>
+                            </span>
+                        </div>
+                        <div class="small text-muted">
+                            <i class="bi bi-shield-check text-primary me-1"></i> Dữ liệu được kiểm tra tự động trước khi lưu
+                        </div>
+                    </div>
+
+                    <!-- Cảnh báo nếu có dòng lỗi / trùng -->
+                    <div id="empPreviewWarning" class="alert alert-warning py-2 px-3 small mb-3 d-none">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i> @EmployeeSharedResource.Excel_Preview_Warning_HasErrors
+                    </div>
+                    <div id="empPreviewSuccessNotice" class="alert alert-success py-2 px-3 small mb-3 d-none">
+                        <i class="bi bi-check-circle-fill me-1"></i> @EmployeeSharedResource.Excel_Preview_All_Valid
+                    </div>
+                    <div id="empPreviewDangerNotice" class="alert alert-danger py-2 px-3 small mb-3 d-none">
+                        <i class="bi bi-x-circle-fill me-1"></i> @EmployeeSharedResource.Excel_Preview_No_Valid
+                    </div>
+
+                    <!-- Bảng Preview dữ liệu -->
+                    <div class="table-responsive border rounded" style="max-height: 420px; overflow-y: auto;">
+                        <table class="table table-sm table-hover table-bordered align-middle mb-0 text-nowrap">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th class="text-center" style="width: 50px;">@EmployeeSharedResource.Excel_Col_Row</th>
+                                    <th class="text-center" style="width: 120px;">@EmployeeSharedResource.Excel_Col_Status</th>
+                                    <th>@EmployeeSharedResource.Excel_Col_Username</th>
+                                    <th>@EmployeeSharedResource.Excel_Col_FullName</th>
+                                    <th>Email</th>
+                                    <th>Số ĐT</th>
+                                    <th>@EmployeeSharedResource.Excel_Col_Role</th>
+                                    <th>@EmployeeSharedResource.Excel_Col_Store</th>
+                                    <th>@EmployeeSharedResource.Excel_Col_EmpCode</th>
+                                    <th style="min-width: 260px;">@EmployeeSharedResource.Excel_Col_Errors</th>
+                                </tr>
+                            </thead>
+                            <tbody id="empPreviewTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer bg-light py-2 border-top">
+                <!-- Footer buttons cho Bước 1 -->
+                <div id="empStep1Footer" class="d-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">@EmployeeSharedResource.Excel_Close</button>
+                    <button type="button" id="empBtnPreview" class="btn btn-sm btn-primary px-3" onclick="previewEmpImport()">
+                        <i class="bi bi-search me-1"></i> @EmployeeSharedResource.Excel_Btn_Preview
+                    </button>
+                </div>
+
+                <!-- Footer buttons cho Bước 2 -->
+                <div id="empStep2Footer" class="d-flex gap-2 d-none">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="backToEmpStep1()">
+                        <i class="bi bi-arrow-left me-1"></i> @EmployeeSharedResource.Excel_Btn_Back
+                    </button>
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">@EmployeeSharedResource.Excel_Close</button>
+                    <button type="button" id="empBtnConfirm" class="btn btn-sm btn-success px-3 fw-bold" onclick="confirmEmpImport()">
+                        <i class="bi bi-check2-circle me-1"></i> @EmployeeSharedResource.Excel_Btn_Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script>
@@ -247,6 +575,17 @@
                 });
             });
         });
+
+        // Mở modal thôi việc
+        function openResignEmployeeModal(employeeId, fullName, employeeCode) {
+            $('#resignEmp_Id').val(employeeId);
+            $('#resignEmp_Name').text(fullName || 'Nhân viên #' + employeeId);
+            $('#resignEmp_Code').text(employeeCode || '');
+            const modalEl = document.getElementById('modalResignEmployee');
+            if (modalEl) {
+                new bootstrap.Modal(modalEl).show();
+            }
+        }
 
         // Mở modal xác nhận xóa nhân viên
         function openDeleteEmployeeModal(employeeId, fullName, employeeCode) {
@@ -284,5 +623,186 @@
                 }
             });
         }
+
+        let currentEmpImportToken = '';
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function previewEmpImport() {
+            const fileInput = document.getElementById('empImportFileInput');
+            const errBox = $('#empImportStep1Error');
+            errBox.addClass('d-none').text('');
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                errBox.removeClass('d-none').text('Vui lòng chọn một file Excel (.xlsx).');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            if (!file.name.toLowerCase().endsWith('.xlsx')) {
+                errBox.removeClass('d-none').text('Chỉ chấp nhận file định dạng Excel (.xlsx).');
+                return;
+            }
+
+            const btn = $('#empBtnPreview');
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> @EmployeeSharedResource.Excel_Btn_Verifying');
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const token = $('input[name="__RequestVerificationToken"]').first().val();
+
+            fetch('/Employee/PreviewImportExcel', {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': token
+                },
+                body: formData
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (!res.success) {
+                    errBox.removeClass('d-none').text(res.message || 'Lỗi khi kiểm tra file Excel.');
+                    return;
+                }
+
+                const data = res.data;
+                currentEmpImportToken = data.importToken;
+
+                $('#empPreviewTotal').text(data.totalRows);
+                $('#empPreviewValid').text(data.validCount);
+                $('#empPreviewInvalid').text(data.invalidCount);
+
+                $('#empPreviewWarning').addClass('d-none');
+                $('#empPreviewSuccessNotice').addClass('d-none');
+                $('#empPreviewDangerNotice').addClass('d-none');
+
+                if (data.validCount === 0) {
+                    $('#empPreviewDangerNotice').removeClass('d-none');
+                    $('#empBtnConfirm').prop('disabled', true);
+                } else if (data.invalidCount > 0) {
+                    $('#empPreviewWarning').removeClass('d-none');
+                    $('#empBtnConfirm').prop('disabled', false);
+                } else {
+                    $('#empPreviewSuccessNotice').removeClass('d-none');
+                    $('#empBtnConfirm').prop('disabled', false);
+                }
+
+                const tbody = $('#empPreviewTableBody');
+                tbody.empty();
+
+                (data.rows || []).forEach(row => {
+                    const tr = $('<tr>');
+                    if (row.isValid) {
+                        tr.addClass('table-success bg-opacity-10');
+                    } else {
+                        tr.addClass('table-danger bg-opacity-10');
+                    }
+
+                    const statusBadge = row.isValid
+                        ? `<span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>@EmployeeSharedResource.Excel_Status_Valid</span>`
+                        : `<span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>@EmployeeSharedResource.Excel_Status_Invalid</span>`;
+
+                    const errHtml = row.isValid
+                        ? `<span class="text-success small"><i class="bi bi-check2 me-1"></i>Sẵn sàng nhập</span>`
+                        : `<span class="text-danger small fw-semibold"><i class="bi bi-exclamation-circle me-1"></i>${escapeHtml(row.errorMessage || '')}</span>`;
+
+                    tr.html(`
+                        <td class="text-center fw-bold text-muted">${row.rowNum}</td>
+                        <td class="text-center">${statusBadge}</td>
+                        <td class="fw-semibold text-dark">${escapeHtml(row.username)}</td>
+                        <td>${escapeHtml(row.fullName)}</td>
+                        <td class="small text-muted">${escapeHtml(row.email)}</td>
+                        <td class="small text-muted">${escapeHtml(row.phone || '')}</td>
+                        <td><span class="badge bg-primary bg-opacity-75">${escapeHtml(row.roleDisplay)}</span></td>
+                        <td><span class="badge bg-secondary bg-opacity-75">${escapeHtml(row.storeDisplay)}</span></td>
+                        <td class="small fw-semibold text-secondary">${escapeHtml(row.empCode)}</td>
+                        <td>${errHtml}</td>
+                    `);
+
+                    tbody.append(tr);
+                });
+
+                $('#empImportStep1').addClass('d-none');
+                $('#empImportStep2').removeClass('d-none');
+                $('#empStep1Footer').addClass('d-none');
+                $('#empStep2Footer').removeClass('d-none');
+            })
+            .catch(err => {
+                errBox.removeClass('d-none').text('Lỗi kết nối máy chủ: ' + err.message);
+            })
+            .finally(() => {
+                btn.prop('disabled', false).html('<i class="bi bi-search me-1"></i> @EmployeeSharedResource.Excel_Btn_Preview');
+            });
+        }
+
+        function backToEmpStep1() {
+            $('#empImportStep2').addClass('d-none');
+            $('#empImportStep1').removeClass('d-none');
+            $('#empStep2Footer').addClass('d-none');
+            $('#empStep1Footer').removeClass('d-none');
+        }
+
+        function confirmEmpImport() {
+            if (!currentEmpImportToken) return;
+
+            const btn = $('#empBtnConfirm');
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> @EmployeeSharedResource.Excel_Btn_Saving');
+
+            const token = $('input[name="__RequestVerificationToken"]').first().val();
+
+            fetch('/Employee/ConfirmImportExcel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token
+                },
+                body: JSON.stringify({ importToken: currentEmpImportToken })
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    if (typeof toastr !== 'undefined') {
+                        toastr.success(res.message);
+                    }
+                    const modalEl = document.getElementById('importExcelModal');
+                    if (modalEl) {
+                        bootstrap.Modal.getInstance(modalEl)?.hide();
+                    }
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 800);
+                } else {
+                    if (typeof toastr !== 'undefined') {
+                        toastr.error(res.message || 'Lưu dữ liệu thất bại.');
+                    } else {
+                        alert(res.message || 'Lưu dữ liệu thất bại.');
+                    }
+                    btn.prop('disabled', false).html('<i class="bi bi-check2-circle me-1"></i> @EmployeeSharedResource.Excel_Btn_Confirm');
+                }
+            })
+            .catch(err => {
+                if (typeof toastr !== 'undefined') {
+                    toastr.error('Lỗi khi lưu: ' + err.message);
+                } else {
+                    alert('Lỗi khi lưu: ' + err.message);
+                }
+                btn.prop('disabled', false).html('<i class="bi bi-check2-circle me-1"></i> @EmployeeSharedResource.Excel_Btn_Confirm');
+            });
+        }
+
+        $('#importExcelModal').on('hidden.bs.modal', function () {
+            backToEmpStep1();
+            $('#empImportFileInput').val('');
+            $('#empImportStep1Error').addClass('d-none').text('');
+        });
     </script>
 }

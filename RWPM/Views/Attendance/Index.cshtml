@@ -53,11 +53,10 @@
                                 <i class="bi bi-exclamation-triangle-fill text-warning me-1"></i> Bạn chưa đăng ký ca làm.
                             </div>
                         }
-                        else
-                        {
-                            <div id="gpsStatus" class="alert alert-info small py-1 mb-2 d-none">
-                                <i class="bi bi-geo-alt spinner-grow spinner-grow-sm me-1"></i> Đang xác định vị trí GPS...
-                            </div>
+
+                        <div id="gpsStatus" class="alert alert-info small py-1 mb-2 d-none">
+                            <i class="bi bi-geo-alt spinner-grow spinner-grow-sm me-1"></i> Đang xác định vị trí GPS...
+                        </div>
 
                         <form id="attendanceForm" method="post" enctype="multipart/form-data" class="d-grid gap-2">
                             <input type="hidden" name="userLatitude" id="userLatitude" />
@@ -85,7 +84,6 @@
                                 <div class="form-text" style="font-size: 0.75rem;">Hãy để khuôn mặt của bạn nằm trong khung hình.</div>
                             </div>
 
-
                             <button type="button" id="btnCheckIn" asp-action="CheckIn" class="btn btn-sm btn-outline-success" disabled="@(canCheckIn ? null : "disabled")">
                                 <i class="bi bi-box-arrow-in-right me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnCheckIn")
                             </button>
@@ -102,8 +100,10 @@
                         <i class="bi bi-info-circle me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_AdminNoNeed")
                     </div>
                     
-                    var employees = ViewBag.Employees as List<RWPM.Models.Entities.Acc>;
-                    if (employees != null && employees.Count > 0)
+                    @{
+                        var empList = ViewBag.Employees as List<RWPM.Models.Entities.Acc>;
+                    }
+                    @if (empList != null && empList.Count > 0)
                     {
                         <div class="mt-3 text-start">
                             <label class="form-label small fw-semibold">@SharedResource.ResourceManager.GetString("Attendance_EmployeeList")</label>
@@ -111,7 +111,7 @@
                                 <a href="@Url.Action("Index", new { searchQuery = "" })" class="list-group-item list-group-item-action py-2 @(string.IsNullOrEmpty(searchQuery) ? "active" : "")">
                                     <i class="bi bi-people me-2"></i> <strong>@SharedResource.ResourceManager.GetString("Attendance_AllEmployees")</strong>
                                 </a>
-                                @foreach(var emp in employees)
+                                @foreach(var emp in empList)
                                 {
                                     <a href="@Url.Action("Index", new { searchQuery = emp.Username })" class="list-group-item list-group-item-action py-2 @(searchQuery == emp.Username ? "active fw-bold" : "")">
                                         <i class="bi bi-person me-2"></i> @emp.FullName <span class="text-muted">(@emp.Username)</span>

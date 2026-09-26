@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using RWPM.Common.Enums;
 using RWPM.Models.Common;
 using System.ComponentModel.DataAnnotations;
@@ -24,6 +24,17 @@ namespace RWPM.Models.Entities
 
         [MaxLength(100)]
         public string Email { get; set; } = string.Empty;
+
+        [MaxLength(20)]
+        public string? PhoneNumber { get; set; }
+
+        [System.ComponentModel.DataAnnotations.Schema.Column(TypeName = "date")]
+        public DateTime? DateOfBirth { get; set; }
+
+        public Gender? Gender { get; set; }
+
+        [MaxLength(255)]
+        public string? AvatarUrl { get; set; }
 
         public bool IsActive { get; set; } = true;
         public DateTime? LastLogin { get; set; }

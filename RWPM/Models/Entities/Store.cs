@@ -1,6 +1,8 @@
 using RWPM.Models.Common;
+using RWPM.Models.Entities;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 public class Store : AuditableEntity, IActivatable
 {
@@ -28,6 +30,16 @@ public class Store : AuditableEntity, IActivatable
     public int MinAllowedDistanceMeters { get; set; } = 0;
 
     public int AllowedRadiusMeters { get; set; } = 100;
+
+    // === Extended Fields ===
+    public int? ManagerId { get; set; }
+
+    [ForeignKey(nameof(ManagerId))]
+    public Employee? Manager { get; set; }
+
+    public TimeSpan? OpeningTime { get; set; }
+
+    public TimeSpan? ClosingTime { get; set; }
 
     public bool IsActive { get; set; } = true;
 }

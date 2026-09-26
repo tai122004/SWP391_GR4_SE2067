@@ -22,9 +22,28 @@ namespace RWPM.Models.Entities
         [Column(TypeName = "date")] 
         public DateTime JoinDate { get; set; }
 
+        public RWPM.Common.Enums.EmploymentType EmploymentType { get; set; } = RWPM.Common.Enums.EmploymentType.FullTime;
+
+        public RWPM.Common.Enums.EmploymentStatus Status { get; set; } = RWPM.Common.Enums.EmploymentStatus.Official;
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? HourlyRate { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? BaseSalary { get; set; }
+
+        public int AnnualLeaveBalance { get; set; } = 12;
+
+        [MaxLength(20)]
+        public string? CitizenId { get; set; }
+
+        [Column(TypeName = "date")]
+        public DateTime? ResignDate { get; set; }
+
+        [MaxLength(255)]
+        public string? ResignReason { get; set; }
+
         public bool IsActive { get; set; } = true;
-
-
 
         public Acc Account { get; set; } = null!;
         public Store Store { get; set; } = null!;

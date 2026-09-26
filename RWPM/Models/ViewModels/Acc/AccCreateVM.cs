@@ -36,6 +36,17 @@ namespace RWPM.Models.ViewModels.Acc
         [EmailAddress(ErrorMessageResourceName = "EmailInvalid", ErrorMessageResourceType = typeof(Resources.Shared.Acc))]
         public string Email { get; set; } = string.Empty;
 
+        [Display(Name = "PhoneNumber", ResourceType = typeof(Resources.Models.Acc))]
+        [MaxLengthLocalized(20)]
+        public string? PhoneNumber { get; set; }
+
+        [Display(Name = "DateOfBirth", ResourceType = typeof(Resources.Models.Acc))]
+        [DataType(DataType.Date)]
+        public DateTime? DateOfBirth { get; set; }
+
+        [Display(Name = "Gender", ResourceType = typeof(Resources.Models.Acc))]
+        public Gender? Gender { get; set; }
+
         // Thông tin hồ sơ nhân viên (khi chọn các vai trò làm việc tại cửa hàng)
         [Display(Name = "EmployeeID", ResourceType = typeof(Resources.Models.Employee))]
         [MaxLength(20)]
@@ -48,6 +59,12 @@ namespace RWPM.Models.ViewModels.Acc
         [DataType(DataType.Date)]
         public DateTime? JoinDate { get; set; } = DateTime.Today;
 
+        [Display(Name = "EmploymentType", ResourceType = typeof(Resources.Models.Employee))]
+        public EmploymentType EmploymentType { get; set; } = EmploymentType.FullTime;
+
+        [Display(Name = "HourlyRate", ResourceType = typeof(Resources.Models.Employee))]
+        public decimal? HourlyRate { get; set; }
+
         public SelectList? StoreSelectList { get; set; }
 
         public AccCreateVM() { }
@@ -58,6 +75,9 @@ namespace RWPM.Models.ViewModels.Acc
             FullName = entity.FullName;
             Role = entity.Role;
             Email = entity.Email;
+            PhoneNumber = entity.PhoneNumber;
+            DateOfBirth = entity.DateOfBirth;
+            Gender = entity.Gender;
         }
 
         public Entities.Acc ToEntity()
@@ -68,7 +88,10 @@ namespace RWPM.Models.ViewModels.Acc
                 Password = Password,
                 FullName = FullName,
                 Role = Role,
-                Email = Email
+                Email = Email,
+                PhoneNumber = PhoneNumber,
+                DateOfBirth = DateOfBirth,
+                Gender = Gender
             };
         }
     }
