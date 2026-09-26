@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace RWPM.Common
 {
@@ -12,6 +12,11 @@ namespace RWPM.Common
         public static void AddErrorMessage(ITempDataDictionary tempData, string errorMessage)
         {
             tempData["ErrorMessage"] = errorMessage;
+        }
+
+        public static void AddWarningMessage(ITempDataDictionary tempData, string warningMessage)
+        {
+            tempData["WarningMessage"] = warningMessage;
         }
 
         public static void CreateSuccess(ITempDataDictionary tempData)

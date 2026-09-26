@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -143,5 +143,53 @@
   </data>
   <data name="StoreId_RangeError" xml:space="preserve">
     <value>Please select a Store.</value>
+  </data>
+  <data name="Position" xml:space="preserve">
+    <value>Job Position</value>
+  </data>
+  <data name="EmploymentType" xml:space="preserve">
+    <value>Employment Type</value>
+  </data>
+  <data name="EmploymentType_FullTime" xml:space="preserve">
+    <value>Full-time</value>
+  </data>
+  <data name="EmploymentType_PartTime" xml:space="preserve">
+    <value>Part-time</value>
+  </data>
+  <data name="EmploymentType_Intern" xml:space="preserve">
+    <value>Intern</value>
+  </data>
+  <data name="EmploymentStatus" xml:space="preserve">
+    <value>Employment Status</value>
+  </data>
+  <data name="EmploymentStatus_Official" xml:space="preserve">
+    <value>Official</value>
+  </data>
+  <data name="EmploymentStatus_Probation" xml:space="preserve">
+    <value>Probation</value>
+  </data>
+  <data name="EmploymentStatus_OnLeave" xml:space="preserve">
+    <value>On Leave</value>
+  </data>
+  <data name="EmploymentStatus_Resigned" xml:space="preserve">
+    <value>Resigned</value>
+  </data>
+  <data name="HourlyRate" xml:space="preserve">
+    <value>Hourly Rate (VND)</value>
+  </data>
+  <data name="BaseSalary" xml:space="preserve">
+    <value>Base Salary (VND)</value>
+  </data>
+  <data name="AnnualLeaveBalance" xml:space="preserve">
+    <value>Annual Leave Balance</value>
+  </data>
+  <data name="CitizenId" xml:space="preserve">
+    <value>Citizen ID (CCCD)</value>
+  </data>
+  <data name="ResignDate" xml:space="preserve">
+    <value>Resignation Date</value>
+  </data>
+  <data name="ResignReason" xml:space="preserve">
+    <value>Resignation Reason</value>
   </data>
 </root>

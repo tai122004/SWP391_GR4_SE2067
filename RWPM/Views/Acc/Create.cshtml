@@ -3,6 +3,7 @@
 @using AccountModelResource = RWPM.Resources.Models.Acc
 @using AccountSharedResource = RWPM.Resources.Shared.Acc
 @using EmployeeSharedResource = RWPM.Resources.Shared.Employee
+@using EmployeeModelResource = RWPM.Resources.Models.Employee
 @using RWPM.Common.Enums
 @using RWPM.Models.ViewModels.Acc
 @using RWPM.Resources.Shared
@@ -11,7 +12,7 @@
     ViewData["Title"] = AccountSharedResource.Create_PageTitle;
 }
 
-<div class="container-fluid px-0" style="max-width: 850px;">
+<div class="container-fluid px-0">
     <!-- Header with Breadcrumb -->
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
@@ -49,6 +50,25 @@
                     <label class="form-label fw-semibold small required" asp-for="Email">@AccountSharedResource.Email</label>
                     <input class="form-control" asp-for="Email" placeholder="@AccountSharedResource.Placeholder_Email" autocomplete="off" />
                     <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold small" asp-for="PhoneNumber">@AccountModelResource.PhoneNumber</label>
+                    <input class="form-control" asp-for="PhoneNumber" placeholder="0901234567" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold small" asp-for="DateOfBirth">@AccountModelResource.DateOfBirth</label>
+                    <input class="form-control" type="date" asp-for="DateOfBirth" />
+                    <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold small" asp-for="Gender">@AccountModelResource.Gender</label>
+                    <select class="form-select" asp-for="Gender" asp-items="Html.GetEnumSelectList<RWPM.Common.Enums.Gender>()">
+                        <option value="">-- Chọn giới tính --</option>
+                    </select>
                 </div>
             </div>
 
@@ -115,7 +135,6 @@
                     <div class="col-md-4">
                         <label class="form-label fw-semibold small required" asp-for="StoreId">@EmployeeSharedResource.Column_Store</label>
                         <select class="form-select" asp-for="StoreId" asp-items="Model.StoreSelectList" id="storeSelectInput">
-                            <option value="">@EmployeeSharedResource.Placeholder_Store</option>
                         </select>
                         <span asp-validation-for="StoreId" class="text-danger small"></span>
                     </div>
@@ -124,6 +143,21 @@
                         <label class="form-label fw-semibold small required" asp-for="JoinDate">@EmployeeSharedResource.Column_JoinDate</label>
                         <input class="form-control" type="date" asp-for="JoinDate" />
                         <span asp-validation-for="JoinDate" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small" asp-for="EmploymentType">@EmployeeModelResource.EmploymentType</label>
+                        <select class="form-select" asp-for="EmploymentType" asp-items="Html.GetEnumSelectList<RWPM.Common.Enums.EmploymentType>()">
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small" asp-for="HourlyRate">@EmployeeModelResource.HourlyRate</label>
+                        <div class="input-group">
+                            <input class="form-control" asp-for="HourlyRate" type="number" step="1000" placeholder="25000" />
+                            <span class="input-group-text small">VNĐ/h</span>
+                        </div>
                     </div>
                 </div>
             </div>
