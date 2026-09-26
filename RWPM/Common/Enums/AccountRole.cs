@@ -42,11 +42,11 @@ namespace RWPM.Common.Enums
         [Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_SalesStaff")]
         SalesStaff = 6,
 
-        /// <summary>
-        /// Part-time Staff - Nhân viên bán thời gian
-        /// </summary>
-        [Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_PartTimeStaff")]
-        PartTimeStaff = 7,
+        ///// <summary>
+        ///// Part-time Staff - Nhân viên bán thời gian
+        ///// </summary>
+        //[Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_PartTimeStaff")]
+        //PartTimeStaff = 7,
 
     }
 

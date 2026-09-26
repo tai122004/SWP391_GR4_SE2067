@@ -1,29 +1,239 @@
-﻿@model Acc
+@model RWPM.Models.Entities.Acc
 @using AccountModelResource = RWPM.Resources.Models.Acc
-@using RWPM.Models.Entities
+@using AccountSharedResource = RWPM.Resources.Shared.Acc
+@using EmployeeModelResource = RWPM.Resources.Models.Employee
+@using EmployeeSharedResource = RWPM.Resources.Shared.Employee
+@using RWPM.Common.Enums
+@using RWPM.Common.Helper
 
 @{
-    ViewBag.Title = "Profile";
+    ViewData["Title"] = AccountSharedResource.Profile_PageTitle;
+    var emp = ViewBag.Employee as RWPM.Models.Entities.Employee;
+    var initials = "NV";
+    if (!string.IsNullOrWhiteSpace(Model.FullName))
+    {
+        var parts = Model.FullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length > 1) { initials = $"{parts[0][0]}{parts[^1][0]}".ToUpper(); }
+        else if (parts.Length == 1 && parts[0].Length > 0) { initials = parts[0].Substring(0, Math.Min(2, parts[0].Length)).ToUpper(); }
+    }
 }
 
+<div class="container-fluid px-0">
+    <!-- Header with Back Button -->
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div>
+            <h4 class="fw-bold text-dark d-flex align-items-center mb-1">
+                <i class="bi bi-person-circle text-primary me-2"></i> @AccountSharedResource.Profile_PageTitle
+            </h4>
+            <div class="text-muted small">@AccountSharedResource.Profile_PageSubTitle</div>
+        </div>
+        <div>
+            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm shadow-sm px-3">
+                <i class="bi bi-arrow-left me-1"></i> @AccountSharedResource.Profile_Back
+            </a>
+        </div>
+    </div>
 
-<style>
-    .profile-container {
-        max-width: 600px;
-        margin: 30px auto;
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        background-color: #f9f9f9;
+    <!-- Profile Header Card -->
+    <div class="modern-card p-4 mb-4 shadow-sm">
+        <div class="d-flex align-items-center flex-wrap gap-3">
+            <div class="avatar-initials avatar-color-1 fs-3 shadow-sm" style="width: 72px; height: 72px; font-weight: 700;">
+                @initials
+            </div>
+            <div class="flex-grow-1">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <h4 class="fw-bold text-dark mb-0">@Model.FullName</h4>
+                    <span class="badge bg-primary px-3 py-1">@UIHelper.GetDisplayName(Model.Role)</span>
+                    @if (emp != null)
+                    {
+                        <span class="badge bg-light text-primary border font-monospace px-2 py-1">@emp.EmployeeCode</span>
+                    }
+                </div>
+                <div class="d-flex align-items-center gap-3 text-muted small mt-1 flex-wrap">
+                    <span><i class="bi bi-person me-1"></i>@Model.Username</span>
+                    <span><i class="bi bi-envelope me-1"></i>@Model.Email</span>
+                    @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                    {
+                        <span><i class="bi bi-telephone me-1"></i>@Model.PhoneNumber</span>
+                    }
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                @* <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm shadow-sm">
+                    <i class="bi bi-arrow-left me-1"></i> @AccountSharedResource.Profile_Back
+                </a> *@
+                <a asp-action="ChangePassword" class="btn btn-outline-primary btn-sm shadow-sm">
+                    <i class="bi bi-key me-1"></i> @AccountSharedResource.Profile_ChangePassword
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (emp != null)
+    {
+        <!-- Employee Details Card (Tanca Style) -->
+        <div class="modern-card p-4 mb-4 shadow-sm">
+            <div class="pb-2 border-bottom mb-3 fw-bold text-primary d-flex align-items-center fs-6">
+                <i class="bi bi-person-workspace me-2"></i> @AccountSharedResource.Profile_Section_JobInfo
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-4 col-sm-6">
+                    <div class="text-muted small">@AccountSharedResource.Profile_Store</div>
+                    <div class="fw-semibold text-dark mt-1">
+                        <i class="bi bi-shop text-primary me-1"></i>
+                        @(emp.Store?.StoreName ?? AccountSharedResource.Profile_StoreUnassigned)
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6">
+                    <div class="text-muted small">@AccountSharedResource.Profile_Role</div>
+                    <div class="fw-semibold text-dark mt-1">
+                        <i class="bi bi-shield-check text-primary me-1"></i>
+                        @UIHelper.GetDisplayName(Model.Role)
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6">
+                    <div class="text-muted small">@AccountSharedResource.Profile_EmploymentType</div>
+                    <div class="mt-1">
+                        @if (emp.EmploymentType == EmploymentType.FullTime)
+                        {
+                            <span class="badge bg-primary-subtle text-primary border border-primary px-2 py-1">@AccountSharedResource.Profile_FullTime</span>
+                        }
+                        else if (emp.EmploymentType == EmploymentType.PartTime)
+                        {
+                            <span class="badge bg-warning-subtle text-dark border border-warning px-2 py-1">@AccountSharedResource.Profile_PartTime</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-info-subtle text-info border border-info px-2 py-1">@EmployeeSharedResource.Badge_Intern</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6">
+                    <div class="text-muted small">@EmployeeModelResource.EmploymentStatus</div>
+                    <div class="mt-1">
+                        @if (emp.Status == EmploymentStatus.Official)
+                        {
+                            <span class="badge bg-success-subtle text-success px-2 py-1"><i class="bi bi-check-circle me-1"></i>@UIHelper.GetDisplayName(emp.Status)</span>
+                        }
+                        else if (emp.Status == EmploymentStatus.Probation)
+                        {
+                            <span class="badge bg-warning-subtle text-warning px-2 py-1"><i class="bi bi-hourglass me-1"></i>@UIHelper.GetDisplayName(emp.Status)</span>
+                        }
+                        else if (emp.Status == EmploymentStatus.Resigned)
+                        {
+                            <span class="badge bg-danger-subtle text-danger px-2 py-1"><i class="bi bi-x-circle me-1"></i>@UIHelper.GetDisplayName(emp.Status)</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary-subtle text-secondary px-2 py-1">@UIHelper.GetDisplayName(emp.Status)</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6">
+                    <div class="text-muted small">@AccountSharedResource.Profile_JoinDate</div>
+                    <div class="fw-semibold text-dark mt-1">
+                        <i class="bi bi-calendar-event text-secondary me-1"></i>
+                        @emp.JoinDate.ToString("dd/MM/yyyy")
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6">
+                    <div class="text-muted small">@AccountSharedResource.Profile_LeaveBalance</div>
+                    <div class="fw-bold text-success mt-1">
+                        <i class="bi bi-sun text-warning me-1"></i>
+                        @emp.AnnualLeaveBalance @AccountSharedResource.Profile_Days
+                    </div>
+                </div>
+
+                @if (emp.HourlyRate.HasValue)
+                {
+                    <div class="col-md-4 col-sm-6">
+                        <div class="text-muted small">@AccountSharedResource.Profile_HourlyRate</div>
+                        <div class="fw-bold text-dark mt-1">
+                            <i class="bi bi-cash me-1 text-success"></i>
+                            @emp.HourlyRate.Value.ToString("N0") VNĐ/h
+                        </div>
+                    </div>
+                }
+
+                @if (emp.BaseSalary.HasValue)
+                {
+                    <div class="col-md-4 col-sm-6">
+                        <div class="text-muted small">@AccountSharedResource.Profile_BaseSalary</div>
+                        <div class="fw-bold text-dark mt-1">
+                            <i class="bi bi-wallet2 me-1 text-success"></i>
+                            @emp.BaseSalary.Value.ToString("N0") VNĐ
+                        </div>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(emp.CitizenId))
+                {
+                    <div class="col-md-4 col-sm-6">
+                        <div class="text-muted small">@AccountSharedResource.Profile_CitizenId</div>
+                        <div class="fw-semibold text-dark mt-1">
+                            <i class="bi bi-card-text text-secondary me-1"></i>
+                            @emp.CitizenId
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
     }
-</style>
 
-<div class="profile-container">
-    <h2>@Model.FullName</h2>
-    <p><strong>@AccountModelResource.Role:</strong> @Model.Role.GetDisplayName()</p>
-    <p><strong>Email:</strong> @Model.Email</p>
-    <p><strong>@AccountModelResource.Fullname:</strong> @Model.FullName</p>
-    <p><strong>@SharedResource.CreatedDate:</strong> @Model.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")</p>
+    <!-- Personal & Account Details Card -->
+    <div class="modern-card p-4 shadow-sm">
+        <div class="pb-2 border-bottom mb-3 fw-bold text-primary d-flex align-items-center fs-6">
+            <i class="bi bi-shield-lock me-2"></i> @AccountSharedResource.Profile_Section_SystemInfo
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-4 col-sm-6">
+                <div class="text-muted small">@AccountSharedResource.Profile_DateOfBirth</div>
+                <div class="fw-semibold text-dark mt-1">
+                    @(Model.DateOfBirth.HasValue ? Model.DateOfBirth.Value.ToString("dd/MM/yyyy") : AccountSharedResource.Profile_NotUpdated)
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+                <div class="text-muted small">@AccountSharedResource.Profile_Gender</div>
+                <div class="fw-semibold text-dark mt-1">
+                    @(Model.Gender.HasValue ? UIHelper.GetDisplayName(Model.Gender.Value) : AccountSharedResource.Profile_NotUpdated)
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+                <div class="text-muted small">@AccountSharedResource.Profile_AccountStatus</div>
+                <div class="mt-1">
+                    @if (Model.IsActive)
+                    {
+                        <span class="badge bg-success-subtle text-success px-2 py-1"><i class="bi bi-check-circle me-1"></i>@AccountSharedResource.Profile_StatusActive</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger-subtle text-danger px-2 py-1"><i class="bi bi-lock me-1"></i>@AccountSharedResource.Profile_StatusLocked</span>
+                    }
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+                <div class="text-muted small">@AccountSharedResource.Profile_LastLogin</div>
+                <div class="fw-semibold text-dark mt-1">
+                    @(Model.LastLogin.HasValue ? Model.LastLogin.Value.ToString("dd/MM/yyyy HH:mm") : AccountSharedResource.Profile_NoData)
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+                <div class="text-muted small">@AccountSharedResource.Profile_CreatedDate</div>
+                <div class="fw-semibold text-dark mt-1">
+                    @Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-
