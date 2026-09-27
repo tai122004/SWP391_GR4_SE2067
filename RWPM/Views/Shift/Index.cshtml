@@ -51,6 +51,7 @@
                     <option value="false">@ShiftSharedResource.Badge_Custom</option>
                 </select>
             </div>
+            <div class="col-md-3 col-lg-2"><input asp-for="EffectiveOn" type="date" class="form-control form-control-sm" title="Có hiệu lực vào ngày" /></div>
 
             @if (Model.StoreSelectList != null)
             {
@@ -84,8 +85,9 @@
                     <th class="text-nowrap text-center" style="width: 130px;">@ShiftModelResource.ShiftClassification</th>
                     <th class="text-nowrap text-center" style="width: 150px;">@ShiftSharedResource.Scope_Title</th>
                     <th class="text-nowrap text-center" style="width: 150px;">@ShiftModelResource.TimeDisplay</th>
+                    <th class="text-nowrap text-center">Giờ công / Hiệu lực / Nhân sự gợi ý</th>
                     <th class="text-nowrap text-center" style="width: 100px;">@ShiftModelResource.IsActive</th>
-                    <th class="text-nowrap text-center" style="width: 120px;">@SharedResource.Button_Action</th>
+                    <th class="text-nowrap text-center" style="width: 190px;">@SharedResource.Button_Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -93,7 +95,9 @@
                 {
                     foreach (var shift in Model.PanigationResponse.Data)
                     {
-                        var timeDisplay = $"{shift.StartTime:hh\\:mm} - {shift.EndTime:hh\\:mm}";
+                        var timeDisplay = $"{shift.StartTime:hh\\:mm} - {shift.EndTime:hh\\:mm}" +
+                            (RWPM.Common.Helper.ShiftTimeHelper.IsOvernight(shift.StartTime, shift.EndTime) ? " (qua ngày)" : "");
+                        var shiftDuration = RWPM.Common.Helper.ShiftTimeHelper.GetDuration(shift.StartTime, shift.EndTime);
 
                         <tr>
                             <td class="fw-semibold">
@@ -108,33 +112,38 @@
                             <td class="text-center">
                                 @if (shift.IsTemplate)
                                 {
-                                    <span class="badge bg-success-subtle text-success border border-success-subtle">
-                                        <i class="bi bi-star-fill me-1"></i>@ShiftSharedResource.Badge_Template
+                                    <span class="badge bg-light text-secondary border">
+                                        @ShiftSharedResource.Badge_Template
                                     </span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">
-                                        <i class="bi bi-gear-fill me-1"></i>@ShiftSharedResource.Badge_Custom
+                                    <span class="badge bg-light text-secondary border">
+                                        @ShiftSharedResource.Badge_Custom
                                     </span>
                                 }
                             </td>
                             <td class="text-center">
                                 @if (shift.IsTemplate || !shift.StoreId.HasValue)
                                 {
-                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
-                                        <i class="bi bi-globe me-1"></i>@ShiftSharedResource.Scope_AllStores
+                                    <span class="badge bg-light text-secondary border">
+                                        @ShiftSharedResource.Scope_AllStores
                                     </span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-info-subtle text-info border border-info-subtle" title="@(shift.Store?.Address ?? "")">
-                                        <i class="bi bi-shop me-1"></i>@(shift.Store?.StoreName ?? $"CN #{shift.StoreId}")
+                                    <span class="badge bg-light text-secondary border" title="@(shift.Store?.Address ?? "")">
+                                        @(shift.Store?.StoreName ?? $"CN #{shift.StoreId}")
                                     </span>
                                 }
                             </td>
                             <td class="text-center font-monospace">
                                 <span class="badge bg-light text-dark border font-monospace px-2 py-1">@timeDisplay</span>
+                            </td>
+                            <td class="text-center small">
+                                <div>@((shiftDuration.TotalMinutes - (shift.IsBreakPaid ? 0 : shift.BreakMinutes)) / 60.0) giờ công</div>
+                                <div>@shift.EffectiveFrom.ToString("dd/MM/yyyy") – @(shift.EffectiveTo?.ToString("dd/MM/yyyy") ?? "không giới hạn")</div>
+                                <div>@(shift.DefaultRequiredHeadcount?.ToString() ?? "–") / @(shift.DefaultMaximumHeadcount?.ToString() ?? "–") người</div>
                             </td>
                             <td class="text-center">
                                 <div class="form-check form-switch d-flex justify-content-center">
@@ -145,7 +154,8 @@
                                 </div>
                             </td>
                             <td class="text-center">
-                                <div class="btn-group btn-action-group" role="group">
+                                <div class="d-flex flex-column align-items-center gap-2">
+                                    <div class="btn-group" role="group" aria-label="Thao tác xem và chỉnh sửa">
                                     <button type="button" 
                                             class="btn btn-sm btn-outline-info btn-view-detail" 
                                             title="Xem chi tiết ca làm việc"
@@ -157,6 +167,10 @@
                                             data-store="@(shift.IsTemplate || !shift.StoreId.HasValue ? ShiftSharedResource.Scope_AllStores : (shift.Store?.StoreName ?? $"Chi nhánh #{shift.StoreId}"))"
                                             data-time="@timeDisplay"
                                             data-break="@(shift.BreakMinutes > 0 ? $"{shift.BreakMinutes} phút" : "Không có")"
+                                            data-paidbreak="@(shift.IsBreakPaid ? "Có" : "Không")"
+                                            data-effective="@shift.EffectiveFrom.ToString("dd/MM/yyyy") – @(shift.EffectiveTo?.ToString("dd/MM/yyyy") ?? "không giới hạn")"
+                                            data-headcount="@(shift.DefaultRequiredHeadcount?.ToString() ?? "–") / @(shift.DefaultMaximumHeadcount?.ToString() ?? "–")"
+                                            data-outsidehours="@(shift.AllowOutsideStoreHours ? "Có" : "Không")"
                                             data-early="@(shift.EarlyCheckInMinutes.HasValue ? $"{shift.EarlyCheckInMinutes} phút" : $"{ShiftDefaults.EarlyCheckInMinutes} phút (Mặc định)")"
                                             data-grace="@(shift.GracePeriodMinutes.HasValue ? $"{shift.GracePeriodMinutes} phút" : $"{ShiftDefaults.GracePeriodMinutes} phút (Mặc định)")"
                                             data-earlycheckout="@(shift.EarlyCheckOutMinutes.HasValue ? $"{shift.EarlyCheckOutMinutes} phút" : $"{ShiftDefaults.EarlyCheckOutMinutes} phút (Mặc định)")"
@@ -171,6 +185,12 @@
                                     <a asp-action="Edit" asp-route-id="@shift.ShiftId" class="btn btn-sm btn-outline-primary" title="@SharedResource.Button_Edit">
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
+                                    </div>
+                                    <form asp-action="Clone" asp-route-id="@shift.ShiftId" method="post" class="d-flex align-items-center justify-content-center gap-1" onsubmit="return confirm('Nhân bản mẫu ca này?');">
+                                        @Html.AntiForgeryToken()
+                                        <input name="newCode" maxlength="30" required class="form-control form-control-sm" style="width:110px" placeholder="Mã mới" aria-label="Mã ca mới" />
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary" title="Nhân bản ca" aria-label="Nhân bản ca"><i class="bi bi-copy"></i></button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -179,7 +199,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="8" class="text-center text-muted py-4">
+                        <td colspan="9" class="text-center text-muted py-4">
                             <i class="bi bi-inbox fs-3 d-block mb-2"></i>
                             @SharedResource.NoDataFound
                         </td>
@@ -195,7 +215,8 @@
         { "Search", Model.Search },
         { "IsActive", Model.IsActive.ToString() },
         { "IsTemplate", Model.IsTemplate?.ToString() },
-        { "StoreId", Model.StoreId?.ToString() }
+        { "StoreId", Model.StoreId?.ToString() },
+        { "EffectiveOn", Model.EffectiveOn?.ToString("yyyy-MM-dd") }
     }))
 </div>
 
@@ -222,24 +243,28 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
                         <div class="border rounded p-3 h-100 bg-light-subtle">
-                            <div class="small text-muted mb-1"><i class="bi bi-alarm me-1"></i>Khung giờ làm việc:</div>
+                            <div class="small text-muted mb-1">Khung giờ làm việc</div>
                             <div class="fs-5 fw-bold font-monospace text-primary" id="detailShiftTime"></div>
                             <div class="small text-muted mt-2">
-                                <span><i class="bi bi-cup-hot me-1"></i>Nghỉ giữa ca:</span>
+                                <span>Nghỉ giữa ca:</span>
                                 <strong id="detailShiftBreak" class="text-dark"></strong>
                             </div>
+                            <div class="small mt-2">Nghỉ tính công: <strong id="detailPaidBreak"></strong></div>
+                            <div class="small">Hiệu lực: <strong id="detailEffective"></strong></div>
+                            <div class="small">Nhân sự gợi ý: <strong id="detailHeadcount"></strong></div>
+                            <div class="small">Ngoài giờ cửa hàng: <strong id="detailOutsideHours"></strong></div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="border rounded p-3 h-100 bg-light-subtle">
-                            <div class="small text-muted mb-1"><i class="bi bi-tag me-1"></i>Phân loại & Trạng thái:</div>
+                            <div class="small text-muted mb-1">Phân loại & trạng thái</div>
                             <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
                                 <span id="detailShiftTemplateBadge"></span>
                                 <span id="detailShiftStoreBadge"></span>
                                 <span id="detailShiftActiveBadge"></span>
                             </div>
                             <div class="small text-muted">
-                                <span><i class="bi bi-card-text me-1"></i>Mô tả:</span>
+                                <span>Mô tả:</span>
                                 <span id="detailShiftDescription" class="fst-italic text-dark"></span>
                             </div>
                         </div>
@@ -255,37 +280,29 @@
                         </div>
                     </div>
                     <div class="card-body p-3">
-                        <div class="row text-center g-2">
-                            <div class="col-md-3">
-                                <div class="p-2 border rounded bg-success-subtle border-success-subtle h-100">
-                                    <div class="small text-success fw-semibold mb-1">
-                                        <i class="bi bi-box-arrow-in-right me-1"></i>Cho phép Check-in trước ca
-                                    </div>
-                                    <div class="fw-bold fs-6 text-dark" id="detailEarlyCheckIn"></div>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <div class="p-3 border rounded bg-light h-100 d-flex align-items-center justify-content-between gap-3">
+                                    <div class="small text-muted fw-semibold">Cho phép Check-in trước ca</div>
+                                    <div class="fw-bold text-dark text-nowrap" id="detailEarlyCheckIn"></div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="p-2 border rounded bg-warning-subtle border-warning-subtle h-100">
-                                    <div class="small text-warning-emphasis fw-semibold mb-1">
-                                        <i class="bi bi-hourglass-split me-1"></i>Cho phép đi muộn
-                                    </div>
-                                    <div class="fw-bold fs-6 text-dark" id="detailGracePeriod"></div>
+                            <div class="col-md-6">
+                                <div class="p-3 border rounded bg-light h-100 d-flex align-items-center justify-content-between gap-3">
+                                    <div class="small text-muted fw-semibold">Cho phép đi muộn</div>
+                                    <div class="fw-bold text-dark text-nowrap" id="detailGracePeriod"></div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="p-2 border rounded bg-info-subtle border-info-subtle h-100">
-                                    <div class="small text-info fw-semibold mb-1">
-                                        <i class="bi bi-box-arrow-right me-1"></i>Cho phép Check-out về sớm
-                                    </div>
-                                    <div class="fw-bold fs-6 text-dark" id="detailEarlyCheckOut"></div>
+                            <div class="col-md-6">
+                                <div class="p-3 border rounded bg-light h-100 d-flex align-items-center justify-content-between gap-3">
+                                    <div class="small text-muted fw-semibold">Cho phép Check-out về sớm</div>
+                                    <div class="fw-bold text-dark text-nowrap" id="detailEarlyCheckOut"></div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="p-2 border rounded bg-danger-subtle border-danger-subtle h-100">
-                                    <div class="small text-danger fw-semibold mb-1">
-                                        <i class="bi bi-slash-circle me-1"></i>Ngưỡng tính bỏ ca
-                                    </div>
-                                    <div class="fw-bold fs-6 text-dark" id="detailLateThreshold"></div>
+                            <div class="col-md-6">
+                                <div class="p-3 border rounded bg-light h-100 d-flex align-items-center justify-content-between gap-3">
+                                    <div class="small text-muted fw-semibold">Ngưỡng tính bỏ ca</div>
+                                    <div class="fw-bold text-dark text-nowrap" id="detailLateThreshold"></div>
                                 </div>
                             </div>
                         </div>
@@ -320,6 +337,10 @@
                 $('#detailShiftType').text('Loại ca: ' + data.type);
                 $('#detailShiftTime').text(data.time);
                 $('#detailShiftBreak').text(data.break);
+                $('#detailPaidBreak').text(data.paidbreak);
+                $('#detailEffective').text(data.effective);
+                $('#detailHeadcount').text(data.headcount);
+                $('#detailOutsideHours').text(data.outsidehours);
                 $('#detailShiftDescription').text(data.description);
                 $('#detailEarlyCheckIn').text(data.early);
                 $('#detailGracePeriod').text(data.grace);
@@ -330,21 +351,21 @@
                 $('#detailEditBtn').attr('href', data.editurl);
 
                 if (data.istemplate === 'True' || data.istemplate === true) {
-                    $('#detailShiftTemplateBadge').html('<span class="badge bg-success-subtle text-success border border-success-subtle"><i class="bi bi-star-fill me-1"></i>@ShiftSharedResource.Badge_Template</span>');
+                    $('#detailShiftTemplateBadge').html('<span class="badge bg-light text-secondary border">@ShiftSharedResource.Badge_Template</span>');
                 } else {
-                    $('#detailShiftTemplateBadge').html('<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle"><i class="bi bi-gear-fill me-1"></i>@ShiftSharedResource.Badge_Custom</span>');
+                    $('#detailShiftTemplateBadge').html('<span class="badge bg-light text-secondary border">@ShiftSharedResource.Badge_Custom</span>');
                 }
 
                 if (data.istemplate === 'True' || data.istemplate === true || !data.storeid) {
-                    $('#detailShiftStoreBadge').html('<span class="badge bg-primary-subtle text-primary border border-primary-subtle"><i class="bi bi-globe me-1"></i>@ShiftSharedResource.Scope_AllStores</span>');
+                    $('#detailShiftStoreBadge').html('<span class="badge bg-light text-secondary border">@ShiftSharedResource.Scope_AllStores</span>');
                 } else {
-                    $('#detailShiftStoreBadge').html('<span class="badge bg-info-subtle text-info border border-info-subtle"><i class="bi bi-shop me-1"></i>' + data.store + '</span>');
+                    $('#detailShiftStoreBadge').html('<span class="badge bg-light text-secondary border">' + data.store + '</span>');
                 }
 
                 if (data.isactive === 'True' || data.isactive === true) {
-                    $('#detailShiftActiveBadge').html('<span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Đang hoạt động</span>');
+                    $('#detailShiftActiveBadge').html('<span class="badge bg-success-subtle text-success-emphasis border border-success-subtle">Đang hoạt động</span>');
                 } else {
-                    $('#detailShiftActiveBadge').html('<span class="badge bg-secondary"><i class="bi bi-pause-circle me-1"></i>Ngừng hoạt động</span>');
+                    $('#detailShiftActiveBadge').html('<span class="badge bg-light text-secondary border">Ngừng hoạt động</span>');
                 }
 
                 $('#shiftDetailModal').modal('show');

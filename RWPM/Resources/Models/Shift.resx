@@ -121,7 +121,7 @@
     <value>Overtime</value>
   </data>
   <data name="ShiftType_Flexible" xml:space="preserve">
-    <value>Flexible</value>
+    <value>Flexible / Event</value>
   </data>
   <data name="Invalid_GracePeriodMinutes" xml:space="preserve">
     <value>Grace period must be non-negative.</value>

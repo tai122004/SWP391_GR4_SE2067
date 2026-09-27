@@ -61,7 +61,7 @@ namespace RWPM.Controllers
             }
             catch (ModelValidationException ex)
             {
-                AlertHelper.AddErrorMessage(TempData, ex.GetErrorString(_localizer));
+                AlertHelper.AddErrorMessage(TempData, _localizer[ex.ErrorCode].ResourceNotFound ? ex.ErrorDetail : ex.GetErrorString(_localizer));
                 ViewBag.StoreList = await _storeService.GetSelectListAsync();
                 return View(viewModel);
             }
@@ -102,14 +102,14 @@ namespace RWPM.Controllers
 
             try
             {
-                var shift = await _shiftService.GetRequiredByIdAsync(id);
-                viewModel.ApplyToEntity(shift);
-                await _shiftService.UpdateAsync(shift);
+                var candidate = new RWPM.Models.Entities.Shift { ShiftId = id };
+                viewModel.ApplyToEntity(candidate);
+                await _shiftService.UpdateAsync(candidate);
                 AlertHelper.EditSuccess(TempData);
             }
             catch (ModelValidationException ex)
             {
-                AlertHelper.AddErrorMessage(TempData, ex.GetErrorString(_localizer));
+                AlertHelper.AddErrorMessage(TempData, _localizer[ex.ErrorCode].ResourceNotFound ? ex.ErrorDetail : ex.GetErrorString(_localizer));
                 ViewBag.StoreList = await _storeService.GetSelectListAsync();
                 return View(viewModel);
             }
@@ -140,6 +140,22 @@ namespace RWPM.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Clone(int id, string newCode)
+        {
+            try
+            {
+                await _shiftService.CloneAsync(id, newCode);
+                AlertHelper.CreateSuccess(TempData);
+            }
+            catch (Exception ex)
+            {
+                AlertHelper.AddErrorMessage(TempData, ex.Message);
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
         // POST: Shift/UpdateActiveStatus/5
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -160,6 +176,10 @@ namespace RWPM.Controllers
             {
                 await _shiftService.UpdateActiveStatusAsync(viewModel.ShiftId!.Value, viewModel.IsActive!.Value);
                 return Ok();
+            }
+            catch (ModelValidationException ex)
+            {
+                return BadRequest(_localizer[ex.ErrorCode].ResourceNotFound ? ex.ErrorDetail : ex.GetErrorString(_localizer));
             }
             catch (Exception ex)
             {

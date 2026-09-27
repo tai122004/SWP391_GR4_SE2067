@@ -63,14 +63,18 @@
         <div class="col-md-4">
             <div class="form-group mb-3">
                 <label class="form-label required" asp-for="StartTime">@ShiftModelResource.StartTime</label>
-                <input class="form-control" asp-for="StartTime" type="time" />
+                <input class="form-control font-monospace shift-time-24h" asp-for="StartTime" type="text"
+                       value="@Model.StartTime.ToString(@"hh\:mm")" inputmode="numeric" maxlength="5"
+                       pattern="(?:[01][0-9]|2[0-3]):[0-5][0-9]" placeholder="HH:mm" title="Nhập giờ theo định dạng 24 giờ HH:mm, ví dụ 08:30 hoặc 17:45" />
                 <span asp-validation-for="StartTime" class="text-danger"></span>
             </div>
         </div>
         <div class="col-md-4">
             <div class="form-group mb-3">
                 <label class="form-label required" asp-for="EndTime">@ShiftModelResource.EndTime</label>
-                <input class="form-control" asp-for="EndTime" type="time" />
+                <input class="form-control font-monospace shift-time-24h" asp-for="EndTime" type="text"
+                       value="@Model.EndTime.ToString(@"hh\:mm")" inputmode="numeric" maxlength="5"
+                       pattern="(?:[01][0-9]|2[0-3]):[0-5][0-9]" placeholder="HH:mm" title="Nhập giờ theo định dạng 24 giờ HH:mm, ví dụ 16:00 hoặc 22:30" />
                 <span asp-validation-for="EndTime" class="text-danger"></span>
             </div>
         </div>
@@ -98,12 +102,21 @@
         </div>
     </div>
 
+    <div class="card mb-3"><div class="card-header fw-semibold">Vận hành mẫu ca</div><div class="card-body row g-3">
+        <div class="col-md-3"><label asp-for="EffectiveFrom" class="form-label">Hiệu lực từ</label><input asp-for="EffectiveFrom" type="date" class="form-control" /><span asp-validation-for="EffectiveFrom" class="text-danger"></span></div>
+        <div class="col-md-3"><label asp-for="EffectiveTo" class="form-label">Hiệu lực đến (tùy chọn)</label><input asp-for="EffectiveTo" type="date" class="form-control" /><span asp-validation-for="EffectiveTo" class="text-danger"></span></div>
+        <div class="col-md-3"><label asp-for="DefaultRequiredHeadcount" class="form-label">Số người cần (gợi ý)</label><input asp-for="DefaultRequiredHeadcount" type="number" min="1" class="form-control" /><span asp-validation-for="DefaultRequiredHeadcount" class="text-danger"></span></div>
+        <div class="col-md-3"><label asp-for="DefaultMaximumHeadcount" class="form-label">Số người tối đa (gợi ý)</label><input asp-for="DefaultMaximumHeadcount" type="number" min="1" class="form-control" /><span asp-validation-for="DefaultMaximumHeadcount" class="text-danger"></span></div>
+        <div class="col-md-6"><div class="form-check"><input asp-for="IsBreakPaid" class="form-check-input" /><label asp-for="IsBreakPaid" class="form-check-label">Thời gian nghỉ được tính công</label></div></div>
+        <div class="col-md-6"><div class="form-check"><input asp-for="AllowOutsideStoreHours" class="form-check-input" /><label asp-for="AllowOutsideStoreHours" class="form-check-label">Cho phép ca ngoài giờ cửa hàng</label></div></div>
+        <div class="col-12 small text-muted">Số người ở đây là mức gợi ý cho lịch theo ngày; không giới hạn trực tiếp số đơn đăng ký.</div>
+    </div></div>
+
     <!-- Attendance Policy Section -->
     <div class="card mb-3 border-light-subtle shadow-sm">
         <div class="card-header bg-light py-2 d-flex flex-wrap justify-content-between align-items-center">
             <div>
                 <div class="fw-semibold text-dark d-flex align-items-center">
-                    <i class="bi bi-shield-check text-primary me-2"></i>
                     @ShiftSharedResource.AttendancePolicy_Title
                 </div>
                 <div class="small text-muted">@ShiftSharedResource.AttendancePolicy_Description</div>
@@ -117,7 +130,6 @@
         </div>
         <div class="card-body py-3">
             <div id="defaultPolicyAlert" class="alert alert-info py-2 px-3 small mb-3 align-items-center @(Model.UseDefaultAttendancePolicy ? "d-flex" : "d-none")">
-                <i class="bi bi-info-circle-fill me-2 fs-5 text-primary"></i>
                 <div>
                     @ShiftSharedResource.AttendancePolicy_InheritNotice (Check-in sớm: <strong>@ShiftDefaults.EarlyCheckInMinutes'</strong>, Đi muộn: <strong>@ShiftDefaults.GracePeriodMinutes'</strong>, Check-out sớm: <strong>@ShiftDefaults.EarlyCheckOutMinutes'</strong>, Ngưỡng bỏ ca: <strong>@ShiftDefaults.LateThresholdMinutes'</strong>).
                 </div>
@@ -126,7 +138,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label class="form-label small fw-semibold" asp-for="EarlyCheckInMinutes">
-                            <i class="bi bi-box-arrow-in-right text-success me-1"></i>@ShiftModelResource.EarlyCheckInMinutes
+                            @ShiftModelResource.EarlyCheckInMinutes
                         </label>
                         <div class="input-group input-group-sm">
                             <input class="form-control" asp-for="EarlyCheckInMinutes" type="number" min="0" max="120" id="earlyCheckInInput" />
@@ -138,10 +150,10 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label class="form-label small fw-semibold" asp-for="GracePeriodMinutes">
-                            <i class="bi bi-hourglass-split text-warning me-1"></i>@ShiftModelResource.GracePeriodMinutes
+                            @ShiftModelResource.GracePeriodMinutes
                         </label>
                         <div class="input-group input-group-sm">
-                            <input class="form-control" asp-for="GracePeriodMinutes" type="number" min="0" max="120" id="gracePeriodInput" />
+                            <input class="form-control" asp-for="GracePeriodMinutes" type="number" min="0" max="60" id="gracePeriodInput" />
                             <span class="input-group-text">phút</span>
                         </div>
                         <span asp-validation-for="GracePeriodMinutes" class="text-danger small"></span>
@@ -150,7 +162,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label class="form-label small fw-semibold" asp-for="EarlyCheckOutMinutes">
-                            <i class="bi bi-box-arrow-right text-info me-1"></i>@ShiftModelResource.EarlyCheckOutMinutes
+                            @ShiftModelResource.EarlyCheckOutMinutes
                         </label>
                         <div class="input-group input-group-sm">
                             <input class="form-control" asp-for="EarlyCheckOutMinutes" type="number" min="0" max="60" id="earlyCheckOutInput" />
@@ -162,10 +174,10 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label class="form-label small fw-semibold" asp-for="LateThresholdMinutes">
-                            <i class="bi bi-slash-circle text-danger me-1"></i>@ShiftModelResource.LateThresholdMinutes
+                            @ShiftModelResource.LateThresholdMinutes
                         </label>
                         <div class="input-group input-group-sm">
-                            <input class="form-control" asp-for="LateThresholdMinutes" type="number" min="0" max="480" id="lateThresholdInput" />
+                            <input class="form-control" asp-for="LateThresholdMinutes" type="number" min="0" max="240" id="lateThresholdInput" />
                             <span class="input-group-text">phút</span>
                         </div>
                         <span asp-validation-for="LateThresholdMinutes" class="text-danger small"></span>
@@ -340,6 +352,7 @@
 
             // Lắng nghe sự kiện khi người dùng chọn loại ca
             $('#shiftTypeSelect').change(applyPreset);
+
         });
     </script>
 }

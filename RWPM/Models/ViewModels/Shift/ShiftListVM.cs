@@ -10,6 +10,7 @@ namespace RWPM.Models.ViewModels.Shift
         public bool? IsActive { get; set; }
         public bool? IsTemplate { get; set; }
         public int? StoreId { get; set; }
+        public DateTime? EffectiveOn { get; set; }
         public SelectList? StoreSelectList { get; set; }
 
         public ShiftListVM(PaginationRes<Entities.Shift> panigationResponse, ShiftSearch searchObject, SelectList? storeSelectList = null)
@@ -19,6 +20,7 @@ namespace RWPM.Models.ViewModels.Shift
             IsActive = searchObject.IsActive;
             IsTemplate = searchObject.IsTemplate;
             StoreId = searchObject.StoreId;
+            EffectiveOn = searchObject.EffectiveOn;
             StoreSelectList = storeSelectList;
         }
     }

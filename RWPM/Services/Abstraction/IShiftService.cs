@@ -9,10 +9,12 @@ namespace RWPM.Services.Abstraction
         Task<Shift?> GetByIdAsync(int shiftId, QueryOptions<Shift>? options = null);
         Task<Shift> GetRequiredByIdAsync(int shiftId, QueryOptions<Shift>? options = null);
         Task<List<Shift>> GetAllAsync(QueryOptions<Shift>? options = null);
+        Task<List<Shift>> GetAvailableForDateAsync(DateTime workDate, int storeId);
         Task<PaginationRes<Shift>> SearchAsync(ShiftSearch searchObject, QueryOptions<Shift>? options = null);
         Task<Shift> CreateAsync(Shift entity);
         Task UpdateAsync(Shift entity);
         Task<bool> ExistsByCodeAsync(string shiftCode, int? excludeShiftId = null);
         Task UpdateActiveStatusAsync(int shiftId, bool active);
+        Task<Shift> CloneAsync(int shiftId, string newCode);
     }
 }
