@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -58,106 +58,88 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="RequestsAndApprovals" xml:space="preserve">
+    <value>Yêu cầu và Phê duyệt</value>
+  </data>
+  <data name="ExportFile" xml:space="preserve">
+    <value>Xuất file</value>
+  </data>
+  <data name="CreateRequest" xml:space="preserve">
+    <value>Tạo yêu cầu</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>Tất cả</value>
+  </data>
+  <data name="ByDateSent" xml:space="preserve">
+    <value>Theo ngày gửi</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Tìm kiếm</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>Yêu cầu</value>
+  </data>
+  <data name="Approved" xml:space="preserve">
+    <value>Chấp thuận</value>
+  </data>
+  <data name="Rejected" xml:space="preserve">
+    <value>Từ chối</value>
+  </data>
+  <data name="SelectMultiple" xml:space="preserve">
+    <value>Chọn nhiều</value>
+  </data>
+  <data name="NoData" xml:space="preserve">
+    <value>Không có dữ liệu</value>
+  </data>
   <data name="ShiftRegistration" xml:space="preserve">
-    <value>Lịch Đăng Ký Ca</value>
-  </data>
-  <data name="FilterByEmployeeId" xml:space="preserve">
-    <value>Lọc theo Employee ID...</value>
-  </data>
-  <data name="Filter" xml:space="preserve">
-    <value>Lọc</value>
-  </data>
-  <data name="RegisterShift" xml:space="preserve">
-    <value>Đăng ký ca làm việc</value>
-  </data>
-  <data name="Employee" xml:space="preserve">
-    <value>Nhân viên</value>
-  </data>
-  <data name="SelectEmployee" xml:space="preserve">
-    <value>-- Chọn nhân viên --</value>
-  </data>
-  <data name="WorkDate" xml:space="preserve">
-    <value>Ngày làm việc</value>
+    <value>Đăng ký ca làm</value>
   </data>
   <data name="Shift" xml:space="preserve">
-    <value>Ca làm việc</value>
+    <value>Ca làm</value>
   </data>
-  <data name="SelectShift" xml:space="preserve">
-    <value>-- Chọn ca làm việc --</value>
+  <data name="Date" xml:space="preserve">
+    <value>Ngày</value>
   </data>
-  <data name="Note" xml:space="preserve">
-    <value>Ghi chú</value>
-  </data>
-  <data name="Close" xml:space="preserve">
-    <value>Đóng</value>
-  </data>
-  <data name="Save" xml:space="preserve">
-    <value>Lưu đăng ký</value>
-  </data>
-  <data name="ShiftDetails" xml:space="preserve">
-    <value>Chi tiết ca làm việc</value>
-  </data>
-  <data name="Time" xml:space="preserve">
-    <value>Thời gian</value>
-  </data>
-  <data name="Status" xml:space="preserve">
-    <value>Trạng thái</value>
+  <data name="Approver" xml:space="preserve">
+    <value>Người phê duyệt</value>
   </data>
   <data name="Approve" xml:space="preserve">
-    <value>Duyệt</value>
+    <value>Chấp thuận</value>
   </data>
   <data name="Reject" xml:space="preserve">
     <value>Từ chối</value>
   </data>
-  <data name="Cancel" xml:space="preserve">
-    <value>Hủy đăng ký</value>
+  <data name="Delete" xml:space="preserve">
+    <value>Xóa</value>
   </data>
-  <data name="PastDateError" xml:space="preserve">
-    <value>Không thể đăng ký ca cho những ngày trong quá khứ!</value>
+  <data name="Department" xml:space="preserve">
+    <value>Phòng ban</value>
   </data>
-  <data name="ConfirmCancel" xml:space="preserve">
-    <value>Bạn có chắc chắn muốn hủy đăng ký này?</value>
+  <data name="Code" xml:space="preserve">
+    <value>Mã đơn</value>
   </data>
-  <data name="SuccessStatus" xml:space="preserve">
-    <value>Cập nhật trạng thái thành công!</value>
+  <data name="Creator" xml:space="preserve">
+    <value>Người tạo</value>
   </data>
-  <data name="ErrorPrefix" xml:space="preserve">
-    <value>Lỗi: </value>
+  <data name="Reason" xml:space="preserve">
+    <value>Lý do</value>
   </data>
-  <data name="UpdateFailed" xml:space="preserve">
-    <value>Cập nhật thất bại: </value>
+  <data name="Status" xml:space="preserve">
+    <value>Trạng thái</value>
   </data>
-  <data name="FilterByEmployee" xml:space="preserve">
-    <value>Theo nhân viên</value>
+  <data name="CurrentlySelecting" xml:space="preserve">
+    <value>Đang chọn</value>
   </data>
-  <data name="AttendanceFilter" xml:space="preserve">
-    <value>Chấm công</value>
+  <data name="Requests" xml:space="preserve">
+    <value>yêu cầu</value>
   </data>
-  <data name="ActiveEmployees" xml:space="preserve">
-    <value>Nhân viên hoạt động</value>
+  <data name="BulkActionDesc" xml:space="preserve">
+    <value>Bạn có thể thao tác hàng loạt cho các yêu cầu đã chọn.</value>
   </data>
-  <data name="SearchBtn" xml:space="preserve">
-    <value>Tìm kiếm</value>
+  <data name="ApproveAll" xml:space="preserve">
+    <value>Chấp thuận tất cả</value>
   </data>
-  <data name="NotYetShifted" xml:space="preserve">
-    <value>Chưa đến ca</value>
-  </data>
-  <data name="OnTimeAttendance" xml:space="preserve">
-    <value>Chấm công đúng giờ</value>
-  </data>
-  <data name="LateEarly" xml:space="preserve">
-    <value>Vào trễ, ra sớm</value>
-  </data>
-  <data name="NotCheckedInOut" xml:space="preserve">
-    <value>Chưa vào/ra ca</value>
-  </data>
-  <data name="OnLeave" xml:space="preserve">
-    <value>Nghỉ phép</value>
-  </data>
-  <data name="CreateShift" xml:space="preserve">
-    <value>Tạo ca làm</value>
-  </data>
-  <data name="CreateNewShift" xml:space="preserve">
-    <value>Tạo ca làm mới</value>
+  <data name="RejectAll" xml:space="preserve">
+    <value>Từ chối tất cả</value>
   </data>
 </root>

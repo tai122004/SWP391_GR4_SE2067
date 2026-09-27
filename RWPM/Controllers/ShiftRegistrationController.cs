@@ -153,22 +153,35 @@ namespace RWPM.Controllers
                     }
                 }
 
-                var shift = await _context.Shift.FirstOrDefaultAsync(s => s.ShiftId == viewModel.ShiftId);
-                if (shift == null || !shift.IsActive)
+                var shiftIds = viewModel.ShiftIds != null && viewModel.ShiftIds.Any() 
+                    ? viewModel.ShiftIds 
+                    : new List<int> { viewModel.ShiftId };
+
+                var entitiesToCreate = new List<ShiftRegistration>();
+
+                foreach (var sId in shiftIds)
                 {
-                    return BadRequest(new { success = false, message = "Ca làm việc không tồn tại hoặc đã ngừng hoạt động." });
-                }
-                if (shift.StoreId.HasValue && shift.StoreId.Value != employee.StoreId)
-                {
-                    return BadRequest(new { success = false, message = "Ca làm việc này không áp dụng cho chi nhánh của nhân viên." });
+                    var shift = await _context.Shift.FirstOrDefaultAsync(s => s.ShiftId == sId);
+                    if (shift == null || !shift.IsActive)
+                    {
+                        return BadRequest(new { success = false, message = $"Ca làm việc có ID {sId} không tồn tại hoặc đã ngừng hoạt động." });
+                    }
+                    if (shift.StoreId.HasValue && shift.StoreId.Value != employee.StoreId)
+                    {
+                        return BadRequest(new { success = false, message = $"Ca làm việc {shift.ShiftName} không áp dụng cho chi nhánh của nhân viên." });
+                    }
+
+                    var entity = viewModel.ToEntity();
+                    entity.ShiftId = sId;
+                    entity.StoreId = employee.StoreId;
+                    entity.CreatedDate = DateTime.Now;
+                    entity.CreatedBy = User.Identity?.Name ?? "system";
+                    
+                    entitiesToCreate.Add(entity);
                 }
 
-                var entity = viewModel.ToEntity();
-                entity.StoreId = employee.StoreId;
-                entity.CreatedDate = DateTime.Now;
-                entity.CreatedBy = User.Identity?.Name ?? "system";
+                await _registrationService.CreateBatchAsync(entitiesToCreate);
 
-                await _registrationService.CreateAsync(entity);
                 return Ok(new { success = true });
             }
             catch (Exception ex)

@@ -22,7 +22,7 @@ namespace RWPM.Services
                 .ThenInclude(e => e.Account)
                 .Include(x => x.Shift)
                 .Include(x => x.Store)
-                .Where(x => x.WorkDate >= start && x.WorkDate <= end);
+                .Where(x => x.WorkDate >= start && x.WorkDate <= end && x.Status != RegistrationStatus.Rejected);
 
             if (employeeId.HasValue)
             {
@@ -69,6 +69,8 @@ namespace RWPM.Services
                 throw new Exception("Không thể đăng ký ca cho những ngày trong quá khứ.");
             }
 
+            await ValidateScheduleConstraintsAsync(entity.EmployeeId, new List<ShiftRegistration> { entity });
+
             var exists = await _context.ShiftRegistration.AnyAsync(x => 
                 x.EmployeeId == entity.EmployeeId && 
                 x.ShiftId == entity.ShiftId && 
@@ -84,8 +86,42 @@ namespace RWPM.Services
             return entity;
         }
 
+        public async Task<List<ShiftRegistration>> CreateBatchAsync(List<ShiftRegistration> entities)
+        {
+            if (!entities.Any()) return entities;
+
+            if (entities.Any(e => e.WorkDate.Date < DateTime.Today))
+            {
+                throw new Exception("Không thể đăng ký ca cho những ngày trong quá khứ.");
+            }
+
+            var employeeId = entities.First().EmployeeId;
+            await ValidateScheduleConstraintsAsync(employeeId, entities);
+
+            foreach (var entity in entities)
+            {
+                var exists = await _context.ShiftRegistration.AnyAsync(x => 
+                    x.EmployeeId == entity.EmployeeId && 
+                    x.ShiftId == entity.ShiftId && 
+                    x.WorkDate == entity.WorkDate);
+
+                if (exists)
+                {
+                    var shift = await _context.Shift.FindAsync(entity.ShiftId);
+                    throw new Exception($"Ca làm việc {shift?.ShiftName} đã được đăng ký cho ngày {entity.WorkDate:dd/MM/yyyy}.");
+                }
+
+                _context.ShiftRegistration.Add(entity);
+            }
+
+            await _context.SaveChangesAsync();
+            return entities;
+        }
+
         public async Task<ShiftRegistration> UpdateAsync(ShiftRegistration entity)
         {
+            await ValidateScheduleConstraintsAsync(entity.EmployeeId, new List<ShiftRegistration> { entity }, new List<int> { entity.ShiftRegistrationId });
+
             var exists = await _context.ShiftRegistration.AnyAsync(x => 
                 x.EmployeeId == entity.EmployeeId && 
                 x.ShiftId == entity.ShiftId && 
@@ -244,10 +280,86 @@ namespace RWPM.Services
                 item.StoreId = storeId;
                 item.Status = RegistrationStatus.Pending;
                 item.CreatedDate = DateTime.Now;
+            }
+
+            var ignoreIds = toDelete.Select(x => x.ShiftRegistrationId).ToList();
+            await ValidateScheduleConstraintsAsync(employeeId, toAdd, ignoreIds);
+
+            foreach (var item in toAdd)
+            {
                 _context.ShiftRegistration.Add(item);
             }
 
             await _context.SaveChangesAsync();
+        }
+
+        private async Task ValidateScheduleConstraintsAsync(int employeeId, List<ShiftRegistration> pendingRegistrations, List<int> ignoreIds = null)
+        {
+            if (!pendingRegistrations.Any()) return;
+
+            var minDate = pendingRegistrations.Min(x => x.WorkDate).Date.AddDays(-1);
+            var maxDate = pendingRegistrations.Max(x => x.WorkDate).Date.AddDays(1);
+
+            var query = _context.ShiftRegistration
+                .Include(x => x.Shift)
+                .Where(x => x.EmployeeId == employeeId 
+                         && x.WorkDate >= minDate 
+                         && x.WorkDate <= maxDate
+                         && x.Status != RegistrationStatus.Rejected);
+                         
+            if (ignoreIds != null && ignoreIds.Any())
+            {
+                query = query.Where(x => !ignoreIds.Contains(x.ShiftRegistrationId));
+            }
+
+            var existingRegistrations = await query.ToListAsync();
+
+            var pendingIds = pendingRegistrations.Select(x => x.ShiftRegistrationId).Where(id => id > 0).ToList();
+            var combinedSchedule = existingRegistrations.Where(x => !pendingIds.Contains(x.ShiftRegistrationId)).ToList();
+            
+            var shiftIds = pendingRegistrations.Select(x => x.ShiftId).Distinct().ToList();
+            var shifts = await _context.Shift.Where(s => shiftIds.Contains(s.ShiftId)).ToListAsync();
+            
+            foreach (var p in pendingRegistrations)
+            {
+                p.Shift = shifts.FirstOrDefault(s => s.ShiftId == p.ShiftId);
+                if (p.Shift != null)
+                {
+                    combinedSchedule.Add(p);
+                }
+            }
+
+            combinedSchedule = combinedSchedule.OrderBy(x => x.WorkDate.Date).ThenBy(x => x.Shift.StartTime).ToList();
+
+            for (int i = 0; i < combinedSchedule.Count; i++)
+            {
+                var current = combinedSchedule[i];
+                var currentStart = current.WorkDate.Date.Add(current.Shift.StartTime);
+                var currentEnd = current.Shift.EndTime < current.Shift.StartTime 
+                    ? current.WorkDate.Date.AddDays(1).Add(current.Shift.EndTime) 
+                    : current.WorkDate.Date.Add(current.Shift.EndTime);
+
+                for (int j = i + 1; j < combinedSchedule.Count; j++)
+                {
+                    var next = combinedSchedule[j];
+                    
+                    if (!pendingRegistrations.Contains(current) && !pendingRegistrations.Contains(next))
+                    {
+                        continue;
+                    }
+
+                    var nextStart = next.WorkDate.Date.Add(next.Shift.StartTime);
+                    var nextEnd = next.Shift.EndTime < next.Shift.StartTime 
+                        ? next.WorkDate.Date.AddDays(1).Add(next.Shift.EndTime) 
+                        : next.WorkDate.Date.Add(next.Shift.EndTime);
+
+                    // 1. Chống trùng ca
+                    if (currentStart < nextEnd && nextStart < currentEnd)
+                    {
+                        throw new Exception($"Trùng ca làm việc: {current.Shift.ShiftName} ({current.WorkDate:dd/MM/yyyy}) và {next.Shift.ShiftName} ({next.WorkDate:dd/MM/yyyy}).");
+                    }
+                }
+            }
         }
     }
 }

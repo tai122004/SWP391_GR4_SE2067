@@ -1,4 +1,4 @@
-@using Microsoft.AspNetCore.Mvc.Localization
+﻿@using Microsoft.AspNetCore.Mvc.Localization
 @using RWPM.Resources.Shared
 
 @{
@@ -54,7 +54,7 @@
                             @if (ViewBag.IsManager)
                             {
                                 <select id="filterEmployeeId" class="tanca-select" style="min-width: 150px;">
-                                    <option value="">Theo nhân viên</option>
+                                    <option value="">@ShiftRegistrationResource.FilterByEmployee</option>
                                     @if (ViewBag.Employees != null)
                                     {
                                         foreach (var emp in ViewBag.Employees)
@@ -66,14 +66,14 @@
                             }
 
                             <select id="filterTimekeeping" class="tanca-select">
-                                <option value="">Chấm công</option>
-                                <option value="ontime">Chấm công đúng giờ</option>
-                                <option value="late">Vào trễ, ra sớm</option>
-                                <option value="missing">Chưa vào/ra ca</option>
+                                <option value="">@ShiftRegistrationResource.AttendanceFilter</option>
+                                <option value="ontime">@ShiftRegistrationResource.OnTimeAttendance</option>
+                                <option value="late">@ShiftRegistrationResource.LateEarly</option>
+                                <option value="missing">@ShiftRegistrationResource.NotCheckedInOut</option>
                             </select>
 
                             <select id="filterEmployeeStatus" class="tanca-select">
-                                <option value="active">Nhân viên hoạt động</option>
+                                <option value="active">@ShiftRegistrationResource.ActiveEmployees</option>
                                 <option value="inactive">Nhân viên đã nghỉ</option>
                             </select>
                         </div>
@@ -86,7 +86,7 @@
                                 <button class="tanca-btn" title="Cảnh báo"><i class="fas fa-exclamation-triangle"></i></button>
                                 <button class="tanca-btn" title="Công cụ"><i class="fas fa-tools"></i></button>
                                 <button class="tanca-btn" title="Cài đặt"><i class="fas fa-cog"></i></button>
-                                <button class="btn btn-sm btn-success mb-0 ms-2" onclick="openCreateModal(new Date())" style="border-radius: 8px; padding: 8px 16px;">Tạo ca làm</button>
+                                <button class="btn btn-sm btn-success mb-0 ms-2" onclick="openCreateModal(new Date())" style="border-radius: 8px; padding: 8px 16px;">@ShiftRegistrationResource.CreateShift</button>
                             }
                             else
                             {
@@ -148,7 +148,8 @@
         vertical-align: middle !important;
     }
     .shift-cell {
-        height: 70px;
+        min-height: 70px;
+        height: auto;
         min-width: 120px;
         position: relative;
         padding: 4px;
@@ -321,7 +322,7 @@
         <div class="d-flex gap-2 mb-3">
             <div class="input-group input-group-sm">
                 <span class="input-group-text bg-light border-end-0" style="border-radius: 8px 0 0 8px;"><i class="fas fa-search text-muted"></i></span>
-                <input type="text" class="form-control bg-light border-start-0 ps-0" id="searchShiftInput" placeholder="Tìm kiếm" onkeyup="filterShifts(this.value)" style="border-radius: 0 8px 8px 0; box-shadow: none;">
+                <input type="text" class="form-control bg-light border-start-0 ps-0" id="searchShiftInput" placeholder="@ShiftRegistrationResource.SearchBtn" onkeyup="filterShifts(this.value)" style="border-radius: 0 8px 8px 0; box-shadow: none;">
             </div>
             <button type="button" class="btn btn-sm btn-outline-success mb-0 text-nowrap" style="border-radius: 8px;"><i class="fas fa-sync-alt"></i> Tải lại ca</button>
         </div>
@@ -349,7 +350,7 @@
             </div>
             
             <div class="mt-4">
-                <a href="#" class="text-success p-0 text-decoration-none fw-bold" style="font-size: 13px;"><i class="fas fa-plus"></i> Tạo ca làm mới</a>
+                <a href="@Url.Action("Create", "Shift")" class="text-success p-0 text-decoration-none fw-bold" style="font-size: 13px;"><i class="fas fa-plus"></i> @ShiftRegistrationResource.CreateNewShift</a>
             </div>
             
             <div class="mt-3 text-end" id="saveShiftBtnContainer" style="display: none;">
@@ -475,34 +476,34 @@
                 var workDate = $('#WorkDate').val();
                 var token = $('input[name="__RequestVerificationToken"]').val();
 
-                var promises = selectedShifts.map(function(shiftId) {
-                    var data = {
-                        EmployeeId: empId,
-                        ShiftId: shiftId,
-                        WorkDate: workDate,
-                        Note: ""
-                    };
-                    return $.ajax({
-                        url: '/ShiftRegistration/Create',
-                        type: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify(data),
-                        headers: {
-                            'RequestVerificationToken': token
-                        }
-                    });
-                });
+                var data = {
+                    EmployeeId: empId,
+                    ShiftId: selectedShifts[0], // fallback for backward compatibility
+                    ShiftIds: selectedShifts.map(id => parseInt(id)),
+                    WorkDate: workDate,
+                    Note: ""
+                };
 
-                Promise.all(promises).then(function(results) {
-                    var hasError = results.some(res => !res.success);
-                    if (hasError) {
-                        alert('Có lỗi xảy ra khi tạo một số ca. Vui lòng kiểm tra lại.');
+                $.ajax({
+                    url: '/ShiftRegistration/Create',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    headers: {
+                        'RequestVerificationToken': token
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            $('#shiftModal').modal('hide');
+                            fetchEvents();
+                            $('#shiftForm')[0].reset();
+                        } else {
+                            alert(res.message || 'Có lỗi xảy ra.');
+                        }
+                    },
+                    error: function(err) {
+                        alert('@Html.Raw(ShiftRegistrationResource.ErrorPrefix)' + (err.responseJSON?.message || err.responseText || 'Lỗi hệ thống'));
                     }
-                    $('#shiftModal').modal('hide');
-                    fetchEvents();
-                    $('#shiftForm')[0].reset();
-                }).catch(function(err) {
-                    alert('@Html.Raw(ShiftRegistrationResource.ErrorPrefix)' + (err.responseJSON?.message || err.responseText || 'Lỗi hệ thống'));
                 });
             });
 
@@ -600,7 +601,7 @@
 
         function renderHeader() {
             if (isManager) {
-                let tr = '<th class="emp-col"><div class="input-group input-group-sm"><span class="input-group-text bg-transparent border-0"><i class="fas fa-search"></i></span><input type="text" class="form-control border-0 bg-transparent ps-1" placeholder="Tìm kiếm" onkeyup="filterEmployeesLocally(this.value)"></div></th>';
+                let tr = '<th class="emp-col"><div class="input-group input-group-sm"><span class="input-group-text bg-transparent border-0"><i class="fas fa-search"></i></span><input type="text" class="form-control border-0 bg-transparent ps-1" placeholder="@ShiftRegistrationResource.SearchBtn" onkeyup="filterEmployeesLocally(this.value)"></div></th>';
                 
                 let tempDate = new Date(currentWeekStart);
                 let days = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
@@ -711,22 +712,25 @@
                     for (let i = 0; i < 7; i++) {
                         let cellDateStr = getISODateString(tempDate);
                         
-                        // Find event for this employee and date
-                        let dayEvent = events.find(e => {
+                        // Find events for this employee and date
+                        let dayEvents = events.filter(e => {
                             let eDate = e.start.split('T')[0];
                             return (e.employeeId == emp.id || !emp.id) && eDate === cellDateStr;
                         });
 
-                        if (dayEvent) {
-                            let eJson = JSON.stringify(dayEvent).replace(/'/g, "&#39;");
-                            tbody += `
-                                <td class="shift-cell" onclick='openViewModal(${eJson})'>
-                                    <div class="shift-filled">
+                        if (dayEvents.length > 0) {
+                            tbody += `<td class="shift-cell" onclick="openCreateModal(new Date('${cellDateStr}'), '${emp.id}')" style="vertical-align: top; padding: 4px;">`;
+                            tbody += `<div class="d-flex flex-column gap-1 h-100">`;
+                            dayEvents.forEach(dayEvent => {
+                                let eJson = JSON.stringify(dayEvent).replace(/'/g, "&#39;");
+                                tbody += `
+                                    <div class="shift-filled" style="height: auto; min-height: 50px;" onclick='event.stopPropagation(); openViewModal(${eJson})'>
                                         <div class="shift-name">${dayEvent.title}</div>
                                         <div class="shift-time">(-:- - -:-)</div>
                                     </div>
-                                </td>
-                            `;
+                                `;
+                            });
+                            tbody += `</div></td>`;
                         } else {
                             // Empty slot
                             tbody += `

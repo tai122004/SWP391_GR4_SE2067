@@ -9,6 +9,7 @@ namespace RWPM.Services.Abstraction
         Task<List<ShiftRegistration>> GetRequestsAsync(DateTime start, DateTime end, RegistrationStatus? status = null);
         Task<ShiftRegistration?> GetByIdAsync(int id);
         Task<ShiftRegistration> CreateAsync(ShiftRegistration entity);
+        Task<List<ShiftRegistration>> CreateBatchAsync(List<ShiftRegistration> entities);
         Task<ShiftRegistration> UpdateAsync(ShiftRegistration entity);
         Task DeleteAsync(int id);
         Task UpdateStatusAsync(int id, RegistrationStatus status);
