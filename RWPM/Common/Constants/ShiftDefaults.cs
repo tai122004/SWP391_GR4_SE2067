@@ -9,7 +9,7 @@ namespace RWPM.Common.Constants
     {
         /// <summary>
         /// Số phút cho phép nhân viên quẹt thẻ TRƯỚC giờ bắt đầu ca làm việc.
-        /// Mặc định: 15 phút.
+        /// Mặc định: 30 phút.
         /// Ví dụ: Ca 08:00, nhân viên có thể bắt đầu chấm công từ 07:45.
         /// </summary>
         public const int EarlyCheckInMinutes = 30;

@@ -121,7 +121,7 @@
     <value>Tăng ca</value>
   </data>
   <data name="ShiftType_Flexible" xml:space="preserve">
-    <value>Linh động</value>
+    <value>Ca linh hoạt / sự kiện</value>
   </data>
   <data name="Invalid_GracePeriodMinutes" xml:space="preserve">
     <value>Thời gian cho phép đi muộn không được nhỏ hơn 0.</value>

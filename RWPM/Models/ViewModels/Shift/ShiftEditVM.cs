@@ -12,7 +12,7 @@ namespace RWPM.Models.ViewModels.Shift
 
         [Display(Name = "ShiftCode", ResourceType = typeof(Resources.Models.Shift))]
         [RequiredLocalization]
-        [MaxLengthLocalized(20)]
+        [MaxLengthLocalized(30)]
         public string ShiftCode { get; set; } = string.Empty;
 
         [Display(Name = "ShiftName", ResourceType = typeof(Resources.Models.Shift))]
@@ -36,6 +36,19 @@ namespace RWPM.Models.ViewModels.Shift
         [Range(0, 60, ErrorMessageResourceType = typeof(Resources.Models.Shift), ErrorMessageResourceName = "Invalid_MaxBreakMinutes")]
         public int BreakMinutes { get; set; }
 
+        public bool IsBreakPaid { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime EffectiveFrom { get; set; } = DateTime.Today;
+        [DataType(DataType.Date)]
+        public DateTime? EffectiveTo { get; set; }
+        public bool AllowOutsideStoreHours { get; set; }
+        [MaxLength(255)]
+        public string? OutsideHoursReason { get; set; }
+        [Range(1, 1000)]
+        public int? DefaultRequiredHeadcount { get; set; }
+        [Range(1, 1000)]
+        public int? DefaultMaximumHeadcount { get; set; }
+
         [Display(Name = "Description", ResourceType = typeof(Resources.Models.Shift))]
         [MaxLengthLocalized(255)]
         public string? Description { get; set; }
@@ -43,7 +56,7 @@ namespace RWPM.Models.ViewModels.Shift
         public bool UseDefaultAttendancePolicy { get; set; } = true;
 
         [Display(Name = "GracePeriodMinutes", ResourceType = typeof(Resources.Models.Shift))]
-        [Range(0, 120)]
+        [Range(0, 60)]
         public int? GracePeriodMinutes { get; set; }
 
         [Display(Name = "EarlyCheckInMinutes", ResourceType = typeof(Resources.Models.Shift))]
@@ -55,7 +68,7 @@ namespace RWPM.Models.ViewModels.Shift
         public int? EarlyCheckOutMinutes { get; set; }
 
         [Display(Name = "LateThresholdMinutes", ResourceType = typeof(Resources.Models.Shift))]
-        [Range(0, 480)]
+        [Range(0, 240)]
         public int? LateThresholdMinutes { get; set; }
 
         [Display(Name = "IsTemplate", ResourceType = typeof(Resources.Models.Shift))]
@@ -78,6 +91,13 @@ namespace RWPM.Models.ViewModels.Shift
             StartTime = entity.StartTime;
             EndTime = entity.EndTime;
             BreakMinutes = entity.BreakMinutes;
+            IsBreakPaid = entity.IsBreakPaid;
+            EffectiveFrom = entity.EffectiveFrom;
+            EffectiveTo = entity.EffectiveTo;
+            AllowOutsideStoreHours = entity.AllowOutsideStoreHours;
+            OutsideHoursReason = entity.OutsideHoursReason;
+            DefaultRequiredHeadcount = entity.DefaultRequiredHeadcount;
+            DefaultMaximumHeadcount = entity.DefaultMaximumHeadcount;
             
             UseDefaultAttendancePolicy = !entity.GracePeriodMinutes.HasValue 
                                       && !entity.EarlyCheckInMinutes.HasValue 
@@ -97,12 +117,12 @@ namespace RWPM.Models.ViewModels.Shift
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (EndTime <= StartTime)
+            if (EndTime == StartTime)
             {
-                yield return new ValidationResult(Resources.Models.Shift.Invalid_TimeRange, new[] { nameof(EndTime) });
+                yield return new ValidationResult("Giờ kết thúc không được trùng giờ bắt đầu.", new[] { nameof(EndTime) });
             }
 
-            double period1Minutes = (EndTime > StartTime) ? (EndTime - StartTime).TotalMinutes : 0;
+            double period1Minutes = RWPM.Common.Helper.ShiftTimeHelper.GetDuration(StartTime, EndTime).TotalMinutes;
             double totalMinutes = period1Minutes;
 
             if (period1Minutes > 0 && period1Minutes < 120)
@@ -133,6 +153,11 @@ namespace RWPM.Models.ViewModels.Shift
             {
                 yield return new ValidationResult(Resources.Models.Shift.StoreId_Required, new[] { nameof(StoreId) });
             }
+            if (EffectiveTo?.Date < EffectiveFrom.Date)
+                yield return new ValidationResult("Ngày hết hiệu lực phải từ ngày bắt đầu hiệu lực trở đi.", new[] { nameof(EffectiveTo) });
+            if (DefaultRequiredHeadcount.HasValue != DefaultMaximumHeadcount.HasValue
+                || (DefaultRequiredHeadcount.HasValue && DefaultMaximumHeadcount < DefaultRequiredHeadcount))
+                yield return new ValidationResult("Số nhân viên tối đa không được nhỏ hơn số nhân viên cần.", new[] { nameof(DefaultMaximumHeadcount) });
         }
 
         public void ApplyToEntity(Entities.Shift entity)
@@ -143,6 +168,13 @@ namespace RWPM.Models.ViewModels.Shift
             entity.StartTime = StartTime;
             entity.EndTime = EndTime;
             entity.BreakMinutes = BreakMinutes;
+            entity.IsBreakPaid = IsBreakPaid;
+            entity.EffectiveFrom = EffectiveFrom.Date;
+            entity.EffectiveTo = EffectiveTo?.Date;
+            entity.AllowOutsideStoreHours = AllowOutsideStoreHours;
+            entity.OutsideHoursReason = null;
+            entity.DefaultRequiredHeadcount = DefaultRequiredHeadcount;
+            entity.DefaultMaximumHeadcount = DefaultMaximumHeadcount;
             entity.GracePeriodMinutes = UseDefaultAttendancePolicy ? null : GracePeriodMinutes;
             entity.EarlyCheckInMinutes = UseDefaultAttendancePolicy ? null : EarlyCheckInMinutes;
             entity.EarlyCheckOutMinutes = UseDefaultAttendancePolicy ? null : EarlyCheckOutMinutes;

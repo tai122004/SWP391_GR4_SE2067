@@ -36,7 +36,7 @@ namespace RWPM.Common.Enums
         Overtime = 5,
 
         /// <summary>
-        /// Ca Linh động (Flexible) - chỉ cần đủ số giờ
+        /// Ca linh hoạt/sự kiện - khung giờ do người quản lý cấu hình
         /// </summary>
         [Display(ResourceType = typeof(Resources.Models.Shift), Name = "ShiftType_Flexible")]
         Flexible = 6,

@@ -11,7 +11,7 @@ namespace RWPM.Models.Entities
         public int ShiftId { get; set; }
 
         [Required]
-        [MaxLength(20)]
+        [MaxLength(30)]
         public string ShiftCode { get; set; } = string.Empty;
 
         [Required]
@@ -25,6 +25,16 @@ namespace RWPM.Models.Entities
         public TimeSpan EndTime { get; set; }
 
         public int BreakMinutes { get; set; }
+        public bool IsBreakPaid { get; set; }
+        [Column(TypeName = "date")]
+        public DateTime EffectiveFrom { get; set; } = DateTime.Today;
+        [Column(TypeName = "date")]
+        public DateTime? EffectiveTo { get; set; }
+        public bool AllowOutsideStoreHours { get; set; }
+        [MaxLength(255)]
+        public string? OutsideHoursReason { get; set; }
+        public int? DefaultRequiredHeadcount { get; set; }
+        public int? DefaultMaximumHeadcount { get; set; }
 
         // === CẤU HÌNH THỜI GIAN CHẤM CÔNG (Attendance Policy) ===
 
@@ -80,16 +90,10 @@ namespace RWPM.Models.Entities
 
     public static class ShiftExtensions
     {
-        public static string GetLocalizedName(this Shift shift)
-        {
-            return shift.ShiftCode switch
-            {
-                "S" => Resources.Models.Shift.ShiftName_S,
-                "C" => Resources.Models.Shift.ShiftName_C,
-                "G" => Resources.Models.Shift.ShiftName_G,
-                "HC" => Resources.Models.Shift.ShiftName_HC,
-                _ => shift.ShiftName
-            };
-        }
+        public static bool IsAvailableOn(this Shift shift, DateTime workDate) =>
+            shift.IsActive && shift.EffectiveFrom.Date <= workDate.Date
+            && (!shift.EffectiveTo.HasValue || shift.EffectiveTo.Value.Date >= workDate.Date);
+
+        public static string GetLocalizedName(this Shift shift) => shift.ShiftName;
     }
 }
