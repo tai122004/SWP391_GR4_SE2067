@@ -429,4 +429,88 @@
   <data name="Dropdown_SelectStore" xml:space="preserve">
     <value>--- Chọn chi nhánh ---</value>
   </data>
+  <data name="Attendance_ShiftCol" xml:space="preserve">
+    <value>Ca làm việc</value>
+  </data>
+  <data name="Attendance_PhotoCol" xml:space="preserve">
+    <value>Ảnh minh chứng</value>
+  </data>
+  <data name="Attendance_DistanceCol" xml:space="preserve">
+    <value>Khoảng cách GPS</value>
+  </data>
+  <data name="Attendance_PhotoTitle" xml:space="preserve">
+    <value>Chụp ảnh hiện trường (Bắt buộc)</value>
+  </data>
+  <data name="Attendance_BtnCapture" xml:space="preserve">
+    <value>Chụp ảnh</value>
+  </data>
+  <data name="Attendance_BtnRetake" xml:space="preserve">
+    <value>Chụp lại</value>
+  </data>
+  <data name="Attendance_PhotoGuide" xml:space="preserve">
+    <value>Hãy để khuôn mặt của bạn nằm trong khung hình.</value>
+  </data>
+  <data name="Attendance_ClearSearch" xml:space="preserve">
+    <value>Xóa tìm kiếm</value>
+  </data>
+  <data name="Attendance_Err_NoPhotoIn" xml:space="preserve">
+    <value>Bắt buộc phải chụp ảnh khi chấm công vào làm!</value>
+  </data>
+  <data name="Attendance_Err_NoPhotoOut" xml:space="preserve">
+    <value>Bắt buộc phải chụp ảnh khi chấm công tan làm!</value>
+  </data>
+  <data name="Attendance_Err_NoEmployee" xml:space="preserve">
+    <value>Tài khoản của bạn chưa được liên kết với hồ sơ nhân viên.</value>
+  </data>
+  <data name="Attendance_Err_NoShift" xml:space="preserve">
+    <value>Bạn không có lịch làm việc (đã được duyệt) trong hôm nay!</value>
+  </data>
+  <data name="Attendance_Err_TooEarlyIn" xml:space="preserve">
+    <value>Chưa đến giờ chấm công ca {0}! Bạn chỉ được phép chấm công trước giờ làm {1} phút.</value>
+  </data>
+  <data name="Attendance_Err_TooLateIn" xml:space="preserve">
+    <value>Bạn đã đến quá muộn cho ca {0}! Hệ thống chỉ cho phép đi muộn tối đa {1} phút.</value>
+  </data>
+  <data name="Attendance_Err_AlreadyCompleted" xml:space="preserve">
+    <value>Bạn đã hoàn thành chấm công cho ca '{0}' rồi!</value>
+  </data>
+  <data name="Attendance_Err_NoGPS" xml:space="preserve">
+    <value>Không thể xác định vị trí của bạn. Vui lòng bật định vị GPS trên thiết bị để tiếp tục.</value>
+  </data>
+  <data name="Attendance_Err_FakeGPS" xml:space="preserve">
+    <value>Phát hiện vị trí GPS bất thường (0m / Trùng khớp vị trí tĩnh). Vui lòng di chuyển hoặc tắt phần mềm giả lập GPS.</value>
+  </data>
+  <data name="Attendance_Err_MinDistance" xml:space="preserve">
+    <value>Vị trí không hợp lệ! Bạn đang cách chi nhánh {0} khoảng {1}m (Nhỏ hơn khoảng cách tối thiểu cho phép {2}m).</value>
+  </data>
+  <data name="Attendance_Err_MaxRadius" xml:space="preserve">
+    <value>Vị trí không hợp lệ! Bạn đang cách chi nhánh {0} khoảng {1}m (Vượt quá bán kính cho phép {2}m).</value>
+  </data>
+  <data name="Attendance_Err_NotCheckedIn" xml:space="preserve">
+    <value>Bạn chưa chấm công vào làm (hoặc không có ca)!</value>
+  </data>
+  <data name="Attendance_Err_AlreadyCheckedOut" xml:space="preserve">
+    <value>Bạn đã chấm công tan làm cho ca này rồi!</value>
+  </data>
+  <data name="Attendance_Err_TooEarlyOut" xml:space="preserve">
+    <value>Chưa đến giờ tan làm! Bạn chỉ được phép chấm công về sớm nhất vào lúc {0} (Sớm tối đa {1} phút trước khi kết thúc ca {2}).</value>
+  </data>
+  <data name="Attendance_WarningNoShift" xml:space="preserve">
+    <value>Bạn chưa đăng ký ca làm.</value>
+  </data>
+  <data name="Attendance_GPSLoading" xml:space="preserve">
+    <value>Đang xác định vị trí GPS...</value>
+  </data>
+  <data name="Attendance_CamLoading" xml:space="preserve">
+    <value>Đang bật Camera...</value>
+  </data>
+  <data name="Attendance_CamError" xml:space="preserve">
+    <value>Không thể bật Camera. Hãy cho phép quyền truy cập!</value>
+  </data>
+  <data name="Attendance_PhotoCheckIn" xml:space="preserve">
+    <value>Ảnh Check-in</value>
+  </data>
+  <data name="Attendance_PhotoCheckOut" xml:space="preserve">
+    <value>Ảnh Check-out</value>
+  </data>
 </root>

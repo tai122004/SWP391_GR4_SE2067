@@ -103,6 +103,13 @@ namespace RWPM.Infrastructure.Data
                 .HasForeignKey(x => x.Username)
                 .OnDelete(DeleteBehavior.Restrict);
             #endregion
+            #region AttendanceAdjustmentHistory
+            modelBuilder.Entity<AttendanceAdjustmentHistory>()
+                .HasOne(x => x.AttendanceRecord)
+                .WithMany(x => x.AdjustmentHistories)
+                .HasForeignKey(x => x.AttendanceRecordId)
+                .OnDelete(DeleteBehavior.Cascade);
+            #endregion
         }
 
         public DbSet<Acc> Acc { get; set; } = default!;
@@ -112,7 +119,7 @@ namespace RWPM.Infrastructure.Data
         public DbSet<Shift> Shift { get; set; } = default!;
 
         public DbSet<AttendanceRecord> AttendanceRecord { get; set; } = default!;
-
+        public DbSet<AttendanceAdjustmentHistory> AttendanceAdjustmentHistory { get; set; } = default!;
         public DbSet<ShiftRegistration> ShiftRegistration { get; set; } = default!;
 
         //public DbSet<IdCounter> IdCounter { get; set; } = default!;

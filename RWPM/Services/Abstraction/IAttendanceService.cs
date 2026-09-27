@@ -11,6 +11,7 @@ namespace RWPM.Services.Abstraction
         Task<AttendanceRecord> CheckOutAsync(string username, double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null);
         Task<List<AttendanceRecord>> GetHistoryAsync(string username);
         Task<List<AttendanceRecord>> GetAllHistoryAsync(string? searchQuery = null);
+        Task AdjustAttendanceAsync(int recordId, TimeSpan? newCheckIn, TimeSpan? newCheckOut, string reason, string modifierUsername);
         Task DeleteRecordAsync(int attendanceId);
     }
 }

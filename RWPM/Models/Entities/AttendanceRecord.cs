@@ -43,5 +43,9 @@ namespace RWPM.Models.Entities
 
         [ForeignKey("ShiftId")]
         public virtual Shift? Shift { get; set; }
+
+        public bool IsAdjusted { get; set; } = false;
+
+        public virtual ICollection<AttendanceAdjustmentHistory> AdjustmentHistories { get; set; } = new List<AttendanceAdjustmentHistory>();
     }
 }

@@ -429,4 +429,88 @@
   <data name="Dropdown_SelectStore" xml:space="preserve">
     <value>--- Select store ---</value>
   </data>
+  <data name="Attendance_ShiftCol" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="Attendance_PhotoCol" xml:space="preserve">
+    <value>Proof Photo</value>
+  </data>
+  <data name="Attendance_DistanceCol" xml:space="preserve">
+    <value>GPS Distance</value>
+  </data>
+  <data name="Attendance_PhotoTitle" xml:space="preserve">
+    <value>Take a live photo (Required)</value>
+  </data>
+  <data name="Attendance_BtnCapture" xml:space="preserve">
+    <value>Capture</value>
+  </data>
+  <data name="Attendance_BtnRetake" xml:space="preserve">
+    <value>Retake</value>
+  </data>
+  <data name="Attendance_PhotoGuide" xml:space="preserve">
+    <value>Please keep your face within the frame.</value>
+  </data>
+  <data name="Attendance_ClearSearch" xml:space="preserve">
+    <value>Clear Search</value>
+  </data>
+  <data name="Attendance_Err_NoPhotoIn" xml:space="preserve">
+    <value>A photo is required when checking in!</value>
+  </data>
+  <data name="Attendance_Err_NoPhotoOut" xml:space="preserve">
+    <value>A photo is required when checking out!</value>
+  </data>
+  <data name="Attendance_Err_NoEmployee" xml:space="preserve">
+    <value>Your account is not linked to an employee profile.</value>
+  </data>
+  <data name="Attendance_Err_NoShift" xml:space="preserve">
+    <value>You don't have any approved shifts for today!</value>
+  </data>
+  <data name="Attendance_Err_TooEarlyIn" xml:space="preserve">
+    <value>It's not time to check into shift {0}! You can only check in {1} minutes before the shift starts.</value>
+  </data>
+  <data name="Attendance_Err_TooLateIn" xml:space="preserve">
+    <value>You are too late for shift {0}! The system only allows a maximum delay of {1} minutes.</value>
+  </data>
+  <data name="Attendance_Err_AlreadyCompleted" xml:space="preserve">
+    <value>You have already completed attendance for shift '{0}'!</value>
+  </data>
+  <data name="Attendance_Err_NoGPS" xml:space="preserve">
+    <value>Unable to determine your location. Please enable GPS to proceed.</value>
+  </data>
+  <data name="Attendance_Err_FakeGPS" xml:space="preserve">
+    <value>Abnormal GPS location detected (0m / Exact static match). Please move or disable GPS emulator.</value>
+  </data>
+  <data name="Attendance_Err_MinDistance" xml:space="preserve">
+    <value>Invalid location! You are about {1}m away from {0} (Less than the minimum allowed distance of {2}m).</value>
+  </data>
+  <data name="Attendance_Err_MaxRadius" xml:space="preserve">
+    <value>Invalid location! You are about {1}m away from {0} (Exceeds the allowed radius of {2}m).</value>
+  </data>
+  <data name="Attendance_Err_NotCheckedIn" xml:space="preserve">
+    <value>You haven't checked in (or have no shift)!</value>
+  </data>
+  <data name="Attendance_Err_AlreadyCheckedOut" xml:space="preserve">
+    <value>You have already checked out for this shift!</value>
+  </data>
+  <data name="Attendance_Err_TooEarlyOut" xml:space="preserve">
+    <value>Not time to leave yet! The earliest you can check out is {0} (Max {1} mins before end of shift {2}).</value>
+  </data>
+  <data name="Attendance_WarningNoShift" xml:space="preserve">
+    <value>You haven't registered for any shift.</value>
+  </data>
+  <data name="Attendance_GPSLoading" xml:space="preserve">
+    <value>Determining GPS location...</value>
+  </data>
+  <data name="Attendance_CamLoading" xml:space="preserve">
+    <value>Starting camera...</value>
+  </data>
+  <data name="Attendance_CamError" xml:space="preserve">
+    <value>Cannot start camera. Please allow camera permissions!</value>
+  </data>
+  <data name="Attendance_PhotoCheckIn" xml:space="preserve">
+    <value>Check-in Photo</value>
+  </data>
+  <data name="Attendance_PhotoCheckOut" xml:space="preserve">
+    <value>Check-out Photo</value>
+  </data>
 </root>
