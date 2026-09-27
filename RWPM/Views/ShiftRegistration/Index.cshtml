@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
 @using RWPM.Resources.Shared
 
 @{
@@ -74,24 +74,24 @@
 
                             <select id="filterEmployeeStatus" class="tanca-select">
                                 <option value="active">@ShiftRegistrationResource.ActiveEmployees</option>
-                                <option value="inactive">Nhân viên đã nghỉ</option>
+                                <option value="inactive">@SharedResource.ResourceManager.GetString("Shift_InactiveEmployees")</option>
                             </select>
                         </div>
 
                         <!-- Right side controls -->
                         <div class="d-flex align-items-center gap-2">
-                            <button class="tanca-btn" onclick="fetchEvents()" title="Làm mới"><i class="fas fa-sync-alt"></i></button>
+                            <button class="tanca-btn" onclick="fetchEvents()" title="@SharedResource.ResourceManager.GetString("Shift_Refresh")"><i class="fas fa-sync-alt"></i></button>
                             @if (ViewBag.IsManager)
                             {
-                                <button class="tanca-btn" title="Cảnh báo"><i class="fas fa-exclamation-triangle"></i></button>
-                                <button class="tanca-btn" title="Công cụ"><i class="fas fa-tools"></i></button>
-                                <button class="tanca-btn" title="Cài đặt"><i class="fas fa-cog"></i></button>
+                                <button class="tanca-btn" title="@SharedResource.ResourceManager.GetString("Shift_Warning")"><i class="fas fa-exclamation-triangle"></i></button>
+                                <button class="tanca-btn" title="@SharedResource.ResourceManager.GetString("Shift_Tools")"><i class="fas fa-tools"></i></button>
+                                <button class="tanca-btn" title="@SharedResource.ResourceManager.GetString("Shift_Settings")"><i class="fas fa-cog"></i></button>
                                 <button class="btn btn-sm btn-success mb-0 ms-2" onclick="openCreateModal(new Date())" style="border-radius: 8px; padding: 8px 16px;">@ShiftRegistrationResource.CreateShift</button>
                             }
                             else
                             {
-                                <button class="btn btn-sm btn-outline-primary mb-0 ms-2" onclick="copyPreviousWeek()" style="border-radius: 8px; padding: 8px 16px;"><i class="fas fa-copy"></i> Sao chép tuần trước</button>
-                                <button class="btn btn-sm btn-success mb-0 ms-2" onclick="syncWeeklySchedule()" style="border-radius: 8px; padding: 8px 16px;"><i class="fas fa-save"></i> Đăng ký tuần</button>
+                                <button class="btn btn-sm btn-outline-primary mb-0 ms-2" onclick="copyPreviousWeek()" style="border-radius: 8px; padding: 8px 16px;"><i class="fas fa-copy"></i> @SharedResource.ResourceManager.GetString("Shift_CopyPrev")</button>
+                                <button class="btn btn-sm btn-success mb-0 ms-2" onclick="syncWeeklySchedule()" style="border-radius: 8px; padding: 8px 16px;"><i class="fas fa-save"></i> @SharedResource.ResourceManager.GetString("Shift_RegisterWeek")</button>
                             }
                         </div>
                     </div>
@@ -112,11 +112,11 @@
                     
                     <!-- Legend -->
                     <div class="d-flex justify-content-center gap-4 py-3 mt-2 flex-wrap" style="font-size: 12px; border-top: 1px solid #e9ecef;">
-                        <span class="d-flex align-items-center gap-1"><i class="far fa-circle text-secondary"></i> Chưa đến ca</span>
-                        <span class="d-flex align-items-center gap-1"><i class="far fa-circle text-success"></i> Chấm công đúng giờ</span>
-                        <span class="d-flex align-items-center gap-1"><i class="far fa-circle text-warning"></i> Vào trễ, ra sớm</span>
-                        <span class="d-flex align-items-center gap-1"><i class="far fa-circle text-danger"></i> Chưa vào/ra ca</span>
-                        <span class="d-flex align-items-center gap-1"><i class="far fa-circle text-primary"></i> Nghỉ phép</span>
+                        <span class="d-flex align-items-center gap-1"><i class="far fa-circle text-secondary"></i> @SharedResource.ResourceManager.GetString("Shift_NotArrived")</span>
+                        <span class="d-flex align-items-center gap-1"><i class="far fa-circle text-success"></i> @SharedResource.ResourceManager.GetString("Shift_OnTime")</span>
+                        <span class="d-flex align-items-center gap-1"><i class="far fa-circle text-warning"></i> @SharedResource.ResourceManager.GetString("Shift_LateEarly")</span>
+                        <span class="d-flex align-items-center gap-1"><i class="far fa-circle text-danger"></i> @SharedResource.ResourceManager.GetString("Shift_NotChecked")</span>
+                        <span class="d-flex align-items-center gap-1"><i class="far fa-circle text-primary"></i> @SharedResource.ResourceManager.GetString("Shift_OnLeave")</span>
                     </div>
                 </div>
             </div>
@@ -324,7 +324,7 @@
                 <span class="input-group-text bg-light border-end-0" style="border-radius: 8px 0 0 8px;"><i class="fas fa-search text-muted"></i></span>
                 <input type="text" class="form-control bg-light border-start-0 ps-0" id="searchShiftInput" placeholder="@ShiftRegistrationResource.SearchBtn" onkeyup="filterShifts(this.value)" style="border-radius: 0 8px 8px 0; box-shadow: none;">
             </div>
-            <button type="button" class="btn btn-sm btn-outline-success mb-0 text-nowrap" style="border-radius: 8px;"><i class="fas fa-sync-alt"></i> Tải lại ca</button>
+            <button type="button" class="btn btn-sm btn-outline-success mb-0 text-nowrap" style="border-radius: 8px;"><i class="fas fa-sync-alt"></i> @SharedResource.ResourceManager.GetString("Shift_Reload")</button>
         </div>
 
         <form id="shiftForm">
@@ -437,7 +437,7 @@
             {
                 <text>
                 // If not manager, just add the current user as one row (if we had the ID, but we can rely on backend returning only their events)
-                employeesList = [{ id: 'me', name: 'Tôi' }];
+                employeesList = [{ id: 'me', name: '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_Me"))' }];
                 </text>
             }
 
@@ -468,7 +468,7 @@
                 });
 
                 if (selectedShifts.length === 0) {
-                    alert('Vui lòng chọn ít nhất một ca làm việc.');
+                    alert('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrSelectOne"))');
                     return;
                 }
 
@@ -498,11 +498,11 @@
                             fetchEvents();
                             $('#shiftForm')[0].reset();
                         } else {
-                            alert(res.message || 'Có lỗi xảy ra.');
+                            alert(res.message || '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrOccurred"))');
                         }
                     },
                     error: function(err) {
-                        alert('@Html.Raw(ShiftRegistrationResource.ErrorPrefix)' + (err.responseJSON?.message || err.responseText || 'Lỗi hệ thống'));
+                        alert('@Html.Raw(ShiftRegistrationResource.ErrorPrefix)' + (err.responseJSON?.message || err.responseText || '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_SysError"))'));
                     }
                 });
             });
@@ -589,12 +589,12 @@
             let weekEnd = new Date(currentWeekStart);
             weekEnd.setDate(currentWeekStart.getDate() + 6);
             
-            // Format: Tuần 39 - 2026 (Calculate week number)
+            // Format: @Html.Raw(SharedResource.ResourceManager.GetString("Shift_Week"))39 - 2026 (Calculate week number)
             let firstDayOfYear = new Date(currentWeekStart.getFullYear(), 0, 1);
             let pastDaysOfYear = (currentWeekStart - firstDayOfYear) / 86400000;
             let weekNum = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 
-            $('#currentWeekDisplay').text('Tuần ' + weekNum + ' - ' + currentWeekStart.getFullYear());
+            $('#currentWeekDisplay').text('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_Week"))' + weekNum + ' - ' + currentWeekStart.getFullYear());
 
             renderHeader();
         }
@@ -613,7 +613,7 @@
                 }
                 $('#gridHeaderRow').html(tr);
             } else {
-                let tr = '<th class="emp-col" style="text-align: center; vertical-align: middle;">Ca làm việc</th>';
+                let tr = '<th class="emp-col" style="text-align: center; vertical-align: middle;">@SharedResource.ResourceManager.GetString("Shift_Shift")</th>';
                 let tempDate = new Date(currentWeekStart);
                 let days = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
                 
@@ -661,7 +661,7 @@
                     renderGrid(events);
                 },
                 error: function() {
-                    alert('Lỗi tải dữ liệu ca làm việc');
+                    alert('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrLoadShift"))');
                 }
             });
         }
@@ -683,7 +683,7 @@
                         }
                     });
                     empsToRender = Object.values(uniqueEmps);
-                    if (empsToRender.length === 0) empsToRender = [{ id: '', name: 'Bạn chưa có ca làm' }];
+                    if (empsToRender.length === 0) empsToRender = [{ id: '', name: '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_NoShifts"))' }];
                 } else if (selectedEmpId) {
                     empsToRender = employeesList.filter(e => e.id == selectedEmpId);
                 }
@@ -764,8 +764,8 @@
                         if (dayEvent) {
                             let isApproved = dayEvent.statusName !== "Pending";
                             let disabled = isApproved ? "disabled" : "";
-                            let label = isApproved ? "<br><small class='text-success fw-bold'>Đã duyệt</small>" : "<br><small class='text-warning'>Chờ duyệt</small>";
-                            let titleStr = isApproved ? "Ca này đã được duyệt, bạn không thể thay đổi." : "";
+                            let label = isApproved ? "<br><small class='text-success fw-bold'>@SharedResource.ResourceManager.GetString("Shift_Approved")</small>" : "<br><small class='text-warning'>@SharedResource.ResourceManager.GetString("Shift_Pending")</small>";
+                            let titleStr = isApproved ? "@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ApprovedCannotChange"))" : "";
                             tbody += `
                                 <td class="shift-cell" style="text-align: center; vertical-align: middle;" title="${titleStr}">
                                     <input type="checkbox" class="form-check-input weekly-shift-cb" style="width: 22px; height: 22px; cursor: pointer; border-color: #00b14f;" 
@@ -780,8 +780,8 @@
                             today.setHours(0,0,0,0);
                             let cellDateObj = new Date(tempDate);
                             let disabled = cellDateObj < today ? "disabled" : "";
-                            let label = cellDateObj < today ? "<br><small class='text-muted'>Quá hạn</small>" : "";
-                            let titleStr = cellDateObj < today ? "Không thể đăng ký ca trong quá khứ." : "";
+                            let label = cellDateObj < today ? "<br><small class='text-muted'>@SharedResource.ResourceManager.GetString("Shift_Overdue")</small>" : "";
+                            let titleStr = cellDateObj < today ? "@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrPast"))" : "";
 
                             tbody += `
                                 <td class="shift-cell" style="text-align: center; vertical-align: middle;" title="${titleStr}">
@@ -841,12 +841,12 @@
                 },
                 success: function(res) {
                     if (res.success) {
-                        alert('Đăng ký tuần thành công!');
+                        alert('@SharedResource.ResourceManager.GetString("Shift_RegisterWeek") thành công!');
                         fetchEvents();
                     }
                 },
                 error: function(err) {
-                    alert('Lỗi: ' + (err.responseJSON?.message || err.responseText || 'Lỗi hệ thống'));
+                    alert('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrPrefix"))' + (err.responseJSON?.message || err.responseText || '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_SysError"))'));
                 }
             });
         }
@@ -869,7 +869,7 @@
                 },
                 success: function(events) {
                     if (events.length === 0) {
-                        alert('Không có ca làm việc nào trong tuần trước để sao chép.');
+                        alert('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrNoPrevShifts"))');
                         return;
                     }
                     
@@ -896,10 +896,10 @@
                         }
                     });
 
-                    alert(`Đã sao chép ${checkedCount} ca hợp lệ. Vui lòng bấm 'Đăng ký tuần' để lưu lại.`);
+                    alert(`Đã sao chép ${checkedCount} ca hợp lệ. Vui lòng bấm '@SharedResource.ResourceManager.GetString("Shift_RegisterWeek")' để lưu lại.`);
                 },
                 error: function() {
-                    alert('Lỗi tải dữ liệu tuần trước');
+                    alert('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrLoadPrev"))');
                 }
             });
         }
@@ -943,7 +943,7 @@
                     let firstEmp = employeesList[0];
                     if (firstEmp.id === 'me') {
                         $('#EmployeeId').val(0);
-                        $('#modalEmpName').text('Tôi');
+                        $('#modalEmpName').text('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_Me"))');
                     } else {
                         $('#EmployeeId').val(firstEmp.id);
                         $('#modalEmpName').text(firstEmp.name);
@@ -994,7 +994,7 @@
                     }
                 },
                 error: function(err) {
-                    alert('Lỗi: ' + (err.responseJSON?.message || err.responseText));
+                    alert('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrPrefix"))' + (err.responseJSON?.message || err.responseText));
                 }
             });
         }
@@ -1016,7 +1016,7 @@
                     }
                 },
                 error: function(err) {
-                    alert('Lỗi: ' + (err.responseJSON?.message || err.responseText));
+                    alert('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrPrefix"))' + (err.responseJSON?.message || err.responseText));
                 }
             });
         }

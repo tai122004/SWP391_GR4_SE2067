@@ -459,8 +459,8 @@
 
                 // Add Layer Control
                 L.control.layers({
-                    "Bản đồ Google": googleStreets,
-                    "Bản đồ OpenStreetMap": osmLayer
+                    "@Html.Raw(SharedResource.ResourceManager.GetString("Store_MapGoogle"))": googleStreets,
+                    "@Html.Raw(SharedResource.ResourceManager.GetString("Store_MapOSM"))": osmLayer
                 }).addTo(map);
 
                 // Marker Pin
