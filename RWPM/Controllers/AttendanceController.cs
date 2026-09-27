@@ -44,24 +44,16 @@ namespace RWPM.Controllers
                     .Select(sr => sr.ShiftId)
                     .ToListAsync();
 
+                var completedShiftIds = await _context.AttendanceRecord
+                    .Where(r => r.Username == username && r.Date == today && r.CheckOutTime.HasValue)
+                    .Select(r => r.ShiftId)
+                    .ToListAsync();
+
                 var allTodayShifts = await _context.Set<RWPM.Models.Entities.Shift>()
-                    .Where(s => s.IsActive && registeredShiftIds.Contains(s.ShiftId))
+                    .Where(s => s.IsActive && registeredShiftIds.Contains(s.ShiftId) && !completedShiftIds.Contains(s.ShiftId))
                     .ToListAsync();
                     
-                var now = DateTime.Now.TimeOfDay;
-                var validShifts = new List<RWPM.Models.Entities.Shift>();
-                foreach(var s in allTodayShifts)
-                {
-                    int lThreshold = s.LateThresholdMinutes ?? RWPM.Common.Constants.ShiftDefaults.LateThresholdMinutes;
-                    var start1Late = s.StartTime.Add(TimeSpan.FromMinutes(lThreshold));
-                    
-                    bool isExpired = now > start1Late;
-
-                    if (!isExpired) {
-                        validShifts.Add(s);
-                    }
-                }
-                ViewBag.ActiveShifts = validShifts;
+                ViewBag.ActiveShifts = allTodayShifts;
             }
             else
             {
@@ -130,6 +122,29 @@ namespace RWPM.Controllers
             {
                 await _attendanceService.DeleteRecordAsync(id);
                 TempData["SuccessMessage"] = SharedResource.ResourceManager.GetString("Notification_DeletedSuccessfully");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin,HR,SuperAdmin")]
+        public async Task<IActionResult> Adjust(int recordId, TimeSpan? newCheckInTime, TimeSpan? newCheckOutTime, string reason)
+        {
+            try
+            {
+                var username = User.Identity?.Name ?? "System";
+                if (string.IsNullOrWhiteSpace(reason))
+                {
+                    throw new Exception("Lý do điều chỉnh không được để trống!");
+                }
+
+                await _attendanceService.AdjustAttendanceAsync(recordId, newCheckInTime, newCheckOutTime, reason, username);
+                TempData["SuccessMessage"] = "Điều chỉnh chấm công thành công!";
             }
             catch (Exception ex)
             {

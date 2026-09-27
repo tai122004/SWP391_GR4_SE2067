@@ -5,9 +5,16 @@
     var todayRecord = ViewBag.TodayRecord as RWPM.Models.Entities.AttendanceRecord;
     bool isAdmin = ViewBag.IsAdmin ?? false;
     string searchQuery = ViewBag.SearchQuery as string;
-    bool canCheckIn = todayRecord == null;
+    
+    var activeShifts = ViewBag.ActiveShifts as List<RWPM.Models.Entities.Shift>;
+    var todayRecords = Model?.Where(x => x.Date == DateTime.Today).ToList();
+    bool hasCompletedShiftToday = todayRecords != null && todayRecords.Any(x => x.CheckOutTime.HasValue);
+    
     bool canCheckOut = todayRecord != null && todayRecord.CheckInTime.HasValue && !todayRecord.CheckOutTime.HasValue;
-    bool isCompleted = todayRecord != null && todayRecord.CheckOutTime.HasValue;
+    bool canCheckIn = !canCheckOut && activeShifts != null && activeShifts.Count > 0;
+    bool isFullyCompleted = !canCheckOut && !canCheckIn && hasCompletedShiftToday;
+    
+    var empList = ViewBag.Employees as List<RWPM.Models.Entities.Acc>;
 }
 
 <div>
@@ -35,53 +42,46 @@
 
                 @if (!isAdmin)
                 {
-                    @if (isCompleted)
+                    if (isFullyCompleted)
                     {
+                        var lastCompleted = todayRecords?.Where(x => x.CheckOutTime.HasValue).OrderByDescending(x => x.CheckOutTime).FirstOrDefault();
                         <div class="alert alert-info small text-start">
-                            <i class="bi bi-check-circle-fill text-success me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_Completed")
+                            <i class="bi bi-check-circle-fill text-success me-1"></i> Hoàn thành toàn bộ ca làm hôm nay!
                             <hr class="my-2"/>
-                            <strong>@SharedResource.ResourceManager.GetString("Attendance_CheckInTime")</strong> @todayRecord?.CheckInTime?.ToString(@"hh\:mm") <br />
-                            <strong>@SharedResource.ResourceManager.GetString("Attendance_CheckOutTime")</strong> @todayRecord?.CheckOutTime?.ToString(@"hh\:mm")
+                            <strong>@SharedResource.ResourceManager.GetString("Attendance_CheckInTime")</strong> @lastCompleted?.CheckInTime?.ToString(@"hh\:mm") <br />
+                            <strong>@SharedResource.ResourceManager.GetString("Attendance_CheckOutTime")</strong> @lastCompleted?.CheckOutTime?.ToString(@"hh\:mm")
                         </div>
                     }
-                    else
+                    else if (canCheckIn || canCheckOut)
                     {
-                        var activeShifts = ViewBag.ActiveShifts as List<RWPM.Models.Entities.Shift>;
-                        if (canCheckIn && (activeShifts == null || activeShifts.Count == 0))
-                        {
-                            <div class="alert alert-warning small py-2 text-start">
-                                <i class="bi bi-exclamation-triangle-fill text-warning me-1"></i> Bạn chưa đăng ký ca làm.
-                            </div>
-                        }
-
                         <div id="gpsStatus" class="alert alert-info small py-1 mb-2 d-none">
-                            <i class="bi bi-geo-alt spinner-grow spinner-grow-sm me-1"></i> Đang xác định vị trí GPS...
+                            <i class="bi bi-geo-alt spinner-grow spinner-grow-sm me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_GPSLoading")
                         </div>
 
                         <form id="attendanceForm" method="post" enctype="multipart/form-data" class="d-grid gap-2">
                             <input type="hidden" name="userLatitude" id="userLatitude" />
                             <input type="hidden" name="userLongitude" id="userLongitude" />
                             <div class="mb-3 text-center">
-                                <label class="form-label small fw-semibold text-danger"><i class="bi bi-camera"></i> Chụp ảnh hiện trường (Bắt buộc)</label>
+                                <label class="form-label small fw-semibold text-danger"><i class="bi bi-camera"></i> @SharedResource.ResourceManager.GetString("Attendance_PhotoTitle")</label>
                                 
                                 <div id="camera-container" class="position-relative bg-dark rounded overflow-hidden mx-auto mb-2" style="width: 100%; max-width: 320px; aspect-ratio: 3/4; display: flex; align-items: center; justify-content: center;">
                                     <video id="camera-stream" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
                                     <img id="camera-preview" style="width: 100%; height: 100%; object-fit: cover; display: none;" />
-                                    <div id="camera-loading" class="text-white small position-absolute top-50 start-50 translate-middle">Đang bật Camera...</div>
+                                    <div id="camera-loading" class="text-white small position-absolute top-50 start-50 translate-middle">@SharedResource.ResourceManager.GetString("Attendance_CamLoading")</div>
                                 </div>
                                 
                                 <div class="d-flex justify-content-center gap-2 mb-2">
                                     <button type="button" id="btnCapture" class="btn btn-sm btn-primary">
-                                        <i class="bi bi-camera-fill"></i> Chụp ảnh
+                                        <i class="bi bi-camera-fill"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnCapture")
                                     </button>
                                     <button type="button" id="btnRetake" class="btn btn-sm btn-outline-secondary" style="display: none;">
-                                        <i class="bi bi-arrow-counterclockwise"></i> Chụp lại
+                                        <i class="bi bi-arrow-counterclockwise"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnRetake")
                                     </button>
                                 </div>
                                 
                                 <input type="file" name="photo" id="photoInput" accept="image/jpeg" class="d-none" required />
                                 <canvas id="camera-canvas" class="d-none"></canvas>
-                                <div class="form-text" style="font-size: 0.75rem;">Hãy để khuôn mặt của bạn nằm trong khung hình.</div>
+                                <div class="form-text" style="font-size: 0.75rem;">@SharedResource.ResourceManager.GetString("Attendance_PhotoGuide")</div>
                             </div>
 
                             <button type="button" id="btnCheckIn" asp-action="CheckIn" class="btn btn-sm btn-outline-success" disabled="@(canCheckIn ? null : "disabled")">
@@ -91,7 +91,12 @@
                                 <i class="bi bi-box-arrow-right me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnCheckOut")
                             </button>
                         </form>
-                        }
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning small py-2 text-start">
+                            <i class="bi bi-exclamation-triangle-fill text-warning me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_WarningNoShift")
+                        </div>
                     }
                 }
                 else
@@ -100,9 +105,6 @@
                         <i class="bi bi-info-circle me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_AdminNoNeed")
                     </div>
                     
-                    @{
-                        var empList = ViewBag.Employees as List<RWPM.Models.Entities.Acc>;
-                    }
                     @if (empList != null && empList.Count > 0)
                     {
                         <div class="mt-3 text-start">
@@ -149,7 +151,7 @@
                                 <i class="bi bi-funnel me-1"></i> @SharedResource.ResourceManager.GetString("Search")
                             </button>
                             <a href="@Url.Action("Index")" class="btn btn-sm btn-outline-secondary">
-                                <i class="bi bi-arrow-clockwise"></i> Xóa tìm kiếm
+                                <i class="bi bi-arrow-clockwise"></i> @SharedResource.ResourceManager.GetString("Attendance_ClearSearch")
                             </a>
                         </div>
                     </form>
@@ -167,11 +169,11 @@
                             {
                                 <th class="text-nowrap">@SharedResource.ResourceManager.GetString("Attendance_EmployeeCol")</th>
                             }
-                            <th class="text-nowrap text-center">Ca làm việc</th>
+                            <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_ShiftCol")</th>
                             <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_CheckInCol")</th>
                             <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_CheckOutCol")</th>
-                            <th class="text-nowrap text-center"><i class="bi bi-image me-1"></i>Ảnh minh chứng</th>
-                            <th class="text-nowrap text-center"><i class="bi bi-geo-alt me-1"></i>Khoảng cách GPS</th>
+                            <th class="text-nowrap text-center"><i class="bi bi-image me-1"></i>@SharedResource.ResourceManager.GetString("Attendance_PhotoCol")</th>
+                            <th class="text-nowrap text-center"><i class="bi bi-geo-alt me-1"></i>@SharedResource.ResourceManager.GetString("Attendance_DistanceCol")</th>
                             @if (isAdmin)
                             {
                                 <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Button_Action")</th>
@@ -190,18 +192,24 @@
                                         <td>@item.Username</td>
                                     }
                                     <td class="text-center">@(item.Shift != null ? item.Shift.ShiftName : "-")</td>
-                                    <td class="text-center text-success fw-bold">@(item.CheckInTime.HasValue ? item.CheckInTime.Value.ToString(@"hh\:mm") : "--:--")</td>
-                                    <td class="text-center text-danger fw-bold">@(item.CheckOutTime.HasValue ? item.CheckOutTime.Value.ToString(@"hh\:mm") : "--:--")</td>
+                                    <td class="text-center text-success fw-bold">
+                                        @(item.CheckInTime.HasValue ? item.CheckInTime.Value.ToString(@"hh\:mm") : "--:--")
+                                        @if (item.IsAdjusted) { <i class="bi bi-info-circle text-primary ms-1" title="Đã được quản lý điều chỉnh"></i> }
+                                    </td>
+                                    <td class="text-center text-danger fw-bold">
+                                        @(item.CheckOutTime.HasValue ? item.CheckOutTime.Value.ToString(@"hh\:mm") : "--:--")
+                                        @if (item.IsAdjusted) { <i class="bi bi-info-circle text-primary ms-1" title="Đã được quản lý điều chỉnh"></i> }
+                                    </td>
                                     <td class="text-center">
                                         @if (!string.IsNullOrEmpty(item.CheckInPhotoPath))
                                         {
-                                            <a href="@item.CheckInPhotoPath" target="_blank" title="Ảnh Check-in">
+                                            <a href="@item.CheckInPhotoPath" target="_blank" title="@SharedResource.ResourceManager.GetString("Attendance_PhotoCheckIn")">
                                                 <img src="@item.CheckInPhotoPath" class="img-thumbnail" style="width: 40px; height: 40px; object-fit: cover;" />
                                             </a>
                                         }
                                         @if (!string.IsNullOrEmpty(item.CheckOutPhotoPath))
                                         {
-                                            <a href="@item.CheckOutPhotoPath" target="_blank" title="Ảnh Check-out">
+                                            <a href="@item.CheckOutPhotoPath" target="_blank" title="@SharedResource.ResourceManager.GetString("Attendance_PhotoCheckOut")">
                                                 <img src="@item.CheckOutPhotoPath" class="img-thumbnail ms-1" style="width: 40px; height: 40px; object-fit: cover;" />
                                             </a>
                                         }
@@ -221,11 +229,47 @@
                                     @if (isAdmin)
                                     {
                                         <td class="text-center">
+                                            <button type="button" class="btn btn-sm btn-outline-warning" title="Điều chỉnh" data-bs-toggle="modal" data-bs-target="#adjustModal_@item.AttendanceId">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </button>
                                             <form method="post" asp-action="Delete" asp-route-id="@item.AttendanceId" onsubmit="return confirm('@SharedResource.ResourceManager.GetString("ConfirmDelete")');" class="d-inline">
                                                 <button type="submit" class="btn btn-sm btn-outline-danger" title="@SharedResource.ResourceManager.GetString("Button_Delete")">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
+                                            
+                                            <!-- Modal Adjust -->
+                                            <div class="modal fade" id="adjustModal_@item.AttendanceId" tabindex="-1" aria-labelledby="adjustModalLabel_@item.AttendanceId" aria-hidden="true">
+                                              <div class="modal-dialog">
+                                                <div class="modal-content text-start">
+                                                  <form method="post" asp-action="Adjust">
+                                                      <input type="hidden" name="recordId" value="@item.AttendanceId" />
+                                                      <div class="modal-header">
+                                                        <h5 class="modal-title" id="adjustModalLabel_@item.AttendanceId">Điều chỉnh chấm công - @item.Username</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                      </div>
+                                                      <div class="modal-body">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Giờ Check-in mới (Hiện tại: @(item.CheckInTime.HasValue ? item.CheckInTime.Value.ToString(@"hh\:mm") : "Trống"))</label>
+                                                            <input type="time" class="form-control" name="newCheckInTime" value="@(item.CheckInTime.HasValue ? item.CheckInTime.Value.ToString(@"hh\:mm") : "")" />
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Giờ Check-out mới (Hiện tại: @(item.CheckOutTime.HasValue ? item.CheckOutTime.Value.ToString(@"hh\:mm") : "Trống"))</label>
+                                                            <input type="time" class="form-control" name="newCheckOutTime" value="@(item.CheckOutTime.HasValue ? item.CheckOutTime.Value.ToString(@"hh\:mm") : "")" />
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Lý do điều chỉnh <span class="text-danger">*</span></label>
+                                                            <textarea class="form-control" name="reason" rows="2" required placeholder="Nhập lý do chi tiết..."></textarea>
+                                                        </div>
+                                                      </div>
+                                                      <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                                        <button type="submit" class="btn btn-warning">Lưu thay đổi</button>
+                                                      </div>
+                                                  </form>
+                                                </div>
+                                              </div>
+                                            </div>
                                         </td>
                                     }
                                 </tr>
@@ -325,7 +369,7 @@
                 })
                 .catch(function (err) {
                     console.error("Lỗi Camera:", err);
-                    cameraLoading.innerHTML = "Không thể bật Camera. Hãy cho phép quyền truy cập!";
+                    cameraLoading.innerHTML = '@SharedResource.ResourceManager.GetString("Attendance_CamError")';
                 });
 
             if (btnCapture) {

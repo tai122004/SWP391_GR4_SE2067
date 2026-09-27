@@ -43,7 +43,7 @@ namespace RWPM.Services.Implementation
         {
             if (photo == null || photo.Length == 0)
             {
-                throw new Exception("Bắt buộc phải chụp ảnh khi chấm công vào làm!");
+                throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_NoPhotoIn"));
             }
 
             var today = DateTime.Today;
@@ -51,29 +51,29 @@ namespace RWPM.Services.Implementation
             var employee = await _context.Employee.Include(e => e.Store).FirstOrDefaultAsync(e => e.Username == username);
             if (employee == null)
             {
-                throw new Exception("Tài khoản của bạn chưa được liên kết với hồ sơ nhân viên.");
+                throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_NoEmployee"));
             }
 
-            // Lấy danh sách các ca đã đăng ký và được duyệt trong ngày
-            var registeredShifts = await _context.Set<ShiftRegistration>()
+            var registrations = await _context.Set<ShiftRegistration>()
                 .Include(sr => sr.Shift)
+                .Include(sr => sr.Store)
                 .Where(sr => sr.EmployeeId == employee.EmployeeId && sr.WorkDate == today && sr.Status == RWPM.Common.Enums.RegistrationStatus.Approved && sr.Shift.IsActive)
-                .Select(sr => sr.Shift)
                 .ToListAsync();
 
-            if (!registeredShifts.Any())
+            if (!registrations.Any())
             {
-                throw new Exception("Bạn không có lịch làm việc (đã được duyệt) trong hôm nay!");
+                throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_NoShift"));
             }
 
             var now = DateTime.Now.TimeOfDay;
-            RWPM.Models.Entities.Shift shift = null;
+            ShiftRegistration matchedRegistration = null;
             bool isValid = false;
             string errorMessage = "Không nằm trong thời gian cho phép chấm công.";
 
             // Tìm ca phù hợp nhất với giờ hiện tại
-            foreach (var s in registeredShifts)
+            foreach (var reg in registrations)
             {
+                var s = reg.Shift;
                 int eCheckIn = s.EarlyCheckInMinutes ?? RWPM.Common.Constants.ShiftDefaults.EarlyCheckInMinutes;
                 int lThreshold = s.LateThresholdMinutes ?? RWPM.Common.Constants.ShiftDefaults.LateThresholdMinutes;
 
@@ -82,27 +82,26 @@ namespace RWPM.Services.Implementation
 
                 if (now >= start1Early && now <= start1Late)
                 {
-                    shift = s;
+                    matchedRegistration = reg;
                     isValid = true;
                     break;
                 }
-
-            // Xóa StartTime2 vì model đã không còn
             }
 
-            if (shift == null)
+            if (matchedRegistration == null)
             {
-                shift = registeredShifts.OrderBy(s => Math.Abs((now - s.StartTime).TotalMinutes)).First();
+                matchedRegistration = registrations.OrderBy(r => Math.Abs((now - r.Shift.StartTime).TotalMinutes)).First();
+                var shift = matchedRegistration.Shift;
                 
                 int eCheckIn = shift.EarlyCheckInMinutes ?? RWPM.Common.Constants.ShiftDefaults.EarlyCheckInMinutes;
                 int lThreshold = shift.LateThresholdMinutes ?? RWPM.Common.Constants.ShiftDefaults.LateThresholdMinutes;
                 if (now < shift.StartTime.Subtract(TimeSpan.FromMinutes(eCheckIn)))
                 {
-                    errorMessage = $"Chưa đến giờ chấm công ca {shift.ShiftName}! Bạn chỉ được phép chấm công trước giờ làm {eCheckIn} phút.";
+                    errorMessage = string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_TooEarlyIn"), shift.ShiftName, eCheckIn);
                 }
                 else
                 {
-                    errorMessage = $"Bạn đã đến quá muộn cho ca {shift.ShiftName}! Hệ thống chỉ cho phép đi muộn tối đa {lThreshold} phút.";
+                    errorMessage = string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_TooLateIn"), shift.ShiftName, lThreshold);
                 }
             }
 
@@ -111,53 +110,58 @@ namespace RWPM.Services.Implementation
                 throw new Exception(errorMessage);
             }
 
-            var record = await GetTodayRecordAsync(username, shift.ShiftId);
-            if (record != null)
+            var matchedShift = matchedRegistration.Shift;
+            var targetStore = matchedRegistration.Store ?? employee.Store; // Fallback to employee store if null
+
+            var existingRecordForShift = await _context.AttendanceRecord
+                .FirstOrDefaultAsync(r => r.Username == username && r.Date == today && r.ShiftId == matchedShift.ShiftId);
+
+            if (existingRecordForShift != null)
             {
-                throw new Exception("Bạn đã chấm công vào làm cho ca này rồi!");
+                throw new Exception(string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_AlreadyCompleted"), matchedShift.ShiftName));
             }
 
 
             // GeoLocation Validation
             double? calculatedDistance = null;
-            if (employee?.Store != null && employee.Store.Latitude.HasValue && employee.Store.Longitude.HasValue)
+            if (targetStore != null && targetStore.Latitude.HasValue && targetStore.Longitude.HasValue)
             {
                 if (!userLatitude.HasValue || !userLongitude.HasValue)
                 {
-                    throw new Exception("Không thể xác định vị trí của bạn. Vui lòng bật định vị GPS trên thiết bị để chấm công.");
+                    throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_NoGPS"));
                 }
 
                 double distance = GeoLocationHelper.CalculateDistanceMeters(
                     userLatitude.Value, userLongitude.Value, 
-                    employee.Store.Latitude.Value, employee.Store.Longitude.Value);
+                    targetStore.Latitude.Value, targetStore.Longitude.Value);
 
                 // Anti-Fake GPS check (0m or exact database match)
-                if (distance < 0.1 || (Math.Abs(userLatitude.Value - employee.Store.Latitude.Value) < 1e-6 && Math.Abs(userLongitude.Value - employee.Store.Longitude.Value) < 1e-6))
+                if (distance < 0.1 || (Math.Abs(userLatitude.Value - targetStore.Latitude.Value) < 1e-6 && Math.Abs(userLongitude.Value - targetStore.Longitude.Value) < 1e-6))
                 {
-                    throw new Exception("Phát hiện vị trí GPS bất thường (0m / Trùng khớp vị trí tĩnh). Vui lòng di chuyển hoặc tắt phần mềm giả lập GPS.");
+                    throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_FakeGPS"));
                 }
 
-                int minDistance = employee.Store.MinAllowedDistanceMeters;
+                int minDistance = targetStore.MinAllowedDistanceMeters;
                 if (minDistance > 0 && distance < minDistance)
                 {
-                    throw new Exception($"Vị trí không hợp lệ! Bạn đang cách chi nhánh {employee.Store.StoreName} khoảng {Math.Round(distance)}m (Nhỏ hơn khoảng cách tối thiểu cho phép {minDistance}m).");
+                    throw new Exception(string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_MinDistance"), targetStore.StoreName, Math.Round(distance), minDistance));
                 }
 
-                int allowedRadius = employee.Store.AllowedRadiusMeters > 0 ? employee.Store.AllowedRadiusMeters : 50;
+                int allowedRadius = targetStore.AllowedRadiusMeters > 0 ? targetStore.AllowedRadiusMeters : 50;
                 if (distance > allowedRadius)
                 {
-                    throw new Exception($"Vị trí không hợp lệ! Bạn đang cách chi nhánh {employee.Store.StoreName} khoảng {Math.Round(distance)}m (Vượt quá bán kính cho phép {allowedRadius}m).");
+                    throw new Exception(string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_MaxRadius"), targetStore.StoreName, Math.Round(distance), allowedRadius));
                 }
 
                 calculatedDistance = distance;
             }
 
-            record = new AttendanceRecord
+            var record = new AttendanceRecord
             {
                 Username = username,
                 Date = today,
                 CheckInTime = now,
-                ShiftId = shift.ShiftId,
+                ShiftId = matchedShift.ShiftId,
                 CheckInLatitude = userLatitude,
                 CheckInLongitude = userLongitude,
                 DistanceMeters = calculatedDistance,
@@ -174,18 +178,18 @@ namespace RWPM.Services.Implementation
         {
             if (photo == null || photo.Length == 0)
             {
-                throw new Exception("Bắt buộc phải chụp ảnh khi chấm công tan làm!");
+                throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_NoPhotoOut"));
             }
 
             var record = await GetTodayRecordAsync(username);
             
             if (record == null)
             {
-                throw new Exception("Bạn chưa chấm công vào làm (hoặc không có ca)!");
+                throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_NotCheckedIn"));
             }
             if (record.CheckOutTime.HasValue)
             {
-                throw new Exception("Bạn đã chấm công tan làm cho ca này rồi!");
+                throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_AlreadyCheckedOut"));
             }
 
             // Time Validation for CheckOut (Early Check-Out)
@@ -198,39 +202,46 @@ namespace RWPM.Services.Implementation
 
                 if (now < minCheckOutTime)
                 {
-                    throw new Exception($"Chưa đến giờ tan làm! Bạn chỉ được phép chấm công về sớm nhất vào lúc {minCheckOutTime:hh\\:mm} (Sớm tối đa {earlyCheckOutMinutes} phút trước khi kết thúc ca {shift.EndTime:hh\\:mm}).");
+                    throw new Exception(string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_TooEarlyOut"), minCheckOutTime.ToString(@"hh\:mm"), earlyCheckOutMinutes, shift.EndTime.ToString(@"hh\:mm")));
                 }
             }
 
             // GeoLocation Validation for CheckOut
             var employee = await _context.Employee.Include(e => e.Store).FirstOrDefaultAsync(e => e.Username == username);
-            if (employee?.Store != null && employee.Store.Latitude.HasValue && employee.Store.Longitude.HasValue)
+            
+            var registration = await _context.Set<ShiftRegistration>()
+                .Include(sr => sr.Store)
+                .FirstOrDefaultAsync(sr => employee != null && sr.EmployeeId == employee.EmployeeId && sr.WorkDate == DateTime.Today && sr.ShiftId == record.ShiftId && sr.Status == RWPM.Common.Enums.RegistrationStatus.Approved);
+            
+            var targetStore = registration?.Store ?? employee?.Store;
+
+            if (targetStore != null && targetStore.Latitude.HasValue && targetStore.Longitude.HasValue)
             {
                 if (!userLatitude.HasValue || !userLongitude.HasValue)
                 {
-                    throw new Exception("Không thể xác định vị trí của bạn. Vui lòng bật định vị GPS trên thiết bị để kết thúc ca làm việc.");
+                    throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_NoGPS"));
                 }
 
                 double distance = GeoLocationHelper.CalculateDistanceMeters(
                     userLatitude.Value, userLongitude.Value, 
-                    employee.Store.Latitude.Value, employee.Store.Longitude.Value);
+                    targetStore.Latitude.Value, targetStore.Longitude.Value);
 
                 // Anti-Fake GPS check
-                if (distance < 0.1 || (Math.Abs(userLatitude.Value - employee.Store.Latitude.Value) < 1e-6 && Math.Abs(userLongitude.Value - employee.Store.Longitude.Value) < 1e-6))
+                if (distance < 0.1 || (Math.Abs(userLatitude.Value - targetStore.Latitude.Value) < 1e-6 && Math.Abs(userLongitude.Value - targetStore.Longitude.Value) < 1e-6))
                 {
-                    throw new Exception("Phát hiện vị trí GPS bất thường (0m / Trùng khớp vị trí tĩnh). Vui lòng di chuyển hoặc tắt phần mềm giả lập GPS.");
+                    throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_FakeGPS"));
                 }
 
-                int minDistance = employee.Store.MinAllowedDistanceMeters;
+                int minDistance = targetStore.MinAllowedDistanceMeters;
                 if (minDistance > 0 && distance < minDistance)
                 {
-                    throw new Exception($"Vị trí không hợp lệ! Bạn đang cách chi nhánh {employee.Store.StoreName} khoảng {Math.Round(distance)}m (Nhỏ hơn khoảng cách tối thiểu cho phép {minDistance}m).");
+                    throw new Exception(string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_MinDistance"), targetStore.StoreName, Math.Round(distance), minDistance));
                 }
 
-                int allowedRadius = employee.Store.AllowedRadiusMeters > 0 ? employee.Store.AllowedRadiusMeters : 50;
+                int allowedRadius = targetStore.AllowedRadiusMeters > 0 ? targetStore.AllowedRadiusMeters : 50;
                 if (distance > allowedRadius)
                 {
-                    throw new Exception($"Vị trí không hợp lệ! Bạn đang cách chi nhánh {employee.Store.StoreName} khoảng {Math.Round(distance)}m (Vượt quá bán kính cho phép {allowedRadius}m).");
+                    throw new Exception(string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_MaxRadius"), targetStore.StoreName, Math.Round(distance), allowedRadius));
                 }
             }
 
@@ -261,6 +272,39 @@ namespace RWPM.Services.Implementation
                 query = query.Where(x => x.Username.Contains(searchQuery));
             }
             return await query.OrderByDescending(x => x.Date).ToListAsync();
+        }
+
+        public async Task AdjustAttendanceAsync(int recordId, TimeSpan? newCheckIn, TimeSpan? newCheckOut, string reason, string modifierUsername)
+        {
+            var record = await _context.AttendanceRecord
+                .FirstOrDefaultAsync(r => r.AttendanceId == recordId);
+
+            if (record == null)
+            {
+                throw new Exception("Bản ghi chấm công không tồn tại!");
+            }
+
+            // Ghi lại lịch sử
+            var history = new AttendanceAdjustmentHistory
+            {
+                AttendanceRecordId = recordId,
+                OldCheckInTime = record.CheckInTime,
+                OldCheckOutTime = record.CheckOutTime,
+                NewCheckInTime = newCheckIn,
+                NewCheckOutTime = newCheckOut,
+                Reason = reason,
+                ModifiedBy = modifierUsername,
+                ModifiedAt = DateTime.Now
+            };
+
+            _context.AttendanceAdjustmentHistory.Add(history);
+
+            // Cập nhật bản ghi gốc
+            record.CheckInTime = newCheckIn;
+            record.CheckOutTime = newCheckOut;
+            record.IsAdjusted = true;
+
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteRecordAsync(int attendanceId)
