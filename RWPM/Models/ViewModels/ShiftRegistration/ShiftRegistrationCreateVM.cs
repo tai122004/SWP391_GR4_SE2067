@@ -12,6 +12,8 @@ namespace RWPM.Models.ViewModels.ShiftRegistration
         [Required(ErrorMessage = "Shift is required.")]
         public int ShiftId { get; set; }
 
+        public List<int>? ShiftIds { get; set; }
+
         [Required(ErrorMessage = "Date is required.")]
         [DataType(DataType.Date)]
         public DateTime WorkDate { get; set; }

@@ -63,6 +63,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ShiftRegistrationResource.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Shared\RequestResource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>RequestResource.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -89,6 +94,10 @@
     <EmbeddedResource Update="Resources\Shared\ShiftRegistrationResource.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ShiftRegistrationResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Shared\RequestResource.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>RequestResource.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 
