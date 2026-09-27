@@ -49,9 +49,13 @@ namespace RWPM.Models.ViewModels.Store
         public int? ManagerId { get; set; }
 
         [Display(Name = "Giờ mở cửa")]
+        [DataType(DataType.Time)]
+        [DisplayFormat(DataFormatString = @"{0:hh\:mm}", ApplyFormatInEditMode = true)]
         public TimeSpan? OpeningTime { get; set; }
 
         [Display(Name = "Giờ đóng cửa")]
+        [DataType(DataType.Time)]
+        [DisplayFormat(DataFormatString = @"{0:hh\:mm}", ApplyFormatInEditMode = true)]
         public TimeSpan? ClosingTime { get; set; }
 
         public StoreEditVM() { }

@@ -85,13 +85,15 @@
                 </div>
 
                 <div class="col-md-6 mb-3">
-                    <label class="form-label" asp-for="OpeningTime">Giờ mở cửa chi nhánh</label>
+                    <label class="form-label" asp-for="OpeningTime">Giờ mở cửa (Ví dụ: 7h30)</label>
                     <input class="form-control" asp-for="OpeningTime" type="time" />
+                    <small class="text-muted">Thời gian bắt đầu mở cửa (Ví dụ: 07:30 / 7h30)</small>
                     <span asp-validation-for="OpeningTime" class="text-danger"></span>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label" asp-for="ClosingTime">Giờ đóng cửa chi nhánh</label>
+                    <label class="form-label" asp-for="ClosingTime">Giờ đóng cửa (Ví dụ: 22h30)</label>
                     <input class="form-control" asp-for="ClosingTime" type="time" />
+                    <small class="text-muted">Thời gian kết thúc đóng cửa (Ví dụ: 22:30 / 22h30)</small>
                     <span asp-validation-for="ClosingTime" class="text-danger"></span>
                 </div>
 

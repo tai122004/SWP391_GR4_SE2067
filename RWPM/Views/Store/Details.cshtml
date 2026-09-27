@@ -1,11 +1,24 @@
 @model RWPM.Models.ViewModels.Store.StoreDetailsVM
+@using System.Globalization
 
 @{
     ViewData["Title"] = $"Chi tiết Chi nhánh - {Model.Store.StoreName}";
     var store = Model.Store;
+    var openStr = store.OpeningTime.HasValue ? $"{store.OpeningTime.Value.Hours:D2}h{store.OpeningTime.Value.Minutes:D2}" : "";
+    var closeStr = store.ClosingTime.HasValue ? $"{store.ClosingTime.Value.Hours:D2}h{store.ClosingTime.Value.Minutes:D2}" : "";
 }
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    /* Prevent Dark Mode browser extensions from darkening map tiles */
+    .leaflet-tile {
+        filter: none !important;
+        -webkit-filter: none !important;
+    }
+    .leaflet-container {
+        background-color: #e5e3df !important;
+    }
+</style>
 
 <div class="container-fluid px-0">
     <!-- Header Page -->
@@ -83,11 +96,11 @@
                         <div class="fs-5 fw-bold mt-1">
                             @if (store.OpeningTime.HasValue && store.ClosingTime.HasValue)
                             {
-                                <span>@store.OpeningTime.Value.ToString(@"hh\:mm") - @store.ClosingTime.Value.ToString(@"hh\:mm")</span>
+                                <span>@openStr - @closeStr</span>
                             }
                             else
                             {
-                                <span>Cả ngày</span>
+                                <span>Cả ngày (24/7)</span>
                             }
                         </div>
                     </div>
@@ -144,6 +157,21 @@
                                     <td class="fw-bold">@store.StoreName</td>
                                 </tr>
                                 <tr>
+                                    <td class="text-muted fw-semibold">Giờ Hoạt Động:</td>
+                                    <td>
+                                        @if (store.OpeningTime.HasValue && store.ClosingTime.HasValue)
+                                        {
+                                            <span class="badge bg-light text-dark border fs-6">
+                                                <i class="bi bi-clock me-1 text-primary"></i>Mở cửa: <strong>@openStr</strong> &mdash; Đóng cửa: <strong>@closeStr</strong>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-light text-dark border">Cả ngày (24/7)</span>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td class="text-muted fw-semibold">Số Điện Thoại:</td>
                                     <td>@(string.IsNullOrWhiteSpace(store.Phone) ? "-" : store.Phone)</td>
                                 </tr>
@@ -170,7 +198,6 @@
                                         </span>
                                     </td>
                                 </tr>
-
                                 <tr>
                                     <td class="text-muted fw-semibold">Trạng Thái Chi Nhánh:</td>
                                     <td>
@@ -184,6 +211,21 @@
                                         }
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td class="text-muted fw-semibold">Ngày Tạo Hệ Thống:</td>
+                                    <td class="small text-muted">
+                                        <i class="bi bi-calendar-event me-1"></i>@store.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")
+                                    </td>
+                                </tr>
+                                @if (store.UpdatedDate.HasValue)
+                                {
+                                    <tr>
+                                        <td class="text-muted fw-semibold">Cập Nhật Cuối:</td>
+                                        <td class="small text-muted">
+                                            <i class="bi bi-pencil-clock me-1"></i>@store.UpdatedDate.Value.ToString("dd/MM/yyyy HH:mm:ss")
+                                        </td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -196,9 +238,9 @@
                         </h5>
                         @if (store.Latitude.HasValue && store.Longitude.HasValue)
                         {
-                            <div id="detailsMap" style="height: 280px;" class="rounded border"></div>
-                            <div class="small text-muted mt-2 d-flex justify-content-between">
-                                <span><i class="bi bi-pin-map-fill text-danger me-1"></i> Tọa độ: @store.Latitude.Value.ToString("F6"), @store.Longitude.Value.ToString("F6")</span>
+                            <div id="detailsMap" style="height: 320px;" class="rounded border shadow-sm"></div>
+                            <div class="small text-muted mt-2 d-flex justify-content-between align-items-center">
+                                <span><i class="bi bi-pin-map-fill text-danger me-1"></i> Tọa độ: @store.Latitude.Value.ToString("F6", CultureInfo.InvariantCulture), @store.Longitude.Value.ToString("F6", CultureInfo.InvariantCulture)</span>
                                 <span class="badge bg-light text-dark border">Bán kính: @store.AllowedRadiusMeters m</span>
                             </div>
                         }
@@ -286,11 +328,13 @@
                             {
                                 foreach (var shift in Model.Shifts)
                                 {
+                                    var sStart = $"{shift.StartTime.Hours:D2}h{shift.StartTime.Minutes:D2}";
+                                    var sEnd = $"{shift.EndTime.Hours:D2}h{shift.EndTime.Minutes:D2}";
                                     <tr>
                                         <td class="fw-bold text-primary">@shift.ShiftCode</td>
                                         <td>@shift.ShiftName</td>
                                         <td class="fw-semibold text-info-emphasis">
-                                            <i class="bi bi-clock me-1"></i>@shift.StartTime.ToString(@"hh\:mm") - @shift.EndTime.ToString(@"hh\:mm")
+                                            <i class="bi bi-clock me-1"></i>@sStart - @sEnd
                                         </td>
                                         <td>@shift.BreakMinutes phút</td>
                                         <td>
@@ -337,13 +381,15 @@
                             {
                                 foreach (var rec in Model.TodayAttendanceRecords)
                                 {
+                                    var cinStr = rec.CheckInTime.HasValue ? $"{rec.CheckInTime.Value.Hours:D2}h{rec.CheckInTime.Value.Minutes:D2}" : "-";
+                                    var coutStr = rec.CheckOutTime.HasValue ? $"{rec.CheckOutTime.Value.Hours:D2}h{rec.CheckOutTime.Value.Minutes:D2}" : "-";
                                     <tr>
                                         <td class="fw-bold">@rec.Username</td>
                                         <td class="text-success fw-bold">
-                                            @(rec.CheckInTime.HasValue ? rec.CheckInTime.Value.ToString(@"hh\:mm\:ss") : "-")
+                                            @cinStr
                                         </td>
                                         <td class="text-danger fw-bold">
-                                            @(rec.CheckOutTime.HasValue ? rec.CheckOutTime.Value.ToString(@"hh\:mm\:ss") : "-")
+                                            @coutStr
                                         </td>
                                         <td>
                                             @(rec.DistanceMeters.HasValue ? $"{Math.Round(rec.DistanceMeters.Value, 1)}m" : "-")
@@ -379,25 +425,67 @@
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-                var lat = @store.Latitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
-                var lng = @store.Longitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                var lat = @store.Latitude.Value.ToString(CultureInfo.InvariantCulture);
+                var lng = @store.Longitude.Value.ToString(CultureInfo.InvariantCulture);
                 var radius = @(store.AllowedRadiusMeters > 0 ? store.AllowedRadiusMeters : 100);
 
-                var map = L.map('detailsMap').setView([lat, lng], 16);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                var mapContainer = document.getElementById('detailsMap');
+                if (!mapContainer) return;
+
+                var map = L.map('detailsMap', {
+                    center: [lat, lng],
+                    zoom: 16,
+                    zoomControl: true
+                });
+
+                // Google Streets Layer for high reliability
+                var googleStreets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                    maxZoom: 20,
+                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                    attribution: '&copy; Google Maps'
+                });
+
+                // OpenStreetMap Layer as fallback
+                var osmLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
                     attribution: '&copy; OpenStreetMap'
+                });
+
+                // Default layer
+                googleStreets.addTo(map);
+
+                // Add Layer Control
+                L.control.layers({
+                    "Bản đồ Google": googleStreets,
+                    "Bản đồ OpenStreetMap": osmLayer
                 }).addTo(map);
 
+                // Marker Pin
                 L.marker([lat, lng]).addTo(map)
                     .bindPopup("<b>@store.StoreName</b><br>@store.Address").openPopup();
 
+                // Circle Radius
                 L.circle([lat, lng], {
                     color: '#198754',
                     fillColor: '#198754',
-                    fillOpacity: 0.15,
+                    fillOpacity: 0.2,
                     radius: radius
                 }).addTo(map);
+
+                // Ensure map tiles load correctly after layout calculation
+                setTimeout(function () {
+                    map.invalidateSize();
+                }, 300);
+
+                // Recalculate tile sizes when switching to Info tab
+                var infoTabBtn = document.getElementById('info-tab');
+                if (infoTabBtn) {
+                    infoTabBtn.addEventListener('click', function () {
+                        setTimeout(function () {
+                            map.invalidateSize();
+                        }, 200);
+                    });
+                }
             });
         </script>
     }

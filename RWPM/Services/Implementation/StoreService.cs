@@ -111,10 +111,21 @@ namespace RWPM.Services.Implementation
             return new PaginationRes<global::Store>(data, searchObject.PageNumber, searchObject.PageSize, totalRecords);
         }
 
+        private static void NormalizeStoreTimes(global::Store entity)
+        {
+            if (entity.OpeningTime.HasValue && entity.ClosingTime.HasValue && entity.OpeningTime > entity.ClosingTime)
+            {
+                var temp = entity.OpeningTime;
+                entity.OpeningTime = entity.ClosingTime;
+                entity.ClosingTime = temp;
+            }
+        }
+
         public async Task<global::Store> CreateAsync(global::Store entity)
         {
             entity.StoreCode = entity.StoreCode.Trim();
             entity.StoreName = entity.StoreName.Trim();
+            NormalizeStoreTimes(entity);
 
             if (await ExistsByCodeAsync(entity.StoreCode))
             {
@@ -133,6 +144,7 @@ namespace RWPM.Services.Implementation
         {
             entity.StoreCode = entity.StoreCode.Trim();
             entity.StoreName = entity.StoreName.Trim();
+            NormalizeStoreTimes(entity);
 
             var existingStore = await GetRequiredByIdAsync(entity.StoreId);
 
@@ -207,6 +219,7 @@ namespace RWPM.Services.Implementation
                 .FirstOrDefaultAsync(x => x.StoreId == storeId);
 
             if (store == null) return null;
+            NormalizeStoreTimes(store);
 
             var employees = await _ctx.Employee.AsNoTracking()
                 .Include(e => e.Account)

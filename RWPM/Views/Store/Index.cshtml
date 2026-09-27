@@ -86,8 +86,10 @@
                                     </a>
                                     @if (store.OpeningTime.HasValue && store.ClosingTime.HasValue)
                                     {
+                                        var openStr = $"{store.OpeningTime.Value.Hours:D2}h{store.OpeningTime.Value.Minutes:D2}";
+                                        var closeStr = $"{store.ClosingTime.Value.Hours:D2}h{store.ClosingTime.Value.Minutes:D2}";
                                         <div class="small text-muted">
-                                            <i class="bi bi-clock me-1 text-info"></i>@store.OpeningTime.Value.ToString(@"hh\:mm") - @store.ClosingTime.Value.ToString(@"hh\:mm")
+                                            <i class="bi bi-clock me-1 text-info"></i>@openStr - @closeStr
                                         </div>
                                     }
                                 </td>
