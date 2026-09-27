@@ -106,5 +106,23 @@ namespace RWPM.Resources.Models {
                 return ResourceManager.GetString("Longitude", resourceCulture);
             }
         }
+
+        public static string ManagerId {
+            get {
+                return ResourceManager.GetString("ManagerId", resourceCulture);
+            }
+        }
+
+        public static string OpeningTime {
+            get {
+                return ResourceManager.GetString("OpeningTime", resourceCulture);
+            }
+        }
+
+        public static string ClosingTime {
+            get {
+                return ResourceManager.GetString("ClosingTime", resourceCulture);
+            }
+        }
     }
 }

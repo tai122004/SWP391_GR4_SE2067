@@ -43,15 +43,15 @@ namespace RWPM.Models.ViewModels.Store
         [Display(Name = "IsActive", ResourceType = typeof(Resources.Models.Store))]
         public bool IsActive { get; set; } = true;
 
-        [Display(Name = "Quản lý chi nhánh")]
+        [Display(Name = "ManagerId", ResourceType = typeof(Resources.Models.Store))]
         public int? ManagerId { get; set; }
 
-        [Display(Name = "Giờ mở cửa")]
+        [Display(Name = "OpeningTime", ResourceType = typeof(Resources.Models.Store))]
         [DataType(DataType.Time)]
         [DisplayFormat(DataFormatString = @"{0:hh\:mm}", ApplyFormatInEditMode = true)]
         public TimeSpan? OpeningTime { get; set; }
 
-        [Display(Name = "Giờ đóng cửa")]
+        [Display(Name = "ClosingTime", ResourceType = typeof(Resources.Models.Store))]
         [DataType(DataType.Time)]
         [DisplayFormat(DataFormatString = @"{0:hh\:mm}", ApplyFormatInEditMode = true)]
         public TimeSpan? ClosingTime { get; set; }

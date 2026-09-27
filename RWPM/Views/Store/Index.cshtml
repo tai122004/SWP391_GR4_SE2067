@@ -17,7 +17,7 @@
                 <i class="bi bi-shop text-primary me-2"></i>
                 @StoreSharedResource.Index_PageHeader
             </h4>
-            <div class="text-muted small">Quản lý danh sách chi nhánh và vị trí GPS</div>
+            <div class="text-muted small">@StoreSharedResource.Index_Subtitle</div>
         </div>
         <a asp-action="Create" class="btn btn-primary btn-sm px-3 shadow-sm">
             <i class="bi bi-plus-lg me-1"></i> @SharedResource.Button_Create
@@ -61,10 +61,10 @@
                     <tr>
                         <th class="text-nowrap">@StoreModelResource.StoreCode</th>
                         <th class="text-nowrap">@StoreModelResource.StoreName</th>
-                        <th class="text-nowrap"><i class="bi bi-person-badge text-primary me-1"></i>Quản lý</th>
+                        <th class="text-nowrap"><i class="bi bi-person-badge text-primary me-1"></i>@StoreSharedResource.Table_Manager</th>
                         <th class="text-nowrap">@StoreModelResource.Address</th>
                         <th class="text-nowrap">@StoreModelResource.Phone</th>
-                        <th class="text-nowrap text-center"><i class="bi bi-geo-alt"></i> GPS & Bán kính</th>
+                        <th class="text-nowrap text-center"><i class="bi bi-geo-alt"></i> @StoreSharedResource.Table_GeoLocation</th>
                         <th class="text-nowrap text-center">@StoreModelResource.IsActive</th>
                         <th class="text-nowrap text-center">@SharedResource.Button_Action</th>
                     </tr>
@@ -102,7 +102,7 @@
                                     }
                                     else
                                     {
-                                        <span class="text-muted small">Chưa chỉ định</span>
+                                        <span class="text-muted small">@StoreSharedResource.Unassigned</span>
                                     }
                                 </td>
                                 <td>@(string.IsNullOrWhiteSpace(store.Address) ? "-" : store.Address)</td>
@@ -111,13 +111,13 @@
                                     @if (store.Latitude.HasValue && store.Longitude.HasValue)
                                     {
                                         <span class="badge bg-success-subtle text-success border border-success-subtle mb-1">
-                                            <i class="bi bi-geo-alt-fill me-1"></i> Bán kính &le; @(store.AllowedRadiusMeters > 0 ? store.AllowedRadiusMeters : 100)m
+                                            <i class="bi bi-geo-alt-fill me-1"></i> @StoreSharedResource.Range &le; @(store.AllowedRadiusMeters > 0 ? store.AllowedRadiusMeters : 100)m
                                         </span>
                                     }
                                     else
                                     {
                                         <span class="badge bg-warning-subtle text-warning border border-warning-subtle mb-1">
-                                            <i class="bi bi-exclamation-triangle me-1"></i> Chưa có GPS
+                                            <i class="bi bi-exclamation-triangle me-1"></i> @StoreSharedResource.Badge_NoGPS
                                         </span>
                                     }
                                 </td>
@@ -131,7 +131,7 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group btn-action-group" role="group">
-                                        <a asp-action="Details" asp-route-id="@store.StoreId" class="btn btn-sm btn-outline-info" title="Xem Chi tiết & Dashboard">
+                                        <a asp-action="Details" asp-route-id="@store.StoreId" class="btn btn-sm btn-outline-info" title="@StoreSharedResource.Tooltip_ViewDetails">
                                             <i class="bi bi-eye"></i>
                                         </a>
                                         <a asp-action="Edit" asp-route-id="@store.StoreId" class="btn btn-sm btn-outline-primary" title="@SharedResource.Button_Edit">

@@ -1,8 +1,11 @@
 @model RWPM.Models.ViewModels.Store.StoreDetailsVM
 @using System.Globalization
+@using StoreModelResource = RWPM.Resources.Models.Store
+@using StoreSharedResource = RWPM.Resources.Shared.Store
+@using RWPM.Resources.Shared
 
 @{
-    ViewData["Title"] = $"Chi tiết Chi nhánh - {Model.Store.StoreName}";
+    ViewData["Title"] = $"{StoreSharedResource.Details_PageHeader} {Model.Store.StoreName}";
     var store = Model.Store;
     var openStr = store.OpeningTime.HasValue ? $"{store.OpeningTime.Value.Hours:D2}h{store.OpeningTime.Value.Minutes:D2}" : "";
     var closeStr = store.ClosingTime.HasValue ? $"{store.ClosingTime.Value.Hours:D2}h{store.ClosingTime.Value.Minutes:D2}" : "";
@@ -26,18 +29,18 @@
         <div>
             <h4 class="fw-bold text-dark d-flex align-items-center mb-1">
                 <i class="bi bi-shop text-primary me-2"></i>
-                Chi tiết Chi nhánh: <span class="text-primary ms-2">@store.StoreName (@store.StoreCode)</span>
+                @StoreSharedResource.Details_PageHeader <span class="text-primary ms-2">@store.StoreName (@store.StoreCode)</span>
             </h4>
             <div class="text-muted small">
-                <i class="bi bi-geo-alt me-1"></i>@(string.IsNullOrWhiteSpace(store.Address) ? "Chưa cập nhật địa chỉ" : store.Address)
+                <i class="bi bi-geo-alt me-1"></i>@(string.IsNullOrWhiteSpace(store.Address) ? StoreSharedResource.Details_UnsetAddress : store.Address)
             </div>
         </div>
         <div class="d-flex gap-2">
             <a asp-action="Edit" asp-route-id="@store.StoreId" class="btn btn-primary btn-sm px-3 shadow-sm">
-                <i class="bi bi-pencil-square me-1"></i> Chỉnh sửa
+                <i class="bi bi-pencil-square me-1"></i> @SharedResource.Button_Edit
             </a>
             <a asp-action="Index" class="btn btn-outline-secondary btn-sm px-3">
-                <i class="bi bi-arrow-left me-1"></i> Quay lại
+                <i class="bi bi-arrow-left me-1"></i> @SharedResource.Button_GoBack
             </a>
         </div>
     </div>
@@ -48,9 +51,9 @@
             <div class="card border-0 shadow-sm rounded-3 bg-primary text-white p-3">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <div class="small text-white-50 fw-semibold text-uppercase">Trưởng Chi Nhánh</div>
+                        <div class="small text-white-50 fw-semibold text-uppercase">@StoreSharedResource.KPI_Manager</div>
                         <div class="fs-5 fw-bold mt-1">
-                            @(store.Manager?.Account?.FullName ?? "Chưa chỉ định")
+                            @(store.Manager?.Account?.FullName ?? StoreSharedResource.Unassigned)
                         </div>
                     </div>
                     <div class="bg-white bg-opacity-25 rounded-circle p-3 d-flex align-items-center justify-content-center">
@@ -64,8 +67,8 @@
             <div class="card border-0 shadow-sm rounded-3 bg-success text-white p-3">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <div class="small text-white-50 fw-semibold text-uppercase">Nhân Sự Thuộc Chi Nhánh</div>
-                        <div class="fs-3 fw-bold mt-1">@Model.TotalEmployees <span class="fs-6 fw-normal text-white-50">người</span></div>
+                        <div class="small text-white-50 fw-semibold text-uppercase">@StoreSharedResource.KPI_TotalEmployees</div>
+                        <div class="fs-3 fw-bold mt-1">@Model.TotalEmployees <span class="fs-6 fw-normal text-white-50">@StoreSharedResource.Unit_People</span></div>
                     </div>
                     <div class="bg-white bg-opacity-25 rounded-circle p-3 d-flex align-items-center justify-content-center">
                         <i class="bi bi-people-fill fs-3"></i>
@@ -78,8 +81,8 @@
             <div class="card border-0 shadow-sm rounded-3 bg-info text-white p-3">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <div class="small text-white-50 fw-semibold text-uppercase">Điểm Danh Hôm Nay</div>
-                        <div class="fs-3 fw-bold mt-1">@Model.TodayPresentCount <span class="fs-6 fw-normal text-white-50">lượt</span></div>
+                        <div class="small text-white-50 fw-semibold text-uppercase">@StoreSharedResource.KPI_TodayAttendance</div>
+                        <div class="fs-3 fw-bold mt-1">@Model.TodayPresentCount <span class="fs-6 fw-normal text-white-50">@StoreSharedResource.Unit_Records</span></div>
                     </div>
                     <div class="bg-white bg-opacity-25 rounded-circle p-3 d-flex align-items-center justify-content-center">
                         <i class="bi bi-calendar-check-fill fs-3"></i>
@@ -92,7 +95,7 @@
             <div class="card border-0 shadow-sm rounded-3 bg-warning text-dark p-3">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <div class="small text-dark-50 fw-semibold text-uppercase">Giờ Hoạt Động</div>
+                        <div class="small text-dark-50 fw-semibold text-uppercase">@StoreSharedResource.KPI_OperatingHours</div>
                         <div class="fs-5 fw-bold mt-1">
                             @if (store.OpeningTime.HasValue && store.ClosingTime.HasValue)
                             {
@@ -100,7 +103,7 @@
                             }
                             else
                             {
-                                <span>Cả ngày (24/7)</span>
+                                <span>@StoreSharedResource.AllDayOperating</span>
                             }
                         </div>
                     </div>
@@ -116,22 +119,22 @@
     <ul class="nav nav-tabs modern-tabs mb-3" id="storeTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-item nav-link active fw-bold" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
-                <i class="bi bi-info-circle me-1"></i> Thông Tin & Bản Đồ GPS
+                <i class="bi bi-info-circle me-1"></i> @StoreSharedResource.Tab_InfoAndMap
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-item nav-link fw-bold" id="employee-tab" data-bs-toggle="tab" data-bs-target="#employee" type="button" role="tab">
-                <i class="bi bi-people me-1"></i> Danh Sách Nhân Viên (@Model.TotalEmployees)
+                <i class="bi bi-people me-1"></i> @StoreSharedResource.Tab_Employees (@Model.TotalEmployees)
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-item nav-link fw-bold" id="shift-tab" data-bs-toggle="tab" data-bs-target="#shift" type="button" role="tab">
-                <i class="bi bi-calendar-range me-1"></i> Ca Làm Việc Áp Dụng (@Model.ActiveShiftsCount)
+                <i class="bi bi-calendar-range me-1"></i> @StoreSharedResource.Tab_Shifts (@Model.ActiveShiftsCount)
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-item nav-link fw-bold" id="attendance-tab" data-bs-toggle="tab" data-bs-target="#attendance" type="button" role="tab">
-                <i class="bi bi-journal-check me-1"></i> Điểm Danh Hôm Nay (@Model.TodayPresentCount)
+                <i class="bi bi-journal-check me-1"></i> @StoreSharedResource.Tab_TodayAttendance (@Model.TodayPresentCount)
             </button>
         </li>
     </ul>
@@ -144,39 +147,39 @@
                 <div class="col-lg-6">
                     <div class="card border-0 shadow-sm rounded-3 h-100 p-3">
                         <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
-                            <i class="bi bi-card-checklist text-primary me-2"></i> Cấu Hình Chi Nhánh
+                            <i class="bi bi-card-checklist text-primary me-2"></i> @StoreSharedResource.Details_BranchConfig
                         </h5>
                         <table class="table table-borderless align-middle mb-0">
                             <tbody>
                                 <tr>
-                                    <td class="text-muted fw-semibold" style="width: 40%;">Mã Chi Nhánh:</td>
+                                    <td class="text-muted fw-semibold" style="width: 40%;">@StoreModelResource.StoreCode:</td>
                                     <td class="fw-bold text-primary">@store.StoreCode</td>
                                 </tr>
                                 <tr>
-                                    <td class="text-muted fw-semibold">Tên Chi Nhánh:</td>
+                                    <td class="text-muted fw-semibold">@StoreModelResource.StoreName:</td>
                                     <td class="fw-bold">@store.StoreName</td>
                                 </tr>
                                 <tr>
-                                    <td class="text-muted fw-semibold">Giờ Hoạt Động:</td>
+                                    <td class="text-muted fw-semibold">@StoreSharedResource.KPI_OperatingHours:</td>
                                     <td>
                                         @if (store.OpeningTime.HasValue && store.ClosingTime.HasValue)
                                         {
                                             <span class="badge bg-light text-dark border fs-6">
-                                                <i class="bi bi-clock me-1 text-primary"></i>Mở cửa: <strong>@openStr</strong> &mdash; Đóng cửa: <strong>@closeStr</strong>
+                                                <i class="bi bi-clock me-1 text-primary"></i>@StoreSharedResource.Details_OpenTimeLabel <strong>@openStr</strong> &mdash; @StoreSharedResource.Details_CloseTimeLabel <strong>@closeStr</strong>
                                             </span>
                                         }
                                         else
                                         {
-                                            <span class="badge bg-light text-dark border">Cả ngày (24/7)</span>
+                                            <span class="badge bg-light text-dark border">@StoreSharedResource.AllDayOperating</span>
                                         }
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="text-muted fw-semibold">Số Điện Thoại:</td>
+                                    <td class="text-muted fw-semibold">@StoreModelResource.Phone:</td>
                                     <td>@(string.IsNullOrWhiteSpace(store.Phone) ? "-" : store.Phone)</td>
                                 </tr>
                                 <tr>
-                                    <td class="text-muted fw-semibold">Quản Lý Phụ Trách:</td>
+                                    <td class="text-muted fw-semibold">@StoreSharedResource.KPI_Manager:</td>
                                     <td>
                                         @if (store.Manager != null && store.Manager.Account != null)
                                         {
@@ -186,33 +189,33 @@
                                         }
                                         else
                                         {
-                                            <span class="text-muted">Chưa chỉ định</span>
+                                            <span class="text-muted">@StoreSharedResource.Unassigned</span>
                                         }
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="text-muted fw-semibold">Bán Kính Chấm Công GPS:</td>
+                                    <td class="text-muted fw-semibold">@StoreSharedResource.Details_GPSRadius:</td>
                                     <td>
                                         <span class="badge bg-success-subtle text-success border border-success-subtle">
-                                            <i class="bi bi-broadcast me-1"></i> Cho phép &le; @store.AllowedRadiusMeters mét
+                                            <i class="bi bi-broadcast me-1"></i> @string.Format(StoreSharedResource.Details_AllowedDistance, store.AllowedRadiusMeters)
                                         </span>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="text-muted fw-semibold">Trạng Thái Chi Nhánh:</td>
+                                    <td class="text-muted fw-semibold">@StoreSharedResource.Details_BranchStatus:</td>
                                     <td>
                                         @if (store.IsActive)
                                         {
-                                            <span class="badge bg-success">Đang hoạt động</span>
+                                            <span class="badge bg-success">@SharedResource.ObjectStatus_IsActive</span>
                                         }
                                         else
                                         {
-                                            <span class="badge bg-secondary">Đã tạm dừng</span>
+                                            <span class="badge bg-secondary">@SharedResource.ObjectStatus_IsInactive</span>
                                         }
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="text-muted fw-semibold">Ngày Tạo Hệ Thống:</td>
+                                    <td class="text-muted fw-semibold">@StoreSharedResource.Details_CreatedDate:</td>
                                     <td class="small text-muted">
                                         <i class="bi bi-calendar-event me-1"></i>@store.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")
                                     </td>
@@ -220,7 +223,7 @@
                                 @if (store.UpdatedDate.HasValue)
                                 {
                                     <tr>
-                                        <td class="text-muted fw-semibold">Cập Nhật Cuối:</td>
+                                        <td class="text-muted fw-semibold">@StoreSharedResource.Details_UpdatedDate:</td>
                                         <td class="small text-muted">
                                             <i class="bi bi-pencil-clock me-1"></i>@store.UpdatedDate.Value.ToString("dd/MM/yyyy HH:mm:ss")
                                         </td>
@@ -234,21 +237,21 @@
                 <div class="col-lg-6">
                     <div class="card border-0 shadow-sm rounded-3 h-100 p-3">
                         <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
-                            <i class="bi bi-geo-alt-fill text-danger me-2"></i> Định Vị Bản Đồ GPS
+                            <i class="bi bi-geo-alt-fill text-danger me-2"></i> @StoreSharedResource.Details_GPSMapHeader
                         </h5>
                         @if (store.Latitude.HasValue && store.Longitude.HasValue)
                         {
                             <div id="detailsMap" style="height: 320px;" class="rounded border shadow-sm"></div>
                             <div class="small text-muted mt-2 d-flex justify-content-between align-items-center">
-                                <span><i class="bi bi-pin-map-fill text-danger me-1"></i> Tọa độ: @store.Latitude.Value.ToString("F6", CultureInfo.InvariantCulture), @store.Longitude.Value.ToString("F6", CultureInfo.InvariantCulture)</span>
-                                <span class="badge bg-light text-dark border">Bán kính: @store.AllowedRadiusMeters m</span>
+                                <span><i class="bi bi-pin-map-fill text-danger me-1"></i> @StoreSharedResource.Details_Coordinates @store.Latitude.Value.ToString("F6", CultureInfo.InvariantCulture), @store.Longitude.Value.ToString("F6", CultureInfo.InvariantCulture)</span>
+                                <span class="badge bg-light text-dark border">@StoreSharedResource.Range @store.AllowedRadiusMeters m</span>
                             </div>
                         }
                         else
                         {
                             <div class="alert alert-warning text-center my-auto">
                                 <i class="bi bi-exclamation-triangle fs-3 d-block mb-2"></i>
-                                Cửa hàng này chưa được thả ghim tọa độ GPS.
+                                @StoreSharedResource.Details_NoGPSAlert
                             </div>
                         }
                     </div>
@@ -263,12 +266,12 @@
                     <table class="table modern-table align-middle mb-0">
                         <thead>
                             <tr>
-                                <th>Mã NV</th>
-                                <th>Họ và Tên</th>
-                                <th>Email</th>
-                                <th>Số điện thoại</th>
-                                <th>Loại hợp đồng</th>
-                                <th>Trạng thái</th>
+                                <th>@StoreSharedResource.EmpTable_Code</th>
+                                <th>@StoreSharedResource.EmpTable_FullName</th>
+                                <th>@StoreSharedResource.EmpTable_Email</th>
+                                <th>@StoreSharedResource.EmpTable_Phone</th>
+                                <th>@StoreSharedResource.EmpTable_ContractType</th>
+                                <th>@StoreSharedResource.EmpTable_Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -287,11 +290,11 @@
                                         <td>
                                             @if (emp.IsActive)
                                             {
-                                                <span class="badge bg-success-subtle text-success border border-success-subtle">Đang làm việc</span>
+                                                <span class="badge bg-success-subtle text-success border border-success-subtle">@StoreSharedResource.EmpTable_Working</span>
                                             }
                                             else
                                             {
-                                                <span class="badge bg-secondary">Đã nghỉ việc</span>
+                                                <span class="badge bg-secondary">@StoreSharedResource.EmpTable_Resigned</span>
                                             }
                                         </td>
                                     </tr>
@@ -300,7 +303,7 @@
                             else
                             {
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted py-4">Chưa có nhân viên nào thuộc chi nhánh này.</td>
+                                    <td colspan="6" class="text-center text-muted py-4">@StoreSharedResource.EmpTable_Empty</td>
                                 </tr>
                             }
                         </tbody>
@@ -316,11 +319,11 @@
                     <table class="table modern-table align-middle mb-0">
                         <thead>
                             <tr>
-                                <th>Mã Ca</th>
-                                <th>Tên Ca Làm Việc</th>
-                                <th>Khung Giờ</th>
-                                <th>Phút Nghỉ Giữa Ca</th>
-                                <th>Phạm Vi Phân Ca</th>
+                                <th>@StoreSharedResource.ShiftTable_Code</th>
+                                <th>@StoreSharedResource.ShiftTable_Name</th>
+                                <th>@StoreSharedResource.ShiftTable_TimeFrame</th>
+                                <th>@StoreSharedResource.ShiftTable_BreakMinutes</th>
+                                <th>@StoreSharedResource.ShiftTable_Scope</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -336,15 +339,15 @@
                                         <td class="fw-semibold text-info-emphasis">
                                             <i class="bi bi-clock me-1"></i>@sStart - @sEnd
                                         </td>
-                                        <td>@shift.BreakMinutes phút</td>
+                                        <td>@shift.BreakMinutes @StoreSharedResource.Unit_Minutes</td>
                                         <td>
                                             @if (shift.IsTemplate)
                                             {
-                                                <span class="badge bg-info-subtle text-info border border-info-subtle">Ca mẫu toàn hệ thống</span>
+                                                <span class="badge bg-info-subtle text-info border border-info-subtle">@StoreSharedResource.ShiftScope_SystemTemplate</span>
                                             }
                                             else
                                             {
-                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Ca riêng chi nhánh</span>
+                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">@StoreSharedResource.ShiftScope_BranchSpecific</span>
                                             }
                                         </td>
                                     </tr>
@@ -353,7 +356,7 @@
                             else
                             {
                                 <tr>
-                                    <td colspan="5" class="text-center text-muted py-4">Chưa có ca làm việc nào được thiết lập.</td>
+                                    <td colspan="5" class="text-center text-muted py-4">@StoreSharedResource.ShiftTable_Empty</td>
                                 </tr>
                             }
                         </tbody>
@@ -369,11 +372,11 @@
                     <table class="table modern-table align-middle mb-0">
                         <thead>
                             <tr>
-                                <th>Tài khoản</th>
-                                <th>Giờ Check-in</th>
-                                <th>Giờ Check-out</th>
-                                <th>Khoảng Cách GPS</th>
-                                <th>Trạng Thái</th>
+                                <th>@StoreSharedResource.AttTable_Account</th>
+                                <th>@StoreSharedResource.AttTable_CheckIn</th>
+                                <th>@StoreSharedResource.AttTable_CheckOut</th>
+                                <th>@StoreSharedResource.AttTable_GPSDistance</th>
+                                <th>@StoreSharedResource.AttTable_Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -396,7 +399,7 @@
                                         </td>
                                         <td>
                                             <span class="badge bg-success-subtle text-success border border-success-subtle">
-                                                <i class="bi bi-check-circle me-1"></i>Hợp lệ
+                                                <i class="bi bi-check-circle me-1"></i>@StoreSharedResource.AttStatus_Valid
                                             </span>
                                         </td>
                                     </tr>
@@ -407,7 +410,7 @@
                                 <tr>
                                     <td colspan="5" class="text-center text-muted py-4">
                                         <i class="bi bi-calendar-x fs-3 d-block mb-2 text-warning"></i>
-                                        Hôm nay chưa có lượt chấm công nào tại chi nhánh này.
+                                        @StoreSharedResource.AttTable_Empty
                                     </td>
                                 </tr>
                             }

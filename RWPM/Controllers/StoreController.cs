@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using RWPM.Common;
 using RWPM.Common.Attributes;
+using RWPM.Common.Enums;
 using RWPM.Common.Exceptions;
 using RWPM.Common.Helper;
 using RWPM.Models.ViewModels.Store;
@@ -30,18 +31,29 @@ namespace RWPM.Controllers
 
         private async Task PopulateManagerSelectListAsync(int? selectedId = null)
         {
-            var employees = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync(
-                _ctx.Employee
-                    .AsNoTracking()
-                    .Include(e => e.Account)
-                    .Where(e => e.IsActive)
-                    .OrderBy(e => e.Account.FullName)
-                    .Select(e => new
-                    {
-                        Id = e.EmployeeId,
-                        Name = e.Account != null ? $"{e.Account.FullName} ({e.EmployeeCode})" : e.EmployeeCode
-                    })
-            );
+            var managerRoles = new[]
+            {
+                RWPM.Common.Enums.AccountRole.StoreManager,
+                RWPM.Common.Enums.AccountRole.Admin,
+                RWPM.Common.Enums.AccountRole.HR
+            };
+
+            var employees = await _ctx.Employee
+                .AsNoTracking()
+                .Include(e => e.Account)
+                .Where(e => e.IsActive && (
+                    (e.Account != null && managerRoles.Contains(e.Account.Role)) ||
+                    (selectedId.HasValue && e.EmployeeId == selectedId.Value)
+                ))
+                .OrderBy(e => e.Account.FullName)
+                .Select(e => new
+                {
+                    Id = e.EmployeeId,
+                    Name = e.Account != null 
+                        ? $"{e.Account.FullName} ({e.EmployeeCode} - {e.Account.Role.GetDisplayName()})" 
+                        : e.EmployeeCode
+                })
+                .ToListAsync();
 
             ViewBag.ManagerSelectList = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(employees, "Id", "Name", selectedId);
         }

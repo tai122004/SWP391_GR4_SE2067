@@ -69,31 +69,30 @@
         <span asp-validation-for="Phone" class="text-danger"></span>
     </div>
 
-    <!-- Nâng cấp chuẩn Tanca: Quản lý chi nhánh & Giờ hoạt động & Wi-Fi Chấm công -->
     <div class="card mb-3 border-primary">
         <div class="card-header bg-primary bg-opacity-10 fw-semibold text-primary">
-            <i class="bi bi-shield-check me-1"></i> Cấu Hình Quản Lý & Phương Thức Chấm Công Chi Nhánh
+            <i class="bi bi-shield-check me-1"></i> @StoreSharedResource.ConfigHeader_Management
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label" asp-for="ManagerId">Quản lý / Trưởng Chi nhánh</label>
+                    <label class="form-label" asp-for="ManagerId">@StoreModelResource.ManagerId</label>
                     <select class="form-select" asp-for="ManagerId" asp-items="ViewBag.ManagerSelectList">
-                        <option value="">-- Chọn Quản lý Chi nhánh --</option>
+                        <option value="">@StoreSharedResource.Dropdown_SelectManager</option>
                     </select>
                     <span asp-validation-for="ManagerId" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6 mb-3">
-                    <label class="form-label" asp-for="OpeningTime">Giờ mở cửa (Ví dụ: 7h30)</label>
+                    <label class="form-label" asp-for="OpeningTime">@StoreModelResource.OpeningTime @StoreSharedResource.Label_OpeningTimeExample</label>
                     <input class="form-control" asp-for="OpeningTime" type="time" />
-                    <small class="text-muted">Thời gian bắt đầu mở cửa (Ví dụ: 07:30 / 7h30)</small>
+                    <small class="text-muted">@StoreSharedResource.Help_OpeningTime</small>
                     <span asp-validation-for="OpeningTime" class="text-danger"></span>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label" asp-for="ClosingTime">Giờ đóng cửa (Ví dụ: 22h30)</label>
+                    <label class="form-label" asp-for="ClosingTime">@StoreModelResource.ClosingTime @StoreSharedResource.Label_ClosingTimeExample</label>
                     <input class="form-control" asp-for="ClosingTime" type="time" />
-                    <small class="text-muted">Thời gian kết thúc đóng cửa (Ví dụ: 22:30 / 22h30)</small>
+                    <small class="text-muted">@StoreSharedResource.Help_ClosingTime</small>
                     <span asp-validation-for="ClosingTime" class="text-danger"></span>
                 </div>
 

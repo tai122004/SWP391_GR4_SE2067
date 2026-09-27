@@ -45,4 +45,13 @@
   <data name="Longitude" xml:space="preserve">
     <value>Longitude</value>
   </data>
+  <data name="ManagerId" xml:space="preserve">
+    <value>Store Manager</value>
+  </data>
+  <data name="OpeningTime" xml:space="preserve">
+    <value>Opening Time</value>
+  </data>
+  <data name="ClosingTime" xml:space="preserve">
+    <value>Closing Time</value>
+  </data>
 </root>

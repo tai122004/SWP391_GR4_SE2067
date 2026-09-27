@@ -232,5 +232,365 @@ namespace RWPM.Resources.Shared {
                 return ResourceManager.GetString("NotLocated", resourceCulture);
             }
         }
+
+        public static string ConfigHeader_Management {
+            get {
+                return ResourceManager.GetString("ConfigHeader_Management", resourceCulture);
+            }
+        }
+
+        public static string Dropdown_SelectManager {
+            get {
+                return ResourceManager.GetString("Dropdown_SelectManager", resourceCulture);
+            }
+        }
+
+        public static string Label_OpeningTimeExample {
+            get {
+                return ResourceManager.GetString("Label_OpeningTimeExample", resourceCulture);
+            }
+        }
+
+        public static string Help_OpeningTime {
+            get {
+                return ResourceManager.GetString("Help_OpeningTime", resourceCulture);
+            }
+        }
+
+        public static string Label_ClosingTimeExample {
+            get {
+                return ResourceManager.GetString("Label_ClosingTimeExample", resourceCulture);
+            }
+        }
+
+        public static string Help_ClosingTime {
+            get {
+                return ResourceManager.GetString("Help_ClosingTime", resourceCulture);
+            }
+        }
+
+        public static string Index_Subtitle {
+            get {
+                return ResourceManager.GetString("Index_Subtitle", resourceCulture);
+            }
+        }
+
+        public static string Table_Manager {
+            get {
+                return ResourceManager.GetString("Table_Manager", resourceCulture);
+            }
+        }
+
+        public static string Unassigned {
+            get {
+                return ResourceManager.GetString("Unassigned", resourceCulture);
+            }
+        }
+
+        public static string Badge_NoGPS {
+            get {
+                return ResourceManager.GetString("Badge_NoGPS", resourceCulture);
+            }
+        }
+
+        public static string Tooltip_ViewDetails {
+            get {
+                return ResourceManager.GetString("Tooltip_ViewDetails", resourceCulture);
+            }
+        }
+
+        public static string Details_PageHeader {
+            get {
+                return ResourceManager.GetString("Details_PageHeader", resourceCulture);
+            }
+        }
+
+        public static string Details_UnsetAddress {
+            get {
+                return ResourceManager.GetString("Details_UnsetAddress", resourceCulture);
+            }
+        }
+
+        public static string KPI_Manager {
+            get {
+                return ResourceManager.GetString("KPI_Manager", resourceCulture);
+            }
+        }
+
+        public static string KPI_TotalEmployees {
+            get {
+                return ResourceManager.GetString("KPI_TotalEmployees", resourceCulture);
+            }
+        }
+
+        public static string Unit_People {
+            get {
+                return ResourceManager.GetString("Unit_People", resourceCulture);
+            }
+        }
+
+        public static string KPI_TodayAttendance {
+            get {
+                return ResourceManager.GetString("KPI_TodayAttendance", resourceCulture);
+            }
+        }
+
+        public static string Unit_Records {
+            get {
+                return ResourceManager.GetString("Unit_Records", resourceCulture);
+            }
+        }
+
+        public static string KPI_OperatingHours {
+            get {
+                return ResourceManager.GetString("KPI_OperatingHours", resourceCulture);
+            }
+        }
+
+        public static string AllDayOperating {
+            get {
+                return ResourceManager.GetString("AllDayOperating", resourceCulture);
+            }
+        }
+
+        public static string Tab_InfoAndMap {
+            get {
+                return ResourceManager.GetString("Tab_InfoAndMap", resourceCulture);
+            }
+        }
+
+        public static string Tab_Employees {
+            get {
+                return ResourceManager.GetString("Tab_Employees", resourceCulture);
+            }
+        }
+
+        public static string Tab_Shifts {
+            get {
+                return ResourceManager.GetString("Tab_Shifts", resourceCulture);
+            }
+        }
+
+        public static string Tab_TodayAttendance {
+            get {
+                return ResourceManager.GetString("Tab_TodayAttendance", resourceCulture);
+            }
+        }
+
+        public static string Details_BranchConfig {
+            get {
+                return ResourceManager.GetString("Details_BranchConfig", resourceCulture);
+            }
+        }
+
+        public static string Details_OpenTimeLabel {
+            get {
+                return ResourceManager.GetString("Details_OpenTimeLabel", resourceCulture);
+            }
+        }
+
+        public static string Details_CloseTimeLabel {
+            get {
+                return ResourceManager.GetString("Details_CloseTimeLabel", resourceCulture);
+            }
+        }
+
+        public static string Details_GPSRadius {
+            get {
+                return ResourceManager.GetString("Details_GPSRadius", resourceCulture);
+            }
+        }
+
+        public static string Details_AllowedDistance {
+            get {
+                return ResourceManager.GetString("Details_AllowedDistance", resourceCulture);
+            }
+        }
+
+        public static string Details_BranchStatus {
+            get {
+                return ResourceManager.GetString("Details_BranchStatus", resourceCulture);
+            }
+        }
+
+        public static string Details_CreatedDate {
+            get {
+                return ResourceManager.GetString("Details_CreatedDate", resourceCulture);
+            }
+        }
+
+        public static string Details_UpdatedDate {
+            get {
+                return ResourceManager.GetString("Details_UpdatedDate", resourceCulture);
+            }
+        }
+
+        public static string Details_GPSMapHeader {
+            get {
+                return ResourceManager.GetString("Details_GPSMapHeader", resourceCulture);
+            }
+        }
+
+        public static string Details_Coordinates {
+            get {
+                return ResourceManager.GetString("Details_Coordinates", resourceCulture);
+            }
+        }
+
+        public static string Details_NoGPSAlert {
+            get {
+                return ResourceManager.GetString("Details_NoGPSAlert", resourceCulture);
+            }
+        }
+
+        public static string EmpTable_Code {
+            get {
+                return ResourceManager.GetString("EmpTable_Code", resourceCulture);
+            }
+        }
+
+        public static string EmpTable_FullName {
+            get {
+                return ResourceManager.GetString("EmpTable_FullName", resourceCulture);
+            }
+        }
+
+        public static string EmpTable_Email {
+            get {
+                return ResourceManager.GetString("EmpTable_Email", resourceCulture);
+            }
+        }
+
+        public static string EmpTable_Phone {
+            get {
+                return ResourceManager.GetString("EmpTable_Phone", resourceCulture);
+            }
+        }
+
+        public static string EmpTable_ContractType {
+            get {
+                return ResourceManager.GetString("EmpTable_ContractType", resourceCulture);
+            }
+        }
+
+        public static string EmpTable_Status {
+            get {
+                return ResourceManager.GetString("EmpTable_Status", resourceCulture);
+            }
+        }
+
+        public static string EmpTable_Working {
+            get {
+                return ResourceManager.GetString("EmpTable_Working", resourceCulture);
+            }
+        }
+
+        public static string EmpTable_Resigned {
+            get {
+                return ResourceManager.GetString("EmpTable_Resigned", resourceCulture);
+            }
+        }
+
+        public static string EmpTable_Empty {
+            get {
+                return ResourceManager.GetString("EmpTable_Empty", resourceCulture);
+            }
+        }
+
+        public static string ShiftTable_Code {
+            get {
+                return ResourceManager.GetString("ShiftTable_Code", resourceCulture);
+            }
+        }
+
+        public static string ShiftTable_Name {
+            get {
+                return ResourceManager.GetString("ShiftTable_Name", resourceCulture);
+            }
+        }
+
+        public static string ShiftTable_TimeFrame {
+            get {
+                return ResourceManager.GetString("ShiftTable_TimeFrame", resourceCulture);
+            }
+        }
+
+        public static string ShiftTable_BreakMinutes {
+            get {
+                return ResourceManager.GetString("ShiftTable_BreakMinutes", resourceCulture);
+            }
+        }
+
+        public static string ShiftTable_Scope {
+            get {
+                return ResourceManager.GetString("ShiftTable_Scope", resourceCulture);
+            }
+        }
+
+        public static string Unit_Minutes {
+            get {
+                return ResourceManager.GetString("Unit_Minutes", resourceCulture);
+            }
+        }
+
+        public static string ShiftScope_SystemTemplate {
+            get {
+                return ResourceManager.GetString("ShiftScope_SystemTemplate", resourceCulture);
+            }
+        }
+
+        public static string ShiftScope_BranchSpecific {
+            get {
+                return ResourceManager.GetString("ShiftScope_BranchSpecific", resourceCulture);
+            }
+        }
+
+        public static string ShiftTable_Empty {
+            get {
+                return ResourceManager.GetString("ShiftTable_Empty", resourceCulture);
+            }
+        }
+
+        public static string AttTable_Account {
+            get {
+                return ResourceManager.GetString("AttTable_Account", resourceCulture);
+            }
+        }
+
+        public static string AttTable_CheckIn {
+            get {
+                return ResourceManager.GetString("AttTable_CheckIn", resourceCulture);
+            }
+        }
+
+        public static string AttTable_CheckOut {
+            get {
+                return ResourceManager.GetString("AttTable_CheckOut", resourceCulture);
+            }
+        }
+
+        public static string AttTable_GPSDistance {
+            get {
+                return ResourceManager.GetString("AttTable_GPSDistance", resourceCulture);
+            }
+        }
+
+        public static string AttTable_Status {
+            get {
+                return ResourceManager.GetString("AttTable_Status", resourceCulture);
+            }
+        }
+
+        public static string AttStatus_Valid {
+            get {
+                return ResourceManager.GetString("AttStatus_Valid", resourceCulture);
+            }
+        }
+
+        public static string AttTable_Empty {
+            get {
+                return ResourceManager.GetString("AttTable_Empty", resourceCulture);
+            }
+        }
     }
 }

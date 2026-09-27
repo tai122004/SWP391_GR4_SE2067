@@ -108,4 +108,184 @@
   <data name="NotLocated" xml:space="preserve">
     <value>Chưa định vị</value>
   </data>
+  <data name="ConfigHeader_Management" xml:space="preserve">
+    <value>Cấu Hình Quản Lý &amp; Giờ Hoạt Động Chi Nhánh</value>
+  </data>
+  <data name="Dropdown_SelectManager" xml:space="preserve">
+    <value>-- Chọn Quản lý Chi nhánh --</value>
+  </data>
+  <data name="Label_OpeningTimeExample" xml:space="preserve">
+    <value>(Ví dụ: 7h30)</value>
+  </data>
+  <data name="Help_OpeningTime" xml:space="preserve">
+    <value>Thời gian bắt đầu mở cửa (Ví dụ: 07:30 / 7h30)</value>
+  </data>
+  <data name="Label_ClosingTimeExample" xml:space="preserve">
+    <value>(Ví dụ: 22h30)</value>
+  </data>
+  <data name="Help_ClosingTime" xml:space="preserve">
+    <value>Thời gian kết thúc đóng cửa (Ví dụ: 22:30 / 22h30)</value>
+  </data>
+  <data name="Index_Subtitle" xml:space="preserve">
+    <value>Quản lý danh sách chi nhánh và vị trí GPS</value>
+  </data>
+  <data name="Table_Manager" xml:space="preserve">
+    <value>Quản lý</value>
+  </data>
+  <data name="Unassigned" xml:space="preserve">
+    <value>Chưa chỉ định</value>
+  </data>
+  <data name="Badge_NoGPS" xml:space="preserve">
+    <value>Chưa có GPS</value>
+  </data>
+  <data name="Tooltip_ViewDetails" xml:space="preserve">
+    <value>Xem Chi tiết &amp; Dashboard</value>
+  </data>
+  <data name="Details_PageHeader" xml:space="preserve">
+    <value>Chi tiết Chi nhánh:</value>
+  </data>
+  <data name="Details_UnsetAddress" xml:space="preserve">
+    <value>Chưa cập nhật địa chỉ</value>
+  </data>
+  <data name="KPI_Manager" xml:space="preserve">
+    <value>Trưởng Chi Nhánh</value>
+  </data>
+  <data name="KPI_TotalEmployees" xml:space="preserve">
+    <value>Nhân Sự Thuộc Chi Nhánh</value>
+  </data>
+  <data name="Unit_People" xml:space="preserve">
+    <value>người</value>
+  </data>
+  <data name="KPI_TodayAttendance" xml:space="preserve">
+    <value>Điểm Danh Hôm Nay</value>
+  </data>
+  <data name="Unit_Records" xml:space="preserve">
+    <value>lượt</value>
+  </data>
+  <data name="KPI_OperatingHours" xml:space="preserve">
+    <value>Giờ Hoạt Động</value>
+  </data>
+  <data name="AllDayOperating" xml:space="preserve">
+    <value>Cả ngày (24/7)</value>
+  </data>
+  <data name="Tab_InfoAndMap" xml:space="preserve">
+    <value>Thông Tin &amp; Bản Đồ GPS</value>
+  </data>
+  <data name="Tab_Employees" xml:space="preserve">
+    <value>Danh Sách Nhân Viên</value>
+  </data>
+  <data name="Tab_Shifts" xml:space="preserve">
+    <value>Ca Làm Việc Áp Dụng</value>
+  </data>
+  <data name="Tab_TodayAttendance" xml:space="preserve">
+    <value>Điểm Danh Hôm Nay</value>
+  </data>
+  <data name="Details_BranchConfig" xml:space="preserve">
+    <value>Cấu Hình Chi Nhánh</value>
+  </data>
+  <data name="Details_OpenTimeLabel" xml:space="preserve">
+    <value>Mở cửa:</value>
+  </data>
+  <data name="Details_CloseTimeLabel" xml:space="preserve">
+    <value>Đóng cửa:</value>
+  </data>
+  <data name="Details_GPSRadius" xml:space="preserve">
+    <value>Bán Kính Chấm Công GPS:</value>
+  </data>
+  <data name="Details_AllowedDistance" xml:space="preserve">
+    <value>Cho phép &amp;le; {0} mét</value>
+  </data>
+  <data name="Details_BranchStatus" xml:space="preserve">
+    <value>Trạng Thái Chi Nhánh:</value>
+  </data>
+  <data name="Details_CreatedDate" xml:space="preserve">
+    <value>Ngày Tạo Hệ Thống:</value>
+  </data>
+  <data name="Details_UpdatedDate" xml:space="preserve">
+    <value>Cập Nhật Cuối:</value>
+  </data>
+  <data name="Details_GPSMapHeader" xml:space="preserve">
+    <value>Định Vị Bản Đồ GPS</value>
+  </data>
+  <data name="Details_Coordinates" xml:space="preserve">
+    <value>Tọa độ:</value>
+  </data>
+  <data name="Details_NoGPSAlert" xml:space="preserve">
+    <value>Cửa hàng này chưa được thả ghim tọa độ GPS.</value>
+  </data>
+  <data name="EmpTable_Code" xml:space="preserve">
+    <value>Mã NV</value>
+  </data>
+  <data name="EmpTable_FullName" xml:space="preserve">
+    <value>Họ và Tên</value>
+  </data>
+  <data name="EmpTable_Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="EmpTable_Phone" xml:space="preserve">
+    <value>Số điện thoại</value>
+  </data>
+  <data name="EmpTable_ContractType" xml:space="preserve">
+    <value>Loại hợp đồng</value>
+  </data>
+  <data name="EmpTable_Status" xml:space="preserve">
+    <value>Trạng thái</value>
+  </data>
+  <data name="EmpTable_Working" xml:space="preserve">
+    <value>Đang làm việc</value>
+  </data>
+  <data name="EmpTable_Resigned" xml:space="preserve">
+    <value>Đã nghỉ việc</value>
+  </data>
+  <data name="EmpTable_Empty" xml:space="preserve">
+    <value>Chưa có nhân viên nào thuộc chi nhánh này.</value>
+  </data>
+  <data name="ShiftTable_Code" xml:space="preserve">
+    <value>Mã Ca</value>
+  </data>
+  <data name="ShiftTable_Name" xml:space="preserve">
+    <value>Tên Ca Làm Việc</value>
+  </data>
+  <data name="ShiftTable_TimeFrame" xml:space="preserve">
+    <value>Khung Giờ</value>
+  </data>
+  <data name="ShiftTable_BreakMinutes" xml:space="preserve">
+    <value>Phút Nghỉ Giữa Ca</value>
+  </data>
+  <data name="ShiftTable_Scope" xml:space="preserve">
+    <value>Phạm Vi Phân Ca</value>
+  </data>
+  <data name="Unit_Minutes" xml:space="preserve">
+    <value>phút</value>
+  </data>
+  <data name="ShiftScope_SystemTemplate" xml:space="preserve">
+    <value>Ca mẫu toàn hệ thống</value>
+  </data>
+  <data name="ShiftScope_BranchSpecific" xml:space="preserve">
+    <value>Ca riêng chi nhánh</value>
+  </data>
+  <data name="ShiftTable_Empty" xml:space="preserve">
+    <value>Chưa có ca làm việc nào được thiết lập.</value>
+  </data>
+  <data name="AttTable_Account" xml:space="preserve">
+    <value>Tài khoản</value>
+  </data>
+  <data name="AttTable_CheckIn" xml:space="preserve">
+    <value>Giờ Check-in</value>
+  </data>
+  <data name="AttTable_CheckOut" xml:space="preserve">
+    <value>Giờ Check-out</value>
+  </data>
+  <data name="AttTable_GPSDistance" xml:space="preserve">
+    <value>Khoảng Cách GPS</value>
+  </data>
+  <data name="AttTable_Status" xml:space="preserve">
+    <value>Trạng Thái</value>
+  </data>
+  <data name="AttStatus_Valid" xml:space="preserve">
+    <value>Hợp lệ</value>
+  </data>
+  <data name="AttTable_Empty" xml:space="preserve">
+    <value>Hôm nay chưa có lượt chấm công nào tại chi nhánh này.</value>
+  </data>
 </root>

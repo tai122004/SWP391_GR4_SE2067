@@ -45,4 +45,13 @@
   <data name="Longitude" xml:space="preserve">
     <value>Kinh độ (Longitude)</value>
   </data>
+  <data name="ManagerId" xml:space="preserve">
+    <value>Quản lý chi nhánh</value>
+  </data>
+  <data name="OpeningTime" xml:space="preserve">
+    <value>Giờ mở cửa</value>
+  </data>
+  <data name="ClosingTime" xml:space="preserve">
+    <value>Giờ đóng cửa</value>
+  </data>
 </root>
