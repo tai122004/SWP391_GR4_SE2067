@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -512,5 +512,292 @@
   </data>
   <data name="Attendance_PhotoCheckOut" xml:space="preserve">
     <value>Ảnh Check-out</value>
+  </data>
+  <data name="Attendance_AllCompletedToday" xml:space="preserve">
+    <value>Hoàn thành toàn bộ ca làm hôm nay!</value>
+  </data>
+  <data name="Attendance_AdjustButton" xml:space="preserve">
+    <value>Điều chỉnh</value>
+  </data>
+  <data name="Attendance_AdjustedTooltip" xml:space="preserve">
+    <value>Đã được quản lý điều chỉnh</value>
+  </data>
+  <data name="Attendance_AdjustTitle" xml:space="preserve">
+    <value>Điều chỉnh chấm công - {0}</value>
+  </data>
+  <data name="Attendance_AdjustNewCheckIn" xml:space="preserve">
+    <value>Giờ Check-in mới (Hiện tại: {0})</value>
+  </data>
+  <data name="Attendance_AdjustNewCheckOut" xml:space="preserve">
+    <value>Giờ Check-out mới (Hiện tại: {0})</value>
+  </data>
+  <data name="Attendance_Empty" xml:space="preserve">
+    <value>Trống</value>
+  </data>
+  <data name="Attendance_AdjustReason" xml:space="preserve">
+    <value>Lý do điều chỉnh</value>
+  </data>
+  <data name="Attendance_AdjustReasonPlaceholder" xml:space="preserve">
+    <value>Nhập lý do chi tiết...</value>
+  </data>
+  <data name="Attendance_PhotoCheckInRequired" xml:space="preserve">
+    <value>Vui lòng BẤM NÚT CHỤP ẢNH TRÊN MÀN HÌNH trước khi chấm công!</value>
+  </data>
+  <data name="Attendance_GPSRequired" xml:space="preserve">
+    <value>Không thể xác định vị trí GPS. Vui lòng cho phép truy cập vị trí.</value>
+  </data>
+  <data name="Attendance_GPSPermissionDenied" xml:space="preserve">
+    <value>BẠN ĐÃ CHẶN QUYỀN VỊ TRÍ TRÊN TRÌNH DUYỆT!
+
+Cách bật lại nhanh:
+1. Click vào biểu tượng ổ khóa 🔒 (hoặc 🎛️) góc trái thanh địa chỉ.
+2. Chuyển mục 'Vị trí (Location)' từ 'Chặn (Block)' sang 'Cho phép (Allow)'.
+3. Nhấn F5 tải lại trang và bấm Check-in lại.</value>
+  </data>
+  <data name="Attendance_GPSUnknownError" xml:space="preserve">
+    <value>Không thể xác định vị trí GPS ({0}). Vui lòng bật vị trí thiết bị và thử lại.</value>
+  </data>
+  <data name="Attendance_GPSNotSupported" xml:space="preserve">
+    <value>Trình duyệt của bạn không hỗ trợ Geolocation GPS.</value>
+  </data>
+  <data name="Shift_InactiveEmployees" xml:space="preserve">
+    <value>Nhân viên đã nghỉ</value>
+  </data>
+  <data name="Shift_Refresh" xml:space="preserve">
+    <value>Làm mới</value>
+  </data>
+  <data name="Shift_Warning" xml:space="preserve">
+    <value>Cảnh báo</value>
+  </data>
+  <data name="Shift_Tools" xml:space="preserve">
+    <value>Công cụ</value>
+  </data>
+  <data name="Shift_Settings" xml:space="preserve">
+    <value>Cài đặt</value>
+  </data>
+  <data name="Shift_CopyPrev" xml:space="preserve">
+    <value>Sao chép tuần trước</value>
+  </data>
+  <data name="Shift_RegisterWeek" xml:space="preserve">
+    <value>Đăng ký tuần</value>
+  </data>
+  <data name="Shift_NotArrived" xml:space="preserve">
+    <value>Chưa đến ca</value>
+  </data>
+  <data name="Shift_OnTime" xml:space="preserve">
+    <value>Chấm công đúng giờ</value>
+  </data>
+  <data name="Shift_LateEarly" xml:space="preserve">
+    <value>Vào trễ, ra sớm</value>
+  </data>
+  <data name="Shift_NotChecked" xml:space="preserve">
+    <value>Chưa vào/ra ca</value>
+  </data>
+  <data name="Shift_OnLeave" xml:space="preserve">
+    <value>Nghỉ phép</value>
+  </data>
+  <data name="Shift_Reload" xml:space="preserve">
+    <value>Tải lại ca</value>
+  </data>
+  <data name="Shift_Me" xml:space="preserve">
+    <value>Tôi</value>
+  </data>
+  <data name="Shift_ErrSelectOne" xml:space="preserve">
+    <value>Vui lòng chọn ít nhất một ca làm việc.</value>
+  </data>
+  <data name="Shift_ErrOccurred" xml:space="preserve">
+    <value>Có lỗi xảy ra.</value>
+  </data>
+  <data name="Shift_SysError" xml:space="preserve">
+    <value>Lỗi hệ thống</value>
+  </data>
+  <data name="Shift_Week" xml:space="preserve">
+    <value>Tuần </value>
+  </data>
+  <data name="Shift_Shift" xml:space="preserve">
+    <value>Ca làm việc</value>
+  </data>
+  <data name="Shift_ErrLoadShift" xml:space="preserve">
+    <value>Lỗi tải dữ liệu ca làm việc</value>
+  </data>
+  <data name="Shift_NoShifts" xml:space="preserve">
+    <value>Bạn chưa có ca làm</value>
+  </data>
+  <data name="Shift_Approved" xml:space="preserve">
+    <value>Đã duyệt</value>
+  </data>
+  <data name="Shift_Pending" xml:space="preserve">
+    <value>Chờ duyệt</value>
+  </data>
+  <data name="Shift_ApprovedCannotChange" xml:space="preserve">
+    <value>Ca này đã được duyệt, bạn không thể thay đổi.</value>
+  </data>
+  <data name="Shift_Overdue" xml:space="preserve">
+    <value>Quá hạn</value>
+  </data>
+  <data name="Shift_ErrPast" xml:space="preserve">
+    <value>Không thể đăng ký ca trong quá khứ.</value>
+  </data>
+  <data name="Shift_RegSuccess" xml:space="preserve">
+    <value>Đăng ký tuần thành công!</value>
+  </data>
+  <data name="Shift_ErrPrefix" xml:space="preserve">
+    <value>Lỗi: </value>
+  </data>
+  <data name="Shift_ErrNoPrevShifts" xml:space="preserve">
+    <value>Không có ca làm việc nào trong tuần trước để sao chép.</value>
+  </data>
+  <data name="Shift_CopiedValid" xml:space="preserve">
+    <value>Đã sao chép ${checkedCount} ca hợp lệ. Vui lòng bấm 'Đăng ký tuần' để lưu lại.</value>
+  </data>
+  <data name="Shift_ErrLoadPrev" xml:space="preserve">
+    <value>Lỗi tải dữ liệu tuần trước</value>
+  </data>
+  <data name="Store_LocationRadius" xml:space="preserve">
+    <value>Định vị Chi nhánh &amp; Bán kính Chấm công</value>
+  </data>
+  <data name="Store_Loc_HN" xml:space="preserve">
+    <value>Hà Nội</value>
+  </data>
+  <data name="Store_Loc_HQV" xml:space="preserve">
+    <value>Hoàng Quốc Việt (HN)</value>
+  </data>
+  <data name="Store_Loc_HL" xml:space="preserve">
+    <value>Thạch Thất / Hòa Lạc</value>
+  </data>
+  <data name="Store_Loc_HCM" xml:space="preserve">
+    <value>TP. Hồ Chí Minh</value>
+  </data>
+  <data name="Store_Loc_DN" xml:space="preserve">
+    <value>Đà Nẵng</value>
+  </data>
+  <data name="Store_Location" xml:space="preserve">
+    <value>Địa điểm</value>
+  </data>
+  <data name="Store_ErrServerResponse" xml:space="preserve">
+    <value>Lỗi phản hồi máy chủ (</value>
+  </data>
+  <data name="Store_MapGoogle" xml:space="preserve">
+    <value>Bản đồ Google</value>
+  </data>
+  <data name="Store_MapOSM" xml:space="preserve">
+    <value>Bản đồ OpenStreetMap</value>
+  </data>
+  <data name="Req_HR" xml:space="preserve">
+    <value>Nhân sự</value>
+  </data>
+  <data name="Req_CreateReq" xml:space="preserve">
+    <value>Tạo Yêu Cầu</value>
+  </data>
+  <data name="Req_AttendanceRecord" xml:space="preserve">
+    <value>Lượt chấm công</value>
+  </data>
+  <data name="Req_BusinessTrip" xml:space="preserve">
+    <value>Công tác/Ra ngoài</value>
+  </data>
+  <data name="Req_LateEarly" xml:space="preserve">
+    <value>Đi muộn về sớm</value>
+  </data>
+  <data name="Req_Leave" xml:space="preserve">
+    <value>Nghỉ phép</value>
+  </data>
+  <data name="Req_Overtime" xml:space="preserve">
+    <value>Làm thêm giờ</value>
+  </data>
+  <data name="Req_Shift" xml:space="preserve">
+    <value>Ca làm</value>
+  </data>
+  <data name="Req_ChangeInOut" xml:space="preserve">
+    <value>Thay đổi giờ vào/ra</value>
+  </data>
+  <data name="Req_Meal" xml:space="preserve">
+    <value>Suất ăn</value>
+  </data>
+  <data name="Req_ShiftReg" xml:space="preserve">
+    <value>Đăng ký ca làm</value>
+  </data>
+  <data name="Req_ChangeShift" xml:space="preserve">
+    <value>Đổi ca làm</value>
+  </data>
+  <data name="Req_Finance" xml:space="preserve">
+    <value>Tài chính</value>
+  </data>
+  <data name="Req_SalaryAdv" xml:space="preserve">
+    <value>Tạm ứng lương</value>
+  </data>
+  <data name="Req_AdvanceRefund" xml:space="preserve">
+    <value>Tạm ứng - Hoàn ứng</value>
+  </data>
+  <data name="Req_Proposal" xml:space="preserve">
+    <value>Phiếu đề nghị</value>
+  </data>
+  <data name="Req_Payment" xml:space="preserve">
+    <value>Thanh toán</value>
+  </data>
+  <data name="Req_ExpensePay" xml:space="preserve">
+    <value>Thanh toán chi phí</value>
+  </data>
+  <data name="Req_Purchase" xml:space="preserve">
+    <value>Mua hàng</value>
+  </data>
+  <data name="Req_Employee" xml:space="preserve">
+    <value>Nhân viên</value>
+  </data>
+  <data name="Req_SelectEmployee" xml:space="preserve">
+    <value>Chọn nhân viên</value>
+  </data>
+  <data name="Req_Date" xml:space="preserve">
+    <value>Ngày</value>
+  </data>
+  <data name="Req_SelectShift" xml:space="preserve">
+    <value>Chọn ca</value>
+  </data>
+  <data name="Req_Note" xml:space="preserve">
+    <value>Ghi chú</value>
+  </data>
+  <data name="Req_Reason" xml:space="preserve">
+    <value>Lý do</value>
+  </data>
+  <data name="Req_CreateNew" xml:space="preserve">
+    <value>Tạo mới</value>
+  </data>
+  <data name="Req_CreateSuccess" xml:space="preserve">
+    <value>Tạo ca làm thành công!</value>
+  </data>
+  <data name="Req_ErrorPrefix" xml:space="preserve">
+    <value>Lỗi: </value>
+  </data>
+  <data name="Req_SysError" xml:space="preserve">
+    <value>Lỗi hệ thống</value>
+  </data>
+  <data name="Req_Pending" xml:space="preserve">
+    <value>Chờ duyệt</value>
+  </data>
+  <data name="Req_Approved" xml:space="preserve">
+    <value>Đã duyệt</value>
+  </data>
+  <data name="Req_Rejected" xml:space="preserve">
+    <value>Từ chối</value>
+  </data>
+  <data name="Req_ConfirmAction" xml:space="preserve">
+    <value>Bạn có chắc chắn muốn </value>
+  </data>
+  <data name="Req_ConfirmReq" xml:space="preserve">
+    <value> yêu cầu này?</value>
+  </data>
+  <data name="Req_UpdateStatusSuccess" xml:space="preserve">
+    <value>Cập nhật trạng thái thành công</value>
+  </data>
+  <data name="Req_Delete" xml:space="preserve">
+    <value>xóa</value>
+  </data>
+  <data name="Req_DeleteSuccess" xml:space="preserve">
+    <value>Xóa yêu cầu thành công</value>
+  </data>
+  <data name="Req_ApproveAction" xml:space="preserve">
+    <value>chấp thuận</value>
+  </data>
+  <data name="Req_BulkActionSuccess" xml:space="preserve">
+    <value>Thao tác hàng loạt thành công</value>
   </data>
 </root>

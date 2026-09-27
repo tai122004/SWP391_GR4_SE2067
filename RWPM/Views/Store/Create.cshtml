@@ -102,7 +102,7 @@
     <input type="hidden" asp-for="Latitude" id="storeLat" />
     <input type="hidden" asp-for="Longitude" id="storeLng" />
 
-    <!-- Định vị Chi nhánh & Bán kính Chấm công -->
+    <!-- @SharedResource.ResourceManager.GetString("Store_LocationRadius") -->
     <div class="card mb-3 border-info">
         <div class="card-header bg-info bg-opacity-10 fw-semibold text-info-emphasis">
             <i class="bi bi-geo-alt-fill me-1"></i> @StoreSharedResource.GeoHeader
@@ -137,11 +137,11 @@
 
             <div class="d-flex flex-wrap align-items-center gap-1 mb-2">
                 <span class="badge bg-secondary-subtle text-secondary border me-1"><i class="bi bi-lightning-fill text-warning me-1"></i>@StoreSharedResource.Label_SuggestedLocations</span>
-                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="21.0285" data-lng="105.8542">Hà Nội</button>
-                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="21.0465" data-lng="105.7942">Hoàng Quốc Việt (HN)</button>
-                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="21.0130" data-lng="105.5268">Thạch Thất / Hòa Lạc</button>
-                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="10.7769" data-lng="106.7009">TP. Hồ Chí Minh</button>
-                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="16.0544" data-lng="108.2022">Đà Nẵng</button>
+                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="21.0285" data-lng="105.8542">@SharedResource.ResourceManager.GetString("Store_Loc_HN")</button>
+                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="21.0465" data-lng="105.7942">@SharedResource.ResourceManager.GetString("Store_Loc_HQV")</button>
+                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="21.0130" data-lng="105.5268">@SharedResource.ResourceManager.GetString("Store_Loc_HL")</button>
+                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="10.7769" data-lng="106.7009">@SharedResource.ResourceManager.GetString("Store_Loc_HCM")</button>
+                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="16.0544" data-lng="108.2022">@SharedResource.ResourceManager.GetString("Store_Loc_DN")</button>
             </div>
 
             <small class="text-muted d-block mb-2"><i class="bi bi-info-circle me-1"></i> @StoreSharedResource.Instruction_MapHelp</small>
@@ -357,7 +357,7 @@
                     var a = document.createElement("a");
                     a.href = "#";
                     a.className = "list-group-item list-group-item-action py-2 px-3 small";
-                    var addrText = item.display_name || item.address || "Địa điểm";
+                    var addrText = item.display_name || item.address || "@Html.Raw(SharedResource.ResourceManager.GetString("Store_Location"))";
                     a.innerHTML = '<i class="bi bi-geo-alt-fill text-danger me-2"></i>' + addrText;
                     a.addEventListener("click", function (e) {
                         e.preventDefault();
@@ -395,7 +395,7 @@
                 var url = "/Store/SearchAddress?query=" + encodeURIComponent(query);
                 fetch(url)
                     .then(function (res) {
-                        if (!res.ok) throw new Error("Lỗi phản hồi máy chủ (" + res.status + ")");
+                        if (!res.ok) throw new Error("@Html.Raw(SharedResource.ResourceManager.GetString("Store_ErrServerResponse"))" + res.status + ")");
                         return res.json();
                     })
                     .then(function (data) {
