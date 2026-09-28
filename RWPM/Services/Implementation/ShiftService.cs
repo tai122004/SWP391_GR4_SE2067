@@ -207,6 +207,11 @@ namespace RWPM.Services.Implementation
             double period1Minutes = ShiftTimeHelper.GetDuration(entity.StartTime, entity.EndTime).TotalMinutes;
             double totalMinutes = period1Minutes;
 
+            if (period1Minutes > 12 * 60)
+            {
+                throw new ModelValidationException("Invalid_MaxShiftDuration", "Thời lượng ca không được vượt quá 12 giờ.");
+            }
+
             if (period1Minutes < 120)
             {
                 throw new ModelValidationException("Invalid_MinShiftDuration", "Thời lượng ca làm việc tối thiểu phải từ 2 tiếng (120 phút) trở lên.");

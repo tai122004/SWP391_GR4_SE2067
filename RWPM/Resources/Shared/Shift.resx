@@ -90,4 +90,51 @@
   <data name="AttendancePolicy_InheritNotice" xml:space="preserve">
     <value>Currently applying company default policy. Toggle off to customize rules for this shift.</value>
   </data>
+  <data name="Minutes" xml:space="preserve"><value>minutes</value></data>
+  <data name="TemplateOperations" xml:space="preserve"><value>Shift template operations</value></data>
+  <data name="EffectiveFrom" xml:space="preserve"><value>Effective from</value></data>
+  <data name="EffectiveTo" xml:space="preserve"><value>Effective to (optional)</value></data>
+  <data name="RequiredHeadcount" xml:space="preserve"><value>Required staff (suggested)</value></data>
+  <data name="MaximumHeadcount" xml:space="preserve"><value>Maximum staff (suggested)</value></data>
+  <data name="BreakIsPaid" xml:space="preserve"><value>Break time is paid</value></data>
+  <data name="AllowOutsideHours" xml:space="preserve"><value>Allow shift outside store hours</value></data>
+  <data name="UsedShiftHint" xml:space="preserve"><value>If this shift has been used, clone it to change its time, scope, or attendance policy.</value></data>
+  <data name="ListSummaryHeader" xml:space="preserve"><value>Hours / Validity / Suggested staff</value></data>
+  <data name="WorkingHours" xml:space="preserve"><value>Working hours</value></data>
+  <data name="BreakTime" xml:space="preserve"><value>Break:</value></data>
+  <data name="PaidBreak" xml:space="preserve"><value>Paid break:</value></data>
+  <data name="Validity" xml:space="preserve"><value>Validity:</value></data>
+  <data name="SuggestedStaff" xml:space="preserve"><value>Suggested staff:</value></data>
+  <data name="OutsideStoreHours" xml:space="preserve"><value>Outside store hours:</value></data>
+  <data name="ClassificationStatus" xml:space="preserve"><value>Classification &amp; status</value></data>
+  <data name="DescriptionLabel" xml:space="preserve"><value>Description:</value></data>
+  <data name="AttendancePolicySection" xml:space="preserve"><value>Attendance &amp; policy configuration</value></data>
+  <data name="AllowEarlyCheckIn" xml:space="preserve"><value>Allowed early check-in</value></data>
+  <data name="AllowLate" xml:space="preserve"><value>Allowed lateness</value></data>
+  <data name="AllowEarlyCheckOut" xml:space="preserve"><value>Allowed early check-out</value></data>
+  <data name="AbsentThreshold" xml:space="preserve"><value>Absent threshold</value></data>
+  <data name="CreatedAt" xml:space="preserve"><value>Created:</value></data>
+  <data name="CreatedBy" xml:space="preserve"><value>Created by:</value></data>
+  <data name="Active" xml:space="preserve"><value>Active</value></data>
+  <data name="Inactive" xml:space="preserve"><value>Inactive</value></data>
+  <data name="Yes" xml:space="preserve"><value>Yes</value></data>
+  <data name="No" xml:space="preserve"><value>No</value></data>
+  <data name="NoBreak" xml:space="preserve"><value>None</value></data>
+  <data name="NoLimit" xml:space="preserve"><value>no limit</value></data>
+  <data name="NoDescription" xml:space="preserve"><value>No description</value></data>
+  <data name="HoursWorked" xml:space="preserve"><value>hours worked</value></data>
+  <data name="PeopleUnit" xml:space="preserve"><value>people</value></data>
+  <data name="DefaultSuffix" xml:space="preserve"><value> (Default)</value></data>
+  <data name="TypePrefix" xml:space="preserve"><value>Type: </value></data>
+  <data name="CloneConfirm" xml:space="preserve"><value>Clone this shift?</value></data>
+  <data name="Close" xml:space="preserve"><value>Close</value></data>
+  <data name="EditThisShift" xml:space="preserve"><value>Edit this shift</value></data>
+  <data name="Index_PageSubtitle" xml:space="preserve"><value>Manage the shift catalog</value></data>
+  <data name="EffectiveOnFilter" xml:space="preserve"><value>Effective on date</value></data>
+  <data name="OvernightSuffix" xml:space="preserve"><value>overnight</value></data>
+  <data name="ViewDetails" xml:space="preserve"><value>View shift details</value></data>
+  <data name="ViewEditActions" xml:space="preserve"><value>View and edit actions</value></data>
+  <data name="NewCode" xml:space="preserve"><value>New code</value></data>
+  <data name="NewShiftCode" xml:space="preserve"><value>New shift code</value></data>
+  <data name="CloneShift" xml:space="preserve"><value>Clone shift</value></data>
 </root>
