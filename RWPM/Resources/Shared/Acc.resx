@@ -174,6 +174,12 @@
   <data name="Create_StoreInfoHint" xml:space="preserve">
     <value>Store-role accounts will automatically create an employee profile in the branch staff list.</value>
   </data>
+  <data name="Edit_StoreInfoLinked" xml:space="preserve">
+    <value>Employee profile is currently linked. You can update store and employment details below.</value>
+  </data>
+  <data name="Edit_StoreInfoNotLinked" xml:space="preserve">
+    <value>This account does not have an active employee profile (or it was removed). Fill in below to automatically recreate and relink an employee profile.</value>
+  </data>
   <data name="Create_UsernameHint" xml:space="preserve">
     <value>Auto-suggested from full name, can be customized.</value>
   </data>

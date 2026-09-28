@@ -230,6 +230,9 @@ namespace RWPM.Resources.Shared {
                 return ResourceManager.GetString("Create_StoreInfoHint", resourceCulture);
             }
         }
+
+        public static string Edit_StoreInfoLinked => ResourceManager.GetString("Edit_StoreInfoLinked", resourceCulture);
+        public static string Edit_StoreInfoNotLinked => ResourceManager.GetString("Edit_StoreInfoNotLinked", resourceCulture);
         
         /// <summary>
         ///   Looks up a localized string similar to Auto-suggested from full name, can be customized.

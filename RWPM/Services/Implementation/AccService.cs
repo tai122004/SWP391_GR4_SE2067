@@ -291,6 +291,15 @@ namespace RWPM.Services.Implementation
             updateEntity.UpdatedDate = DateTime.Now;
             updateEntity.UpdatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor);
 
+            // Đồng bộ trạng thái cho các bản ghi Nhân viên (Employee) tương ứng với tài khoản này
+            var linkedEmployees = await _ctx.Employee.Where(e => e.Username == username).ToListAsync();
+            foreach (var emp in linkedEmployees)
+            {
+                emp.IsActive = active;
+                emp.UpdatedDate = DateTime.Now;
+                emp.UpdatedBy = updateEntity.UpdatedBy;
+            }
+
             // IV. Save
             await _ctx.SaveChangesAsync();
         }

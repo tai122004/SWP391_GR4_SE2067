@@ -2,6 +2,8 @@
 
 @using AccountModelResource = RWPM.Resources.Models.Acc
 @using AccountSharedResource = RWPM.Resources.Shared.Acc
+@using EmployeeModelResource = RWPM.Resources.Models.Employee
+@using EmployeeSharedResource = RWPM.Resources.Shared.Employee
 @using RWPM.Common.Enums
 @using RWPM.Models.ViewModels.Acc
 @using RWPM.Resources.Shared
@@ -33,6 +35,8 @@
         <form asp-action="Edit" method="post">
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="Username" />
+            <input type="hidden" asp-for="HasExistingEmployee" />
+            <input type="hidden" asp-for="EmployeeId" />
 
             <!-- Account identity badge -->
             <div class="d-flex align-items-center p-3 bg-light rounded border mb-4">
@@ -94,9 +98,68 @@
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
                     <label class="form-label fw-semibold small required" asp-for="Role">@AccountModelResource.Role</label>
-                    <select asp-for="Role" asp-items="Model.AccountRoleSelectList" class="form-select system-select2">
+                    <select asp-for="Role" asp-items="Model.AccountRoleSelectList" class="form-select system-select2" id="accRoleSelect">
                     </select>
                     <span asp-validation-for="Role" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <!-- KHỐI THÔNG TIN CỬA HÀNG & HỒ SƠ NHÂN VIÊN (TỰ ĐỘNG HIỂN THỊ KHI CHỌN VAI TRÒ NHÂN SỰ CỬA HÀNG) -->
+            <div id="storeAssignmentSection">
+                <div class="form-section-title mt-4 text-primary">
+                    <i class="bi bi-shop"></i> @AccountSharedResource.Create_Section_StoreInfo
+                </div>
+
+                @if (Model.HasExistingEmployee)
+                {
+                    <div class="alert alert-success bg-success bg-opacity-10 border-0 py-2 px-3 small mb-3 text-dark d-flex align-items-center">
+                        <i class="bi bi-check-circle-fill text-success me-2 fs-5 flex-shrink-0"></i>
+                        <div>@AccountSharedResource.Edit_StoreInfoLinked</div>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning bg-warning bg-opacity-10 border-0 py-2 px-3 small mb-3 text-dark d-flex align-items-center">
+                        <i class="bi bi-exclamation-triangle-fill text-warning me-2 fs-5 flex-shrink-0"></i>
+                        <div>@AccountSharedResource.Edit_StoreInfoNotLinked</div>
+                    </div>
+                }
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold small required" asp-for="EmployeeCode">@EmployeeSharedResource.Column_EmployeeCode</label>
+                        <input class="form-control font-monospace" asp-for="EmployeeCode" id="empCodeInput" placeholder="NV..." autocomplete="off" />
+                        <span asp-validation-for="EmployeeCode" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold small required" asp-for="StoreId">@EmployeeSharedResource.Column_Store</label>
+                        <select class="form-select" asp-for="StoreId" asp-items="Model.StoreSelectList" id="storeSelectInput">
+                            <option value="">-- @SharedResource.Dropdown_SelectStore --</option>
+                        </select>
+                        <span asp-validation-for="StoreId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold small required" asp-for="JoinDate">@EmployeeSharedResource.Column_JoinDate</label>
+                        <input class="form-control" type="date" asp-for="JoinDate" value="@(Model.JoinDate.HasValue ? Model.JoinDate.Value.ToString("yyyy-MM-dd") : "")" />
+                        <span asp-validation-for="JoinDate" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small" asp-for="EmploymentType">@EmployeeModelResource.EmploymentType</label>
+                        <select class="form-select" asp-for="EmploymentType" asp-items="Html.GetEnumSelectList<RWPM.Common.Enums.EmploymentType>()">
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small" asp-for="HourlyRate">@EmployeeModelResource.HourlyRate</label>
+                        <div class="input-group">
+                            <input class="form-control" asp-for="HourlyRate" type="number" step="1000" placeholder="25000" />
+                            <span class="input-group-text small">VNĐ/h</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -164,3 +227,27 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function updateStoreSectionVisibility() {
+            const roleVal = $('#accRoleSelect').val();
+            // StoreManager = 4, SalesStaff = 6, PartTimeStaff = 7 (hoặc text tương ứng)
+            const isStoreRole = (roleVal == '4' || roleVal == '6' || roleVal == '7' || 
+                                 roleVal == 'StoreManager' || roleVal == 'SalesStaff' || roleVal == 'PartTimeStaff');
+            
+            if (isStoreRole) {
+                $('#storeAssignmentSection').slideDown(200);
+            } else {
+                $('#storeAssignmentSection').slideUp(200);
+            }
+        }
+
+        $('#accRoleSelect').on('change', updateStoreSectionVisibility);
+
+        $(document).ready(function () {
+            updateStoreSectionVisibility();
+        });
+    </script>
+}

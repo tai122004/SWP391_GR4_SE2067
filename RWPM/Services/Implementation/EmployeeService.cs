@@ -196,10 +196,20 @@ namespace RWPM.Services.Implementation
 
         public async Task UpdateActiveStatusAsync(int employeeId, bool active)
         {
-            var employee = await GetRequiredByIdAsync(employeeId, new QueryOptions<Employee>() { NoTracking = false });
+            var employee = await _ctx.Employee.Include(e => e.Account).FirstOrDefaultAsync(e => e.EmployeeId == employeeId);
+            if (employee == null) throw new ModelValidationException($"Employee_IdNotExists", employeeId.ToString());
+
             employee.IsActive = active;
             employee.UpdatedDate = DateTime.Now;
             employee.UpdatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor);
+
+            if (employee.Account != null)
+            {
+                employee.Account.IsActive = active;
+                employee.Account.UpdatedDate = DateTime.Now;
+                employee.Account.UpdatedBy = employee.UpdatedBy;
+            }
+
             await _ctx.SaveChangesAsync();
         }
 

@@ -38,6 +38,29 @@ namespace RWPM.Models.ViewModels.Acc
         [Display(Name = "Gender", ResourceType = typeof(Resources.Models.Acc))]
         public Gender? Gender { get; set; }
 
+        // Thông tin hồ sơ nhân viên & Cửa hàng (tương tự màn hình Tạo mới)
+        [Display(Name = "EmployeeID", ResourceType = typeof(Resources.Models.Employee))]
+        [MaxLength(20)]
+        public string? EmployeeCode { get; set; }
+
+        [Display(Name = "Store", ResourceType = typeof(Resources.Models.Employee))]
+        public int? StoreId { get; set; }
+
+        [Display(Name = "StartDate", ResourceType = typeof(Resources.Models.Employee))]
+        [DataType(DataType.Date)]
+        public DateTime? JoinDate { get; set; } = DateTime.Today;
+
+        [Display(Name = "EmploymentType", ResourceType = typeof(Resources.Models.Employee))]
+        public EmploymentType EmploymentType { get; set; } = EmploymentType.FullTime;
+
+        [Display(Name = "HourlyRate", ResourceType = typeof(Resources.Models.Employee))]
+        public decimal? HourlyRate { get; set; }
+
+        public SelectList? StoreSelectList { get; set; }
+
+        public bool HasExistingEmployee { get; set; }
+        public int? EmployeeId { get; set; }
+
         public AccUpdateVM() { }
 
         public AccUpdateVM(Entities.Acc entity) 
