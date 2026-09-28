@@ -93,6 +93,11 @@ namespace RWPM.Models.ViewModels.Shift
             double period1Minutes = RWPM.Common.Helper.ShiftTimeHelper.GetDuration(StartTime, EndTime).TotalMinutes;
             double totalMinutes = period1Minutes;
 
+            if (period1Minutes > 12 * 60)
+            {
+                yield return new ValidationResult("Thời lượng ca không được vượt quá 12 giờ.", new[] { nameof(EndTime) });
+            }
+
             if (period1Minutes > 0 && period1Minutes < 120)
             {
                 yield return new ValidationResult(Resources.Models.Shift.Invalid_MinShiftDuration, new[] { nameof(EndTime) });

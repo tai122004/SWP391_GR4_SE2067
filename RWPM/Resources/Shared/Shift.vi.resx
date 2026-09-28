@@ -90,4 +90,51 @@
   <data name="AttendancePolicy_InheritNotice" xml:space="preserve">
     <value>Đang áp dụng theo chính sách chung của công ty. Tắt công tắc nếu muốn tùy chỉnh thông số riêng cho ca này.</value>
   </data>
+  <data name="Minutes" xml:space="preserve"><value>phút</value></data>
+  <data name="TemplateOperations" xml:space="preserve"><value>Vận hành mẫu ca</value></data>
+  <data name="EffectiveFrom" xml:space="preserve"><value>Hiệu lực từ</value></data>
+  <data name="EffectiveTo" xml:space="preserve"><value>Hiệu lực đến (tùy chọn)</value></data>
+  <data name="RequiredHeadcount" xml:space="preserve"><value>Số người cần (gợi ý)</value></data>
+  <data name="MaximumHeadcount" xml:space="preserve"><value>Số người tối đa (gợi ý)</value></data>
+  <data name="BreakIsPaid" xml:space="preserve"><value>Thời gian nghỉ được tính công</value></data>
+  <data name="AllowOutsideHours" xml:space="preserve"><value>Cho phép ca ngoài giờ cửa hàng</value></data>
+  <data name="UsedShiftHint" xml:space="preserve"><value>Nếu ca đã được sử dụng, hãy nhân bản để đổi giờ, phạm vi hoặc chính sách chấm công.</value></data>
+  <data name="ListSummaryHeader" xml:space="preserve"><value>Giờ công / Hiệu lực / Nhân sự gợi ý</value></data>
+  <data name="WorkingHours" xml:space="preserve"><value>Khung giờ làm việc</value></data>
+  <data name="BreakTime" xml:space="preserve"><value>Nghỉ giữa ca:</value></data>
+  <data name="PaidBreak" xml:space="preserve"><value>Nghỉ tính công:</value></data>
+  <data name="Validity" xml:space="preserve"><value>Hiệu lực:</value></data>
+  <data name="SuggestedStaff" xml:space="preserve"><value>Nhân sự gợi ý:</value></data>
+  <data name="OutsideStoreHours" xml:space="preserve"><value>Ngoài giờ cửa hàng:</value></data>
+  <data name="ClassificationStatus" xml:space="preserve"><value>Phân loại &amp; trạng thái</value></data>
+  <data name="DescriptionLabel" xml:space="preserve"><value>Mô tả:</value></data>
+  <data name="AttendancePolicySection" xml:space="preserve"><value>Cấu hình Chấm công &amp; Chuyên cần</value></data>
+  <data name="AllowEarlyCheckIn" xml:space="preserve"><value>Cho phép Check-in trước ca</value></data>
+  <data name="AllowLate" xml:space="preserve"><value>Cho phép đi muộn</value></data>
+  <data name="AllowEarlyCheckOut" xml:space="preserve"><value>Cho phép Check-out về sớm</value></data>
+  <data name="AbsentThreshold" xml:space="preserve"><value>Ngưỡng tính bỏ ca</value></data>
+  <data name="CreatedAt" xml:space="preserve"><value>Ngày tạo:</value></data>
+  <data name="CreatedBy" xml:space="preserve"><value>Tạo bởi:</value></data>
+  <data name="Active" xml:space="preserve"><value>Đang hoạt động</value></data>
+  <data name="Inactive" xml:space="preserve"><value>Ngừng hoạt động</value></data>
+  <data name="Yes" xml:space="preserve"><value>Có</value></data>
+  <data name="No" xml:space="preserve"><value>Không</value></data>
+  <data name="NoBreak" xml:space="preserve"><value>Không có</value></data>
+  <data name="NoLimit" xml:space="preserve"><value>không giới hạn</value></data>
+  <data name="NoDescription" xml:space="preserve"><value>Không có mô tả</value></data>
+  <data name="HoursWorked" xml:space="preserve"><value>giờ công</value></data>
+  <data name="PeopleUnit" xml:space="preserve"><value>người</value></data>
+  <data name="DefaultSuffix" xml:space="preserve"><value> (Mặc định)</value></data>
+  <data name="TypePrefix" xml:space="preserve"><value>Loại ca: </value></data>
+  <data name="CloneConfirm" xml:space="preserve"><value>Nhân bản mẫu ca này?</value></data>
+  <data name="Close" xml:space="preserve"><value>Đóng</value></data>
+  <data name="EditThisShift" xml:space="preserve"><value>Chỉnh sửa ca này</value></data>
+  <data name="Index_PageSubtitle" xml:space="preserve"><value>Quản lý danh mục các ca làm việc</value></data>
+  <data name="EffectiveOnFilter" xml:space="preserve"><value>Có hiệu lực vào ngày</value></data>
+  <data name="OvernightSuffix" xml:space="preserve"><value>qua ngày</value></data>
+  <data name="ViewDetails" xml:space="preserve"><value>Xem chi tiết ca làm việc</value></data>
+  <data name="ViewEditActions" xml:space="preserve"><value>Thao tác xem và chỉnh sửa</value></data>
+  <data name="NewCode" xml:space="preserve"><value>Mã mới</value></data>
+  <data name="NewShiftCode" xml:space="preserve"><value>Mã ca mới</value></data>
+  <data name="CloneShift" xml:space="preserve"><value>Nhân bản ca</value></data>
 </root>
