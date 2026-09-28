@@ -175,6 +175,12 @@
   <data name="Create_StoreInfoHint" xml:space="preserve">
     <value>Tài khoản có vai trò nhân sự cửa hàng sẽ được tự động tạo hồ sơ nhân viên vào danh sách nhân sự của chi nhánh.</value>
   </data>
+  <data name="Edit_StoreInfoLinked" xml:space="preserve">
+    <value>Hồ sơ nhân viên đang liên kết. Bạn có thể cập nhật lại cửa hàng và thông tin làm việc bên dưới.</value>
+  </data>
+  <data name="Edit_StoreInfoNotLinked" xml:space="preserve">
+    <value>Tài khoản này hiện chưa có hồ sơ nhân viên (hoặc đã bị xóa bên Employee). Nhập thông tin bên dưới để tự động tạo và liên kết lại hồ sơ nhân viên.</value>
+  </data>
   <data name="Create_UsernameHint" xml:space="preserve">
     <value>Tự động gợi ý từ Họ tên, có thể tùy chỉnh.</value>
   </data>

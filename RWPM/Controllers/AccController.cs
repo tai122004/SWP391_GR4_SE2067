@@ -14,6 +14,7 @@ using RWPM.Common.Exceptions;
 using RWPM.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using RWPM.Models.ViewModels.Employee;
+using RWPM.Common.Enums;
 
 namespace RWPM.Controllers
 {
@@ -247,14 +248,35 @@ namespace RWPM.Controllers
         [Authorize(Roles = "Admin,HR")]
         public async Task<IActionResult> Edit(string id)
         {
-            var category = await _accService.GetByIdAsync(id);
-            if (category == null)
+            var account = await _accService.GetByIdAsync(id);
+            if (account == null)
                 return NotFound();
 
-            return View(new AccUpdateVM(category)
+            var vm = new AccUpdateVM(account)
             {
                 AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync(),
-            });
+                StoreSelectList = await _storeService.GetSelectListAsync()
+            };
+
+            var existingEmp = await _context.Employee.FirstOrDefaultAsync(e => e.Username == id);
+            if (existingEmp != null)
+            {
+                vm.HasExistingEmployee = true;
+                vm.EmployeeId = existingEmp.EmployeeId;
+                vm.EmployeeCode = existingEmp.EmployeeCode;
+                vm.StoreId = existingEmp.StoreId;
+                vm.JoinDate = existingEmp.JoinDate;
+                vm.EmploymentType = existingEmp.EmploymentType;
+                vm.HourlyRate = existingEmp.HourlyRate;
+            }
+            else
+            {
+                vm.HasExistingEmployee = false;
+                vm.EmployeeCode = $"NV{DateTime.Now:yyMMddHHmm}";
+                vm.JoinDate = DateTime.Today;
+            }
+
+            return View(vm);
         }
 
         [Authorize(Roles = "Admin,HR")]
@@ -265,21 +287,94 @@ namespace RWPM.Controllers
             if (id != viewModel.Username)
                 return BadRequest();
 
+            var isStoreRole = viewModel.Role == AccountRole.StoreManager ||
+                              viewModel.Role == AccountRole.SalesStaff;
+
+            if (isStoreRole)
+            {
+                if (!viewModel.StoreId.HasValue || viewModel.StoreId <= 0)
+                {
+                    ModelState.AddModelError(nameof(viewModel.StoreId), "Vui lòng chọn cửa hàng làm việc cho nhân viên này.");
+                }
+                if (string.IsNullOrWhiteSpace(viewModel.EmployeeCode))
+                {
+                    ModelState.AddModelError(nameof(viewModel.EmployeeCode), "Vui lòng nhập mã nhân viên.");
+                }
+                else
+                {
+                    var duplicateEmp = await _context.Employee.AnyAsync(e => e.EmployeeCode == viewModel.EmployeeCode.Trim() && e.Username != viewModel.Username);
+                    if (duplicateEmp)
+                    {
+                        ModelState.AddModelError(nameof(viewModel.EmployeeCode), $"Mã nhân viên '{viewModel.EmployeeCode}' đã được sử dụng bởi nhân viên khác.");
+                    }
+                }
+            }
+
             if (!ModelState.IsValid)
             {
                 viewModel.AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync();
+                viewModel.StoreSelectList = await _storeService.GetSelectListAsync();
                 return View(viewModel);
             }
 
             try
             {
                 await _accService.UpdateAsync(viewModel.ToEntity());
+
+                // Xử lý hồ sơ nhân viên (Employee)
+                var existingEmp = await _context.Employee.FirstOrDefaultAsync(e => e.Username == viewModel.Username);
+                if (existingEmp != null)
+                {
+                    if (isStoreRole)
+                    {
+                        existingEmp.StoreId = viewModel.StoreId!.Value;
+                        if (!string.IsNullOrWhiteSpace(viewModel.EmployeeCode))
+                        {
+                            existingEmp.EmployeeCode = viewModel.EmployeeCode.Trim();
+                        }
+                        if (viewModel.JoinDate.HasValue)
+                        {
+                            existingEmp.JoinDate = viewModel.JoinDate.Value.Date;
+                        }
+                        existingEmp.EmploymentType = viewModel.EmploymentType;
+                        existingEmp.HourlyRate = viewModel.HourlyRate;
+                        existingEmp.UpdatedDate = DateTime.Now;
+                        existingEmp.UpdatedBy = AccountHelper.GetCurrentUsername(HttpContext.User);
+
+                        _context.Employee.Update(existingEmp);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                else if (isStoreRole && viewModel.StoreId.HasValue)
+                {
+                    // Trường hợp tài khoản chưa có hoặc từng bị xóa hồ sơ nhân viên: Tự động tái tạo và liên kết lại
+                    var newEmp = new Employee
+                    {
+                        EmployeeCode = (viewModel.EmployeeCode ?? $"NV{DateTime.Now:yyMMddHHmm}").Trim(),
+                        Username = viewModel.Username,
+                        StoreId = viewModel.StoreId.Value,
+                        JoinDate = viewModel.JoinDate?.Date ?? DateTime.Today,
+                        EmploymentType = viewModel.EmploymentType,
+                        HourlyRate = viewModel.HourlyRate,
+                        IsActive = true
+                    };
+                    await _employeeService.CreateAsync(newEmp);
+                }
+
                 AlertHelper.EditSuccess(TempData);
             }
             catch (ModelValidationException ex)
             {
                 AlertHelper.AddErrorMessage(TempData, ex.GetErrorString(_localizer));
                 viewModel.AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync();
+                viewModel.StoreSelectList = await _storeService.GetSelectListAsync();
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                AlertHelper.AddErrorMessage(TempData, ex.Message);
+                viewModel.AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync();
+                viewModel.StoreSelectList = await _storeService.GetSelectListAsync();
                 return View(viewModel);
             }
 
