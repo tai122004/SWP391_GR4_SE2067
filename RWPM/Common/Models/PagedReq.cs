@@ -2,7 +2,7 @@
 {
     public class PagedReq
     {
-        private int _pageSize = 50;
+        private int _pageSize = 10;
         private const int MaxPageSize = 50;
 
         public int PageNumber { get; set; } = 1;
