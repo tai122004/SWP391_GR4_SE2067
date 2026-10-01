@@ -28,13 +28,7 @@ namespace RWPM.Models.ViewModels.ShiftRegistration
         {
             // Calculate start and end datetime based on WorkDate and Shift.StartTime/EndTime
             var startDateTime = entity.WorkDate.Add(entity.Shift.StartTime);
-            var endDateTime = entity.WorkDate.Add(entity.Shift.EndTime);
-
-            // Handle overnight shifts if EndTime < StartTime
-            if (entity.Shift.EndTime < entity.Shift.StartTime)
-            {
-                endDateTime = endDateTime.AddDays(1);
-            }
+            var endDateTime = entity.WorkDate.Date.AddDays(entity.Shift.EndDayOffset).Add(entity.Shift.EndTime);
 
             var color = GetColorByStatus(entity.Status);
 
@@ -44,7 +38,7 @@ namespace RWPM.Models.ViewModels.ShiftRegistration
             return new ShiftRegistrationEventVM
             {
                 id = entity.ShiftRegistrationId,
-                title = $"{entity.Shift.ShiftCode} - {entity.Employee.EmployeeCode}",
+                title = $"{entity.Shift.ShiftName} - {entity.Employee.EmployeeCode}",
                 start = startDateTime.ToString("yyyy-MM-ddTHH:mm:ss"),
                 end = endDateTime.ToString("yyyy-MM-ddTHH:mm:ss"),
                 backgroundColor = color,

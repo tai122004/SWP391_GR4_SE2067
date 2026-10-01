@@ -49,12 +49,13 @@ namespace RWPM.Controllers
             if (userStoreId.HasValue)
             {
                 ViewBag.Shifts = _context.Shift
-                    .Where(x => x.IsActive && (x.StoreId == null || x.StoreId == userStoreId.Value))
+                    .Include(x => x.StoreShifts)
+                    .Where(x => x.IsActive && x.StoreShifts.Any(link => link.IsActive && link.StoreId == userStoreId.Value && link.Store.IsActive))
                     .ToList();
             }
             else
             {
-                ViewBag.Shifts = _context.Shift.Where(x => x.IsActive).ToList();
+                ViewBag.Shifts = isAdmin ? _context.Shift.Include(x => x.StoreShifts).Where(x => x.IsActive).ToList() : new List<Shift>();
             }
             
             if (isAdmin)
@@ -71,6 +72,28 @@ namespace RWPM.Controllers
             }
 
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AvailableShifts(int employeeId, DateTime workDate)
+        {
+            var current = await _context.Employee.AsNoTracking().FirstOrDefaultAsync(x => x.Username == User.Identity!.Name);
+            var chainAccess = User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("AreaManager");
+            if (!chainAccess && !User.IsInRole("StoreManager"))
+            {
+                if (current == null) return Forbid();
+                employeeId = current.EmployeeId;
+            }
+            var employee = await _context.Employee.AsNoTracking().FirstOrDefaultAsync(x => x.EmployeeId == employeeId && x.IsActive);
+            if (employee == null) return NotFound();
+            if (!chainAccess && User.IsInRole("StoreManager") && (current == null || current.StoreId != employee.StoreId)) return Forbid();
+            var day = workDate.Date;
+            var shifts = await _context.Shift.AsNoTracking().Where(x => x.IsActive && x.EffectiveFrom <= day
+                && (x.EffectiveTo == null || x.EffectiveTo >= day)
+                && x.StoreShifts.Any(link => link.StoreId == employee.StoreId && link.IsActive && link.Store.IsActive))
+                .OrderBy(x => x.StartTime).ToListAsync();
+            return Json(shifts.Select(x => new { id = x.ShiftId, name = x.ShiftName,
+                time = $"{x.StartTime:hh\\:mm} – {x.EndTime:hh\\:mm}{(x.EndDayOffset == 1 ? " (+1)" : "")}" }));
         }
 
         // GET: ShiftRegistration/GetEvents
@@ -166,7 +189,7 @@ namespace RWPM.Controllers
                     {
                         return BadRequest(new { success = false, message = $"Ca làm việc có ID {sId} không tồn tại hoặc đã ngừng hoạt động." });
                     }
-                    if (shift.StoreId.HasValue && shift.StoreId.Value != employee.StoreId)
+                    if (!await _context.StoreShift.AnyAsync(link => link.ShiftId == sId && link.StoreId == employee.StoreId && link.IsActive && link.Store.IsActive))
                     {
                         return BadRequest(new { success = false, message = $"Ca làm việc {shift.ShiftName} không áp dụng cho chi nhánh của nhân viên." });
                     }

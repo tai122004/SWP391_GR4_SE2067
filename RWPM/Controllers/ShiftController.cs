@@ -140,21 +140,6 @@ namespace RWPM.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Clone(int id, string newCode)
-        {
-            try
-            {
-                await _shiftService.CloneAsync(id, newCode);
-                AlertHelper.CreateSuccess(TempData);
-            }
-            catch (Exception ex)
-            {
-                AlertHelper.AddErrorMessage(TempData, ex.Message);
-            }
-            return RedirectToAction(nameof(Index));
-        }
 
         // POST: Shift/UpdateActiveStatus/5
         [HttpPost]
