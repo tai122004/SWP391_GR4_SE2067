@@ -98,7 +98,7 @@
   <data name="MaximumHeadcount" xml:space="preserve"><value>Maximum staff (suggested)</value></data>
   <data name="BreakIsPaid" xml:space="preserve"><value>Break time is paid</value></data>
   <data name="AllowOutsideHours" xml:space="preserve"><value>Allow shift outside store hours</value></data>
-  <data name="UsedShiftHint" xml:space="preserve"><value>If this shift has been used, clone it to change its time, scope, or attendance policy.</value></data>
+  <data name="UsedShiftHint" xml:space="preserve"><value>If this shift has been used, create a new shift to change its hours, validity or attendance policy.</value></data>
   <data name="ListSummaryHeader" xml:space="preserve"><value>Hours / Validity / Suggested staff</value></data>
   <data name="WorkingHours" xml:space="preserve"><value>Working hours</value></data>
   <data name="BreakTime" xml:space="preserve"><value>Break:</value></data>
@@ -126,7 +126,6 @@
   <data name="PeopleUnit" xml:space="preserve"><value>people</value></data>
   <data name="DefaultSuffix" xml:space="preserve"><value> (Default)</value></data>
   <data name="TypePrefix" xml:space="preserve"><value>Type: </value></data>
-  <data name="CloneConfirm" xml:space="preserve"><value>Clone this shift?</value></data>
   <data name="Close" xml:space="preserve"><value>Close</value></data>
   <data name="EditThisShift" xml:space="preserve"><value>Edit this shift</value></data>
   <data name="Index_PageSubtitle" xml:space="preserve"><value>Manage the shift catalog</value></data>
@@ -134,7 +133,44 @@
   <data name="OvernightSuffix" xml:space="preserve"><value>overnight</value></data>
   <data name="ViewDetails" xml:space="preserve"><value>View shift details</value></data>
   <data name="ViewEditActions" xml:space="preserve"><value>View and edit actions</value></data>
-  <data name="NewCode" xml:space="preserve"><value>New code</value></data>
-  <data name="NewShiftCode" xml:space="preserve"><value>New shift code</value></data>
-  <data name="CloneShift" xml:space="preserve"><value>Clone shift</value></data>
+  <data name="ApplicableStores" xml:space="preserve"><value>Applicable stores</value></data>
+  <data name="EndsNextDay" xml:space="preserve"><value>Ends the next day</value></data>
+  <data name="NextDay" xml:space="preserve"><value>Next day</value></data>
+  <data name="UnpaidBreak" xml:space="preserve"><value>Unpaid break</value></data>
+  <data name="BreakStart" xml:space="preserve"><value>Break starts at (optional)</value></data>
+  <data name="BreakEnd" xml:space="preserve"><value>Break ends at (optional)</value></data>
+  <data name="InheritDefault" xml:space="preserve"><value>Use company default</value></data>
+  <data name="CancelAction" xml:space="preserve"><value>Cancel</value></data>
+  <data name="SaveAction" xml:space="preserve"><value>Save</value></data>
+  <data name="CreateAction" xml:space="preserve"><value>Create shift</value></data>
+  <data name="AllStoresFilter" xml:space="preserve"><value>All stores</value></data>
+  <data name="AllStatuses" xml:space="preserve"><value>All statuses</value></data>
+  <data name="FilterAction" xml:space="preserve"><value>Filter</value></data>
+  <data name="WorkTime" xml:space="preserve"><value>Work hours</value></data>
+  <data name="HoursEffective" xml:space="preserve"><value>Work hours / validity</value></data>
+  <data name="Actions" xml:space="preserve"><value>Actions</value></data>
+  <data name="ViewAction" xml:space="preserve"><value>View details</value></data>
+  <data name="EditAction" xml:space="preserve"><value>Edit</value></data>
+  <data name="CloseAction" xml:space="preserve"><value>Close</value></data>
+  <data name="NoResults" xml:space="preserve"><value>No shifts found.</value></data>
+  <data name="CreatedInfo" xml:space="preserve"><value>Created</value></data>
+  <data name="ValidationName" xml:space="preserve"><value>Shift name must contain 1 to 100 characters.</value></data>
+  <data name="ValidationDescription" xml:space="preserve"><value>Description cannot exceed 255 characters.</value></data>
+  <data name="ValidationTime" xml:space="preserve"><value>Invalid shift time or end day.</value></data>
+  <data name="ValidationDuration" xml:space="preserve"><value>Shift duration must be 2 to 12 hours. Check the next-day option.</value></data>
+  <data name="ValidationBreakFields" xml:space="preserve"><value>Enter both break times and their days.</value></data>
+  <data name="ValidationBreakRange" xml:space="preserve"><value>Break must be within the shift, end after it starts, and last no more than 60 minutes.</value></data>
+  <data name="ValidationWorkDuration" xml:space="preserve"><value>Work time after subtracting the break must be at least 2 hours.</value></data>
+  <data name="ValidationDates" xml:space="preserve"><value>Invalid effective dates.</value></data>
+  <data name="ValidationTolerance" xml:space="preserve"><value>Lateness and early-departure tolerances must be 0 to 60 minutes.</value></data>
+  <data name="ValidationGraceThreshold" xml:space="preserve"><value>Lateness tolerance must be less than the company absence threshold.</value></data>
+  <data name="ValidationStores" xml:space="preserve"><value>Select at least one store.</value></data>
+  <data name="SelectStores" xml:space="preserve"><value>Select stores</value></data>
+  <data name="SelectedStoresCount" xml:space="preserve"><value>{0} stores selected</value></data>
+  <data name="SearchStores" xml:space="preserve"><value>Search by store name or code</value></data>
+  <data name="SelectAllStores" xml:space="preserve"><value>Select all</value></data>
+  <data name="ClearAllStores" xml:space="preserve"><value>Clear all</value></data>
+  <data name="ViewSelectedStores" xml:space="preserve"><value>View selected stores</value></data>
+  <data name="LatenessTolerance" xml:space="preserve"><value>Lateness tolerance (minutes)</value></data>
+  <data name="EarlyDepartureTolerance" xml:space="preserve"><value>Early departure tolerance (minutes)</value></data>
 </root>

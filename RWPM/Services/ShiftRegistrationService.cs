@@ -150,6 +150,7 @@ namespace RWPM.Services
 
         public async Task UpdateStatusAsync(int id, RegistrationStatus status)
         {
+            await using var transaction = await _context.Database.BeginTransactionAsync();
             var entity = await _context.ShiftRegistration
                 .Include(x => x.Employee)
                 .ThenInclude(e => e.Account)
@@ -157,6 +158,8 @@ namespace RWPM.Services
                 
             if (entity != null)
             {
+                if (status == RegistrationStatus.Approved)
+                    await ValidateScheduleConstraintsAsync(entity.EmployeeId, new List<ShiftRegistration> { entity }, new List<int> { id });
                 entity.Status = status;
                 await _context.SaveChangesAsync();
 
@@ -165,10 +168,12 @@ namespace RWPM.Services
                     await AutoScheduleForSalesStaffAsync(new List<ShiftRegistration> { entity });
                 }
             }
+            await transaction.CommitAsync();
         }
 
         public async Task UpdateBulkStatusAsync(List<int> ids, RegistrationStatus status)
         {
+            await using var transaction = await _context.Database.BeginTransactionAsync();
             var entities = await _context.ShiftRegistration
                 .Include(x => x.Employee)
                 .ThenInclude(e => e.Account)
@@ -176,6 +181,10 @@ namespace RWPM.Services
                 .ToListAsync();
 
             if (!entities.Any()) return;
+
+            if (status == RegistrationStatus.Approved)
+                foreach (var group in entities.GroupBy(x => x.EmployeeId))
+                    await ValidateScheduleConstraintsAsync(group.Key, group.ToList(), ids);
 
             foreach (var entity in entities)
             {
@@ -195,6 +204,7 @@ namespace RWPM.Services
                     await AutoScheduleForSalesStaffAsync(salesStaffRegistrations);
                 }
             }
+            await transaction.CommitAsync();
         }
 
         private async Task AutoScheduleForSalesStaffAsync(List<ShiftRegistration> approvedRegistrations)
@@ -244,6 +254,8 @@ namespace RWPM.Services
 
             if (newShifts.Any())
             {
+                foreach (var group in newShifts.GroupBy(x => x.EmployeeId))
+                    await ValidateScheduleConstraintsAsync(group.Key, group.ToList());
                 _context.ShiftRegistration.AddRange(newShifts);
                 await _context.SaveChangesAsync();
             }
@@ -322,11 +334,12 @@ namespace RWPM.Services
             
             foreach (var p in pendingRegistrations)
             {
-                p.Shift = shifts.FirstOrDefault(s => s.ShiftId == p.ShiftId);
-                if (p.Shift != null)
-                {
-                    combinedSchedule.Add(p);
-                }
+                var shift = shifts.FirstOrDefault(s => s.ShiftId == p.ShiftId);
+                if (shift == null || !shift.IsAvailableOn(p.WorkDate)
+                    || !await _context.StoreShift.AnyAsync(x => x.ShiftId == p.ShiftId && x.StoreId == p.StoreId && x.IsActive && x.Store.IsActive))
+                    throw new Exception("Ca không hoạt động, hết hiệu lực hoặc chưa được áp dụng tại chi nhánh.");
+                p.Shift = shift;
+                combinedSchedule.Add(p);
             }
 
             combinedSchedule = combinedSchedule.OrderBy(x => x.WorkDate.Date).ThenBy(x => x.Shift.StartTime).ToList();
@@ -335,9 +348,7 @@ namespace RWPM.Services
             {
                 var current = combinedSchedule[i];
                 var currentStart = current.WorkDate.Date.Add(current.Shift.StartTime);
-                var currentEnd = current.Shift.EndTime < current.Shift.StartTime 
-                    ? current.WorkDate.Date.AddDays(1).Add(current.Shift.EndTime) 
-                    : current.WorkDate.Date.Add(current.Shift.EndTime);
+                var currentEnd = current.WorkDate.Date.AddDays(current.Shift.EndDayOffset).Add(current.Shift.EndTime);
 
                 for (int j = i + 1; j < combinedSchedule.Count; j++)
                 {
@@ -349,9 +360,7 @@ namespace RWPM.Services
                     }
 
                     var nextStart = next.WorkDate.Date.Add(next.Shift.StartTime);
-                    var nextEnd = next.Shift.EndTime < next.Shift.StartTime 
-                        ? next.WorkDate.Date.AddDays(1).Add(next.Shift.EndTime) 
-                        : next.WorkDate.Date.Add(next.Shift.EndTime);
+                    var nextEnd = next.WorkDate.Date.AddDays(next.Shift.EndDayOffset).Add(next.Shift.EndTime);
 
                     // 1. Chống trùng ca
                     if (currentStart < nextEnd && nextStart < currentEnd)

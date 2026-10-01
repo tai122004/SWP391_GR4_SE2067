@@ -228,8 +228,9 @@ namespace RWPM.Services.Implementation
                 .ToListAsync();
 
             var shifts = await _ctx.Shift.AsNoTracking()
-                .Where(s => s.StoreId == storeId || s.IsTemplate)
-                .OrderBy(s => s.ShiftCode)
+                .Include(s => s.StoreShifts).ThenInclude(x => x.Store)
+                .Where(s => s.StoreShifts.Any(x => x.StoreId == storeId && x.IsActive))
+                .OrderBy(s => s.StartTime).ThenBy(s => s.ShiftName)
                 .ToListAsync();
 
             var today = DateTime.Today;

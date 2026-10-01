@@ -319,11 +319,9 @@
                     <table class="table modern-table align-middle mb-0">
                         <thead>
                             <tr>
-                                <th>@StoreSharedResource.ShiftTable_Code</th>
                                 <th>@StoreSharedResource.ShiftTable_Name</th>
                                 <th>@StoreSharedResource.ShiftTable_TimeFrame</th>
                                 <th>@StoreSharedResource.ShiftTable_BreakMinutes</th>
-                                <th>@StoreSharedResource.ShiftTable_Scope</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -334,29 +332,18 @@
                                     var sStart = $"{shift.StartTime.Hours:D2}h{shift.StartTime.Minutes:D2}";
                                     var sEnd = $"{shift.EndTime.Hours:D2}h{shift.EndTime.Minutes:D2}";
                                     <tr>
-                                        <td class="fw-bold text-primary">@shift.ShiftCode</td>
                                         <td>@shift.ShiftName</td>
                                         <td class="fw-semibold text-info-emphasis">
-                                            <i class="bi bi-clock me-1"></i>@sStart - @sEnd
+                                            @sStart - @sEnd @(shift.EndDayOffset == 1 ? "(+1)" : "")
                                         </td>
                                         <td>@shift.BreakMinutes @StoreSharedResource.Unit_Minutes</td>
-                                        <td>
-                                            @if (shift.IsTemplate)
-                                            {
-                                                <span class="badge bg-info-subtle text-info border border-info-subtle">@StoreSharedResource.ShiftScope_SystemTemplate</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">@StoreSharedResource.ShiftScope_BranchSpecific</span>
-                                            }
-                                        </td>
                                     </tr>
                                 }
                             }
                             else
                             {
                                 <tr>
-                                    <td colspan="5" class="text-center text-muted py-4">@StoreSharedResource.ShiftTable_Empty</td>
+                                    <td colspan="3" class="text-center text-muted py-4">@StoreSharedResource.ShiftTable_Empty</td>
                                 </tr>
                             }
                         </tbody>
