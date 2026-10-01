@@ -27,16 +27,20 @@ namespace RWPM.Services.Implementation
         public async Task<AttendanceRecord?> GetTodayRecordAsync(string username, int? shiftId = null)
         {
             var query = _context.AttendanceRecord
-                .Where(r => r.Username == username && r.Date == DateTime.Today.Date && !r.CheckOutTime.HasValue);
+                .Include(r => r.Shift)
+                .Where(r => r.Username == username && r.Date >= DateTime.Today.AddDays(-1)
+                    && r.Date <= DateTime.Today && !r.CheckOutTime.HasValue);
             
             if (shiftId.HasValue)
             {
                 query = query.Where(r => r.ShiftId == shiftId.Value);
             }
 
-            return await query
+            var records = await query
                 .OrderByDescending(r => r.AttendanceId)
-                .FirstOrDefaultAsync();
+                .ToListAsync();
+            return records.FirstOrDefault(r => r.Date.Date == DateTime.Today
+                || r.Shift?.EndDayOffset == 1);
         }
 
         public async Task<AttendanceRecord> CheckInAsync(string username, double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
@@ -57,7 +61,8 @@ namespace RWPM.Services.Implementation
             var registrations = await _context.Set<ShiftRegistration>()
                 .Include(sr => sr.Shift)
                 .Include(sr => sr.Store)
-                .Where(sr => sr.EmployeeId == employee.EmployeeId && sr.WorkDate == today && sr.Status == RWPM.Common.Enums.RegistrationStatus.Approved && sr.Shift.IsActive)
+                .Where(sr => sr.EmployeeId == employee.EmployeeId && sr.WorkDate >= today.AddDays(-1)
+                    && sr.WorkDate <= today.AddDays(1) && sr.Status == RWPM.Common.Enums.RegistrationStatus.Approved)
                 .ToListAsync();
 
             if (!registrations.Any())
@@ -65,8 +70,9 @@ namespace RWPM.Services.Implementation
                 throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_NoShift"));
             }
 
-            var now = DateTime.Now.TimeOfDay;
-            ShiftRegistration matchedRegistration = null;
+            var nowAt = DateTime.Now;
+            var now = nowAt.TimeOfDay;
+            ShiftRegistration? matchedRegistration = null;
             bool isValid = false;
             string errorMessage = "Không nằm trong thời gian cho phép chấm công.";
 
@@ -74,13 +80,12 @@ namespace RWPM.Services.Implementation
             foreach (var reg in registrations)
             {
                 var s = reg.Shift;
-                int eCheckIn = s.EarlyCheckInMinutes ?? RWPM.Common.Constants.ShiftDefaults.EarlyCheckInMinutes;
-                int lThreshold = s.LateThresholdMinutes ?? RWPM.Common.Constants.ShiftDefaults.LateThresholdMinutes;
-
-                var start1Early = s.StartTime.Subtract(TimeSpan.FromMinutes(eCheckIn));
-                var start1Late = s.StartTime.Add(TimeSpan.FromMinutes(lThreshold));
-
-                if (now >= start1Early && now <= start1Late)
+                int eCheckIn = ShiftDefaults.EarlyCheckInMinutes;
+                int lThreshold = ShiftDefaults.LateThresholdMinutes;
+                var startAt = reg.WorkDate.Date.Add(s.StartTime);
+                var start1Early = startAt.AddMinutes(-eCheckIn);
+                var start1Late = startAt.AddMinutes(lThreshold);
+                if (nowAt >= start1Early && nowAt <= start1Late)
                 {
                     matchedRegistration = reg;
                     isValid = true;
@@ -90,12 +95,12 @@ namespace RWPM.Services.Implementation
 
             if (matchedRegistration == null)
             {
-                matchedRegistration = registrations.OrderBy(r => Math.Abs((now - r.Shift.StartTime).TotalMinutes)).First();
+                matchedRegistration = registrations.OrderBy(r => Math.Abs((nowAt - r.WorkDate.Date.Add(r.Shift.StartTime)).TotalMinutes)).First();
                 var shift = matchedRegistration.Shift;
                 
-                int eCheckIn = shift.EarlyCheckInMinutes ?? RWPM.Common.Constants.ShiftDefaults.EarlyCheckInMinutes;
-                int lThreshold = shift.LateThresholdMinutes ?? RWPM.Common.Constants.ShiftDefaults.LateThresholdMinutes;
-                if (now < shift.StartTime.Subtract(TimeSpan.FromMinutes(eCheckIn)))
+                int eCheckIn = ShiftDefaults.EarlyCheckInMinutes;
+                int lThreshold = ShiftDefaults.LateThresholdMinutes;
+                if (nowAt < matchedRegistration.WorkDate.Date.Add(shift.StartTime).AddMinutes(-eCheckIn))
                 {
                     errorMessage = string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_TooEarlyIn"), shift.ShiftName, eCheckIn);
                 }
@@ -114,7 +119,7 @@ namespace RWPM.Services.Implementation
             var targetStore = matchedRegistration.Store ?? employee.Store; // Fallback to employee store if null
 
             var existingRecordForShift = await _context.AttendanceRecord
-                .FirstOrDefaultAsync(r => r.Username == username && r.Date == today && r.ShiftId == matchedShift.ShiftId);
+                .FirstOrDefaultAsync(r => r.Username == username && r.Date == matchedRegistration.WorkDate.Date && r.ShiftId == matchedShift.ShiftId);
 
             if (existingRecordForShift != null)
             {
@@ -159,7 +164,7 @@ namespace RWPM.Services.Implementation
             var record = new AttendanceRecord
             {
                 Username = username,
-                Date = today,
+                Date = matchedRegistration.WorkDate.Date,
                 CheckInTime = now,
                 ShiftId = matchedShift.ShiftId,
                 CheckInLatitude = userLatitude,
@@ -197,12 +202,12 @@ namespace RWPM.Services.Implementation
             if (shift != null)
             {
                 int earlyCheckOutMinutes = shift.EarlyCheckOutMinutes ?? RWPM.Common.Constants.ShiftDefaults.EarlyCheckOutMinutes;
-                var minCheckOutTime = shift.EndTime.Subtract(TimeSpan.FromMinutes(earlyCheckOutMinutes));
-                var now = DateTime.Now.TimeOfDay;
+                var minCheckOutTime = record.Date.Date.AddDays(shift.EndDayOffset).Add(shift.EndTime).AddMinutes(-earlyCheckOutMinutes);
+                var now = DateTime.Now;
 
                 if (now < minCheckOutTime)
                 {
-                    throw new Exception(string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_TooEarlyOut"), minCheckOutTime.ToString(@"hh\:mm"), earlyCheckOutMinutes, shift.EndTime.ToString(@"hh\:mm")));
+                    throw new Exception(string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_TooEarlyOut"), minCheckOutTime.ToString("dd/MM HH:mm"), earlyCheckOutMinutes, shift.EndTime.ToString(@"hh\:mm")));
                 }
             }
 
@@ -211,7 +216,7 @@ namespace RWPM.Services.Implementation
             
             var registration = await _context.Set<ShiftRegistration>()
                 .Include(sr => sr.Store)
-                .FirstOrDefaultAsync(sr => employee != null && sr.EmployeeId == employee.EmployeeId && sr.WorkDate == DateTime.Today && sr.ShiftId == record.ShiftId && sr.Status == RWPM.Common.Enums.RegistrationStatus.Approved);
+                .FirstOrDefaultAsync(sr => employee != null && sr.EmployeeId == employee.EmployeeId && sr.WorkDate == record.Date && sr.ShiftId == record.ShiftId && sr.Status == RWPM.Common.Enums.RegistrationStatus.Approved);
             
             var targetStore = registration?.Store ?? employee?.Store;
 

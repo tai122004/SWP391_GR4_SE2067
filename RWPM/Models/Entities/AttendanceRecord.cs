@@ -47,5 +47,20 @@ namespace RWPM.Models.Entities
         public bool IsAdjusted { get; set; } = false;
 
         public virtual ICollection<AttendanceAdjustmentHistory> AdjustmentHistories { get; set; } = new List<AttendanceAdjustmentHistory>();
+
+        [NotMapped]
+        public double? WorkHours
+        {
+            get
+            {
+                if (Shift == null || !CheckInTime.HasValue || !CheckOutTime.HasValue) return null;
+                var start = Date.Date.Add(Shift.StartTime);
+                var checkIn = new[] { -1, 0, 1 }.Select(day => Date.Date.AddDays(day).Add(CheckInTime.Value))
+                    .OrderBy(time => Math.Abs((time - start).TotalMinutes)).First();
+                var checkOut = new[] { -1, 0, 1, 2 }.Select(day => Date.Date.AddDays(day).Add(CheckOutTime.Value))
+                    .Where(time => time >= checkIn).OrderBy(time => time).First();
+                return RWPM.Common.Helper.ShiftTimeHelper.GetWorkedHours(Date, Shift, checkIn, checkOut);
+            }
+        }
     }
 }

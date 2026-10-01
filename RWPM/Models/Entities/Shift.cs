@@ -1,99 +1,47 @@
-using RWPM.Common.Enums;
 using RWPM.Models.Common;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace RWPM.Models.Entities
+namespace RWPM.Models.Entities;
+
+public class Shift : AuditableEntity, IActivatable
 {
-    public class Shift : AuditableEntity, IActivatable
+    [Key] public int ShiftId { get; set; }
+    [Required, MaxLength(100)] public string ShiftName { get; set; } = string.Empty;
+    [Column(TypeName = "time(0)")] public TimeSpan StartTime { get; set; }
+    [Column(TypeName = "time(0)")] public TimeSpan EndTime { get; set; }
+    public byte EndDayOffset { get; set; }
+    [Column(TypeName = "time(0)")] public TimeSpan? BreakStartTime { get; set; }
+    [Column(TypeName = "time(0)")] public TimeSpan? BreakEndTime { get; set; }
+    public byte? BreakStartDayOffset { get; set; }
+    public byte? BreakEndDayOffset { get; set; }
+    [Required] public int? GracePeriodMinutes { get; set; } = RWPM.Common.Constants.ShiftDefaults.GracePeriodMinutes;
+    [Required] public int? EarlyCheckOutMinutes { get; set; } = RWPM.Common.Constants.ShiftDefaults.EarlyCheckOutMinutes;
+    [Column(TypeName = "date")] public DateTime EffectiveFrom { get; set; } = DateTime.Today;
+    [Column(TypeName = "date")] public DateTime? EffectiveTo { get; set; }
+    [MaxLength(255)] public string? Description { get; set; }
+    public bool IsActive { get; set; } = true;
+    public ICollection<StoreShift> StoreShifts { get; set; } = new List<StoreShift>();
+    [NotMapped] public TimeSpan Duration => EndTime.Add(TimeSpan.FromDays(EndDayOffset)) - StartTime;
+    [NotMapped] public double BreakMinutes => BreakStartTime.HasValue && BreakEndTime.HasValue
+        ? (BreakEndTime.Value.Add(TimeSpan.FromDays(BreakEndDayOffset ?? 0))
+           - BreakStartTime.Value.Add(TimeSpan.FromDays(BreakStartDayOffset ?? 0))).TotalMinutes : 0;
+    // Every configured break is unpaid; use the same calculation as attendance.
+    [NotMapped] public double ScheduledWorkHours
     {
-        [Key]
-        public int ShiftId { get; set; }
-
-        [Required]
-        [MaxLength(30)]
-        public string ShiftCode { get; set; } = string.Empty;
-
-        [Required]
-        [MaxLength(100)]
-        public string ShiftName { get; set; } = string.Empty;
-
-        public ShiftType Type { get; set; }
-
-        // Khung giờ làm việc
-        public TimeSpan StartTime { get; set; }
-        public TimeSpan EndTime { get; set; }
-
-        public int BreakMinutes { get; set; }
-        public bool IsBreakPaid { get; set; }
-        [Column(TypeName = "date")]
-        public DateTime EffectiveFrom { get; set; } = DateTime.Today;
-        [Column(TypeName = "date")]
-        public DateTime? EffectiveTo { get; set; }
-        public bool AllowOutsideStoreHours { get; set; }
-        [MaxLength(255)]
-        public string? OutsideHoursReason { get; set; }
-        public int? DefaultRequiredHeadcount { get; set; }
-        public int? DefaultMaximumHeadcount { get; set; }
-
-        // === CẤU HÌNH THỜI GIAN CHẤM CÔNG (Attendance Policy) ===
-
-        /// <summary>
-        /// Số phút cho phép đi muộn trước khi tính là "Late".
-        /// Null = kế thừa cấu hình mặc định từ <see cref="Common.Constants.ShiftDefaults.GracePeriodMinutes"/>.
-        /// Ví dụ: 5 → quẹt thẻ lúc 08:35 vẫn "Đúng giờ" nếu ca bắt đầu 08:30.
-        /// </summary>
-        public int? GracePeriodMinutes { get; set; }
-
-        /// <summary>
-        /// Số phút cho phép quẹt thẻ TRƯỚC giờ bắt đầu ca.
-        /// Null = kế thừa cấu hình mặc định từ <see cref="Common.Constants.ShiftDefaults.EarlyCheckInMinutes"/>.
-        /// Ví dụ: 15 → ca 08:30, cho phép quẹt thẻ từ 08:15.
-        /// </summary>
-        public int? EarlyCheckInMinutes { get; set; }
-
-        /// <summary>
-        /// Số phút cho phép quẹt thẻ về sớm trước khi hết ca mà vẫn tính là "Đúng giờ".
-        /// Null = kế thừa cấu hình mặc định từ <see cref="Common.Constants.ShiftDefaults.EarlyCheckOutMinutes"/>.
-        /// Ví dụ: 5 → ca kết thúc 16:00, quẹt thẻ từ 15:55 vẫn được ghi nhận là hoàn thành ca đúng giờ.
-        /// </summary>
-        public int? EarlyCheckOutMinutes { get; set; }
-
-        /// <summary>
-        /// Số phút tối đa được phép đi muộn trước khi bị tính "Vắng mặt" (Bỏ ca).
-        /// Null = kế thừa cấu hình mặc định từ <see cref="Common.Constants.ShiftDefaults.LateThresholdMinutes"/>.
-        /// Ví dụ: 60 → quá 1 tiếng không quẹt thẻ = Bỏ ca.
-        /// </summary>
-        public int? LateThresholdMinutes { get; set; }
-
-        // === PHÂN LOẠI CA ===
-
-        /// <summary>
-        /// true = Ca mẫu (Template) dùng chung cho toàn hệ thống.
-        /// false = Ca tùy chỉnh (Custom) cho sự kiện đặc biệt hoặc chi nhánh riêng.
-        /// </summary>
-        public bool IsTemplate { get; set; } = true;
-
-        /// <summary>
-        /// null = Áp dụng toàn hệ thống (mọi chi nhánh).
-        /// Có giá trị = Ca riêng của chi nhánh tương ứng.
-        /// </summary>
-        public int? StoreId { get; set; }
-
-        public Store? Store { get; set; }
-
-        [MaxLength(255)]
-        public string Description { get; set; } = string.Empty;
-
-        public bool IsActive { get; set; } = true;
+        get
+        {
+            var workDate = new DateTime(2000, 1, 1);
+            var (start, end) = RWPM.Common.Helper.ShiftTimeHelper.GetDateTimeRange(workDate, this);
+            return RWPM.Common.Helper.ShiftTimeHelper.GetWorkedHours(workDate, this, start, end);
+        }
     }
+}
 
-    public static class ShiftExtensions
-    {
-        public static bool IsAvailableOn(this Shift shift, DateTime workDate) =>
-            shift.IsActive && shift.EffectiveFrom.Date <= workDate.Date
-            && (!shift.EffectiveTo.HasValue || shift.EffectiveTo.Value.Date >= workDate.Date);
-
-        public static string GetLocalizedName(this Shift shift) => shift.ShiftName;
-    }
+public static class ShiftExtensions
+{
+    public static bool IsAvailableOn(this Shift shift, DateTime workDate) => shift.IsActive
+        && shift.EffectiveFrom.Date <= workDate.Date
+        && (!shift.EffectiveTo.HasValue || shift.EffectiveTo.Value.Date >= workDate.Date);
+    public static string GetLocalizedName(this Shift shift) => shift.ShiftName;
 }

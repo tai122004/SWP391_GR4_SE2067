@@ -412,12 +412,7 @@
             @if (ViewBag.Shifts != null)
             {
                 <text>
-                shiftsList = [
-                    @foreach (var s in ViewBag.Shifts)
-                    {
-                        @:{ id: '@s.ShiftId', name: '@s.ShiftName' },
-                    }
-                ];
+                shiftsList = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(((IEnumerable<RWPM.Models.Entities.Shift>)ViewBag.Shifts).Select(s => new { id = s.ShiftId, name = s.ShiftName, from = s.EffectiveFrom.ToString("yyyy-MM-dd"), to = s.EffectiveTo?.ToString("yyyy-MM-dd") })));
                 </text>
             }
             
@@ -779,7 +774,8 @@
                             let today = new Date();
                             today.setHours(0,0,0,0);
                             let cellDateObj = new Date(tempDate);
-                            let disabled = cellDateObj < today ? "disabled" : "";
+                            let unavailable = cellDateStr < shift.from || (shift.to && cellDateStr > shift.to);
+                            let disabled = cellDateObj < today || unavailable ? "disabled" : "";
                             let label = cellDateObj < today ? "<br><small class='text-muted'>@SharedResource.ResourceManager.GetString("Shift_Overdue")</small>" : "";
                             let titleStr = cellDateObj < today ? "@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrPast"))" : "";
 
@@ -954,7 +950,18 @@
             $('.shift-checkbox').prop('checked', false);
             $('#saveShiftBtnContainer').hide();
             $('#searchShiftInput').val('');
-            $('.shift-option').show();
+            $('.shift-list-container').empty();
+            $.get('@Url.Action("AvailableShifts", "ShiftRegistration")', { employeeId: $('#EmployeeId').val(), workDate: $('#WorkDate').val() })
+                .done(function(shifts) {
+                    const container = $('.shift-list-container').empty();
+                    if (!shifts.length) container.text(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(RWPM.Resources.Shared.Shift.ResourceManager.GetString("NoResults"))));
+                    shifts.forEach(function(shift) {
+                        const row = $('<div>').addClass('shift-item d-flex justify-content-between align-items-center py-3 border-bottom shift-option').attr('data-shift-name', shift.name);
+                        const label = $('<label>').attr('for', 'shift_' + shift.id).text(shift.name + ' (' + shift.time + ')');
+                        const input = $('<input>').attr({ type: 'checkbox', id: 'shift_' + shift.id, name: 'ShiftId', value: shift.id }).addClass('form-check-input shift-checkbox');
+                        row.append(label, input); container.append(row);
+                    });
+                }).fail(function() { $('.shift-list-container').text(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(SharedResource.ResourceManager.GetString("Shift_SysError")))); });
 
             var modal = new bootstrap.Modal(document.getElementById('shiftModal'));
             modal.show();

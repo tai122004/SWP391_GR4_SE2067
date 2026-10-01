@@ -1,0 +1,50 @@
+@model RWPM.Models.ViewModels.Shift.ShiftCreateVM
+@using R = RWPM.Resources.Shared.Shift
+@using M = RWPM.Resources.Models.Shift
+@functions { string T(string key) => R.ResourceManager.GetString(key) ?? key; }
+<div asp-validation-summary="All" class="text-danger mb-3"></div>
+@if (Model is RWPM.Models.ViewModels.Shift.ShiftEditVM) { <p class="text-muted small">@T("UsedShiftHint")</p> }
+<div class="card mb-3"><div class="card-body">
+    <div class="row g-3">
+        <div class="col-md-6"><label asp-for="ShiftName" class="form-label">@M.ShiftName *</label><input asp-for="ShiftName" class="form-control" maxlength="100" /><span asp-validation-for="ShiftName" class="text-danger"></span></div>
+        <div class="col-md-6"><label for="shift-store-toggle" class="form-label">@T("ApplicableStores") *</label>
+            <div class="dropdown shift-store-picker" data-selected-format="@T("SelectedStoresCount")" data-placeholder="@T("SelectStores")">
+            <button id="shift-store-toggle" type="button" class="form-select text-start" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" aria-controls="shift-store-menu">@T("SelectStores")</button>
+            <div id="shift-store-menu" class="dropdown-menu w-100 p-2">
+            <input type="search" class="form-control mb-2 store-search" placeholder="@T("SearchStores")" aria-label="@T("SearchStores")" />
+            <div class="d-flex justify-content-between mb-2"><button type="button" class="btn btn-link btn-sm p-0 store-select-all">@T("SelectAllStores")</button><button type="button" class="btn btn-link btn-sm p-0 store-clear-all">@T("ClearAllStores")</button></div>
+            <div style="max-height:200px;overflow-y:auto" class="store-options">
+            @foreach (Microsoft.AspNetCore.Mvc.Rendering.SelectListItem store in ViewBag.StoreList)
+            {
+                if (int.TryParse(store.Value, out var storeId) && storeId > 0)
+                {
+                    <div class="form-check store-option"><input class="form-check-input" type="checkbox" name="StoreIds" value="@storeId" id="store-@storeId" checked="@Model.StoreIds.Contains(storeId)" /><label class="form-check-label" for="store-@storeId">@store.Text</label></div>
+                }
+            }
+            </div>
+            <div class="text-muted small store-no-results" hidden>@T("NoResults")</div>
+            </div>
+            <details class="mt-2 small store-selection-details" hidden><summary class="text-muted">@T("ViewSelectedStores")</summary><div class="store-selection-names mt-1" style="max-height:100px;overflow-y:auto"></div></details>
+            </div>
+            <span asp-validation-for="StoreIds" class="text-danger"></span>
+        </div>
+        <div class="col-md-4"><label asp-for="StartTime" class="form-label">@M.StartTime *</label><input asp-for="StartTime" asp-format="{0:hh\:mm}" type="text" class="form-control shift-time" placeholder="HH:mm" inputmode="numeric" pattern="([01][0-9]|2[0-3]):[0-5][0-9]" required /></div>
+        <div class="col-md-4"><label asp-for="EndTime" class="form-label">@M.EndTime *</label><input asp-for="EndTime" asp-format="{0:hh\:mm}" type="text" class="form-control shift-time" placeholder="HH:mm" inputmode="numeric" pattern="([01][0-9]|2[0-3]):[0-5][0-9]" required /></div>
+        <div class="col-md-4 d-flex align-items-end"><div class="form-check mb-2"><input asp-for="EndsNextDay" class="form-check-input" /><label asp-for="EndsNextDay" class="form-check-label">@T("EndsNextDay")</label></div></div>
+    </div>
+</div></div>
+<div class="card mb-3"><div class="card-header">@T("UnpaidBreak")</div><div class="card-body row g-3">
+    <div class="col-md-6"><label asp-for="BreakStartTime" class="form-label">@T("BreakStart")</label><input asp-for="BreakStartTime" asp-format="{0:hh\:mm}" type="text" class="form-control shift-time" placeholder="HH:mm" pattern="([01][0-9]|2[0-3]):[0-5][0-9]" /><div class="form-check mt-2"><input asp-for="BreakStartsNextDay" class="form-check-input" /><label asp-for="BreakStartsNextDay" class="form-check-label">@T("NextDay")</label></div></div>
+    <div class="col-md-6"><label asp-for="BreakEndTime" class="form-label">@T("BreakEnd")</label><input asp-for="BreakEndTime" asp-format="{0:hh\:mm}" type="text" class="form-control shift-time" placeholder="HH:mm" pattern="([01][0-9]|2[0-3]):[0-5][0-9]" /><div class="form-check mt-2"><input asp-for="BreakEndsNextDay" class="form-check-input" /><label asp-for="BreakEndsNextDay" class="form-check-label">@T("NextDay")</label></div></div>
+</div></div>
+<div class="card mb-3"><div class="card-header">@R.AttendancePolicy_Title</div><div class="card-body row g-3">
+    <div class="col-md-6"><label asp-for="GracePeriodMinutes" class="form-label">@T("LatenessTolerance") *</label><input asp-for="GracePeriodMinutes" type="number" min="0" max="60" step="1" required class="form-control" /><span asp-validation-for="GracePeriodMinutes" class="text-danger"></span></div>
+    <div class="col-md-6"><label asp-for="EarlyCheckOutMinutes" class="form-label">@T("EarlyDepartureTolerance") *</label><input asp-for="EarlyCheckOutMinutes" type="number" min="0" max="60" step="1" required class="form-control" /><span asp-validation-for="EarlyCheckOutMinutes" class="text-danger"></span></div>
+</div></div>
+<div class="card mb-3"><div class="card-body row g-3">
+    <div class="col-md-6"><label asp-for="EffectiveFrom" class="form-label">@T("EffectiveFrom")</label><input asp-for="EffectiveFrom" type="date" class="form-control" /></div>
+    <div class="col-md-6"><label asp-for="EffectiveTo" class="form-label">@T("EffectiveTo")</label><input asp-for="EffectiveTo" type="date" class="form-control" /></div>
+    <div class="col-12"><label asp-for="Description" class="form-label">@M.Description</label><textarea asp-for="Description" class="form-control" maxlength="255" rows="2"></textarea></div>
+    <div class="col-12"><div class="form-check"><input asp-for="IsActive" class="form-check-input" /><label asp-for="IsActive" class="form-check-label">@M.IsActive</label></div></div>
+</div></div>
+<div class="d-flex justify-content-end gap-2"><a asp-action="Index" class="btn btn-outline-secondary">@T("CancelAction")</a><button type="submit" class="btn btn-primary">@T("SaveAction")</button></div>

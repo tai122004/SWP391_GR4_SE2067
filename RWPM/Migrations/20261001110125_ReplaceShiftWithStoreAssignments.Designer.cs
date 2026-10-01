@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RWPM.Infrastructure.Data;
 
@@ -11,9 +12,10 @@ using RWPM.Infrastructure.Data;
 namespace RWPM.Migrations
 {
     [DbContext(typeof(DefaultDatabaseContext))]
-    partial class DefaultDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20261001110125_ReplaceShiftWithStoreAssignments")]
+    partial class ReplaceShiftWithStoreAssignments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -355,7 +357,6 @@ namespace RWPM.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<int?>("EarlyCheckOutMinutes")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<DateTime>("EffectiveFrom")
@@ -371,7 +372,6 @@ namespace RWPM.Migrations
                         .HasColumnType("time(0)");
 
                     b.Property<int?>("GracePeriodMinutes")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")

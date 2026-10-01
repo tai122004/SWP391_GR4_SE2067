@@ -58,14 +58,15 @@ namespace RWPM.Infrastructure.Data
             #region Shift
             modelBuilder.Entity<Shift>(e =>
             {
-                e.HasIndex(x => x.ShiftCode)
-                 .IsUnique()
-                 .HasDatabaseName("IX_Shift_ShiftCode");
-
-                e.HasOne(x => x.Store)
-                 .WithMany()
-                 .HasForeignKey(x => x.StoreId)
-                 .OnDelete(DeleteBehavior.Restrict);
+                e.HasCheckConstraint("CK_Shift_DayOffsets", "[EndDayOffset] IN (0,1) AND ([BreakStartDayOffset] IS NULL OR [BreakStartDayOffset] IN (0,1)) AND ([BreakEndDayOffset] IS NULL OR [BreakEndDayOffset] IN (0,1))");
+                e.HasCheckConstraint("CK_Shift_BreakFields", "([BreakStartTime] IS NULL AND [BreakEndTime] IS NULL AND [BreakStartDayOffset] IS NULL AND [BreakEndDayOffset] IS NULL) OR ([BreakStartTime] IS NOT NULL AND [BreakEndTime] IS NOT NULL AND [BreakStartDayOffset] IS NOT NULL AND [BreakEndDayOffset] IS NOT NULL)");
+                e.HasCheckConstraint("CK_Shift_EffectiveDates", "[EffectiveTo] IS NULL OR [EffectiveTo] >= [EffectiveFrom]");
+            });
+            modelBuilder.Entity<StoreShift>(e =>
+            {
+                e.HasKey(x => new { x.StoreId, x.ShiftId });
+                e.HasOne(x => x.Store).WithMany().HasForeignKey(x => x.StoreId).OnDelete(DeleteBehavior.Restrict);
+                e.HasOne(x => x.Shift).WithMany(x => x.StoreShifts).HasForeignKey(x => x.ShiftId).OnDelete(DeleteBehavior.Restrict);
             });
             #endregion
 
@@ -117,6 +118,7 @@ namespace RWPM.Infrastructure.Data
         public DbSet<Employee> Employee { get; set; } = default!;
         public DbSet<ImportLog> ImportLog { get; set; } = default!;
         public DbSet<Shift> Shift { get; set; } = default!;
+        public DbSet<StoreShift> StoreShift { get; set; } = default!;
 
         public DbSet<AttendanceRecord> AttendanceRecord { get; set; } = default!;
         public DbSet<AttendanceAdjustmentHistory> AttendanceAdjustmentHistory { get; set; } = default!;

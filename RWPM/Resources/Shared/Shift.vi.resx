@@ -98,7 +98,7 @@
   <data name="MaximumHeadcount" xml:space="preserve"><value>Số người tối đa (gợi ý)</value></data>
   <data name="BreakIsPaid" xml:space="preserve"><value>Thời gian nghỉ được tính công</value></data>
   <data name="AllowOutsideHours" xml:space="preserve"><value>Cho phép ca ngoài giờ cửa hàng</value></data>
-  <data name="UsedShiftHint" xml:space="preserve"><value>Nếu ca đã được sử dụng, hãy nhân bản để đổi giờ, phạm vi hoặc chính sách chấm công.</value></data>
+  <data name="UsedShiftHint" xml:space="preserve"><value>Nếu ca đã được sử dụng, hãy tạo ca mới để đổi giờ, hiệu lực hoặc chính sách chấm công.</value></data>
   <data name="ListSummaryHeader" xml:space="preserve"><value>Giờ công / Hiệu lực / Nhân sự gợi ý</value></data>
   <data name="WorkingHours" xml:space="preserve"><value>Khung giờ làm việc</value></data>
   <data name="BreakTime" xml:space="preserve"><value>Nghỉ giữa ca:</value></data>
@@ -126,7 +126,6 @@
   <data name="PeopleUnit" xml:space="preserve"><value>người</value></data>
   <data name="DefaultSuffix" xml:space="preserve"><value> (Mặc định)</value></data>
   <data name="TypePrefix" xml:space="preserve"><value>Loại ca: </value></data>
-  <data name="CloneConfirm" xml:space="preserve"><value>Nhân bản mẫu ca này?</value></data>
   <data name="Close" xml:space="preserve"><value>Đóng</value></data>
   <data name="EditThisShift" xml:space="preserve"><value>Chỉnh sửa ca này</value></data>
   <data name="Index_PageSubtitle" xml:space="preserve"><value>Quản lý danh mục các ca làm việc</value></data>
@@ -134,7 +133,44 @@
   <data name="OvernightSuffix" xml:space="preserve"><value>qua ngày</value></data>
   <data name="ViewDetails" xml:space="preserve"><value>Xem chi tiết ca làm việc</value></data>
   <data name="ViewEditActions" xml:space="preserve"><value>Thao tác xem và chỉnh sửa</value></data>
-  <data name="NewCode" xml:space="preserve"><value>Mã mới</value></data>
-  <data name="NewShiftCode" xml:space="preserve"><value>Mã ca mới</value></data>
-  <data name="CloneShift" xml:space="preserve"><value>Nhân bản ca</value></data>
+  <data name="ApplicableStores" xml:space="preserve"><value>Chi nhánh áp dụng</value></data>
+  <data name="EndsNextDay" xml:space="preserve"><value>Kết thúc ngày hôm sau</value></data>
+  <data name="NextDay" xml:space="preserve"><value>Ngày hôm sau</value></data>
+  <data name="UnpaidBreak" xml:space="preserve"><value>Nghỉ giữa ca không tính công</value></data>
+  <data name="BreakStart" xml:space="preserve"><value>Bắt đầu nghỉ (tùy chọn)</value></data>
+  <data name="BreakEnd" xml:space="preserve"><value>Kết thúc nghỉ (tùy chọn)</value></data>
+  <data name="InheritDefault" xml:space="preserve"><value>Dùng mặc định của công ty</value></data>
+  <data name="CancelAction" xml:space="preserve"><value>Hủy</value></data>
+  <data name="SaveAction" xml:space="preserve"><value>Lưu</value></data>
+  <data name="CreateAction" xml:space="preserve"><value>Tạo ca</value></data>
+  <data name="AllStoresFilter" xml:space="preserve"><value>Tất cả chi nhánh</value></data>
+  <data name="AllStatuses" xml:space="preserve"><value>Tất cả trạng thái</value></data>
+  <data name="FilterAction" xml:space="preserve"><value>Lọc</value></data>
+  <data name="WorkTime" xml:space="preserve"><value>Khung giờ làm việc</value></data>
+  <data name="HoursEffective" xml:space="preserve"><value>Giờ công / hiệu lực</value></data>
+  <data name="Actions" xml:space="preserve"><value>Thao tác</value></data>
+  <data name="ViewAction" xml:space="preserve"><value>Xem chi tiết</value></data>
+  <data name="EditAction" xml:space="preserve"><value>Chỉnh sửa</value></data>
+  <data name="CloseAction" xml:space="preserve"><value>Đóng</value></data>
+  <data name="NoResults" xml:space="preserve"><value>Không tìm thấy ca.</value></data>
+  <data name="CreatedInfo" xml:space="preserve"><value>Thông tin tạo</value></data>
+  <data name="ValidationName" xml:space="preserve"><value>Tên ca phải có từ 1 đến 100 ký tự.</value></data>
+  <data name="ValidationDescription" xml:space="preserve"><value>Mô tả ca không được vượt quá 255 ký tự.</value></data>
+  <data name="ValidationTime" xml:space="preserve"><value>Giờ ca và ngày kết thúc không hợp lệ.</value></data>
+  <data name="ValidationDuration" xml:space="preserve"><value>Thời lượng ca phải từ 2 đến 12 giờ. Kiểm tra lựa chọn kết thúc ngày hôm sau.</value></data>
+  <data name="ValidationBreakFields" xml:space="preserve"><value>Vui lòng nhập đầy đủ khoảng nghỉ và ngày nghỉ.</value></data>
+  <data name="ValidationBreakRange" xml:space="preserve"><value>Khoảng nghỉ phải nằm trong ca, kết thúc sau bắt đầu và không vượt quá 60 phút.</value></data>
+  <data name="ValidationWorkDuration" xml:space="preserve"><value>Thời gian làm việc sau khi trừ nghỉ phải từ 2 giờ.</value></data>
+  <data name="ValidationDates" xml:space="preserve"><value>Ngày hiệu lực không hợp lệ.</value></data>
+  <data name="ValidationTolerance" xml:space="preserve"><value>Dung sai đi muộn và về sớm phải từ 0 đến 60 phút.</value></data>
+  <data name="ValidationGraceThreshold" xml:space="preserve"><value>Dung sai đi muộn phải nhỏ hơn ngưỡng vắng mặt chung.</value></data>
+  <data name="ValidationStores" xml:space="preserve"><value>Vui lòng chọn ít nhất một chi nhánh.</value></data>
+  <data name="SelectStores" xml:space="preserve"><value>Chọn chi nhánh</value></data>
+  <data name="SelectedStoresCount" xml:space="preserve"><value>Đã chọn {0} chi nhánh</value></data>
+  <data name="SearchStores" xml:space="preserve"><value>Tìm theo tên hoặc mã chi nhánh</value></data>
+  <data name="SelectAllStores" xml:space="preserve"><value>Chọn tất cả</value></data>
+  <data name="ClearAllStores" xml:space="preserve"><value>Bỏ chọn tất cả</value></data>
+  <data name="ViewSelectedStores" xml:space="preserve"><value>Xem chi nhánh đã chọn</value></data>
+  <data name="LatenessTolerance" xml:space="preserve"><value>Dung sai đi muộn (phút)</value></data>
+  <data name="EarlyDepartureTolerance" xml:space="preserve"><value>Dung sai về sớm (phút)</value></data>
 </root>
