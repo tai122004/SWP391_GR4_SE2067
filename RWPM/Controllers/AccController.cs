@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using RWPM.Common.Attributes;
@@ -183,7 +183,7 @@ namespace RWPM.Controllers
         public async Task<IActionResult> Create(AccCreateVM viewModel)
         {
             var isStoreRole = viewModel.Role == RWPM.Common.Enums.AccountRole.StoreManager ||
-                              viewModel.Role == RWPM.Common.Enums.AccountRole.SalesStaff;
+                              viewModel.Role == RWPM.Common.Enums.AccountRole.Employee;
 
             if (isStoreRole)
             {
@@ -288,7 +288,7 @@ namespace RWPM.Controllers
                 return BadRequest();
 
             var isStoreRole = viewModel.Role == AccountRole.StoreManager ||
-                              viewModel.Role == AccountRole.SalesStaff;
+                              viewModel.Role == AccountRole.Employee;
 
             if (isStoreRole)
             {
@@ -546,3 +546,4 @@ namespace RWPM.Controllers
         }
     }
 }
+

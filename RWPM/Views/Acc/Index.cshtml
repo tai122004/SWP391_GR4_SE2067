@@ -1,4 +1,4 @@
-@model AccListVM
+﻿@model AccListVM
 
 @using AccountModelResource = RWPM.Resources.Models.Acc
 @using AccountSharedResource = RWPM.Resources.Shared.Acc
@@ -126,7 +126,7 @@
                                 AccountRole.Admin => "bg-danger text-white",
                                 AccountRole.HR => "bg-warning text-dark",
                                 AccountRole.StoreManager => "bg-success text-white",
-                                AccountRole.SalesStaff => "bg-info text-dark",
+                                AccountRole.Employee => "bg-info text-dark",
                                 _ => "bg-secondary text-white"
                             };
 
@@ -609,3 +609,4 @@
         }
     </script>
 }
+

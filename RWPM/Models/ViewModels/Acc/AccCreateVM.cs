@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using RWPM.Common.Attributes;
 using RWPM.Common;
 using System.ComponentModel.DataAnnotations;
@@ -28,7 +28,7 @@ namespace RWPM.Models.ViewModels.Acc
         [Display(Name = "Role", ResourceType = typeof(Resources.Models.Acc))]
         [RequiredLocalization]
         [EnumDataTypeLocalization(typeof(AccountRole))]
-        public AccountRole Role { get; set; } = AccountRole.SalesStaff;
+        public AccountRole Role { get; set; } = AccountRole.Employee;
 
         public SelectList? AccountRoleSelectList { get; set; }
 
@@ -96,3 +96,4 @@ namespace RWPM.Models.ViewModels.Acc
         }
     }
 }
+

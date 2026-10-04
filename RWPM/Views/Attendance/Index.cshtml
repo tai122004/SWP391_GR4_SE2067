@@ -308,7 +308,7 @@
 
 
                 if (!photoInput.files || photoInput.files.length === 0) {
-                    alert('@SharedResource.ResourceManager.GetString("Attendance_PhotoCheckInRequired")');
+                    alert(`@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_PhotoCheckInRequired"))`);
                     return;
                 }
 
@@ -338,7 +338,7 @@
                 });
             } else {
                 if (gpsStatus) gpsStatus.classList.add("d-none");
-                alert('@SharedResource.ResourceManager.GetString("Attendance_GPSNotSupported")');
+                alert(`@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSNotSupported"))`);
             }
         }
 
@@ -371,7 +371,7 @@
                 })
                 .catch(function (err) {
                     console.error("Lỗi Camera:", err);
-                    cameraLoading.innerHTML = '@SharedResource.ResourceManager.GetString("Attendance_CamError")';
+                    cameraLoading.innerHTML = `@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_CamError"))`;
                 });
 
             if (btnCapture) {

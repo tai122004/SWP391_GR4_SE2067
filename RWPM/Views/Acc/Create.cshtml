@@ -1,4 +1,4 @@
-@model AccCreateVM
+﻿@model AccCreateVM
 
 @using AccountModelResource = RWPM.Resources.Models.Acc
 @using AccountSharedResource = RWPM.Resources.Shared.Acc
@@ -215,9 +215,9 @@
         // Tự động ẩn/hiện thông tin cửa hàng dựa theo Role
         function updateStoreSectionVisibility() {
             const roleVal = $('#accRoleSelect').val();
-            // StoreManager = 4, SalesStaff = 6, PartTimeStaff = 7 (hoặc text tương ứng)
+            // StoreManager = 4, Employee = 6, PartTimeStaff = 7 (hoặc text tương ứng)
             const isStoreRole = (roleVal == '4' || roleVal == '6' || roleVal == '7' || 
-                                 roleVal == 'StoreManager' || roleVal == 'SalesStaff' || roleVal == 'PartTimeStaff');
+                                 roleVal == 'StoreManager' || roleVal == 'Employee' || roleVal == 'PartTimeStaff');
             
             if (isStoreRole) {
                 $('#storeAssignmentSection').slideDown(200);

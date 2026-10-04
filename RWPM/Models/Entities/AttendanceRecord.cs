@@ -59,6 +59,15 @@ namespace RWPM.Models.Entities
                     .OrderBy(time => Math.Abs((time - start).TotalMinutes)).First();
                 var checkOut = new[] { -1, 0, 1, 2 }.Select(day => Date.Date.AddDays(day).Add(CheckOutTime.Value))
                     .Where(time => time >= checkIn).OrderBy(time => time).First();
+
+                var shiftRange = RWPM.Common.Helper.ShiftTimeHelper.GetDateTimeRange(Date, Shift);
+                
+                // Nếu đi muộn quá 15 phút so với giờ vào làm -> Không được tính lương
+                if ((checkIn - shiftRange.StartAt).TotalMinutes > 15) return 0;
+                
+                // Nếu về sớm quá 15 phút so với giờ tan làm -> Không được tính lương
+                if ((shiftRange.EndAt - checkOut).TotalMinutes > 15) return 0;
+
                 return RWPM.Common.Helper.ShiftTimeHelper.GetWorkedHours(Date, Shift, checkIn, checkOut);
             }
         }

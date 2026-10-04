@@ -7,8 +7,8 @@ namespace RWPM.Services.Abstraction
     public interface IAttendanceService
     {
         Task<AttendanceRecord?> GetTodayRecordAsync(string username, int? shiftId = null);
-        Task<AttendanceRecord> CheckInAsync(string username, double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null);
-        Task<AttendanceRecord> CheckOutAsync(string username, double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null);
+        Task<(AttendanceRecord Record, string? WarningMessage)> CheckInAsync(string username, double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null);
+        Task<(AttendanceRecord Record, string? WarningMessage)> CheckOutAsync(string username, double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null);
         Task<List<AttendanceRecord>> GetHistoryAsync(string username);
         Task<List<AttendanceRecord>> GetAllHistoryAsync(string? searchQuery = null);
         Task AdjustAttendanceAsync(int recordId, TimeSpan? newCheckIn, TimeSpan? newCheckOut, string reason, string modifierUsername);
