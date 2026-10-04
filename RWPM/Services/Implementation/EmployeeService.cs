@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RWPM.Common;
 using RWPM.Common.Enums;
@@ -371,14 +371,14 @@ namespace RWPM.Services.Implementation
             var firstStore = await _ctx.Store.AsNoTracking().FirstOrDefaultAsync();
             int sampleStoreId = firstStore?.StoreId ?? 1;
 
-            // Dòng mẫu 1: Nhân viên bán hàng
+            // Dòng mẫu 1: Nhân viên
             ws.Cell(2, 1).Value = "Nguyễn Văn An";
             ws.Cell(2, 2).Value = "nguyenvanan";
             ws.Cell(2, 3).Value = "an.nguyen@example.com";
             ws.Cell(2, 4).Value = "0912345678";
             ws.Cell(2, 5).Value = "Nam";
             ws.Cell(2, 6).Value = "15/05/1998";
-            ws.Cell(2, 7).Value = "SalesStaff";
+            ws.Cell(2, 7).Value = "Employee";
             ws.Cell(2, 8).Value = sampleStoreId;
             ws.Cell(2, 9).Value = "NV26001";
             ws.Cell(2, 10).Value = "Bán thời gian";
@@ -512,7 +512,7 @@ namespace RWPM.Services.Implementation
                 }
 
                 // Parse Role
-                AccountRole role = AccountRole.SalesStaff;
+                AccountRole role = AccountRole.Employee;
                 if (roleStr.Equals("StoreManager", StringComparison.OrdinalIgnoreCase) || roleStr.Contains("Quản lý", StringComparison.OrdinalIgnoreCase))
                 {
                     role = AccountRole.StoreManager;
@@ -527,7 +527,7 @@ namespace RWPM.Services.Implementation
                 }
                 else
                 {
-                    role = AccountRole.SalesStaff;
+                    role = AccountRole.Employee;
                 }
 
                 // Parse Gender
@@ -548,7 +548,7 @@ namespace RWPM.Services.Implementation
                     dateOfBirth = parsedDob;
                 }
 
-                bool isStoreRole = (role == AccountRole.StoreManager || role == AccountRole.SalesStaff);
+                bool isStoreRole = (role == AccountRole.StoreManager || role == AccountRole.Employee);
                 int parsedStoreId = 0;
 
                 if (isStoreRole)
@@ -737,7 +737,7 @@ namespace RWPM.Services.Implementation
                 }
 
                 // Parse Role
-                AccountRole role = AccountRole.SalesStaff;
+                AccountRole role = AccountRole.Employee;
                 if (roleStr.Equals("StoreManager", StringComparison.OrdinalIgnoreCase) || roleStr.Contains("Quản lý", StringComparison.OrdinalIgnoreCase))
                 {
                     role = AccountRole.StoreManager;
@@ -764,7 +764,7 @@ namespace RWPM.Services.Implementation
                 }
 
                 DateTime? dateOfBirth = DateTime.TryParse(dobStr, out var parsedDob) ? parsedDob : null;
-                bool isStoreRole = (role == AccountRole.StoreManager || role == AccountRole.SalesStaff);
+                bool isStoreRole = (role == AccountRole.StoreManager || role == AccountRole.Employee);
                 int parsedStoreId = 0;
 
                 if (isStoreRole)

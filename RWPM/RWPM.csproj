@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <Folder Include="Models\ViewModels\Employee\" />
+    <Watch Include="wwwroot\**\*" ExcludeFromSingleFile="true" />
   </ItemGroup>
 
   <ItemGroup>

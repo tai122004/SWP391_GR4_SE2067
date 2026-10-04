@@ -77,15 +77,27 @@ namespace RWPM.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CheckIn(double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
+        public async Task<IActionResult> CheckIn(string? userLatitude = null, string? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
         {
             var username = User.Identity?.Name;
             if (string.IsNullOrEmpty(username)) return RedirectToAction("Login", "Auth");
 
+            double? parsedLat = null;
+            double? parsedLng = null;
+            if (double.TryParse(userLatitude?.Replace(",", "."), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double lat)) parsedLat = lat;
+            if (double.TryParse(userLongitude?.Replace(",", "."), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double lng)) parsedLng = lng;
+
             try
             {
-                await _attendanceService.CheckInAsync(username, userLatitude, userLongitude, photo);
-                TempData["SuccessMessage"] = SharedResource.ResourceManager.GetString("Attendance_CheckInSuccess");
+                var result = await _attendanceService.CheckInAsync(username, parsedLat, parsedLng, photo);
+                if (!string.IsNullOrEmpty(result.WarningMessage))
+                {
+                    TempData["ErrorMessage"] = result.WarningMessage; // Hiển thị màu đỏ để chú ý
+                }
+                else
+                {
+                    TempData["SuccessMessage"] = SharedResource.ResourceManager.GetString("Attendance_CheckInSuccess");
+                }
             }
             catch (Exception ex)
             {
@@ -96,15 +108,27 @@ namespace RWPM.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CheckOut(double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
+        public async Task<IActionResult> CheckOut(string? userLatitude = null, string? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
         {
             var username = User.Identity?.Name;
             if (string.IsNullOrEmpty(username)) return RedirectToAction("Login", "Auth");
 
+            double? parsedLat = null;
+            double? parsedLng = null;
+            if (double.TryParse(userLatitude?.Replace(",", "."), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double lat)) parsedLat = lat;
+            if (double.TryParse(userLongitude?.Replace(",", "."), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double lng)) parsedLng = lng;
+
             try
             {
-                await _attendanceService.CheckOutAsync(username, userLatitude, userLongitude, photo);
-                TempData["SuccessMessage"] = SharedResource.ResourceManager.GetString("Attendance_CheckOutSuccess");
+                var result = await _attendanceService.CheckOutAsync(username, parsedLat, parsedLng, photo);
+                if (!string.IsNullOrEmpty(result.WarningMessage))
+                {
+                    TempData["ErrorMessage"] = result.WarningMessage;
+                }
+                else
+                {
+                    TempData["SuccessMessage"] = SharedResource.ResourceManager.GetString("Attendance_CheckOutSuccess");
+                }
             }
             catch (Exception ex)
             {

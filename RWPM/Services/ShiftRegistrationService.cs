@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using RWPM.Common.Enums;
 using RWPM.Infrastructure.Data;
 using RWPM.Models.Entities;
@@ -163,9 +163,9 @@ namespace RWPM.Services
                 entity.Status = status;
                 await _context.SaveChangesAsync();
 
-                if (status == RegistrationStatus.Approved && entity.Employee?.Account?.Role == AccountRole.SalesStaff)
+                if (status == RegistrationStatus.Approved && entity.Employee?.Account?.Role == AccountRole.Employee)
                 {
-                    await AutoScheduleForSalesStaffAsync(new List<ShiftRegistration> { entity });
+                    await AutoScheduleForEmployeeAsync(new List<ShiftRegistration> { entity });
                 }
             }
             await transaction.CommitAsync();
@@ -195,19 +195,19 @@ namespace RWPM.Services
 
             if (status == RegistrationStatus.Approved)
             {
-                var salesStaffRegistrations = entities
-                    .Where(x => x.Employee?.Account?.Role == AccountRole.SalesStaff)
+                var EmployeeRegistrations = entities
+                    .Where(x => x.Employee?.Account?.Role == AccountRole.Employee)
                     .ToList();
 
-                if (salesStaffRegistrations.Any())
+                if (EmployeeRegistrations.Any())
                 {
-                    await AutoScheduleForSalesStaffAsync(salesStaffRegistrations);
+                    await AutoScheduleForEmployeeAsync(EmployeeRegistrations);
                 }
             }
             await transaction.CommitAsync();
         }
 
-        private async Task AutoScheduleForSalesStaffAsync(List<ShiftRegistration> approvedRegistrations)
+        private async Task AutoScheduleForEmployeeAsync(List<ShiftRegistration> approvedRegistrations)
         {
             var newShifts = new List<ShiftRegistration>();
 
@@ -372,3 +372,4 @@ namespace RWPM.Services
         }
     }
 }
+

@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using RWPM.Common.Helper;
 
 namespace RWPM.Common.Enums
@@ -37,10 +37,10 @@ namespace RWPM.Common.Enums
         //ShiftLeader = 5,
 
         /// <summary>
-        /// Sales Staff - Nhân viên bán hàng
+        /// Employee - Nhân viên
         /// </summary>
-        [Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_SalesStaff")]
-        SalesStaff = 6,
+        [Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_Employee")]
+        Employee = 6,
 
         ///// <summary>
         ///// Part-time Staff - Nhân viên bán thời gian

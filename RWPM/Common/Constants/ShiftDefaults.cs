@@ -12,7 +12,7 @@ namespace RWPM.Common.Constants
         /// Mặc định: 30 phút.
         /// Ví dụ: Ca 08:00, nhân viên có thể bắt đầu chấm công từ 07:45.
         /// </summary>
-        public const int EarlyCheckInMinutes = 30;
+        public const int EarlyCheckInMinutes = 15;
 
         /// <summary>
         /// Số phút cho phép nhân viên đến muộn mà KHÔNG bị tính phạt / không bị đánh dấu "Đi trễ" (Grace Period).
@@ -30,9 +30,8 @@ namespace RWPM.Common.Constants
 
         /// <summary>
         /// Số phút tối đa được phép đi muộn trước khi hệ thống đánh dấu là "Vắng mặt" (Bỏ ca).
-        /// Mặc định: 60 phút.
-        /// Ví dụ: Ca 08:00, nếu sau 09:00 nhân viên vẫn chưa quẹt thẻ thì tính là vắng không phép.
+        /// Đã nới lỏng thành 480 phút (8 tiếng) để cho phép check-in bất cứ lúc nào.
         /// </summary>
-        public const int LateThresholdMinutes = 45;
+        public const int LateThresholdMinutes = 480;
     }
 }

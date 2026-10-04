@@ -43,7 +43,7 @@ namespace RWPM.Services.Implementation
                 || r.Shift?.EndDayOffset == 1);
         }
 
-        public async Task<AttendanceRecord> CheckInAsync(string username, double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
+        public async Task<(AttendanceRecord Record, string? WarningMessage)> CheckInAsync(string username, double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
         {
             if (photo == null || photo.Length == 0)
             {
@@ -106,7 +106,7 @@ namespace RWPM.Services.Implementation
                 }
                 else
                 {
-                    errorMessage = string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_TooLateIn"), shift.ShiftName, lThreshold);
+                    isValid = true;
                 }
             }
 
@@ -176,10 +176,21 @@ namespace RWPM.Services.Implementation
             _context.AttendanceRecord.Add(record);
             await _context.SaveChangesAsync();
 
-            return record;
+            string? warningMsg = null;
+            var shiftRange = RWPM.Common.Helper.ShiftTimeHelper.GetDateTimeRange(record.Date, matchedShift);
+            var checkInActual = new[] { -1, 0, 1 }.Select(day => record.Date.AddDays(day).Add(record.CheckInTime.Value))
+                .OrderBy(time => Math.Abs((time - shiftRange.StartAt).TotalMinutes)).First();
+                
+            int lateMins = (int)(checkInActual - shiftRange.StartAt).TotalMinutes;
+            if (lateMins > RWPM.Common.Constants.ShiftDefaults.GracePeriodMinutes)
+            {
+                warningMsg = $"Bạn đã chấm công vào làm thành công! NHƯNG bạn đã đi muộn {lateMins} phút (Vượt quá {RWPM.Common.Constants.ShiftDefaults.GracePeriodMinutes} phút cho phép). Ca làm việc này của bạn sẽ KHÔNG ĐƯỢC TÍNH LƯƠNG!";
+            }
+
+            return (record, warningMsg);
         }
 
-        public async Task<AttendanceRecord> CheckOutAsync(string username, double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
+        public async Task<(AttendanceRecord Record, string? WarningMessage)> CheckOutAsync(string username, double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
         {
             if (photo == null || photo.Length == 0)
             {
@@ -198,18 +209,8 @@ namespace RWPM.Services.Implementation
             }
 
             // Time Validation for CheckOut (Early Check-Out)
+            // Người dùng có thể check out bất cứ lúc nào. Việc tính lương sẽ phạt nếu về quá sớm.
             var shift = await _context.Shift.FindAsync(record.ShiftId);
-            if (shift != null)
-            {
-                int earlyCheckOutMinutes = shift.EarlyCheckOutMinutes ?? RWPM.Common.Constants.ShiftDefaults.EarlyCheckOutMinutes;
-                var minCheckOutTime = record.Date.Date.AddDays(shift.EndDayOffset).Add(shift.EndTime).AddMinutes(-earlyCheckOutMinutes);
-                var now = DateTime.Now;
-
-                if (now < minCheckOutTime)
-                {
-                    throw new Exception(string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_TooEarlyOut"), minCheckOutTime.ToString("dd/MM HH:mm"), earlyCheckOutMinutes, shift.EndTime.ToString(@"hh\:mm")));
-                }
-            }
 
             // GeoLocation Validation for CheckOut
             var employee = await _context.Employee.Include(e => e.Store).FirstOrDefaultAsync(e => e.Username == username);
@@ -257,7 +258,21 @@ namespace RWPM.Services.Implementation
 
             await _context.SaveChangesAsync();
 
-            return record;
+            string? warningMsg = null;
+            if (shift != null)
+            {
+                var shiftRange = RWPM.Common.Helper.ShiftTimeHelper.GetDateTimeRange(record.Date, shift);
+                var checkOutActual = new[] { -1, 0, 1, 2 }.Select(day => record.Date.AddDays(day).Add(record.CheckOutTime.Value))
+                    .Where(time => time >= record.Date.Add(record.CheckInTime.Value)).OrderBy(time => time).First();
+                    
+                int earlyMins = (int)(shiftRange.EndAt - checkOutActual).TotalMinutes;
+                if (earlyMins > RWPM.Common.Constants.ShiftDefaults.EarlyCheckOutMinutes)
+                {
+                    warningMsg = $"Bạn đã chấm công tan làm thành công! NHƯNG bạn đã về sớm {earlyMins} phút (Vượt quá {RWPM.Common.Constants.ShiftDefaults.EarlyCheckOutMinutes} phút cho phép). Ca làm việc này của bạn sẽ KHÔNG ĐƯỢC TÍNH LƯƠNG!";
+                }
+            }
+
+            return (record, warningMsg);
         }
 
         public async Task<List<AttendanceRecord>> GetHistoryAsync(string username)
