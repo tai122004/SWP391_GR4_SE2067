@@ -8,6 +8,14 @@
     <div class="row g-3">
         <div class="col-md-6"><label asp-for="ShiftName" class="form-label">@M.ShiftName *</label><input asp-for="ShiftName" class="form-control" maxlength="100" /><span asp-validation-for="ShiftName" class="text-danger"></span></div>
         <div class="col-md-6"><label for="shift-store-toggle" class="form-label">@T("ApplicableStores") *</label>
+            @if (ViewBag.ManagedStoreId != null)
+            {
+                var managedStoreId = (int)ViewBag.ManagedStoreId;
+                <input type="hidden" name="StoreIds" value="@managedStoreId" />
+                <div class="form-control bg-light">@(((IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.StoreList).FirstOrDefault(x => x.Value == managedStoreId.ToString())?.Text)</div>
+            }
+            else
+            {
             <div class="dropdown shift-store-picker" data-selected-format="@T("SelectedStoresCount")" data-placeholder="@T("SelectStores")">
             <button id="shift-store-toggle" type="button" class="form-select text-start" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" aria-controls="shift-store-menu">@T("SelectStores")</button>
             <div id="shift-store-menu" class="dropdown-menu w-100 p-2">
@@ -26,6 +34,7 @@
             </div>
             <details class="mt-2 small store-selection-details" hidden><summary class="text-muted">@T("ViewSelectedStores")</summary><div class="store-selection-names mt-1" style="max-height:100px;overflow-y:auto"></div></details>
             </div>
+            }
             <span asp-validation-for="StoreIds" class="text-danger"></span>
         </div>
         <div class="col-md-4"><label asp-for="StartTime" class="form-label">@M.StartTime *</label><input asp-for="StartTime" asp-format="{0:hh\:mm}" type="text" class="form-control shift-time" placeholder="HH:mm" inputmode="numeric" pattern="([01][0-9]|2[0-3]):[0-5][0-9]" required /></div>

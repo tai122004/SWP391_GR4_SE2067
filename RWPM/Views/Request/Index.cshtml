@@ -10,12 +10,12 @@
     int rejectedCount = ViewBag.RejectedCount ?? 0;
 }
 
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="container-fluid px-0">
+    <div class="app-page-header">
         <h4 class="mb-0 text-dark fw-bold">@RequestResource.RequestsAndApprovals</h4>
-        <div class="d-flex gap-2">
+        <div class="app-page-actions">
             <button class="btn btn-outline-success mb-0 bg-white"><i class="fas fa-file-export"></i> @RequestResource.ExportFile</button>
-            <button class="btn btn-success mb-0" data-bs-toggle="modal" data-bs-target="#createRequestModal"><i class="fas fa-plus"></i> @RequestResource.CreateRequest</button>
+            <button class="btn btn-primary mb-0" data-bs-toggle="modal" data-bs-target="#createRequestModal"><i class="fas fa-plus"></i> @RequestResource.CreateRequest</button>
         </div>
     </div>
 

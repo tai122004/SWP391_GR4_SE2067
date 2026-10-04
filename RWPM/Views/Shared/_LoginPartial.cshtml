@@ -27,8 +27,6 @@
                         @RWPM.Resources.Shared.NavigationBarResource.ChangePassword
                     </a>
                 </li>
-                <li><a class="dropdown-item" href="#">...</a></li>
-
                 @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin"))
                 {
                     <li>

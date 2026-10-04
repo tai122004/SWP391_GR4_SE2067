@@ -1,6 +1,6 @@
 @model RWPM.Models.ViewModels.Shift.ShiftCreateVM
 @using R = RWPM.Resources.Shared.Shift
 @{ ViewData["Title"] = R.Create_PageTitle; }
-<div class="container-fluid px-0"><h4 class="mb-3">@R.Create_PageTitle</h4>
+<div class="container-fluid px-0"><div class="app-page-header"><div><h4>@R.Create_PageTitle</h4></div></div>
 <form asp-action="Create" method="post"><partial name="_Form" model="Model" /></form></div>
 @section Scripts { <partial name="_ValidationScriptsPartial" /><script src="~/js/shift-store-picker.js" asp-append-version="true"></script> }

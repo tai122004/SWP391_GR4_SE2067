@@ -175,3 +175,26 @@ function submitQuickResetPassword() {
     });
 }
 
+document.addEventListener('DOMContentLoaded', function () {
+    const menuButton = document.getElementById('appMenuToggle');
+    const sidebar = document.getElementById('appSidebar');
+    if (menuButton && sidebar) {
+        menuButton.addEventListener('click', function () {
+            const isOpen = sidebar.classList.toggle('is-open');
+            menuButton.setAttribute('aria-expanded', String(isOpen));
+        });
+        document.addEventListener('click', function (event) {
+            if (window.innerWidth <= 991 && !sidebar.contains(event.target) && !menuButton.contains(event.target)) {
+                sidebar.classList.remove('is-open');
+                menuButton.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+    const controller = window.location.pathname.split('/').filter(Boolean)[0]?.toLowerCase() || 'home';
+    document.querySelectorAll('.app-nav-link[data-nav-controller]').forEach(function (link) {
+        if (link.dataset.navController.toLowerCase() === controller) {
+            link.classList.add('active');
+            link.setAttribute('aria-current', 'page');
+        }
+    });
+});

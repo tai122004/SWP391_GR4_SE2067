@@ -24,29 +24,21 @@
     <!-- Toastr -->
     <link href="~/lib/toastr/toastr.min.css" rel="stylesheet" />
 </head>
-<body class="d-flex flex-column min-vh-100">
-    <header>
-        <partial name="_NavigationBarPartial" />
-
-    </header>
-
-
-    <div class="px-3 flex-grow-1 mb-4">
-        <main role="main" class="pb-3">
+<body class="app-body app-page-@ViewContext.RouteData.Values["controller"]">
+    <partial name="_NavigationBarPartial" />
+    <div class="app-shell">
+        <header class="app-topbar">
+            <button class="app-menu-toggle" type="button" id="appMenuToggle" aria-label="Toggle navigation" aria-controls="appSidebar" aria-expanded="false"><i class="bi bi-list"></i></button>
+            <div class="app-topbar-title">@ViewData["Title"]</div>
+            <div class="app-topbar-actions">
+                <partial name="_LanguageSelector" />
+                <partial name="_LoginPartial" />
+            </div>
+        </header>
+        <main role="main" class="app-main">
             @RenderBody()
         </main>
     </div>
-
-    <footer class="footer border-top mt-auto bg-white shadow-sm">
-        <div class="container d-flex justify-content-between align-items-center flex-wrap text-muted small">
-            <div>
-                &copy; 2025 <strong>RWPM</strong>
-            </div>
-            <div>
-                Version <span class="text-dark">v1.0.1</span>
-            </div>
-        </div>
-    </footer>
 
 
     <partial name="_AleartMessagePartial" />

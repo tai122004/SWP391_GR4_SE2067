@@ -1,8 +1,22 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@using NavigationBarResource = RWPM.Resources.Shared.NavigationBarResource
+@using RWPM.Resources.Shared
+@{
+    ViewData["Title"] = "RWPM";
 }
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="mb-4">
+    <h1 class="h3 fw-bold mb-1">RWPM</h1>
+    <p class="text-muted mb-0">@User.Identity?.Name</p>
+</div>
+<div class="row g-3">
+    <div class="col-md-6 col-xl-4"><a class="card dashboard-link h-100 text-decoration-none" asp-controller="Attendance" asp-action="Index"><div class="card-body d-flex align-items-center gap-3"><i class="bi bi-calendar-check fs-3 text-primary"></i><span class="fw-semibold">@NavigationBarResource.Attendance</span><i class="bi bi-chevron-right ms-auto text-muted"></i></div></a></div>
+    <div class="col-md-6 col-xl-4"><a class="card dashboard-link h-100 text-decoration-none" asp-controller="ShiftRegistration" asp-action="Index"><div class="card-body d-flex align-items-center gap-3"><i class="bi bi-calendar-week fs-3 text-primary"></i><span class="fw-semibold">@ShiftRegistrationResource.ShiftRegistration</span><i class="bi bi-chevron-right ms-auto text-muted"></i></div></a></div>
+    <div class="col-md-6 col-xl-4"><a class="card dashboard-link h-100 text-decoration-none" asp-controller="Request" asp-action="Index"><div class="card-body d-flex align-items-center gap-3"><i class="bi bi-inbox fs-3 text-primary"></i><span class="fw-semibold">@RequestResource.RequestsAndApprovals</span><i class="bi bi-chevron-right ms-auto text-muted"></i></div></a></div>
+    @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("AreaManager") || User.IsInRole("SuperAdmin") || User.IsInRole("StoreManager"))
+    {
+        <div class="col-md-6 col-xl-4"><a class="card dashboard-link h-100 text-decoration-none" asp-controller="Employee" asp-action="Index"><div class="card-body d-flex align-items-center gap-3"><i class="bi bi-people fs-3 text-primary"></i><span class="fw-semibold">@NavigationBarResource.EmployeeManagement</span><i class="bi bi-chevron-right ms-auto text-muted"></i></div></a></div>
+        @if (!User.IsInRole("StoreManager") || User.IsInRole("Admin") || User.IsInRole("HR"))
+        {
+            <div class="col-md-6 col-xl-4"><a class="card dashboard-link h-100 text-decoration-none" asp-controller="Shift" asp-action="Index"><div class="card-body d-flex align-items-center gap-3"><i class="bi bi-clock-history fs-3 text-primary"></i><span class="fw-semibold">@NavigationBarResource.ShiftManagement</span><i class="bi bi-chevron-right ms-auto text-muted"></i></div></a></div>
+        }
+    }
 </div>
