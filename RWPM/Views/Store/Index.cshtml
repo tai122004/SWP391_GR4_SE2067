@@ -11,30 +11,31 @@
 @Html.AntiForgeryToken()
 
 <div class="container-fluid px-0">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="app-page-header">
         <div>
-            <h4 class="fw-bold text-dark d-flex align-items-center mb-1">
-                <i class="bi bi-shop text-primary me-2"></i>
-                @StoreSharedResource.Index_PageHeader
-            </h4>
+            <h1 class="fw-bold text-dark mb-1">@StoreSharedResource.Index_PageHeader</h1>
             <div class="text-muted small">@StoreSharedResource.Index_Subtitle</div>
         </div>
-        <a asp-action="Create" class="btn btn-primary btn-sm px-3 shadow-sm">
-            <i class="bi bi-plus-lg me-1"></i> @SharedResource.Button_Create
-        </a>
+        <div class="app-page-actions">
+            <a asp-action="Create" class="btn btn-primary btn-sm px-3">
+                <i class="bi bi-plus-lg me-1"></i> @SharedResource.Button_Create
+            </a>
+        </div>
     </div>
 
     <!-- Search form -->
-    <div class="modern-card p-3 mb-3">
+    <div class="app-filter-panel">
         <form asp-action="Index" method="get" class="row g-2 align-items-center">
-            <div class="col-md-5 col-lg-4">
+            <div class="col-md-6 col-lg-5">
+                <label class="form-label">Tìm kiếm</label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
                     <input type="text" asp-for="Search" class="form-control border-start-0 ps-0" placeholder="@StoreSharedResource.Placeholder_Search" />
                 </div>
             </div>
 
-            <div class="col-md-3 col-lg-3">
+            <div class="col-md-4 col-lg-3">
+                <label class="form-label">Trạng thái</label>
                 <select asp-for="IsActive" class="form-select form-select-sm">
                     <option value="">-- @SharedResource.ObjectStatus_Default --</option>
                     <option value="true">@SharedResource.ObjectStatus_IsActive</option>
@@ -54,17 +55,17 @@
     </div>
 
     <!-- Table Container -->
-    <div class="modern-card overflow-hidden mb-3">
+    <div class="app-content-card management-table-card mb-3">
         <div class="table-responsive">
             <table class="table modern-table align-middle mb-0">
                 <thead>
                     <tr>
                         <th class="text-nowrap">@StoreModelResource.StoreCode</th>
                         <th class="text-nowrap">@StoreModelResource.StoreName</th>
-                        <th class="text-nowrap"><i class="bi bi-person-badge text-primary me-1"></i>@StoreSharedResource.Table_Manager</th>
+                        <th class="text-nowrap">@StoreSharedResource.Table_Manager</th>
                         <th class="text-nowrap">@StoreModelResource.Address</th>
                         <th class="text-nowrap">@StoreModelResource.Phone</th>
-                        <th class="text-nowrap text-center"><i class="bi bi-geo-alt"></i> @StoreSharedResource.Table_GeoLocation</th>
+                        <th class="text-nowrap text-center">@StoreSharedResource.Table_GeoLocation</th>
                         <th class="text-nowrap text-center">@StoreModelResource.IsActive</th>
                         <th class="text-nowrap text-center">@SharedResource.Button_Action</th>
                     </tr>
@@ -75,30 +76,26 @@
                         foreach (var store in Model.PanigationResponse.Data)
                         {
                             <tr>
-                                <td class="fw-semibold text-primary">
-                                    <a asp-action="Details" asp-route-id="@store.StoreId" class="text-decoration-none text-primary fw-bold">
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@store.StoreId" class="text-decoration-none text-dark">
                                         @store.StoreCode
                                     </a>
                                 </td>
                                 <td>
-                                    <a asp-action="Details" asp-route-id="@store.StoreId" class="text-decoration-none text-dark fw-bold">
+                                    <a asp-action="Details" asp-route-id="@store.StoreId" class="text-decoration-none text-dark">
                                         @store.StoreName
                                     </a>
                                     @if (store.OpeningTime.HasValue && store.ClosingTime.HasValue)
                                     {
                                         var openStr = $"{store.OpeningTime.Value.Hours:D2}h{store.OpeningTime.Value.Minutes:D2}";
                                         var closeStr = $"{store.ClosingTime.Value.Hours:D2}h{store.ClosingTime.Value.Minutes:D2}";
-                                        <div class="small text-muted">
-                                            <i class="bi bi-clock me-1 text-info"></i>@openStr - @closeStr
-                                        </div>
+                                        <div class="small text-muted">@openStr - @closeStr</div>
                                     }
                                 </td>
                                 <td>
                                     @if (store.Manager != null && store.Manager.Account != null)
                                     {
-                                        <span class="badge bg-info-subtle text-info border border-info-subtle">
-                                            <i class="bi bi-person-circle me-1"></i>@store.Manager.Account.FullName
-                                        </span>
+                                        <span>@store.Manager.Account.FullName</span>
                                     }
                                     else
                                     {
@@ -110,24 +107,22 @@
                                 <td class="text-center small">
                                     @if (store.Latitude.HasValue && store.Longitude.HasValue)
                                     {
-                                        <span class="badge bg-success-subtle text-success border border-success-subtle mb-1">
-                                            <i class="bi bi-geo-alt-fill me-1"></i> @StoreSharedResource.Range &le; @(store.AllowedRadiusMeters > 0 ? store.AllowedRadiusMeters : 100)m
-                                        </span>
+                                        <span>@StoreSharedResource.Range &le; @(store.AllowedRadiusMeters > 0 ? store.AllowedRadiusMeters : 100)m</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle mb-1">
-                                            <i class="bi bi-exclamation-triangle me-1"></i> @StoreSharedResource.Badge_NoGPS
-                                        </span>
+                                        <span class="text-muted">@StoreSharedResource.Badge_NoGPS</span>
                                     }
                                 </td>
                                 <td class="text-center">
-                                    <div class="form-check form-switch d-flex justify-content-center">
+                                    <label class="status-choice">
                                         <input class="form-check-input active-toggle"
                                                type="checkbox"
                                                data-id="@store.StoreId"
                                                @(store.IsActive ? "checked" : "") />
-                                    </div>
+                                        <span class="status-dot @(store.IsActive ? "is-active" : "is-inactive")"></span>
+                                        <span class="status-choice-text">@(store.IsActive ? "Đang hoạt động" : "Ngừng hoạt động")</span>
+                                    </label>
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group btn-action-group" role="group">
@@ -186,6 +181,9 @@
                         isActive: isActive
                     }),
                     success: function () {
+                        var choice = checkbox.closest('.status-choice');
+                        choice.find('.status-dot').toggleClass('is-active', isActive).toggleClass('is-inactive', !isActive);
+                        choice.find('.status-choice-text').text(isActive ? 'Đang hoạt động' : 'Ngừng hoạt động');
                         toastr.success('@StoreSharedResource.StatusUpdateSuccess');
                     },
                     error: function (xhr) {

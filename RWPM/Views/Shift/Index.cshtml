@@ -2,19 +2,25 @@
 @using R = RWPM.Resources.Shared.Shift
 @using M = RWPM.Resources.Models.Shift
 @using RWPM.Common.Constants
-@functions { string T(string key) => R.ResourceManager.GetString(key) ?? key; }
+@using System.Globalization
+@functions {
+    string T(string key) => R.ResourceManager.GetString(key) ?? key;
+    string StatusText(bool active) => CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "vi"
+        ? (active ? "Đang hoạt động" : "Ngừng hoạt động")
+        : (active ? "Active" : "Inactive");
+}
 @{ ViewData["Title"] = R.Index_PageTitle; }
 @Html.AntiForgeryToken()
-<div class="container-fluid px-0">
-<div class="d-flex justify-content-between align-items-center mb-3"><h4 class="mb-0">@R.Index_PageHeader</h4><a asp-action="Create" class="btn btn-primary">@T("CreateAction")</a></div>
-<form method="get" class="row g-2 mb-3">
-    <div class="col-md-4"><input asp-for="Search" class="form-control" placeholder="@M.ShiftName" /></div>
-    <div class="col-md-3"><select asp-for="StoreId" asp-items="@(Model.StoreSelectList?.Where(x => x.Value != "0"))" class="form-select"><option value="">@T("AllStoresFilter")</option></select></div>
-    <div class="col-md-2"><select asp-for="IsActive" class="form-select"><option value="">@T("AllStatuses")</option><option value="true">@T("Active")</option><option value="false">@T("Inactive")</option></select></div>
-    <div class="col-md-2"><input asp-for="EffectiveOn" type="date" class="form-control" aria-label="@T("EffectiveFrom")" /></div>
-    <div class="col-md-1"><button class="btn btn-outline-secondary">@T("FilterAction")</button></div>
-</form>
-<div class="card"><div class="table-responsive"><table class="table align-middle mb-0">
+<div class="container-fluid px-0 shift-page">
+<div class="app-page-header"><div><h4 class="mb-1">@R.Index_PageHeader</h4><p class="text-muted mb-0">@T("ApplicableStores") · @T("WorkTime") · @T("HoursWorked")</p></div>@if (ViewBag.CanManageShifts == true) { <a asp-action="Create" class="btn btn-primary px-3"><i class="bi bi-plus-lg me-1"></i>@T("CreateAction")</a> }</div>
+<form method="get" class="app-filter-panel"><div class="row g-3 align-items-end">
+    <div class="col-lg-4 col-md-6"><label asp-for="Search" class="form-label small fw-semibold">@M.ShiftName</label><input asp-for="Search" class="form-control" placeholder="@M.ShiftName" /></div>
+    <div class="col-lg-3 col-md-6"><label asp-for="StoreId" class="form-label small fw-semibold">@T("ApplicableStores")</label><select asp-for="StoreId" asp-items="@(Model.StoreSelectList?.Where(x => x.Value != "0"))" class="form-select" disabled="@(ViewBag.ManagedStoreId != null)"><option value="">@T("AllStoresFilter")</option></select></div>
+    <div class="col-lg-2 col-md-6"><label asp-for="IsActive" class="form-label small fw-semibold">@M.IsActive</label><select asp-for="IsActive" class="form-select"><option value="">@T("AllStatuses")</option><option value="true">@T("Active")</option><option value="false">@T("Inactive")</option></select></div>
+    <div class="col-lg-2 col-md-6"><label asp-for="EffectiveOn" class="form-label small fw-semibold">@T("EffectiveFrom")</label><input asp-for="EffectiveOn" type="date" class="form-control" /></div>
+    <div class="col-lg-1 col-md-12"><button class="btn btn-primary w-100">@T("FilterAction")</button></div>
+</div></form>
+<div class="app-content-card shift-table-card"><div class="table-responsive"><table class="table align-middle mb-0 shift-list-table">
 <thead><tr><th>@M.ShiftName</th><th>@T("ApplicableStores")</th><th>@T("WorkTime")</th><th>@T("HoursEffective")</th><th>@M.IsActive</th><th class="text-end">@T("Actions")</th></tr></thead>
 <tbody>
 @foreach (var shift in Model.PanigationResponse.Data)
@@ -24,8 +30,19 @@
     <td class="fw-semibold">@shift.ShiftName</td><td>@stores</td>
     <td class="text-nowrap">@shift.StartTime.ToString(@"hh\:mm") – @shift.EndTime.ToString(@"hh\:mm") @if (shift.EndDayOffset == 1) { <span class="text-muted">(@T("NextDay"))</span> }</td>
     <td><div>@shift.ScheduledWorkHours.ToString("0.##") @T("HoursWorked")</div><small class="text-muted">@shift.EffectiveFrom.ToString("dd/MM/yyyy") – @(shift.EffectiveTo?.ToString("dd/MM/yyyy") ?? T("NoLimit"))</small></td>
-    <td><input type="checkbox" class="form-check-input active-toggle" data-id="@shift.ShiftId" checked="@shift.IsActive" aria-label="@M.IsActive" /></td>
-    <td class="text-end text-nowrap"><button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#detail-@shift.ShiftId" aria-label="@T("ViewAction")"><i class="bi bi-eye"></i></button> <a asp-action="Edit" asp-route-id="@shift.ShiftId" class="btn btn-outline-secondary btn-sm" aria-label="@T("EditAction")"><i class="bi bi-pencil-square"></i></a></td>
+    <td>
+        @if (ViewBag.CanManageShifts == true)
+        {
+            <button type="button" class="shift-status status-toggle border-0 bg-transparent p-0" data-id="@shift.ShiftId" data-active="@shift.IsActive.ToString().ToLowerInvariant()" data-active-label="@StatusText(true)" data-inactive-label="@StatusText(false)" aria-pressed="@shift.IsActive" title="@StatusText(shift.IsActive)">
+                <span class="status-dot @(shift.IsActive ? "is-active" : "is-inactive")"></span><span>@StatusText(shift.IsActive)</span>
+            </button>
+        }
+        else
+        {
+            <span class="shift-status"><span class="status-dot @(shift.IsActive ? "is-active" : "is-inactive")"></span><span>@StatusText(shift.IsActive)</span></span>
+        }
+    </td>
+    <td class="text-end text-nowrap"><button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#detail-@shift.ShiftId" aria-label="@T("ViewAction")"><i class="bi bi-eye"></i></button> @if (ViewBag.CanManageShifts == true) { <a asp-action="Edit" asp-route-id="@shift.ShiftId" class="btn btn-outline-secondary btn-sm" aria-label="@T("EditAction")"><i class="bi bi-pencil-square"></i></a> }</td>
     </tr>
 }
 @if (!Model.PanigationResponse.Data.Any()) { <tr><td colspan="6" class="text-center text-muted py-4">@T("NoResults")</td></tr> }
@@ -48,22 +65,40 @@
 <dt class="col-sm-4">@T("EarlyDepartureTolerance")</dt><dd class="col-sm-8">@shift.EarlyCheckOutMinutes @T("Minutes")</dd>
 <dt class="col-sm-4">@M.Description</dt><dd class="col-sm-8">@shift.Description</dd>
 <dt class="col-sm-4">@T("CreatedInfo")</dt><dd class="col-sm-8">@shift.CreatedDate.ToString("dd/MM/yyyy HH:mm") · @shift.CreatedBy</dd>
-</dl></div><div class="modal-footer"><button class="btn btn-outline-secondary" data-bs-dismiss="modal">@T("CloseAction")</button><a asp-action="Edit" asp-route-id="@shift.ShiftId" class="btn btn-primary">@T("EditAction")</a></div>
+</dl></div><div class="modal-footer"><button class="btn btn-outline-secondary" data-bs-dismiss="modal">@T("CloseAction")</button>@if (ViewBag.CanManageShifts == true) { <a asp-action="Edit" asp-route-id="@shift.ShiftId" class="btn btn-primary">@T("EditAction")</a> }</div>
 </div></div></div>
 }
 @section Scripts {
 <script>
-document.querySelectorAll('.active-toggle').forEach(function(input) {
-    input.addEventListener('change', async function() {
-        const value = input.checked; input.disabled = true;
+document.querySelectorAll('.status-toggle').forEach(function (button) {
+    button.addEventListener('click', async function () {
+        const oldValue = button.dataset.active === 'true';
+        const newValue = !oldValue;
+        button.disabled = true;
         try {
-            const response = await fetch('@Url.Action("UpdateActiveStatus", "Shift")/' + input.dataset.id, {
-                method: 'POST', headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value },
-                body: JSON.stringify({ shiftId: Number(input.dataset.id), isActive: value })
+            const response = await fetch('@Url.Action("UpdateActiveStatus", "Shift")/' + button.dataset.id, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify({ shiftId: Number(button.dataset.id), isActive: newValue })
             });
             if (!response.ok) throw new Error(await response.text());
-        } catch(error) { input.checked = !value; toastr.error(error.message); }
-        finally { input.disabled = false; }
+
+            button.dataset.active = String(newValue);
+            button.setAttribute('aria-pressed', String(newValue));
+            const activeLabel = button.dataset.activeLabel;
+            const inactiveLabel = button.dataset.inactiveLabel;
+            button.title = newValue ? activeLabel : inactiveLabel;
+            button.querySelector('.status-dot').classList.toggle('is-active', newValue);
+            button.querySelector('.status-dot').classList.toggle('is-inactive', !newValue);
+            button.querySelector('span:nth-child(2)').textContent = newValue ? activeLabel : inactiveLabel;
+        } catch (error) {
+            if (typeof toastr !== 'undefined') toastr.error(error.message || 'Không thể cập nhật trạng thái ca.');
+        } finally {
+            button.disabled = false;
+        }
     });
 });
 </script>

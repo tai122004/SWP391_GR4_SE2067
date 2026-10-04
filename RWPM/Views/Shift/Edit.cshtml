@@ -1,6 +1,6 @@
 @model RWPM.Models.ViewModels.Shift.ShiftEditVM
 @using R = RWPM.Resources.Shared.Shift
 @{ ViewData["Title"] = R.Edit_PageTitle; }
-<div class="container-fluid px-0"><h4 class="mb-3">@R.Edit_PageTitle</h4>
+<div class="container-fluid px-0"><div class="app-page-header"><div><h4>@R.Edit_PageTitle</h4></div></div>
 <form asp-action="Edit" asp-route-id="@Model.ShiftId" method="post"><input asp-for="ShiftId" type="hidden" /><partial name="_Form" model="Model" /></form></div>
 @section Scripts { <partial name="_ValidationScriptsPartial" /><script src="~/js/shift-store-picker.js" asp-append-version="true"></script> }

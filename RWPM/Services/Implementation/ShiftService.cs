@@ -17,6 +17,21 @@ public class ShiftService : IShiftService
     private readonly IHttpContextAccessor _accessor;
     public ShiftService(DefaultDatabaseContext ctx, IHttpContextAccessor accessor)
     { _ctx = ctx; _accessor = accessor; }
+    private bool IsStoreManager => _accessor.HttpContext?.User.IsInRole("StoreManager") == true
+        && _accessor.HttpContext.User.IsInRole("Admin") == false;
+    private bool IsAdmin => _accessor.HttpContext?.User.IsInRole("Admin") == true;
+    public async Task<int?> GetManagedStoreIdAsync()
+    {
+        if (!IsStoreManager) return null;
+        var username = _accessor.HttpContext?.User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(username)) return null;
+        return await _ctx.Employee.AsNoTracking()
+            .Where(x => x.Username == username && x.IsActive && x.Store.IsActive
+                && x.Account.IsActive && x.Account.Role == AccountRole.StoreManager)
+            .Select(x => (int?)x.StoreId).FirstOrDefaultAsync();
+    }
+    private async Task<int> RequireManagerStoreAsync() => await GetManagedStoreIdAsync()
+        ?? throw new UnauthorizedAccessException("Tài khoản quản lý chưa được gán chi nhánh hoạt động.");
     private IQueryable<Shift> Query() => _ctx.Shift.Include(x => x.StoreShifts).ThenInclude(x => x.Store);
     public async Task<Shift?> GetByIdAsync(int id, QueryOptions<Shift>? options = null) =>
         await QueryHelper.ApplyQueryOptions(Query().Where(x => x.ShiftId == id), options).FirstOrDefaultAsync();
@@ -35,6 +50,12 @@ public class ShiftService : IShiftService
     public async Task<PaginationRes<Shift>> SearchAsync(ShiftSearch search, QueryOptions<Shift>? options = null)
     {
         var query = Query();
+        if (IsStoreManager)
+        {
+            var managedStoreId = await RequireManagerStoreAsync();
+            query = query.Where(s => s.StoreShifts.Any(x => x.StoreId == managedStoreId));
+            search.StoreId = managedStoreId;
+        }
         if (!string.IsNullOrWhiteSpace(search.Search))
         {
             var term = search.Search.Trim();
@@ -63,6 +84,13 @@ public class ShiftService : IShiftService
     }
     public async Task<Shift> CreateAsync(Shift shift)
     {
+        if (!IsAdmin)
+        {
+            if (!IsStoreManager) throw new UnauthorizedAccessException("Không có quyền tạo ca.");
+            var managedStoreId = await RequireManagerStoreAsync();
+            if (shift.StoreShifts.Count != 1 || shift.StoreShifts.Single().StoreId != managedStoreId)
+                throw new UnauthorizedAccessException("Chỉ được tạo ca cho chi nhánh đang quản lý.");
+        }
         await ValidateAsync(shift);
         shift.ShiftName = shift.ShiftName.Trim();
         shift.CreatedDate = DateTime.Now; shift.CreatedBy = AccountHelper.GetCurrentUsername(_accessor);
@@ -73,8 +101,16 @@ public class ShiftService : IShiftService
     }
     public async Task UpdateAsync(Shift candidate)
     {
-        await ValidateAsync(candidate);
         var existing = await GetRequiredByIdAsync(candidate.ShiftId, new QueryOptions<Shift> { NoTracking = false });
+        if (!IsAdmin)
+        {
+            if (!IsStoreManager) throw new UnauthorizedAccessException("Không có quyền sửa ca.");
+            var managedStoreId = await RequireManagerStoreAsync();
+            if (existing.StoreShifts.Count != 1 || existing.StoreShifts.Single().StoreId != managedStoreId
+                || candidate.StoreShifts.Count != 1 || candidate.StoreShifts.Single().StoreId != managedStoreId)
+                throw new UnauthorizedAccessException("Ca dùng chung hoặc ca thuộc chi nhánh khác không thể sửa tại cửa hàng này.");
+        }
+        await ValidateAsync(candidate);
         var used = await _ctx.ShiftRegistration.AnyAsync(x => x.ShiftId == existing.ShiftId)
             || await _ctx.AttendanceRecord.AnyAsync(x => x.ShiftId == existing.ShiftId);
         if (used && (existing.StartTime != candidate.StartTime || existing.EndTime != candidate.EndTime
@@ -108,6 +144,21 @@ public class ShiftService : IShiftService
     public async Task UpdateActiveStatusAsync(int id, bool active)
     {
         var shift = await GetRequiredByIdAsync(id, new QueryOptions<Shift> { NoTracking = false });
+        if (!IsAdmin)
+        {
+            if (!IsStoreManager) throw new UnauthorizedAccessException("Không có quyền thay đổi ca.");
+            var managedStoreId = await RequireManagerStoreAsync();
+            var link = shift.StoreShifts.SingleOrDefault(x => x.StoreId == managedStoreId)
+                ?? throw new UnauthorizedAccessException("Ca không thuộc chi nhánh đang quản lý.");
+            if (active && !shift.IsActive)
+                throw new ModelValidationException("Shift_Inactive", "Ca đã bị ngừng hoạt động toàn hệ thống; vui lòng liên hệ Admin.");
+            if (link.IsActive && !active) await EnsureNoFutureAsync(id, managedStoreId);
+            link.IsActive = active;
+            link.UpdatedDate = DateTime.Now;
+            link.UpdatedBy = AccountHelper.GetCurrentUsername(_accessor);
+            await _ctx.SaveChangesAsync();
+            return;
+        }
         if (shift.IsActive && !active) await EnsureNoFutureAsync(id);
         shift.IsActive = active; shift.UpdatedDate = DateTime.Now; shift.UpdatedBy = AccountHelper.GetCurrentUsername(_accessor);
         await _ctx.SaveChangesAsync();

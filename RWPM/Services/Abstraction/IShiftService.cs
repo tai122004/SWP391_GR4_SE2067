@@ -11,6 +11,7 @@ namespace RWPM.Services.Abstraction
         Task<List<Shift>> GetAllAsync(QueryOptions<Shift>? options = null);
         Task<List<Shift>> GetAvailableForDateAsync(DateTime workDate, int storeId);
         Task<PaginationRes<Shift>> SearchAsync(ShiftSearch searchObject, QueryOptions<Shift>? options = null);
+        Task<int?> GetManagedStoreIdAsync();
         Task<Shift> CreateAsync(Shift entity);
         Task UpdateAsync(Shift entity);
         Task UpdateActiveStatusAsync(int shiftId, bool active);
