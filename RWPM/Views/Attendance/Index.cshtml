@@ -303,14 +303,20 @@
         var lngInput = document.getElementById("userLongitude");
         var gpsStatus = document.getElementById("gpsStatus");
 
-        function submitWithGPS(actionName) {
+        function submitWithGPS(actionName, btnElement) {
             if (!form) return;
 
+            if (!photoInput.files || photoInput.files.length === 0) {
+                alert(`@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_PhotoCheckInRequired"))`);
+                return;
+            }
 
-                if (!photoInput.files || photoInput.files.length === 0) {
-                    alert(`@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_PhotoCheckInRequired"))`);
-                    return;
-                }
+            // Ngăn chặn click đúp (Double click) gây nhiễu luồng GPS
+            if (btnElement) {
+                btnElement.disabled = true;
+                var originalText = btnElement.innerHTML;
+                btnElement.innerHTML = '<i class="spinner-border spinner-border-sm me-1"></i> Đang xử lý...';
+            }
 
             if (gpsStatus) gpsStatus.classList.remove("d-none");
 
@@ -323,6 +329,10 @@
                     form.submit();
                 }, function (error) {
                     if (gpsStatus) gpsStatus.classList.add("d-none");
+                    if (btnElement) {
+                        btnElement.disabled = false;
+                        btnElement.innerHTML = originalText;
+                    }
                     var errorMsg = "";
                     if (error.code === 1) { // PERMISSION_DENIED
                         errorMsg = `@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSPermissionDenied"))`;
@@ -330,6 +340,7 @@
                         var template = `@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSUnknownError"))`;
                         errorMsg = template.replace("{0}", error.message);
                     }
+                    // Chỉ hiện alert khi thực sự có lỗi từ browser
                     alert(errorMsg);
                 }, {
                     enableHighAccuracy: true,
@@ -338,19 +349,23 @@
                 });
             } else {
                 if (gpsStatus) gpsStatus.classList.add("d-none");
+                if (btnElement) {
+                    btnElement.disabled = false;
+                    btnElement.innerHTML = originalText;
+                }
                 alert(`@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSNotSupported"))`);
             }
         }
 
         if (btnCheckIn && !btnCheckIn.disabled) {
             btnCheckIn.addEventListener("click", function () {
-                submitWithGPS("CheckIn");
+                submitWithGPS("CheckIn", this);
             });
         }
 
         if (btnCheckOut && !btnCheckOut.disabled) {
             btnCheckOut.addEventListener("click", function () {
-                submitWithGPS("CheckOut");
+                submitWithGPS("CheckOut", this);
             });
         }
 
