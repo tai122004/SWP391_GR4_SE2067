@@ -122,7 +122,7 @@
   <data name="NoBreak" xml:space="preserve"><value>Không có</value></data>
   <data name="NoLimit" xml:space="preserve"><value>không giới hạn</value></data>
   <data name="NoDescription" xml:space="preserve"><value>Không có mô tả</value></data>
-  <data name="HoursWorked" xml:space="preserve"><value>giờ công</value></data>
+  <data name="HoursWorked" xml:space="preserve"><value>Giờ công</value></data>
   <data name="PeopleUnit" xml:space="preserve"><value>người</value></data>
   <data name="DefaultSuffix" xml:space="preserve"><value> (Mặc định)</value></data>
   <data name="TypePrefix" xml:space="preserve"><value>Loại ca: </value></data>

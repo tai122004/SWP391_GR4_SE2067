@@ -55,20 +55,41 @@ namespace RWPM.Models.Entities
             {
                 if (Shift == null || !CheckInTime.HasValue || !CheckOutTime.HasValue) return null;
                 var start = Date.Date.Add(Shift.StartTime);
-                var checkIn = new[] { -1, 0, 1 }.Select(day => Date.Date.AddDays(day).Add(CheckInTime.Value))
+                var checkInActual = new[] { -1, 0, 1 }.Select(day => Date.Date.AddDays(day).Add(CheckInTime.Value))
                     .OrderBy(time => Math.Abs((time - start).TotalMinutes)).First();
-                var checkOut = new[] { -1, 0, 1, 2 }.Select(day => Date.Date.AddDays(day).Add(CheckOutTime.Value))
-                    .Where(time => time >= checkIn).OrderBy(time => time).First();
+                var checkOutActual = new[] { -1, 0, 1, 2 }.Select(day => Date.Date.AddDays(day).Add(CheckOutTime.Value))
+                    .Where(time => time >= checkInActual).OrderBy(time => time).First();
 
                 var shiftRange = RWPM.Common.Helper.ShiftTimeHelper.GetDateTimeRange(Date, Shift);
                 
-                // Nếu đi muộn quá 15 phút so với giờ vào làm -> Không được tính lương
-                if ((checkIn - shiftRange.StartAt).TotalMinutes > 15) return 0;
-                
-                // Nếu về sớm quá 15 phút so với giờ tan làm -> Không được tính lương
-                if ((shiftRange.EndAt - checkOut).TotalMinutes > 15) return 0;
+                int lateMins = (int)(checkInActual - shiftRange.StartAt).TotalMinutes;
+                int earlyMins = (int)(shiftRange.EndAt - checkOutActual).TotalMinutes;
 
-                return RWPM.Common.Helper.ShiftTimeHelper.GetWorkedHours(Date, Shift, checkIn, checkOut);
+                // Nếu không phải do HR/Admin chỉnh sửa (IsAdjusted = false) thì chạy luật phạt tự động
+                if (!IsAdjusted)
+                {
+                    // 1. Phạt đi muộn
+                    if (lateMins > 60)
+                    {
+                        return 0; // Đi muộn quá 1 tiếng -> Mất trắng ca làm
+                    }
+                    else if (lateMins > 0 && lateMins <= 15)
+                    {
+                        // Châm chước 15 phút đầu -> Coi như đi đúng giờ
+                        checkInActual = shiftRange.StartAt;
+                    }
+                    // Nếu lateMins từ 16 đến 60 thì giữ nguyên checkInActual (trừ lương theo số phút muộn)
+
+                    // 2. Phạt về sớm
+                    if (earlyMins > 0 && earlyMins <= 15)
+                    {
+                        // Châm chước về sớm 15 phút -> Coi như về đúng giờ
+                        checkOutActual = shiftRange.EndAt;
+                    }
+                    // Nếu earlyMins > 15 thì giữ nguyên checkOutActual (trừ lương theo số phút về sớm)
+                }
+
+                return RWPM.Common.Helper.ShiftTimeHelper.GetWorkedHours(Date, Shift, checkInActual, checkOutActual);
             }
         }
     }

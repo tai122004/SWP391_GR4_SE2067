@@ -182,9 +182,13 @@ namespace RWPM.Services.Implementation
                 .OrderBy(time => Math.Abs((time - shiftRange.StartAt).TotalMinutes)).First();
                 
             int lateMins = (int)(checkInActual - shiftRange.StartAt).TotalMinutes;
-            if (lateMins > RWPM.Common.Constants.ShiftDefaults.GracePeriodMinutes)
+            if (lateMins > 60)
             {
-                warningMsg = $"Bạn đã chấm công vào làm thành công! NHƯNG bạn đã đi muộn {lateMins} phút (Vượt quá {RWPM.Common.Constants.ShiftDefaults.GracePeriodMinutes} phút cho phép). Ca làm việc này của bạn sẽ KHÔNG ĐƯỢC TÍNH LƯƠNG!";
+                warningMsg = $"Bạn đã chấm công vào làm thành công! NHƯNG bạn đã đi muộn {lateMins} phút (Vượt quá 1 tiếng). Ca làm việc này của bạn sẽ KHÔNG ĐƯỢC TÍNH LƯƠNG!";
+            }
+            else if (lateMins > RWPM.Common.Constants.ShiftDefaults.GracePeriodMinutes)
+            {
+                warningMsg = $"Bạn đã chấm công vào làm thành công! NHƯNG bạn đã đi muộn {lateMins} phút (Vượt quá {RWPM.Common.Constants.ShiftDefaults.GracePeriodMinutes} phút cho phép). Ca này bạn sẽ bị trừ lương tương ứng với {lateMins} phút đi muộn.";
             }
 
             return (record, warningMsg);
@@ -268,7 +272,7 @@ namespace RWPM.Services.Implementation
                 int earlyMins = (int)(shiftRange.EndAt - checkOutActual).TotalMinutes;
                 if (earlyMins > RWPM.Common.Constants.ShiftDefaults.EarlyCheckOutMinutes)
                 {
-                    warningMsg = $"Bạn đã chấm công tan làm thành công! NHƯNG bạn đã về sớm {earlyMins} phút (Vượt quá {RWPM.Common.Constants.ShiftDefaults.EarlyCheckOutMinutes} phút cho phép). Ca làm việc này của bạn sẽ KHÔNG ĐƯỢC TÍNH LƯƠNG!";
+                    warningMsg = $"Bạn đã chấm công tan làm thành công! NHƯNG bạn đã về sớm {earlyMins} phút (Vượt quá {RWPM.Common.Constants.ShiftDefaults.EarlyCheckOutMinutes} phút cho phép). Ca này bạn sẽ bị trừ lương tương ứng với {earlyMins} phút về sớm.";
                 }
             }
 
