@@ -161,6 +161,38 @@ namespace RWPM.Infrastructure.Data
                  .OnDelete(DeleteBehavior.Restrict);
             });
             #endregion
+
+            #region Payroll
+            modelBuilder.Entity<Payroll>(e =>
+            {
+                e.HasIndex(x => new { x.PeriodMonth, x.PeriodYear })
+                 .IsUnique()
+                 .HasDatabaseName("IX_Payroll_PeriodMonth_PeriodYear");
+
+                e.HasMany(x => x.Details)
+                 .WithOne(x => x.Payroll)
+                 .HasForeignKey(x => x.PayrollId)
+                 .OnDelete(DeleteBehavior.Cascade);
+            });
+            #endregion
+
+            #region PayrollDetail
+            modelBuilder.Entity<PayrollDetail>(e =>
+            {
+                e.HasIndex(x => new { x.PayrollId, x.EmployeeId })
+                 .HasDatabaseName("IX_PayrollDetail_PayrollId_EmployeeId");
+
+                e.HasOne(x => x.Employee)
+                 .WithMany()
+                 .HasForeignKey(x => x.EmployeeId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+                e.HasOne(x => x.Store)
+                 .WithMany()
+                 .HasForeignKey(x => x.StoreId)
+                 .OnDelete(DeleteBehavior.Restrict);
+            });
+            #endregion
         }
 
         public DbSet<Acc> Acc { get; set; } = default!;
@@ -175,6 +207,8 @@ namespace RWPM.Infrastructure.Data
         public DbSet<ShiftRegistration> ShiftRegistration { get; set; } = default!;
         public DbSet<ShiftSwapRequest> ShiftSwapRequest { get; set; } = default!;
         public DbSet<LeaveRequest> LeaveRequest { get; set; } = default!;
+        public DbSet<Payroll> Payroll { get; set; } = default!;
+        public DbSet<PayrollDetail> PayrollDetail { get; set; } = default!;
 
         //public DbSet<IdCounter> IdCounter { get; set; } = default!;
 

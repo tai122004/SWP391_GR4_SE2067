@@ -1,0 +1,352 @@
+@using RWPM.Common.Enums
+@model RWPM.Models.ViewModels.Payroll.PayrollDetailVM
+
+@{
+    ViewData["Title"] = Model.Payroll.Title;
+    bool isAdminOrHR = ViewBag.IsAdminOrHR ?? false;
+    bool isStoreManager = ViewBag.IsStoreManager ?? false;
+    bool isLocked = Model.Payroll.Status == PayrollStatus.Locked;
+}
+
+<div class="container-fluid py-4">
+    <!-- Breadcrumb & Navigation -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none">Quản lý Bảng lương</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Payroll.Title</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <h2 class="h3 font-weight-bold mb-0 text-dark">@Model.Payroll.Title</h2>
+                @if (isLocked)
+                {
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 fs-6">
+                        <i class="bi bi-lock-fill me-1"></i>Đã chốt (Locked)
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-1 fs-6">
+                        <i class="bi bi-pencil me-1"></i>Bản nháp (Draft)
+                    </span>
+                }
+            </div>
+            <p class="text-muted mb-0 mt-1">
+                Kỳ tính công: <strong>@Model.Payroll.StartDate.ToString("dd/MM/yyyy") - @Model.Payroll.EndDate.ToString("dd/MM/yyyy")</strong>
+                @if (isLocked && !string.IsNullOrEmpty(Model.Payroll.LockedBy))
+                {
+                    <span> | Chốt bởi: <strong>@Model.Payroll.LockedBy</strong> (@Model.Payroll.LockedDate?.ToString("dd/MM/yyyy HH:mm"))</span>
+                }
+            </p>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a asp-action="ExportExcel" asp-route-id="@Model.Payroll.PayrollId" asp-route-storeId="@Model.SelectedStoreId" class="btn btn-outline-success btn-sm d-flex align-items-center gap-1">
+                <i class="bi bi-file-earmark-excel"></i>
+                <span>Xuất Excel</span>
+            </a>
+
+            @if (isAdminOrHR)
+            {
+                if (!isLocked)
+                {
+                    <form asp-action="Recalculate" asp-route-id="@Model.Payroll.PayrollId" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn tính toán lại toàn bộ bảng lương này?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1">
+                            <i class="bi bi-arrow-repeat"></i>
+                            <span>Tính lại</span>
+                        </button>
+                    </form>
+
+                    <form asp-action="Lock" asp-route-id="@Model.Payroll.PayrollId" method="post" class="d-inline" onsubmit="return confirm('Sau khi chốt, bảng lương sẽ được bảo vệ bất biến. Bạn có chắc chắn muốn chốt?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-success btn-sm d-flex align-items-center gap-1 shadow-sm">
+                            <i class="bi bi-lock-fill"></i>
+                            <span>Chốt bảng lương</span>
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#unlockModal">
+                        <i class="bi bi-unlock-fill"></i>
+                        <span>Mở khóa bảng lương</span>
+                    </button>
+                }
+            }
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (Model.MissingRateCount > 0 || Model.WarningCount > 0)
+    {
+        <div class="alert alert-warning border-0 shadow-sm rounded-3 mb-4">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-exclamation-triangle-fill fs-3 text-warning me-3"></i>
+                <div>
+                    <h6 class="fw-bold mb-1 text-dark">Phát hiện dữ liệu cần xử lý trước khi thanh toán</h6>
+                    <ul class="mb-0 small text-secondary">
+                        @if (Model.MissingRateCount > 0)
+                        {
+                            <li>Có <strong>@Model.MissingRateCount</strong> nhân viên chưa được thiết lập <code>HourlyRate</code> (Lương tính ra = 0). Hãy cập nhật mức lương trước khi chốt!</li>
+                        }
+                        @if (Model.WarningCount > 0)
+                        {
+                            <li>Có <strong>@Model.WarningCount</strong> nhân viên có ca chấm công bất thường hoặc thiếu giờ vào/ra.</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Metric Summary Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-body">
+                    <span class="text-muted text-uppercase fw-semibold small">Tổng nhân viên</span>
+                    <h3 class="fw-bold mb-0 mt-1 text-primary">@Model.TotalEmployeesCount</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-body">
+                    <span class="text-muted text-uppercase fw-semibold small">Tổng giờ làm</span>
+                    <h3 class="fw-bold mb-0 mt-1 text-info">@Model.TotalHours.ToString("#,##0.00") <small class="fs-6">giờ</small></h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-body">
+                    <span class="text-muted text-uppercase fw-semibold small">Tổng quỹ lương kỳ</span>
+                    <h3 class="fw-bold mb-0 mt-1 text-success">@Model.TotalAmount.ToString("#,##0") <small class="fs-6">VNĐ</small></h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-body">
+                    <span class="text-muted text-uppercase fw-semibold small">Cảnh báo / Bất thường</span>
+                    <h3 class="fw-bold mb-0 mt-1 @(Model.WarningCount + Model.MissingRateCount > 0 ? "text-danger" : "text-muted")">
+                        @(Model.WarningCount + Model.MissingRateCount)
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Form -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-body py-3">
+            <form method="get" asp-action="Detail" class="row g-2 align-items-center">
+                <input type="hidden" name="id" value="@Model.Payroll.PayrollId" />
+                @if (!isStoreManager)
+                {
+                    <div class="col-12 col-md-3">
+                        <select name="storeId" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="">-- Tất cả chi nhánh --</option>
+                            @foreach (var store in Model.Stores)
+                            {
+                                if (store.StoreId == Model.SelectedStoreId)
+                                {
+                                    <option value="@store.StoreId" selected>@store.StoreName</option>
+                                }
+                                else
+                                {
+                                    <option value="@store.StoreId">@store.StoreName</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                }
+
+                <div class="col-12 col-md-3">
+                    <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">-- Tất cả trạng thái --</option>
+                        <option value="@PayrollDetailStatus.Valid" selected="@(Model.StatusFilter == PayrollDetailStatus.Valid)">Hợp lệ</option>
+                        <option value="@PayrollDetailStatus.MissingRate" selected="@(Model.StatusFilter == PayrollDetailStatus.MissingRate)">Thiếu đơn giá</option>
+                        <option value="@PayrollDetailStatus.HasWarnings" selected="@(Model.StatusFilter == PayrollDetailStatus.HasWarnings)">Có cảnh báo</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <div class="input-group input-group-sm">
+                        <input type="text" name="search" class="form-control" placeholder="Tìm theo Mã NV, Họ tên..." value="@Model.Search">
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-2 text-end">
+                    <a asp-action="Detail" asp-route-id="@Model.Payroll.PayrollId" class="btn btn-sm btn-link text-decoration-none">
+                        Đặt lại
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Table Details -->
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Mã NV</th>
+                        <th>Họ và tên</th>
+                        <th>Chi nhánh</th>
+                        <th>Hình thức</th>
+                        <th class="text-end">Giờ theo lịch</th>
+                        <th class="text-end">Giờ thực tế</th>
+                        <th class="text-center">Nghỉ phép</th>
+                        <th class="text-end">Đơn giá / Giờ</th>
+                        <th class="text-end">Tổng tiền lương</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-end pe-4">Chi tiết</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Details.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="11" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary"></i>
+                                Không tìm thấy nhân viên nào phù hợp với bộ lọc.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model.Details)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-semibold text-primary">@item.EmployeeCode</td>
+                                <td class="fw-bold">@item.EmployeeName</td>
+                                <td>@item.StoreName</td>
+                                <td>
+                                    <span class="badge bg-light text-secondary border">@item.EmploymentType</span>
+                                </td>
+                                <td class="text-end text-muted">@item.TotalStandardHours.ToString("#,##0.00")</td>
+                                <td class="text-end fw-bold text-dark">@item.TotalWorkHours.ToString("#,##0.00")</td>
+                                <td class="text-center">
+                                    @if (item.ApprovedLeaveDays > 0)
+                                    {
+                                        <span class="badge bg-info-subtle text-info">@item.ApprovedLeaveDays ngày</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    @if (item.HourlyRate > 0)
+                                    {
+                                        <span>@item.HourlyRate.ToString("#,##0") đ</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger fw-bold">Chưa có</span>
+                                    }
+                                </td>
+                                <td class="text-end fw-bold text-success fs-6">
+                                    @item.TotalSalary.ToString("#,##0") đ
+                                </td>
+                                <td class="text-center">
+                                    @switch (item.Status)
+                                    {
+                                        case PayrollDetailStatus.Valid:
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                                <i class="bi bi-check-circle me-1"></i>Hợp lệ
+                                            </span>
+                                            break;
+                                        case PayrollDetailStatus.MissingRate:
+                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle" title="@item.WarningNotes">
+                                                <i class="bi bi-exclamation-circle me-1"></i>Thiếu đơn giá
+                                            </span>
+                                            break;
+                                        case PayrollDetailStatus.HasWarnings:
+                                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle" title="@item.WarningNotes">
+                                                <i class="bi bi-exclamation-triangle me-1"></i>Có ca thiếu
+                                            </span>
+                                            break;
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <a asp-action="EmployeeDetail" asp-route-payrollId="@Model.Payroll.PayrollId" asp-route-employeeId="@item.EmployeeId" class="btn btn-sm btn-outline-primary" title="Xem chi tiết chấm công">
+                                        <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+                @if (Model.Details.Count > 0)
+                {
+                    <tfoot class="table-light fw-bold">
+                        <tr>
+                            <td colspan="4" class="ps-4">TỔNG CỘNG (@Model.Details.Count nhân viên)</td>
+                            <td class="text-end">@Model.Details.Sum(d => d.TotalStandardHours).ToString("#,##0.00")</td>
+                            <td class="text-end text-primary">@Model.Details.Sum(d => d.TotalWorkHours).ToString("#,##0.00")</td>
+                            <td class="text-center">@Model.Details.Sum(d => d.ApprovedLeaveDays) ngày</td>
+                            <td></td>
+                            <td class="text-end text-success fs-6">@Model.Details.Sum(d => d.TotalSalary).ToString("#,##0") đ</td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </tfoot>
+                }
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Mở khóa -->
+@if (isAdminOrHR && isLocked)
+{
+    <div class="modal fade" id="unlockModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form asp-action="Unlock" asp-route-id="@Model.Payroll.PayrollId" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title"><i class="bi bi-unlock-fill me-2"></i>Mở khóa Bảng lương</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-muted small">Sau khi mở khóa, bảng lương sẽ quay về trạng thái <strong>Bản nháp (Draft)</strong>, cho phép chỉnh sửa hoặc tính toán lại.</p>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Lý do mở khóa <span class="text-danger">*</span></label>
+                            <textarea name="reason" class="form-control" rows="3" required placeholder="Nhập lý do cần điều chỉnh lại..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-warning">Xác nhận mở khóa</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}

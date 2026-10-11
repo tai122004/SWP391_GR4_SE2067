@@ -25,5 +25,13 @@
         <a class="app-nav-link" asp-controller="ShiftRegistration" asp-action="Index" data-nav-controller="ShiftRegistration"><i class="bi bi-calendar-week"></i><span>@ShiftRegistrationResource.ShiftRegistration</span></a>
         <a class="app-nav-link" asp-controller="Attendance" asp-action="Index" data-nav-controller="Attendance"><i class="bi bi-calendar-check"></i><span>@NavigationBarResource.Attendance</span></a>
         <a class="app-nav-link" asp-controller="Request" asp-action="Index" data-nav-controller="Request"><i class="bi bi-inbox"></i><span>@RequestResource.RequestsAndApprovals</span></a>
+        @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("AreaManager") || User.IsInRole("SuperAdmin") || User.IsInRole("StoreManager"))
+        {
+            <a class="app-nav-link" asp-controller="Payroll" asp-action="Index" data-nav-controller="Payroll"><i class="bi bi-cash-stack"></i><span>@(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "vi" ? "Bảng lương" : "Payroll")</span></a>
+        }
+        else
+        {
+            <a class="app-nav-link" asp-controller="Payroll" asp-action="MyPayslips" data-nav-controller="Payroll"><i class="bi bi-receipt"></i><span>@(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "vi" ? "Phiếu lương" : "My Payslips")</span></a>
+        }
     </nav>
 </aside>

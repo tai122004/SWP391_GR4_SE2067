@@ -1,0 +1,229 @@
+@using RWPM.Common.Enums
+@model RWPM.Models.ViewModels.Payroll.EmployeePayslipVM
+
+@{
+    ViewData["Title"] = $"Chi tiết chấm công & lương: {Model.Detail.EmployeeName}";
+    bool isAdminOrHR = ViewBag.IsAdminOrHR ?? false;
+}
+
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none">Quản lý Bảng lương</a></li>
+            <li class="breadcrumb-item"><a asp-action="Detail" asp-route-id="@Model.Payroll.PayrollId" class="text-decoration-none">@Model.Payroll.Title</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Detail.EmployeeName</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="h3 font-weight-bold mb-1 text-dark">
+                Chi tiết Bảng lương: @Model.Detail.EmployeeName
+            </h2>
+            <p class="text-muted mb-0">Mã NV: <strong>@Model.Detail.EmployeeCode</strong> | Chi nhánh: <strong>@Model.Detail.StoreName</strong> | Kỳ: <strong>@Model.Payroll.Title</strong></p>
+        </div>
+        <div>
+            <a asp-action="Detail" asp-route-id="@Model.Payroll.PayrollId" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i>Quay lại bảng lương
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-body">
+                    <span class="text-muted text-uppercase fw-semibold small">Mức lương / Giờ</span>
+                    <h4 class="fw-bold mb-0 mt-1 text-primary">
+                        @(Model.Detail.HourlyRate > 0 ? Model.Detail.HourlyRate.ToString("#,##0") + " đ" : "Chưa có đơn giá")
+                    </h4>
+                    <small class="text-muted">Đơn giá giờ làm cố định</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-body">
+                    <span class="text-muted text-uppercase fw-semibold small">Tổng giờ thực tế</span>
+                    <h4 class="fw-bold mb-0 mt-1 text-info">
+                        @Model.Detail.TotalWorkHours.ToString("#,##0.00") <small class="fs-6">giờ</small>
+                    </h4>
+                    <small class="text-muted">Lịch phân ca: @Model.Detail.TotalStandardHours.ToString("#,##0.00") h</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-body">
+                    <span class="text-muted text-uppercase fw-semibold small">Tổng thu nhập kỳ</span>
+                    <h4 class="fw-bold mb-0 mt-1 text-success">
+                        @Model.Detail.TotalSalary.ToString("#,##0") <small class="fs-6">VNĐ</small>
+                    </h4>
+                    <small class="text-muted">@Model.Detail.TotalWorkHours.ToString("#,##0.00") h × @Model.Detail.HourlyRate.ToString("#,##0") đ</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-body">
+                    <span class="text-muted text-uppercase fw-semibold small">Trạng thái dữ liệu</span>
+                    <div class="mt-2">
+                        @switch (Model.Detail.Status)
+                        {
+                            case PayrollDetailStatus.Valid:
+                                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+                                    <i class="bi bi-check-circle me-1"></i>Hợp lệ
+                                </span>
+                                break;
+                            case PayrollDetailStatus.MissingRate:
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
+                                    <i class="bi bi-exclamation-circle me-1"></i>Chưa có HourlyRate
+                                </span>
+                                break;
+                            case PayrollDetailStatus.HasWarnings:
+                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>Có ca thiếu dữ liệu
+                                </span>
+                                break;
+                        }
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Detail.WarningNotes))
+                    {
+                        <small class="text-danger d-block mt-1">@Model.Detail.WarningNotes</small>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Details Table -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0 fw-bold text-dark">
+                <i class="bi bi-clock-history me-2 text-primary"></i>Chi tiết ca chấm công trong kỳ (@Model.AttendanceRecords.Count ca)
+            </h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Ngày làm</th>
+                        <th>Ca làm việc</th>
+                        <th>Khung giờ ca</th>
+                        <th>Giờ vào</th>
+                        <th>Giờ ra</th>
+                        <th class="text-end">Giờ làm tính lương</th>
+                        <th class="text-center">Điều chỉnh HR</th>
+                        <th class="text-center">Trạng thái ca</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.AttendanceRecords.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-muted">
+                                Không có bản ghi chấm công nào trong kỳ này.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var ar in Model.AttendanceRecords)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-semibold">@ar.Date.ToString("dd/MM/yyyy") (@ar.Date.ToString("ddd"))</td>
+                                <td>@(ar.Shift?.ShiftName ?? "Không xác định")</td>
+                                <td class="text-muted small">
+                                    @if (ar.Shift != null)
+                                    {
+                                        <span>@ar.Shift.StartTime.ToString(@"hh\:mm") - @ar.Shift.EndTime.ToString(@"hh\:mm")</span>
+                                    }
+                                    else
+                                    {
+                                        <span>-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @(ar.CheckInTime.HasValue ? ar.CheckInTime.Value.ToString(@"hh\:mm") : "<span class='text-danger fw-bold'>Thiếu</span>")
+                                </td>
+                                <td>
+                                    @(ar.CheckOutTime.HasValue ? ar.CheckOutTime.Value.ToString(@"hh\:mm") : "<span class='text-danger fw-bold'>Thiếu</span>")
+                                </td>
+                                <td class="text-end fw-bold">
+                                    @if (ar.WorkHours.HasValue)
+                                    {
+                                        <span class="text-success">@ar.WorkHours.Value.ToString("#,##0.00") h</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger">0.00 h</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (ar.IsAdjusted)
+                                    {
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Đã duyệt điều chỉnh</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">Tự động</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (ar.WorkHours.HasValue)
+                                    {
+                                        <span class="badge bg-success-subtle text-success">Hợp lệ</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger-subtle text-danger">Bất thường</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Leave Requests Table -->
+    @if (Model.LeaveRequests.Count > 0)
+    {
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h5 class="card-title mb-0 fw-bold text-dark">
+                    <i class="bi bi-calendar-check me-2 text-info"></i>Đơn nghỉ phép đã duyệt trong kỳ (@Model.LeaveRequests.Count đơn)
+                </h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Từ ngày</th>
+                            <th>Đến ngày</th>
+                            <th>Lý do</th>
+                            <th class="text-center">Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var l in Model.LeaveRequests)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-semibold">@l.StartDate.ToString("dd/MM/yyyy")</td>
+                                <td class="fw-semibold">@l.EndDate.ToString("dd/MM/yyyy")</td>
+                                <td>@l.Reason</td>
+                                <td class="text-center">
+                                    <span class="badge bg-success-subtle text-success">Đã phê duyệt</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

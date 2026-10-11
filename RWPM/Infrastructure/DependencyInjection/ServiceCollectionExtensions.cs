@@ -76,6 +76,7 @@ namespace RWPM.Infrastructure.DependencyInjection
             services.AddScoped<IShiftRegistrationService, ShiftRegistrationService>();
             services.AddScoped<IShiftSwapService, ShiftSwapService>();
             services.AddScoped<ILeaveRequestService, LeaveRequestService>();
+            services.AddScoped<IPayrollService, PayrollService>();
             //services.AddScoped<IIdCounterService, IdCounterService>();
 
             return services;
