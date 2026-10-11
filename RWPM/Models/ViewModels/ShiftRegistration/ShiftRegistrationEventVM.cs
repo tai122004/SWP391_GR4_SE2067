@@ -23,6 +23,11 @@ namespace RWPM.Models.ViewModels.ShiftRegistration
         public int statusId { get; set; }
         public string statusName { get; set; } = string.Empty;
         public string note { get; set; } = string.Empty;
+        public string startTime { get; set; } = string.Empty;
+        public string endTime { get; set; } = string.Empty;
+        public string? rejectionReason { get; set; }
+        public string? approvedBy { get; set; }
+        public string? approvedAt { get; set; }
 
         public static ShiftRegistrationEventVM FromEntity(Models.Entities.ShiftRegistration entity)
         {
@@ -34,6 +39,9 @@ namespace RWPM.Models.ViewModels.ShiftRegistration
 
             var empName = entity.Employee.Account?.FullName ?? entity.Employee.Username;
             var storeName = entity.Store?.StoreName ?? string.Empty;
+
+            var startStr = entity.Shift.StartTime.ToString(@"hh\:mm");
+            var endStr = entity.Shift.EndTime.ToString(@"hh\:mm") + (entity.Shift.EndDayOffset > 0 ? " (+1)" : "");
 
             return new ShiftRegistrationEventVM
             {
@@ -52,7 +60,12 @@ namespace RWPM.Models.ViewModels.ShiftRegistration
                 shiftName = entity.Shift.GetLocalizedName(),
                 statusId = (int)entity.Status,
                 statusName = entity.Status.ToString(),
-                note = entity.Note
+                note = entity.Note,
+                startTime = startStr,
+                endTime = endStr,
+                rejectionReason = entity.RejectionReason,
+                approvedBy = entity.ApprovedBy,
+                approvedAt = entity.ApprovedAt?.ToString("dd/MM/yyyy HH:mm")
             };
         }
 

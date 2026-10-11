@@ -50,10 +50,10 @@ namespace RWPM.Services.Implementation
 
         public async Task<SelectList> GetSelectListAsync(string? defaultOption = null)
         {
-            var defaultDisplay = defaultOption ?? _localizer["Dropdown_SelectStore"].Value;
-            if (string.IsNullOrWhiteSpace(defaultDisplay) || defaultDisplay == "Dropdown_SelectStore")
+            var defaultDisplay = defaultOption ?? RWPM.Resources.Shared.Store.Dropdown_SelectStore;
+            if (string.IsNullOrWhiteSpace(defaultDisplay))
             {
-                defaultDisplay = "-- Chọn cửa hàng --";
+                defaultDisplay = "-- Select store --";
             }
 
             var data = new List<object>

@@ -311,5 +311,127 @@ namespace RWPM.Resources.Shared {
                 return ResourceManager.GetString("Status", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Rejection Reason.
+        /// </summary>
+        public static string RejectReasonTitle {
+            get {
+                return ResourceManager.GetString("RejectReasonTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Please provide a reason for rejecting the request.
+        /// </summary>
+        public static string RejectReasonPrompt {
+            get {
+                return ResourceManager.GetString("RejectReasonPrompt", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Enter detailed reason....
+        /// </summary>
+        public static string RejectReasonPlaceholder {
+            get {
+                return ResourceManager.GetString("RejectReasonPlaceholder", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm Rejection.
+        /// </summary>
+        public static string ConfirmRejectBtn {
+            get {
+                return ResourceManager.GetString("ConfirmRejectBtn", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Please enter a rejection reason..
+        /// </summary>
+        public static string RejectReasonRequired {
+            get {
+                return ResourceManager.GetString("RejectReasonRequired", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Request rejected successfully.
+        /// </summary>
+        public static string RejectSuccess {
+            get {
+                return ResourceManager.GetString("RejectSuccess", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Bulk requests rejected successfully.
+        /// </summary>
+        public static string BulkRejectSuccess {
+            get {
+                return ResourceManager.GetString("BulkRejectSuccess", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Not approved yet.
+        /// </summary>
+        public static string NotApprovedYet {
+            get {
+                return ResourceManager.GetString("NotApprovedYet", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to approve this request?.
+        /// </summary>
+        public static string ConfirmApproveMsg {
+            get {
+                return ResourceManager.GetString("ConfirmApproveMsg", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to approve {0} requests?.
+        /// </summary>
+        public static string ConfirmBulkApproveMsg {
+            get {
+                return ResourceManager.GetString("ConfirmBulkApproveMsg", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this request?.
+        /// </summary>
+        public static string ConfirmDeleteMsg {
+            get {
+                return ResourceManager.GetString("ConfirmDeleteMsg", resourceCulture);
+            }
+        }
+        public static string ShiftSwap => ResourceManager.GetString("ShiftSwap", resourceCulture);
+        public static string Swap_SourceShift => ResourceManager.GetString("Swap_SourceShift", resourceCulture);
+        public static string Swap_SwapType => ResourceManager.GetString("Swap_SwapType", resourceCulture);
+        public static string Swap_WithCoworker => ResourceManager.GetString("Swap_WithCoworker", resourceCulture);
+        public static string Swap_DirectChange => ResourceManager.GetString("Swap_DirectChange", resourceCulture);
+        public static string Swap_SelectCoworker => ResourceManager.GetString("Swap_SelectCoworker", resourceCulture);
+        public static string Swap_CoworkerShift => ResourceManager.GetString("Swap_CoworkerShift", resourceCulture);
+        public static string Swap_NewShift => ResourceManager.GetString("Swap_NewShift", resourceCulture);
+        public static string Swap_NewDate => ResourceManager.GetString("Swap_NewDate", resourceCulture);
+        public static string Swap_Reason => ResourceManager.GetString("Swap_Reason", resourceCulture);
+        public static string Swap_ReasonPlaceholder => ResourceManager.GetString("Swap_ReasonPlaceholder", resourceCulture);
+        public static string Swap_SubmitSuccess => ResourceManager.GetString("Swap_SubmitSuccess", resourceCulture);
+        public static string Swap_ApproveSuccess => ResourceManager.GetString("Swap_ApproveSuccess", resourceCulture);
+        public static string Swap_RejectSuccess => ResourceManager.GetString("Swap_RejectSuccess", resourceCulture);
+        public static string Swap_DeleteSuccess => ResourceManager.GetString("Swap_DeleteSuccess", resourceCulture);
+        public static string Swap_NoEligibleShifts => ResourceManager.GetString("Swap_NoEligibleShifts", resourceCulture);
+        public static string Swap_SelectSourcePrompt => ResourceManager.GetString("Swap_SelectSourcePrompt", resourceCulture);
+        public static string Swap_SelectCoworkerPrompt => ResourceManager.GetString("Swap_SelectCoworkerPrompt", resourceCulture);
+        public static string Swap_SelectCoworkerShiftPrompt => ResourceManager.GetString("Swap_SelectCoworkerShiftPrompt", resourceCulture);
+        public static string Swap_TargetShiftInfo => ResourceManager.GetString("Swap_TargetShiftInfo", resourceCulture);
+        public static string Filter_AllTypes => ResourceManager.GetString("Filter_AllTypes", resourceCulture);
+        public static string Filter_ShiftRegOnly => ResourceManager.GetString("Filter_ShiftRegOnly", resourceCulture);
+        public static string Filter_ShiftSwapOnly => ResourceManager.GetString("Filter_ShiftSwapOnly", resourceCulture);
     }
 }

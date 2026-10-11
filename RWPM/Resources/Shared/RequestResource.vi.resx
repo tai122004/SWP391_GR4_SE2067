@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -141,5 +141,107 @@
   </data>
   <data name="RejectAll" xml:space="preserve">
     <value>Từ chối tất cả</value>
+  </data>
+  <data name="RejectReasonTitle" xml:space="preserve">
+    <value>Lý do từ chối</value>
+  </data>
+  <data name="RejectReasonPrompt" xml:space="preserve">
+    <value>Vui lòng nhập lý do từ chối yêu cầu</value>
+  </data>
+  <data name="RejectReasonPlaceholder" xml:space="preserve">
+    <value>Nhập lý do chi tiết...</value>
+  </data>
+  <data name="ConfirmRejectBtn" xml:space="preserve">
+    <value>Xác nhận từ chối</value>
+  </data>
+  <data name="RejectReasonRequired" xml:space="preserve">
+    <value>Vui lòng nhập lý do từ chối.</value>
+  </data>
+  <data name="RejectSuccess" xml:space="preserve">
+    <value>Đã từ chối yêu cầu thành công</value>
+  </data>
+  <data name="BulkRejectSuccess" xml:space="preserve">
+    <value>Đã từ chối các yêu cầu thành công</value>
+  </data>
+  <data name="NotApprovedYet" xml:space="preserve">
+    <value>Chưa duyệt</value>
+  </data>
+  <data name="ConfirmApproveMsg" xml:space="preserve">
+    <value>Bạn có chắc chắn muốn chấp thuận yêu cầu này không?</value>
+  </data>
+  <data name="ConfirmBulkApproveMsg" xml:space="preserve">
+    <value>Bạn có chắc chắn muốn chấp thuận {0} yêu cầu này không?</value>
+  </data>
+  <data name="ConfirmDeleteMsg" xml:space="preserve">
+    <value>Bạn có chắc chắn muốn xóa yêu cầu này không?</value>
+  </data>
+  <data name="ShiftSwap" xml:space="preserve">
+    <value>Đổi ca làm</value>
+  </data>
+  <data name="Swap_SourceShift" xml:space="preserve">
+    <value>Ca của tôi cần đổi</value>
+  </data>
+  <data name="Swap_SwapType" xml:space="preserve">
+    <value>Hình thức đổi ca</value>
+  </data>
+  <data name="Swap_WithCoworker" xml:space="preserve">
+    <value>Đổi ca với đồng nghiệp</value>
+  </data>
+  <data name="Swap_DirectChange" xml:space="preserve">
+    <value>Chuyển sang ca khác</value>
+  </data>
+  <data name="Swap_SelectCoworker" xml:space="preserve">
+    <value>Chọn đồng nghiệp cùng chi nhánh</value>
+  </data>
+  <data name="Swap_CoworkerShift" xml:space="preserve">
+    <value>Ca của đồng nghiệp muốn đổi</value>
+  </data>
+  <data name="Swap_NewShift" xml:space="preserve">
+    <value>Ca làm việc mới</value>
+  </data>
+  <data name="Swap_NewDate" xml:space="preserve">
+    <value>Ngày làm việc mới</value>
+  </data>
+  <data name="Swap_Reason" xml:space="preserve">
+    <value>Lý do đổi ca</value>
+  </data>
+  <data name="Swap_ReasonPlaceholder" xml:space="preserve">
+    <value>Nhập lý do đổi ca...</value>
+  </data>
+  <data name="Swap_SubmitSuccess" xml:space="preserve">
+    <value>Tạo yêu cầu đổi ca thành công!</value>
+  </data>
+  <data name="Swap_ApproveSuccess" xml:space="preserve">
+    <value>Đã phê duyệt và hoán đổi ca làm việc thành công!</value>
+  </data>
+  <data name="Swap_RejectSuccess" xml:space="preserve">
+    <value>Đã từ chối yêu cầu đổi ca!</value>
+  </data>
+  <data name="Swap_DeleteSuccess" xml:space="preserve">
+    <value>Đã hủy yêu cầu đổi ca!</value>
+  </data>
+  <data name="Swap_NoEligibleShifts" xml:space="preserve">
+    <value>Bạn chưa có ca làm việc nào đã duyệt trong tương lai để đổi.</value>
+  </data>
+  <data name="Swap_SelectSourcePrompt" xml:space="preserve">
+    <value>-- Chọn ca của tôi cần đổi --</value>
+  </data>
+  <data name="Swap_SelectCoworkerPrompt" xml:space="preserve">
+    <value>-- Chọn đồng nghiệp --</value>
+  </data>
+  <data name="Swap_SelectCoworkerShiftPrompt" xml:space="preserve">
+    <value>-- Chọn ca của đồng nghiệp --</value>
+  </data>
+  <data name="Swap_TargetShiftInfo" xml:space="preserve">
+    <value>Đổi sang / Đổi với</value>
+  </data>
+  <data name="Filter_AllTypes" xml:space="preserve">
+    <value>Tất cả loại yêu cầu</value>
+  </data>
+  <data name="Filter_ShiftRegOnly" xml:space="preserve">
+    <value>Đăng ký ca</value>
+  </data>
+  <data name="Filter_ShiftSwapOnly" xml:space="preserve">
+    <value>Đổi ca làm</value>
   </data>
 </root>

@@ -19,7 +19,7 @@
             <h4 class="fw-bold text-dark d-flex align-items-center mb-1">
                 <i class="bi bi-person-gear text-primary me-2"></i> @AccountSharedResource.Update_PageHeader
             </h4>
-            <div class="text-muted small">Cập nhật thông tin và vai trò của tài khoản <strong>@Model.Username</strong></div>
+            <div class="text-muted small">@AccountSharedResource.Update_SubTitle <strong>@Model.Username</strong></div>
         </div>
 
         <nav aria-label="breadcrumb" class="d-none d-md-block">
@@ -49,13 +49,13 @@
                 </div>
                 <div class="ms-auto">
                     <button type="button" class="btn btn-outline-primary btn-sm" onclick="openQuickResetPassword('@Model.Username', '@Model.FullName')">
-                        <i class="bi bi-key me-1"></i> Cấp lại mật khẩu
+                        <i class="bi bi-key me-1"></i> @AccountSharedResource.Modal_QuickResetTitle
                     </button>
                 </div>
             </div>
 
             <div class="form-section-title">
-                <i class="bi bi-person-badge text-primary"></i> Thông tin cá nhân
+                <i class="bi bi-person-badge text-primary"></i> @AccountSharedResource.Create_Section_AccountInfo
             </div>
 
             <div class="row g-3 mb-3">
@@ -66,7 +66,7 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold small required" asp-for="Email">Email</label>
+                    <label class="form-label fw-semibold small required" asp-for="Email">@AccountSharedResource.Email</label>
                     <input class="form-control" asp-for="Email" placeholder="@AccountSharedResource.Placeholder_Email" />
                     <span asp-validation-for="Email" class="text-danger small"></span>
                 </div>
@@ -86,13 +86,13 @@
                 <div class="col-md-4">
                     <label class="form-label fw-semibold small" asp-for="Gender">@AccountModelResource.Gender</label>
                     <select class="form-select" asp-for="Gender" asp-items="Html.GetEnumSelectList<RWPM.Common.Enums.Gender>()">
-                        <option value="">-- Chọn giới tính --</option>
+                        <option value="">@SharedResource.Dropdown_SelectGender</option>
                     </select>
                 </div>
             </div>
 
             <div class="form-section-title mt-4">
-                <i class="bi bi-shield-check text-primary"></i> Quyền hạn hệ thống
+                <i class="bi bi-shield-check text-primary"></i> @AccountSharedResource.Update_Section_Role
             </div>
 
             <div class="row g-3 mb-3">
@@ -135,7 +135,6 @@
                     <div class="col-md-4">
                         <label class="form-label fw-semibold small required" asp-for="StoreId">@EmployeeSharedResource.Column_Store</label>
                         <select class="form-select" asp-for="StoreId" asp-items="Model.StoreSelectList" id="storeSelectInput">
-                            <option value="">-- @SharedResource.Dropdown_SelectStore --</option>
                         </select>
                         <span asp-validation-for="StoreId" class="text-danger small"></span>
                     </div>
@@ -157,7 +156,7 @@
                         <label class="form-label fw-semibold small" asp-for="HourlyRate">@EmployeeModelResource.HourlyRate</label>
                         <div class="input-group">
                             <input class="form-control" asp-for="HourlyRate" type="number" step="1000" placeholder="25000" />
-                            <span class="input-group-text small">VNĐ/h</span>
+                            <span class="input-group-text small">@SharedResource.Unit_VndPerHour</span>
                         </div>
                     </div>
                 </div>
@@ -176,12 +175,20 @@
 </div>
 
 <!-- Modal Đổi Mật Khẩu Nhanh -->
-<div class="modal fade" id="modalQuickResetPassword" tabindex="-1" aria-labelledby="modalQuickResetPasswordLabel" aria-hidden="true">
+<div class="modal fade" id="modalQuickResetPassword"
+     data-label-account="@AccountSharedResource.Label_Account"
+     data-label-password="@AccountModelResource.Password"
+     data-toast-copied="@AccountSharedResource.Toast_CopiedAccountPassword"
+     data-err-minlen="@AccountSharedResource.Err_MinLengthPassword"
+     data-err-match="@AccountSharedResource.Err_PasswordMismatch"
+     data-text-saving="@AccountSharedResource.Saving"
+     data-toast-success="@AccountSharedResource.Toast_ResetPasswordSuccess"
+     tabindex="-1" aria-labelledby="modalQuickResetPasswordLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content shadow-lg border-0">
             <div class="modal-header bg-primary text-white py-3">
                 <h5 class="modal-title fs-6 d-flex align-items-center" id="modalQuickResetPasswordLabel">
-                    <i class="bi bi-key-fill me-2 fs-5"></i> Cấp lại mật khẩu tài khoản
+                    <i class="bi bi-key-fill me-2 fs-5"></i> @AccountSharedResource.Modal_QuickResetTitle
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -190,22 +197,22 @@
                 
                 <div class="alert alert-info py-2 px-3 small d-flex align-items-center mb-3">
                     <i class="bi bi-person-check fs-5 me-2"></i>
-                    <div>Đang cấp lại mật khẩu cho: <strong id="quickResetModal_DisplayUser"></strong></div>
+                    <div>@AccountSharedResource.Modal_QuickResetFor <strong id="quickResetModal_DisplayUser"></strong></div>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold text-secondary">Mật khẩu mới</label>
+                    <label class="form-label small fw-semibold text-secondary">@AccountSharedResource.Modal_QuickResetNewPass</label>
                     <div class="input-group">
-                        <input type="text" id="quickResetModal_NewPassword" class="form-control" placeholder="Nhập mật khẩu mới..." autocomplete="off" />
-                        <button class="btn btn-outline-secondary" type="button" onclick="const p = generateRandomPassword(8); $('#quickResetModal_NewPassword').val(p); $('#quickResetModal_ConfirmPassword').val(p); $('#quickResetModal_CopyText').text('Tài khoản: ' + $('#quickResetModal_Username').val() + ' | Mật khẩu: ' + p);" title="Sinh mật khẩu ngẫu nhiên">
-                            <i class="bi bi-dice-5 me-1"></i> Sinh ngẫu nhiên
+                        <input type="text" id="quickResetModal_NewPassword" class="form-control" placeholder="@AccountSharedResource.Placeholder_Password" autocomplete="off" />
+                        <button class="btn btn-outline-secondary" type="button" onclick="regenerateQuickResetPassword()" title="@AccountSharedResource.Create_GeneratePassHint">
+                            <i class="bi bi-dice-5 me-1"></i> @AccountSharedResource.Button_GenerateRandom
                         </button>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold text-secondary">Xác nhận mật khẩu</label>
-                    <input type="text" id="quickResetModal_ConfirmPassword" class="form-control" placeholder="Nhập lại mật khẩu..." autocomplete="off" />
+                    <label class="form-label small fw-semibold text-secondary">@AccountSharedResource.Modal_QuickResetConfirmPass</label>
+                    <input type="text" id="quickResetModal_ConfirmPassword" class="form-control" placeholder="@AccountSharedResource.Modal_QuickResetPlaceholderConfirmPass" autocomplete="off" />
                 </div>
 
                 <div class="p-3 bg-light rounded border d-flex justify-content-between align-items-center mb-1">
@@ -213,15 +220,16 @@
                         <i class="bi bi-clipboard me-1 text-muted"></i>
                         <span id="quickResetModal_CopyText" class="text-secondary font-monospace"></span>
                     </div>
-                    <button type="button" class="btn btn-sm btn-outline-dark text-nowrap" onclick="copyToClipboard($('#quickResetModal_CopyText').text(), 'Đã sao chép tài khoản & mật khẩu!')">
-                        <i class="bi bi-copy me-1"></i> Sao chép
+                    <button type="button" class="btn btn-sm btn-outline-dark text-nowrap" onclick="copyToClipboard($('#quickResetModal_CopyText').text(), '@AccountSharedResource.Toast_CopiedAccountPassword')">
+                        <i class="bi bi-copy me-1"></i> @AccountSharedResource.Button_Copy
                     </button>
                 </div>
+                <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>@AccountSharedResource.Modal_QuickResetHint</small>
             </div>
             <div class="modal-footer bg-light py-2">
-                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">@SharedResource.Button_Cancel</button>
                 <button type="button" id="quickResetModal_BtnSubmit" class="btn btn-sm btn-primary" onclick="submitQuickResetPassword()">
-                    <i class="bi bi-check2-circle me-1"></i> Lưu mật khẩu mới
+                    <i class="bi bi-check2-circle me-1"></i> @AccountSharedResource.Modal_QuickResetSaveBtn
                 </button>
             </div>
         </div>

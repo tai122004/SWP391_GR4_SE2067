@@ -332,5 +332,11 @@ namespace RWPM.Resources.Shared {
                 return ResourceManager.GetString("CreateNewShift", resourceCulture);
             }
         }
+
+        public static string Subtitle {
+            get {
+                return ResourceManager.GetString("Subtitle", resourceCulture);
+            }
+        }
     }
 }

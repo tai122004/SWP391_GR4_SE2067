@@ -67,7 +67,7 @@
                 <div class="col-md-4">
                     <label class="form-label fw-semibold small" asp-for="Gender">@AccountModelResource.Gender</label>
                     <select class="form-select" asp-for="Gender" asp-items="Html.GetEnumSelectList<RWPM.Common.Enums.Gender>()">
-                        <option value="">-- Chọn giới tính --</option>
+                        <option value="">@AccountSharedResource.Dropdown_SelectGender</option>
                     </select>
                 </div>
             </div>
@@ -96,7 +96,7 @@
                     <label class="form-label fw-semibold small required" asp-for="Password">@AccountModelResource.Password</label>
                     <div class="input-group">
                         <input type="password" class="form-control font-monospace" asp-for="Password" id="accPassword" placeholder="@AccountSharedResource.Placeholder_Password" autocomplete="off" />
-                        <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('accPassword', 'toggleIcon')" title="Hiện/Ẩn mật khẩu">
+                        <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('accPassword', 'toggleIcon')" title="@AccountModelResource.Password">
                             <i class="bi bi-eye" id="toggleIcon"></i>
                         </button>
                         <button type="button" class="btn btn-outline-primary" onclick="generateAndSetPassword()" title="@AccountSharedResource.Create_GeneratePassHint">
@@ -156,7 +156,7 @@
                         <label class="form-label fw-semibold small" asp-for="HourlyRate">@EmployeeModelResource.HourlyRate</label>
                         <div class="input-group">
                             <input class="form-control" asp-for="HourlyRate" type="number" step="1000" placeholder="25000" />
-                            <span class="input-group-text small">VNĐ/h</span>
+                            <span class="input-group-text small">@SharedResource.Unit_VndPerHour</span>
                         </div>
                     </div>
                 </div>

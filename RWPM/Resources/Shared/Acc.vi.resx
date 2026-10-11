@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -423,5 +423,14 @@
   </data>
   <data name="Profile_CreatedDate" xml:space="preserve">
     <value>Ngày tạo tài khoản</value>
+  </data>
+  <data name="Dropdown_SelectGender" xml:space="preserve">
+    <value>-- Chọn giới tính --</value>
+  </data>
+  <data name="Update_SubTitle" xml:space="preserve">
+    <value>Cập nhật thông tin và vai trò của tài khoản</value>
+  </data>
+  <data name="Update_Section_Role" xml:space="preserve">
+    <value>Quyền hạn hệ thống</value>
   </data>
 </root>

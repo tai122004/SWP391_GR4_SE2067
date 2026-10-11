@@ -1,4 +1,4 @@
-﻿@model AccListVM
+@model AccListVM
 
 @using AccountModelResource = RWPM.Resources.Models.Acc
 @using AccountSharedResource = RWPM.Resources.Shared.Acc
@@ -59,8 +59,8 @@
                 </div>
             </div>
             <div>
-                <button type="button" class="btn btn-sm btn-outline-success me-2" onclick="copyToClipboard('@TempData["CreatedAccountNotice"]', 'Đã sao chép thông tin tài khoản!')">
-                    <i class="bi bi-copy me-1"></i> Sao chép
+                <button type="button" class="btn btn-sm btn-outline-success me-2" onclick="copyToClipboard('@TempData["CreatedAccountNotice"]', '@AccountSharedResource.Toast_CopiedAccountPassword')">
+                    <i class="bi bi-copy me-1"></i> @AccountSharedResource.Button_Copy
                 </button>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
@@ -73,7 +73,7 @@
     <div class="app-filter-panel">
         <form asp-action="Index" method="get" class="row g-2 align-items-center">
             <div class="col-md-6 col-lg-5">
-                <label class="form-label">Tìm kiếm</label>
+                <label class="form-label">@SharedResource.Button_Search</label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
                     <input type="text" asp-for="Search" class="form-control border-start-0 ps-0" placeholder="@AccountSharedResource.Placeholder_Search" />
@@ -81,9 +81,9 @@
             </div>
 
             <div class="col-md-4 col-lg-3">
-                <label class="form-label">Trạng thái</label>
+                <label class="form-label">@SharedResource.ObjectStatus</label>
                 <select name="IsActive" class="form-select form-select-sm">
-                    <option value="" selected="@(string.IsNullOrEmpty(Model.IsActive))">-- @SharedResource.ObjectStatus --</option>
+                    <option value="" selected="@(string.IsNullOrEmpty(Model.IsActive))">-- @SharedResource.ObjectStatus_Default --</option>
                     <option value="true" selected="@(Model.IsActive == "true")">@SharedResource.ObjectStatus_IsActive</option>
                     <option value="false" selected="@(Model.IsActive == "false")">@SharedResource.ObjectStatus_IsInactive</option>
                 </select>
@@ -170,9 +170,9 @@
                                                id="isActiveSwitch_@category.Username"
                                                @(category.IsActive ? "checked" : "")
                                                onchange="onToggleAccountStatus('@category.Username', this.checked)"
-                                               title="@(category.IsActive ? "Đang hoạt động" : "Đang khóa")" />
+                                               title="@(category.IsActive ? SharedResource.ObjectStatus_IsActive : SharedResource.ObjectStatus_IsInactive)" />
                                         <span class="status-dot @(category.IsActive ? "is-active" : "is-inactive")"></span>
-                                        <span class="status-choice-text">@(category.IsActive ? "Đang hoạt động" : "Đang khóa")</span>
+                                        <span class="status-choice-text">@(category.IsActive ? SharedResource.ObjectStatus_IsActive : SharedResource.ObjectStatus_IsInactive)</span>
                                     </label>
                                 </td>
                                 <td class="text-center">
@@ -307,7 +307,7 @@
                     <div class="mb-3">
                         <label class="form-label fw-semibold small required">@AccountSharedResource.Excel_SelectFile</label>
                         <input type="file" id="accImportFileInput" class="form-control form-control-lg" accept=".xlsx" />
-                        <div class="form-text small mt-1">Định dạng hỗ trợ: .xlsx (Microsoft Excel)</div>
+                        <div class="form-text small mt-1">.xlsx (Microsoft Excel)</div>
                     </div>
 
                     <div id="accImportStep1Error" class="alert alert-danger py-2 px-3 small d-none"></div>
@@ -329,7 +329,7 @@
                             </span>
                         </div>
                         <div class="small text-muted">
-                            <i class="bi bi-shield-check text-primary me-1"></i> Dữ liệu được kiểm tra tự động trước khi lưu
+                            <i class="bi bi-shield-check text-primary me-1"></i> @AccountSharedResource.Excel_Step1_Note
                         </div>
                     </div>
 
@@ -354,7 +354,7 @@
                                     <th>@AccountSharedResource.Excel_Col_Username</th>
                                     <th>@AccountSharedResource.Excel_Col_FullName</th>
                                     <th>Email</th>
-                                    <th>Số ĐT</th>
+                                    <th>@AccountModelResource.PhoneNumber</th>
                                     <th>@AccountSharedResource.Excel_Col_Role</th>
                                     <th>@AccountSharedResource.Excel_Col_Store</th>
                                     <th>@AccountSharedResource.Excel_Col_EmpCode</th>
@@ -412,13 +412,13 @@
             errBox.addClass('d-none').text('');
 
             if (!fileInput.files || fileInput.files.length === 0) {
-                errBox.removeClass('d-none').text('Vui lòng chọn một file Excel (.xlsx).');
+                errBox.removeClass('d-none').text('@Html.Raw(AccountSharedResource.Excel_SelectFile)');
                 return;
             }
 
             const file = fileInput.files[0];
             if (!file.name.toLowerCase().endsWith('.xlsx')) {
-                errBox.removeClass('d-none').text('Chỉ chấp nhận file định dạng Excel (.xlsx).');
+                errBox.removeClass('d-none').text('@Html.Raw(AccountSharedResource.Excel_SelectFile)');
                 return;
             }
 
@@ -440,7 +440,7 @@
             .then(r => r.json())
             .then(res => {
                 if (!res.success) {
-                    errBox.removeClass('d-none').text(res.message || 'Lỗi khi kiểm tra file Excel.');
+                    errBox.removeClass('d-none').text(res.message || '@Html.Raw(SharedResource.OperationFailed)');
                     return;
                 }
 
@@ -482,7 +482,7 @@
                         : `<span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>@AccountSharedResource.Excel_Status_Invalid</span>`;
 
                     const errHtml = row.isValid
-                        ? `<span class="text-success small"><i class="bi bi-check2 me-1"></i>Sẵn sàng nhập</span>`
+                        ? `<span class="text-success small"><i class="bi bi-check2 me-1"></i>@AccountSharedResource.Excel_Status_Valid</span>`
                         : `<span class="text-danger small fw-semibold"><i class="bi bi-exclamation-circle me-1"></i>${escapeHtml(row.errorMessage || '')}</span>`;
 
                     tr.html(`
@@ -507,7 +507,7 @@
                 $('#accStep2Footer').removeClass('d-none');
             })
             .catch(err => {
-                errBox.removeClass('d-none').text('Lỗi kết nối máy chủ: ' + err.message);
+                errBox.removeClass('d-none').text('@Html.Raw(SharedResource.OperationFailed): ' + err.message);
             })
             .finally(() => {
                 btn.prop('disabled', false).html('<i class="bi bi-search me-1"></i> @AccountSharedResource.Excel_Btn_Preview');
@@ -552,18 +552,18 @@
                     }, 800);
                 } else {
                     if (typeof toastr !== 'undefined') {
-                        toastr.error(res.message || 'Lưu dữ liệu thất bại.');
+                        toastr.error(res.message || '@Html.Raw(SharedResource.OperationFailed)');
                     } else {
-                        alert(res.message || 'Lưu dữ liệu thất bại.');
+                        alert(res.message || '@Html.Raw(SharedResource.OperationFailed)');
                     }
                     btn.prop('disabled', false).html('<i class="bi bi-check2-circle me-1"></i> @AccountSharedResource.Excel_Btn_Confirm');
                 }
             })
             .catch(err => {
                 if (typeof toastr !== 'undefined') {
-                    toastr.error('Lỗi khi lưu: ' + err.message);
+                    toastr.error('@Html.Raw(SharedResource.OperationFailed): ' + err.message);
                 } else {
-                    alert('Lỗi khi lưu: ' + err.message);
+                    alert('@Html.Raw(SharedResource.OperationFailed): ' + err.message);
                 }
                 btn.prop('disabled', false).html('<i class="bi bi-check2-circle me-1"></i> @AccountSharedResource.Excel_Btn_Confirm');
             });
@@ -595,21 +595,21 @@
                     return response.text().then(text => { throw new Error(text); });
                 }
                 if (typeof toastr !== 'undefined') {
-                    toastr.success(isActive ? `Đã kích hoạt tài khoản ${username}!` : `Đã tạm khóa tài khoản ${username}!`);
+                    toastr.success(isActive ? `@Html.Raw(SharedResource.ObjectStatus_IsActive): ${username}` : `@Html.Raw(SharedResource.ObjectStatus_IsInactive): ${username}`);
                 }
                 if (checkbox) {
                     const choice = checkbox.closest('.status-choice');
                     choice?.querySelector('.status-dot')?.classList.toggle('is-active', isActive);
                     choice?.querySelector('.status-dot')?.classList.toggle('is-inactive', !isActive);
                     const text = choice?.querySelector('.status-choice-text');
-                    if (text) text.textContent = isActive ? 'Đang hoạt động' : 'Đang khóa';
+                    if (text) text.textContent = isActive ? '@Html.Raw(SharedResource.ObjectStatus_IsActive)' : '@Html.Raw(SharedResource.ObjectStatus_IsInactive)';
                 }
             })
             .catch(error => {
                 if (typeof toastr !== 'undefined') {
-                    toastr.error("Lỗi cập nhật trạng thái: " + error.message);
+                    toastr.error(error.message || '@Html.Raw(SharedResource.OperationFailed)');
                 } else {
-                    alert("Lỗi cập nhật trạng thái: " + error.message);
+                    alert(error.message || '@Html.Raw(SharedResource.OperationFailed)');
                 }
                 if (checkbox) checkbox.checked = !isActive;
             });

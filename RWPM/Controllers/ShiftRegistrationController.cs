@@ -217,7 +217,7 @@ namespace RWPM.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,HR,AreaManager,StoreManager")]
-        public async Task<IActionResult> UpdateStatus(int id, RegistrationStatus status)
+        public async Task<IActionResult> UpdateStatus(int id, RegistrationStatus status, string? reason = null)
         {
             try
             {
@@ -235,7 +235,7 @@ namespace RWPM.Controllers
                     }
                 }
                 
-                await _registrationService.UpdateStatusAsync(id, status);
+                await _registrationService.UpdateStatusAsync(id, status, reason, User.Identity?.Name);
                 return Ok(new { success = true });
             }
             catch (Exception ex)
@@ -266,6 +266,16 @@ namespace RWPM.Controllers
                     if (employee == null || entity.EmployeeId != employee.EmployeeId)
                     {
                         return Forbid();
+                    }
+
+                    if (entity.Status == RegistrationStatus.Approved)
+                    {
+                        return BadRequest(new { success = false, message = "Ca làm việc đã được duyệt. Bạn không thể tự ý hủy ca, vui lòng liên hệ Quản lý!" });
+                    }
+
+                    if (entity.WorkDate.Date < DateTime.Today)
+                    {
+                        return BadRequest(new { success = false, message = "Không thể hủy ca làm việc trong quá khứ." });
                     }
                 }
                 else if (isStoreManager)
