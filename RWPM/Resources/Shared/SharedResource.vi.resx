@@ -800,4 +800,19 @@ Cách bật lại nhanh:
   <data name="Req_BulkActionSuccess" xml:space="preserve">
     <value>Thao tác hàng loạt thành công</value>
   </data>
+  <data name="OperationFailed" xml:space="preserve">
+    <value>Thao tác thất bại</value>
+  </data>
+  <data name="Dropdown_SelectGender" xml:space="preserve">
+    <value>-- Chọn giới tính --</value>
+  </data>
+  <data name="Unit_VndPerHour" xml:space="preserve">
+    <value>VNĐ/h</value>
+  </data>
+  <data name="Unit_VndPerMonth" xml:space="preserve">
+    <value>VNĐ/tháng</value>
+  </data>
+  <data name="Unit_Days" xml:space="preserve">
+    <value>ngày</value>
+  </data>
 </root>

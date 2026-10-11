@@ -9,7 +9,7 @@
     <div class="app-page-header">
         <div>
             <h1 class="fw-bold text-dark mb-1">@ShiftRegistrationResource.ShiftRegistration</h1>
-            <div class="text-muted small">Theo dõi, đăng ký và quản lý lịch làm việc theo tuần.</div>
+            <div class="text-muted small">@ShiftRegistrationResource.Subtitle</div>
         </div>
     </div>
     <div class="row gx-0">
@@ -402,6 +402,8 @@
           <p><strong>@ShiftRegistrationResource.Time:</strong> <span id="vTime"></span></p>
           <p><strong>@ShiftRegistrationResource.Status:</strong> <span id="vStatus"></span></p>
           <p><strong>@ShiftRegistrationResource.Note:</strong> <span id="vNote"></span></p>
+          <p id="vRejectionReasonRow" class="text-danger" style="display: none;"><strong>Lý do từ chối:</strong> <span id="vRejectionReason"></span></p>
+          <p id="vApproverRow" style="display: none;"><strong>Người duyệt:</strong> <span id="vApprover"></span> <span id="vApprovedAt" class="text-muted small"></span></p>
       </div>
       <div class="modal-footer">
         <input type="hidden" id="vRegistrationId" />
@@ -411,7 +413,11 @@
         }
         else
         {
-            <button type="button" class="btn btn-danger" onclick="deleteRegistration()">@ShiftRegistrationResource.Cancel</button>
+            <a href="/Request" class="btn btn-warning text-dark btn-sm me-auto" id="btnGoToSwapShift" style="display: none;">
+                <i class="fas fa-exchange-alt me-1"></i> @SharedResource.Req_ChangeShift
+            </a>
+            <button type="button" class="btn btn-danger" id="btnCancelRegistration" onclick="deleteRegistration()">@ShiftRegistrationResource.Cancel</button>
+            <span id="txtApprovedNotice" class="text-muted small" style="display: none;">@RequestResource.ShiftSwap</span>
         }
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ShiftRegistrationResource.Close</button>
       </div>
@@ -737,10 +743,19 @@
                             tbody += `<div class="d-flex flex-column gap-1 h-100">`;
                             dayEvents.forEach(dayEvent => {
                                 let eJson = JSON.stringify(dayEvent).replace(/'/g, "&#39;");
+                                let timeDisplay = (dayEvent.startTime && dayEvent.endTime) ? `${dayEvent.startTime} - ${dayEvent.endTime}` : '';
+                                let badgeHtml = dayEvent.statusId === 1 
+                                    ? '<span class="badge bg-success" style="font-size: 10px;">Đã duyệt</span>' 
+                                    : (dayEvent.statusId === 2 
+                                        ? '<span class="badge bg-danger" style="font-size: 10px;">Từ chối</span>' 
+                                        : '<span class="badge bg-warning text-dark" style="font-size: 10px;">Chờ duyệt</span>');
                                 tbody += `
                                     <div class="shift-filled" style="height: auto; min-height: 50px;" onclick='event.stopPropagation(); openViewModal(${eJson})'>
-                                        <div class="shift-name">${dayEvent.title}</div>
-                                        <div class="shift-time">(-:- - -:-)</div>
+                                        <div class="shift-name d-flex justify-content-between align-items-center">
+                                            <span>${dayEvent.title}</span>
+                                            ${badgeHtml}
+                                        </div>
+                                        <div class="shift-time">${timeDisplay}</div>
                                     </div>
                                 `;
                             });
@@ -990,12 +1005,38 @@
             $('#vEmployee').text(eventObj.employeeName);
             $('#vStore').text(eventObj.storeName);
             $('#vShift').text(eventObj.title);
-            // Since title doesn't have time easily parsing, ideally we pass shift info from backend,
-            // or we use dummy time just for UI like in the image.
-            $('#vTime').text(eventObj.start.replace('T', ' ') + ' - ' + eventObj.end.replace('T', ' '));
+            let timeText = (eventObj.startTime && eventObj.endTime) ? `${eventObj.startTime} - ${eventObj.endTime}` : (eventObj.start.replace('T', ' ') + ' - ' + eventObj.end.replace('T', ' '));
+            $('#vTime').text(timeText);
             $('#vStatus').text(eventObj.statusName || '');
-            $('#vNote').text(eventObj.note || '');
+            $('#vNote').text(eventObj.note || '-');
             $('#vRegistrationId').val(eventObj.id);
+            
+            if (eventObj.rejectionReason) {
+                $('#vRejectionReason').text(eventObj.rejectionReason);
+                $('#vRejectionReasonRow').show();
+            } else {
+                $('#vRejectionReasonRow').hide();
+            }
+
+            if (eventObj.approvedBy) {
+                $('#vApprover').text(eventObj.approvedBy);
+                $('#vApprovedAt').text(eventObj.approvedAt ? `(${eventObj.approvedAt})` : '');
+                $('#vApproverRow').show();
+            } else {
+                $('#vApproverRow').hide();
+            }
+
+            if (!isManager) {
+                if (eventObj.statusId === 1) { // Approved
+                    $('#btnCancelRegistration').hide();
+                    $('#txtApprovedNotice').show();
+                    $('#btnGoToSwapShift').show();
+                } else {
+                    $('#btnCancelRegistration').show();
+                    $('#txtApprovedNotice').hide();
+                    $('#btnGoToSwapShift').hide();
+                }
+            }
             
             var modal = new bootstrap.Modal(document.getElementById('viewModal'));
             modal.show();

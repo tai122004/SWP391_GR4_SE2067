@@ -1,10 +1,11 @@
 @using RWPM.Common.Enums
 @using RWPM.Resources.Shared
-@model List<RWPM.Models.Entities.ShiftRegistration>
+@model List<RWPM.Models.ViewModels.ShiftRegistration.RequestItemVM>
 
 @{
     ViewData["Title"] = RequestResource.RequestsAndApprovals;
     var currentStatus = ViewBag.CurrentStatus as int?;
+    var currentType = ViewBag.CurrentType as string;
     int pendingCount = ViewBag.PendingCount ?? 0;
     int approvedCount = ViewBag.ApprovedCount ?? 0;
     int rejectedCount = ViewBag.RejectedCount ?? 0;
@@ -23,21 +24,18 @@
         <!-- Sidebar -->
         <div class="col-md-3">
             <div class="d-flex gap-2 mb-3">
-                <button class="btn btn-light mb-0 text-muted px-3"><i class="fas fa-sliders-h"></i></button>
-                <div class="dropdown">
-                    <button class="btn btn-light mb-0 dropdown-toggle text-dark" type="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-list"></i> @RequestResource.All
+                <div class="dropdown w-100">
+                    <button class="btn btn-light mb-0 dropdown-toggle text-dark w-100 text-start d-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown">
+                        <span>
+                            <i class="fas fa-filter me-1 text-muted"></i>
+                            @(currentType == "ShiftSwap" ? RequestResource.Filter_ShiftSwapOnly : (currentType == "ShiftReg" ? RequestResource.Filter_ShiftRegOnly : (currentType == "Leave" ? RequestResource.Filter_LeaveOnly : RequestResource.Filter_AllTypes)))
+                        </span>
                     </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">@RequestResource.All</a></li>
-                    </ul>
-                </div>
-                <div class="dropdown">
-                    <button class="btn btn-light mb-0 dropdown-toggle text-dark" type="button" data-bs-toggle="dropdown">
-                        @RequestResource.ByDateSent
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">@RequestResource.ByDateSent</a></li>
+                    <ul class="dropdown-menu w-100 shadow-sm">
+                        <li><a class="dropdown-item @(string.IsNullOrEmpty(currentType) ? "active" : "")" href="?status=@currentStatus&start=@ViewBag.StartDate&end=@ViewBag.EndDate">@RequestResource.Filter_AllTypes</a></li>
+                        <li><a class="dropdown-item @(currentType == "ShiftReg" ? "active" : "")" href="?status=@currentStatus&type=ShiftReg&start=@ViewBag.StartDate&end=@ViewBag.EndDate">@RequestResource.Filter_ShiftRegOnly</a></li>
+                        <li><a class="dropdown-item @(currentType == "ShiftSwap" ? "active" : "")" href="?status=@currentStatus&type=ShiftSwap&start=@ViewBag.StartDate&end=@ViewBag.EndDate">@RequestResource.Filter_ShiftSwapOnly</a></li>
+                        <li><a class="dropdown-item @(currentType == "Leave" ? "active" : "")" href="?status=@currentStatus&type=Leave&start=@ViewBag.StartDate&end=@ViewBag.EndDate">@RequestResource.Filter_LeaveOnly</a></li>
                     </ul>
                 </div>
             </div>
@@ -49,19 +47,19 @@
             
             <div class="mb-3 position-relative">
                 <i class="fas fa-search position-absolute text-muted" style="left: 10px; top: 10px;"></i>
-                <input type="text" class="form-control bg-white ps-4 border-0 shadow-sm" placeholder="@RequestResource.Search" style="border-radius: 8px;">
+                <input type="text" id="requestSearchInput" class="form-control bg-white ps-4 border-0 shadow-sm" placeholder="@RequestResource.Search" style="border-radius: 8px;">
             </div>
 
             <div class="nav flex-column nav-pills request-tabs">
-                <a class="nav-link @(currentStatus == 0 ? "active" : "") d-flex justify-content-between align-items-center" href="?status=0&start=@ViewBag.StartDate&end=@ViewBag.EndDate">
+                <a class="nav-link @(currentStatus == 0 ? "active" : "") d-flex justify-content-between align-items-center" href="?status=0&type=@currentType&start=@ViewBag.StartDate&end=@ViewBag.EndDate">
                     <span><i class="fas fa-caret-right me-2 text-muted"></i> @RequestResource.Pending</span>
                     <span class="@(currentStatus == 0 ? "text-success fw-bold" : "text-muted")">@pendingCount</span>
                 </a>
-                <a class="nav-link @(currentStatus == 1 ? "active" : "") d-flex justify-content-between align-items-center" href="?status=1&start=@ViewBag.StartDate&end=@ViewBag.EndDate">
+                <a class="nav-link @(currentStatus == 1 ? "active" : "") d-flex justify-content-between align-items-center" href="?status=1&type=@currentType&start=@ViewBag.StartDate&end=@ViewBag.EndDate">
                     <span><i class="fas fa-caret-right me-2 text-muted"></i> @RequestResource.Approved</span>
                     <span class="@(currentStatus == 1 ? "text-success fw-bold" : "text-success")">@approvedCount</span>
                 </a>
-                <a class="nav-link @(currentStatus == 2 ? "active" : "") d-flex justify-content-between align-items-center" href="?status=2&start=@ViewBag.StartDate&end=@ViewBag.EndDate">
+                <a class="nav-link @(currentStatus == 2 ? "active" : "") d-flex justify-content-between align-items-center" href="?status=2&type=@currentType&start=@ViewBag.StartDate&end=@ViewBag.EndDate">
                     <span><i class="fas fa-caret-right me-2 text-muted"></i> @RequestResource.Rejected</span>
                     <span class="@(currentStatus == 2 ? "text-danger fw-bold" : "text-danger")">@rejectedCount</span>
                 </a>
@@ -93,27 +91,61 @@
                         @foreach (var item in Model)
                         {
                             <!-- Item Card -->
-                            <div class="modern-card mb-2 request-card me-2" style="cursor: pointer;" data-id="@item.ShiftRegistrationId">
+                            <div class="modern-card mb-2 request-card me-2" style="cursor: pointer;" data-id="@item.Id" data-type="@item.RequestType">
                                 <div class="card-body p-3 position-relative">
                                     @if (item.Status == RegistrationStatus.Pending)
                                     {
                                         <div class="form-check position-absolute" style="top: 15px; right: 15px;">
-                                            <input class="form-check-input request-checkbox" type="checkbox" value="@item.ShiftRegistrationId">
+                                            <input class="form-check-input request-checkbox" type="checkbox" value="@item.Id" data-type="@item.RequestType">
                                         </div>
                                     }
-                                    <h6 class="fw-bold mb-1 text-dark">@RequestResource.ShiftRegistration</h6>
-                                    <div class="small mb-1 text-dark"><span class="text-muted">@RequestResource.Shift:</span> @item.Shift?.ShiftName</div>
-                                    <div class="small mb-1 text-dark"><span class="text-muted">@RequestResource.Date:</span> @item.WorkDate.ToString("dd/MM/yyyy")</div>
-                                    <div class="small mb-2 text-dark"><span class="text-muted">@RequestResource.Approver:</span> <span class="text-primary">Admin</span></div>
+                                    <div class="d-flex align-items-center justify-content-between mb-1">
+                                        <h6 class="fw-bold mb-0 text-dark">@item.RequestTypeName</h6>
+                                        @if (item.RequestType == "ShiftSwap")
+                                        {
+                                            <span class="badge bg-warning bg-opacity-10 text-dark border border-warning" style="font-size: 10px;">
+                                                <i class="fas fa-exchange-alt me-1 text-warning"></i>@RequestResource.ShiftSwap
+                                            </span>
+                                        }
+                                        else if (item.RequestType == "Leave")
+                                        {
+                                            <span class="badge bg-success bg-opacity-10 text-success border border-success" style="font-size: 10px;">
+                                                <i class="fas fa-bed me-1 text-success"></i>@RequestResource.LeaveRequest
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-info bg-opacity-10 text-primary border border-info" style="font-size: 10px;">
+                                                <i class="far fa-calendar-plus me-1 text-primary"></i>@RequestResource.ShiftRegistration
+                                            </span>
+                                        }
+                                    </div>
+
+                                    @if (item.RequestType == "Leave")
+                                    {
+                                        <div class="small mb-1 text-dark"><span class="text-muted">@RequestResource.Leave_Duration:</span> @item.ShiftName (@item.WorkDateStr)</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="small mb-1 text-dark"><span class="text-muted">@RequestResource.Shift:</span> @item.ShiftName (@item.WorkDateStr)</div>
+                                    }
+                                    
+                                    @if (item.RequestType == "ShiftSwap" && !string.IsNullOrEmpty(item.SwapSummary))
+                                    {
+                                        <div class="small mb-1 text-primary text-truncate fw-semibold"><i class="fas fa-arrow-right me-1 small"></i> @item.SwapSummary</div>
+                                    }
+
+                                    <div class="small mb-2 text-dark"><span class="text-muted">@RequestResource.Approver:</span> <span class="text-primary">@(string.IsNullOrEmpty(item.ApprovedBy) ? (item.Status == RegistrationStatus.Pending ? RequestResource.NotApprovedYet : "-") : item.ApprovedBy)</span></div>
+                                    
                                     <div class="d-flex justify-content-between align-items-end mt-2">
                                         <div class="d-flex align-items-center gap-2">
                                             <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; font-size: 12px;">
-                                                @((item.Employee?.Account?.FullName ?? item.Employee?.Username ?? "U").Substring(0, 1).ToUpper())
+                                                @((item.EmployeeName ?? "U").Substring(0, 1).ToUpper())
                                             </div>
-                                            <span class="text-primary fw-bold small">@(item.Employee?.Account?.FullName ?? item.Employee?.Username)</span>
+                                            <span class="text-primary fw-bold small">@item.EmployeeName</span>
                                         </div>
                                         <div class="text-muted" style="font-size: 11px;">
-                                            @item.CreatedDate.ToString("dd/MM/yyyy HH:mm")
+                                            @item.CreatedDateStr
                                         </div>
                                     </div>
                                 </div>
@@ -137,7 +169,7 @@
                         }
                     </div>
                     
-                    <h5 class="fw-bold text-dark mb-4">@RequestResource.ShiftRegistration</h5>
+                    <h5 class="fw-bold text-dark mb-4" id="detailTypeName">@RequestResource.ShiftRegistration</h5>
 
                     <div class="bg-light p-4 rounded-3 mb-3">
                         <div class="row mb-3">
@@ -153,7 +185,7 @@
                         <div class="row">
                             <div class="col-6">
                                 <div class="text-muted small mb-1">@RequestResource.Department:</div>
-                                <div class="text-dark fw-bold">NhÃ¢n sá»±</div>
+                                <div class="text-dark fw-bold">@SharedResource.Req_HR</div>
                             </div>
                         </div>
                     </div>
@@ -169,11 +201,11 @@
                                 <div class="text-dark fw-bold" id="detailCreator"></div>
                             </div>
                             <div class="col-4">
-                                <div class="text-muted small mb-1">@RequestResource.Shift</div>
+                                <div class="text-muted small mb-1" id="detailShiftLabel">@RequestResource.Shift</div>
                                 <div class="text-dark fw-bold" id="detailShiftName"></div>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row mb-3">
                             <div class="col-4">
                                 <div class="text-muted small mb-1">@RequestResource.Date</div>
                                 <div class="text-dark fw-bold" id="detailWorkDate"></div>
@@ -185,6 +217,43 @@
                             <div class="col-4">
                                 <div class="text-muted small mb-1">@RequestResource.Status</div>
                                 <div id="detailStatus"></div>
+                            </div>
+                        </div>
+
+                        <!-- Thông tin đổi ca (chỉ hiện khi requestType == 'ShiftSwap') -->
+                        <div class="row mt-3" id="detailSwapTargetRow" style="display: none;">
+                            <div class="col-12">
+                                <div class="p-3 bg-white rounded border border-warning">
+                                    <div class="text-warning small fw-bold mb-1"><i class="fas fa-exchange-alt me-1"></i> @RequestResource.Swap_TargetShiftInfo</div>
+                                    <div class="text-dark fw-bold" id="detailSwapSummary"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Thông tin xin nghỉ phép (chỉ hiện khi requestType == 'Leave') -->
+                        <div class="row mt-3" id="detailLeaveInfoRow" style="display: none;">
+                            <div class="col-12">
+                                <div class="p-3 bg-white rounded border border-success">
+                                    <div class="text-success small fw-bold mb-1"><i class="fas fa-bed me-1"></i> @RequestResource.LeaveRequest</div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="text-dark fw-bold" id="detailLeaveTypeDesc"></div>
+                                        <div class="badge bg-success bg-opacity-10 text-success p-2" id="detailLeaveBalanceBadge"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3" id="detailRejectionRow" style="display: none;">
+                            <div class="col-12">
+                                <div class="alert alert-danger mb-0 py-2">
+                                    <strong>@RequestResource.RejectReasonTitle:</strong> <span id="detailRejectionReason"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-3" id="detailApproverRow" style="display: none;">
+                            <div class="col-12 text-muted small">
+                                <strong>@RequestResource.Approver:</strong> <span id="detailApprover" class="text-dark fw-bold"></span> 
+                                <span id="detailApprovedAt" class="ms-2"></span>
                             </div>
                         </div>
                     </div>
@@ -212,53 +281,63 @@
     </div>
 </div>
 
-<!-- Modal Táº¡o YÃªu Cáº§u (Main) -->
+<!-- Modal Tạo Mới Yêu Cầu (Chọn loại) -->
 <div class="modal fade" id="createRequestModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content" style="border-radius: 12px; border: none;">
             <div class="modal-header border-bottom-0 pb-0">
-                <h5 class="modal-title fw-bold text-dark fs-5">Táº¡o yÃªu cáº§u</h5>
+                <h5 class="modal-title fw-bold text-dark fs-5">@SharedResource.Req_CreateReq</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body pt-2 px-4 pb-4">
-                
                 <div class="mb-4">
-                    <h6 class="text-primary fw-bold mb-3" style="font-size: 13px;">LÆ°á»£t cháº¥m cÃ´ng</h6>
+                    <h6 class="text-primary fw-bold mb-3" style="font-size: 13px;">@SharedResource.Req_AttendanceRecord</h6>
                     <div class="row g-3">
-                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-briefcase text-success fs-5"></i><span>CÃ´ng tÃ¡c/Ra ngoÃ i</span></div></div>
-                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-user-clock text-success fs-5"></i><span>Äi muá»™n vá» sá»›m</span></div></div>
-                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-bed text-success fs-5"></i><span>Nghá»‰ phÃ©p</span></div></div>
-                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-history text-success fs-5"></i><span>LÃ m thÃªm giá»</span></div></div>
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-briefcase text-success fs-5"></i><span>@SharedResource.Req_BusinessTrip</span></div></div>
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-user-clock text-success fs-5"></i><span>@SharedResource.Req_LateEarly</span></div></div>
+                        <div class="col-md-4">
+                            <div class="request-type-btn active-btn" onclick="openLeaveModal()">
+                                <i class="fas fa-bed text-success fs-5"></i>
+                                <span>@SharedResource.Req_Leave</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-history text-success fs-5"></i><span>@SharedResource.Req_Overtime</span></div></div>
                     </div>
                 </div>
 
                 <div class="mb-4">
-                    <h6 class="text-primary fw-bold mb-3" style="font-size: 13px;">Ca lÃ m</h6>
+                    <h6 class="text-primary fw-bold mb-3" style="font-size: 13px;">@SharedResource.Req_Shift</h6>
                     <div class="row g-3">
-                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="far fa-calendar-alt text-warning fs-5"></i><span>Thay Ä‘á»•i giá» vÃ o/ra</span></div></div>
-                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-hamburger text-warning fs-5"></i><span>Suáº¥t Äƒn</span></div></div>
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="far fa-calendar-alt text-warning fs-5"></i><span>@SharedResource.Req_ChangeInOut</span></div></div>
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-hamburger text-warning fs-5"></i><span>@SharedResource.Req_Meal</span></div></div>
                         
                         <div class="col-md-4">
-                            <!-- NÃºt má»Ÿ modal ÄÄƒng kÃ½ ca -->
+                            <!-- Nút mở modal Đăng ký ca -->
                             <div class="request-type-btn active-btn" onclick="openShiftModal()">
                                 <i class="far fa-calendar-plus text-warning fs-5"></i>
-                                <span>ÄÄƒng kÃ½ ca lÃ m</span>
+                                <span>@SharedResource.Req_ShiftReg</span>
                             </div>
                         </div>
 
-                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-exchange-alt text-warning fs-5"></i><span>Äá»•i ca lÃ m</span></div></div>
+                        <div class="col-md-4">
+                            <!-- Nút mở modal Đổi ca làm -->
+                            <div class="request-type-btn active-btn" onclick="openSwapModal()">
+                                <i class="fas fa-exchange-alt text-warning fs-5"></i>
+                                <span>@SharedResource.Req_ChangeShift</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div>
-                    <h6 class="text-primary fw-bold mb-3" style="font-size: 13px;">TÃ i chÃ­nh</h6>
+                    <h6 class="text-primary fw-bold mb-3" style="font-size: 13px;">@SharedResource.Req_Finance</h6>
                     <div class="row g-3">
-                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-money-bill-wave text-primary fs-5"></i><span>Táº¡m á»©ng lÆ°Æ¡ng</span></div></div>
-                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-hand-holding-usd text-primary fs-5"></i><span>Táº¡m á»©ng - HoÃ n á»©ng</span></div></div>
-                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-file-invoice-dollar text-primary fs-5"></i><span>Phiáº¿u Ä‘á» nghá»‹</span></div></div>
-                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="far fa-credit-card text-primary fs-5"></i><span>Thanh toÃ¡n</span></div></div>
-                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-receipt text-primary fs-5"></i><span>Thanh toÃ¡n chi phÃ­</span></div></div>
-                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-shopping-cart text-primary fs-5"></i><span>Mua hÃ ng</span></div></div>
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-money-bill-wave text-primary fs-5"></i><span>@SharedResource.Req_SalaryAdv</span></div></div>
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-hand-holding-usd text-primary fs-5"></i><span>@SharedResource.Req_AdvanceRefund</span></div></div>
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-file-invoice-dollar text-primary fs-5"></i><span>@SharedResource.Req_Proposal</span></div></div>
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="far fa-credit-card text-primary fs-5"></i><span>@SharedResource.Req_Payment</span></div></div>
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-receipt text-primary fs-5"></i><span>@SharedResource.Req_ExpensePay</span></div></div>
+                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-shopping-cart text-primary fs-5"></i><span>@SharedResource.Req_Purchase</span></div></div>
                     </div>
                 </div>
             </div>
@@ -266,12 +345,12 @@
     </div>
 </div>
 
-<!-- Modal ÄÄƒng KÃ½ Ca LÃ m (Nested) -->
+<!-- Modal Đăng Ký Ca Làm (Nested) -->
 <div class="modal fade" id="createShiftRequestModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
             <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
-                <h5 class="modal-title fw-bold text-dark fs-5">ÄÄƒng kÃ½ ca lÃ m</h5>
+                <h5 class="modal-title fw-bold text-dark fs-5">@SharedResource.Req_ShiftReg</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
@@ -279,10 +358,10 @@
                     @if (ViewBag.IsManager)
                     {
                         <div class="row align-items-center mb-3">
-                            <div class="col-3 text-dark fw-bold small">NhÃ¢n viÃªn <span class="text-danger">*</span></div>
+                            <div class="col-3 text-dark fw-bold small">@SharedResource.Req_Employee <span class="text-danger">*</span></div>
                             <div class="col-9">
                                 <select class="form-select border-success text-success" id="reqEmployeeId" required style="border-radius: 8px;">
-                                    <option value="">Chá»n nhÃ¢n viÃªn</option>
+                                    <option value="">@SharedResource.Req_SelectEmployee</option>
                                     @if (ViewBag.Employees != null)
                                     {
                                         foreach (var emp in ViewBag.Employees)
@@ -296,22 +375,21 @@
                     }
                     else
                     {
-                        <!-- Cáº§n gÃ¡n 0 Ä‘á»ƒ backend tá»± láº¥y theo User.Identity náº¿u cáº§n -->
                         <input type="hidden" id="reqEmployeeId" value="0" /> 
                     }
 
                     <div class="row align-items-center mb-3">
-                        <div class="col-3 text-dark fw-bold small">NgÃ y <span class="text-danger">*</span></div>
+                        <div class="col-3 text-dark fw-bold small">@SharedResource.Req_Date <span class="text-danger">*</span></div>
                         <div class="col-9 position-relative">
                             <input type="date" class="form-control" id="reqWorkDate" required style="border-radius: 8px; color: #495057;">
                         </div>
                     </div>
 
                     <div class="row align-items-center mb-4">
-                        <div class="col-3 text-dark fw-bold small">Chá»n ca <span class="text-danger">*</span></div>
+                        <div class="col-3 text-dark fw-bold small">@SharedResource.Req_SelectShift <span class="text-danger">*</span></div>
                         <div class="col-9">
                             <select class="form-select" id="reqShiftId" required style="border-radius: 8px; color: #495057; background-color: #f8f9fa;">
-                                <option value="">Chá»n ca lÃ m</option>
+                                <option value="">@SharedResource.Req_SelectShift</option>
                                 @if (ViewBag.Shifts != null)
                                 {
                                     foreach (var shift in ViewBag.Shifts)
@@ -324,16 +402,238 @@
                     </div>
 
                     <div class="row align-items-start mb-4">
-                        <div class="col-3 text-dark fw-bold small mt-2">Ghi chÃº</div>
+                        <div class="col-3 text-dark fw-bold small mt-2">@SharedResource.Req_Note</div>
                         <div class="col-9">
-                            <textarea class="form-control" id="reqNote" rows="2" placeholder="LÃ½ do" style="border-radius: 8px; background-color: #f8f9fa;"></textarea>
+                            <textarea class="form-control" id="reqNote" rows="2" placeholder="@SharedResource.Req_Reason" style="border-radius: 8px; background-color: #f8f9fa;"></textarea>
                         </div>
                     </div>
 
                     <div class="text-end">
-                        <button type="submit" class="btn btn-success px-4" style="border-radius: 8px;">Táº¡o má»›i</button>
+                        <button type="submit" class="btn btn-success px-4" style="border-radius: 8px;">@SharedResource.Req_CreateNew</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Đổi Ca Làm Việc (Shift Swap) -->
+<div class="modal fade" id="createSwapShiftModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+            <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
+                <h5 class="modal-title fw-bold text-dark fs-5">
+                    <i class="fas fa-exchange-alt text-warning me-2"></i>@RequestResource.ShiftSwap
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="swapShiftForm">
+                    <!-- Step 1: Chọn ca cần đổi -->
+                    <div class="mb-3">
+                        <label class="form-label text-dark fw-bold small">@RequestResource.Swap_SourceShift <span class="text-danger">*</span></label>
+                        <select class="form-select" id="swapSourceRegistrationId" required style="border-radius: 8px;">
+                            <option value="">@RequestResource.Swap_SelectSourcePrompt</option>
+                        </select>
+                        <div id="swapNoShiftsAlert" class="text-danger small mt-1 d-none">@RequestResource.Swap_NoEligibleShifts</div>
+                    </div>
+
+                    <!-- Step 2: Chọn hình thức đổi -->
+                    <div class="mb-3">
+                        <label class="form-label text-dark fw-bold small">@RequestResource.Swap_SwapType</label>
+                        <div class="d-flex gap-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="swapType" id="swapTypePeer" value="peer" checked>
+                                <label class="form-check-label text-dark" for="swapTypePeer">
+                                    <i class="fas fa-user-friends me-1 text-primary"></i> @RequestResource.Swap_WithCoworker
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="swapType" id="swapTypeDirect" value="direct">
+                                <label class="form-check-label text-dark" for="swapTypeDirect">
+                                    <i class="fas fa-calendar-alt me-1 text-success"></i> @RequestResource.Swap_DirectChange
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trường hợp: Đổi với đồng nghiệp -->
+                    <div id="swapPeerSection" class="p-3 bg-light rounded-3 mb-3 border">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-dark fw-bold small">@RequestResource.Swap_SelectCoworker <span class="text-danger">*</span></label>
+                                <select class="form-select" id="swapTargetEmployeeId" style="border-radius: 8px;">
+                                    <option value="">@RequestResource.Swap_SelectCoworkerPrompt</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark fw-bold small">@RequestResource.Swap_CoworkerShift <span class="text-danger">*</span></label>
+                                <select class="form-select" id="swapTargetRegistrationId" style="border-radius: 8px;">
+                                    <option value="">@RequestResource.Swap_SelectCoworkerShiftPrompt</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trường hợp: Chuyển sang ca khác của mình -->
+                    <div id="swapDirectSection" class="p-3 bg-light rounded-3 mb-3 border" style="display: none;">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-dark fw-bold small">@RequestResource.Swap_NewDate <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="swapTargetWorkDate" style="border-radius: 8px;">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark fw-bold small">@RequestResource.Swap_NewShift <span class="text-danger">*</span></label>
+                                <select class="form-select" id="swapTargetShiftId" style="border-radius: 8px;">
+                                    <option value="">@SharedResource.Req_SelectShift</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Lý do đổi ca -->
+                    <div class="mb-4">
+                        <label class="form-label text-dark fw-bold small">@RequestResource.Swap_Reason <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="swapReason" rows="3" required placeholder="@RequestResource.Swap_ReasonPlaceholder" style="border-radius: 8px;"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal" style="border-radius: 8px;">@SharedResource.Button_Cancel</button>
+                        <button type="submit" id="btnSubmitSwap" class="btn btn-warning text-dark fw-bold px-4" style="border-radius: 8px;">
+                            <i class="fas fa-paper-plane me-1"></i> @SharedResource.Req_CreateNew
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Xin Nghỉ Phép (Leave Request) -->
+<div class="modal fade" id="createLeaveRequestModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+            <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
+                <h5 class="modal-title fw-bold text-dark fs-5">
+                    <i class="fas fa-bed text-success me-2"></i>@RequestResource.LeaveRequest
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="leaveRequestForm">
+                    @if (ViewBag.IsManager)
+                    {
+                        <div class="mb-3">
+                            <label class="form-label text-dark fw-bold small">@SharedResource.Req_Employee <span class="text-danger">*</span></label>
+                            <select class="form-select border-success text-success" id="leaveEmployeeId" style="border-radius: 8px;">
+                                <option value="">@SharedResource.Req_SelectEmployee</option>
+                                @if (ViewBag.Employees != null)
+                                {
+                                    foreach (var emp in ViewBag.Employees)
+                                    {
+                                        <option value="@emp.EmployeeId">@emp.EmployeeCode - @(emp.Account?.FullName ?? emp.Username)</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    }
+                    else
+                    {
+                        <input type="hidden" id="leaveEmployeeId" value="0" />
+                    }
+
+                    <!-- Thẻ hiển thị số ngày phép năm còn lại -->
+                    <div class="p-3 mb-3 bg-light rounded-3 border d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div>
+                                <div class="text-muted small">@RequestResource.Leave_AnnualLeaveBalance</div>
+                                <div class="text-success fw-bold fs-6">
+                                    <span id="leaveAnnualBalanceDisplay">--</span> @RequestResource.Leave_DaysUnit
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="badge bg-success bg-opacity-10 text-success p-2" id="leaveDurationBadge" style="font-size: 13px;">
+                                <i class="fas fa-clock me-1"></i> @RequestResource.Leave_Duration: <span id="leaveDaysCount">1</span> @RequestResource.Leave_DaysUnit
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chọn khoảng thời gian nghỉ -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-dark fw-bold small">@RequestResource.Leave_StartDate <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="leaveStartDate" required style="border-radius: 8px;">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-dark fw-bold small">@RequestResource.Leave_EndDate <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="leaveEndDate" required style="border-radius: 8px;">
+                        </div>
+                    </div>
+
+                    <!-- Chọn loại nghỉ -->
+                    <div class="mb-3">
+                        <label class="form-label text-dark fw-bold small">@RequestResource.Leave_Type <span class="text-danger">*</span></label>
+                        <div class="d-flex flex-column gap-2 p-3 bg-light rounded-3 border">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="leaveType" id="leaveTypePaid" value="0" checked>
+                                <label class="form-check-label text-dark fw-semibold" for="leaveTypePaid">
+                                    <i class="fas fa-check-circle text-success me-1"></i> @RequestResource.Leave_Paid
+                                    <span class="text-muted small fw-normal d-block">Trừ vào quỹ phép năm hiện tại và được hưởng nguyên lương theo quy định</span>
+                                </label>
+                            </div>
+                            <div class="form-check mt-1">
+                                <input class="form-check-input" type="radio" name="leaveType" id="leaveTypeUnpaid" value="1">
+                                <label class="form-check-label text-dark fw-semibold" for="leaveTypeUnpaid">
+                                    <i class="fas fa-minus-circle text-secondary me-1"></i> @RequestResource.Leave_Unpaid
+                                    <span class="text-muted small fw-normal d-block">Không trừ phép năm và không tính lương cho những ngày này</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div id="leaveBalanceAlert" class="alert alert-warning py-2 px-3 small mt-2 d-none">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            <span id="leaveBalanceAlertText">@RequestResource.Leave_InsufficientBalance</span>
+                        </div>
+                    </div>
+
+                    <!-- Lý do xin nghỉ -->
+                    <div class="mb-4">
+                        <label class="form-label text-dark fw-bold small">@RequestResource.Leave_Reason <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="leaveReason" rows="3" required placeholder="@RequestResource.Leave_ReasonPlaceholder" style="border-radius: 8px;"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal" style="border-radius: 8px;">@SharedResource.Button_Cancel</button>
+                        <button type="submit" id="btnSubmitLeave" class="btn btn-success fw-bold px-4" style="border-radius: 8px;">
+                            <i class="fas fa-paper-plane me-1"></i> @SharedResource.Req_CreateNew
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Nhập Lý Do Từ Chối -->
+<div class="modal fade" id="rejectReasonModal" tabindex="-1" aria-hidden="true" style="z-index: 1070;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold text-danger fs-5"><i class="fas fa-exclamation-circle me-2"></i>@RequestResource.RejectReasonTitle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <label class="form-label text-dark small fw-bold">@RequestResource.RejectReasonPrompt <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="modalRejectionReason" rows="3" placeholder="@RequestResource.RejectReasonPlaceholder" style="border-radius: 8px;"></textarea>
+                </div>
+                <div class="text-end">
+                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal" style="border-radius: 8px;">@SharedResource.Button_Cancel</button>
+                    <button type="button" class="btn btn-danger px-4" onclick="submitRejection()" style="border-radius: 8px;">@RequestResource.ConfirmRejectBtn</button>
+                </div>
             </div>
         </div>
     </div>
@@ -393,17 +693,30 @@
     <script>
         // Data populated from model
         var requestsData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Select(x => new {
-            id = x.ShiftRegistrationId,
-            employeeName = x.Employee?.Account?.FullName ?? x.Employee?.Username ?? "N/A",
-            createdDateStr = x.CreatedDate.ToString("dd/MM/yyyy HH:mm"),
-            shiftName = x.Shift?.ShiftName ?? "",
-            workDateStr = x.WorkDate.ToString("dd/MM/yyyy"),
+            id = x.Id,
+            requestType = x.RequestType,
+            requestTypeName = x.RequestTypeName,
+            employeeName = x.EmployeeName,
+            createdDateStr = x.CreatedDateStr,
+            shiftName = x.ShiftName,
+            workDateStr = x.WorkDateStr,
             status = (int)x.Status,
-            code = "YCCL" + x.CreatedDate.ToString("yyMMdd") + "-" + x.ShiftRegistrationId.ToString("D3"),
-            note = x.Note
+            code = x.Code,
+            note = x.Note,
+            rejectionReason = x.RejectionReason ?? "",
+            approvedBy = x.ApprovedBy ?? "",
+            approvedAt = x.ApprovedAtStr ?? "",
+            swapSummary = x.SwapSummary ?? "",
+            startDateStr = x.StartDateStr ?? "",
+            endDateStr = x.EndDateStr ?? "",
+            leaveType = (int?)x.LeaveType,
+            leaveTypeName = x.LeaveTypeName ?? "",
+            leaveDays = x.LeaveDays,
+            annualLeaveBalance = x.AnnualLeaveBalance
         })));
 
         let currentSelectedId = 0;
+        let currentSelectedType = 'ShiftReg';
 
         $(document).ready(function() {
             // Date Picker setup
@@ -413,24 +726,35 @@
                     startDate: '@ViewBag.StartDate',
                     endDate: '@ViewBag.EndDate'
                 }, function(start, end, label) {
-                    var url = new URL(window.location.href);
-                    url.searchParams.set('start', start.format('YYYY-MM-DD'));
-                    url.searchParams.set('end', end.format('YYYY-MM-DD'));
-                    window.location.href = url.toString();
+                    window.location.href = `?start=${start.format('YYYY-MM-DD')}&end=${end.format('YYYY-MM-DD')}&status=@ViewBag.CurrentStatus&type=@ViewBag.CurrentType`;
                 });
             }
 
+            // Quick Client search filter
+            $('#requestSearchInput').on('input', function() {
+                var query = $(this).val().toLowerCase().trim();
+                $('.request-card').each(function() {
+                    var text = $(this).text().toLowerCase();
+                    if (text.indexOf(query) !== -1) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+
             // Card click logic
-            $('.request-card').click(function(e) {
-                // If clicked on checkbox, don't trigger card selection unless needed
+            $(document).on('click', '.request-card', function(e) {
+                // If checkbox was clicked, don't trigger card selection
                 if($(e.target).is('input[type="checkbox"]')) {
                     return;
                 }
-                $('.request-card').removeClass('active-card').css('background-color', '#fff');
+                $('.request-card').removeClass('active-card');
                 $(this).addClass('active-card');
-                
+
                 var id = $(this).data('id');
-                showDetail(id);
+                var type = $(this).data('type');
+                showDetail(id, type);
             });
 
             // Select first card by default if any
@@ -445,7 +769,6 @@
             });
 
             $('.request-checkbox').change(function(e) {
-                // If all are checked, check selectAll
                 if ($('.request-checkbox:checked').length === $('.request-checkbox').length) {
                     $('#selectAll').prop('checked', true);
                 } else {
@@ -458,7 +781,7 @@
             $('#shiftRequestForm').submit(function(e) {
                 e.preventDefault();
                 var empId = $('#reqEmployeeId').val();
-                if(!empId) empId = "0"; // Handle default or backend logic if needed
+                if(!empId) empId = "0";
 
                 var data = {
                     EmployeeId: empId,
@@ -478,34 +801,224 @@
                     success: function(res) {
                         if (res.success) {
                             $('#createShiftRequestModal').modal('hide');
-                            toastr.success('Táº¡o ca lÃ m thÃ nh cÃ´ng!');
+                            toastr.success('@Html.Raw(SharedResource.Req_CreateSuccess)');
                             setTimeout(() => window.location.reload(), 1000);
                         }
                     },
                     error: function(err) {
-                        toastr.error('Lá»—i: ' + (err.responseJSON?.message || err.responseText || 'Lá»—i há»‡ thá»‘ng'));
+                        toastr.error(err.responseJSON?.message || '@Html.Raw(SharedResource.OperationFailed)');
                     }
                 });
             });
+
+            // Form Submit for Shift Swap Request
+            $('#swapShiftForm').submit(function(e) {
+                e.preventDefault();
+                var swapType = $('input[name="swapType"]:checked').val();
+                var sourceId = $('#swapSourceRegistrationId').val();
+                if (!sourceId) {
+                    toastr.warning('@Html.Raw(RequestResource.Swap_SelectSourcePrompt)');
+                    return;
+                }
+
+                var data = {
+                    SourceRegistrationId: parseInt(sourceId),
+                    SwapType: swapType,
+                    Reason: $('#swapReason').val().trim()
+                };
+
+                if (swapType === 'peer') {
+                    var targetEmp = $('#swapTargetEmployeeId').val();
+                    var targetReg = $('#swapTargetRegistrationId').val();
+                    if (!targetEmp || !targetReg) {
+                        toastr.warning('@Html.Raw(RequestResource.Swap_SelectCoworkerShiftPrompt)');
+                        return;
+                    }
+                    data.TargetEmployeeId = parseInt(targetEmp);
+                    data.TargetRegistrationId = parseInt(targetReg);
+                } else {
+                    var targetDate = $('#swapTargetWorkDate').val();
+                    var targetShift = $('#swapTargetShiftId').val();
+                    if (!targetDate || !targetShift) {
+                        toastr.warning('@Html.Raw(SharedResource.Req_SelectShift)');
+                        return;
+                    }
+                    data.TargetWorkDate = targetDate;
+                    data.TargetShiftId = parseInt(targetShift);
+                }
+
+                $('#btnSubmitSwap').prop('disabled', true);
+
+                $.ajax({
+                    url: '/Request/CreateSwap',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    headers: {
+                        'RequestVerificationToken': $('#antiForgeryForm input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            $('#createSwapShiftModal').modal('hide');
+                            toastr.success(res.message || '@Html.Raw(RequestResource.Swap_SubmitSuccess)');
+                            setTimeout(() => window.location.reload(), 1000);
+                        } else {
+                            toastr.error(res.message || '@Html.Raw(SharedResource.OperationFailed)');
+                            $('#btnSubmitSwap').prop('disabled', false);
+                        }
+                    },
+                    error: function(err) {
+                        toastr.error(err.responseJSON?.message || '@Html.Raw(SharedResource.OperationFailed)');
+                        $('#btnSubmitSwap').prop('disabled', false);
+                    }
+                });
+            });
+
+            // Radio button toggle for swap types
+            $('input[name="swapType"]').change(function() {
+                if ($(this).val() === 'peer') {
+                    $('#swapPeerSection').slideDown(150);
+                    $('#swapDirectSection').slideUp(150);
+                } else {
+                    $('#swapPeerSection').slideUp(150);
+                    $('#swapDirectSection').slideDown(150);
+                }
+            });
+
+            // When coworker changes, fetch their shifts
+            $('#swapTargetEmployeeId').change(function() {
+                var coworkerId = $(this).val();
+                var shiftSelect = $('#swapTargetRegistrationId');
+                shiftSelect.empty().append('<option value="">@Html.Raw(RequestResource.Swap_SelectCoworkerShiftPrompt)</option>');
+
+                if (!coworkerId) return;
+
+                $.get(`/Request/GetCoworkerShifts?coworkerId=${coworkerId}`, function(res) {
+                    if (res.success && res.shifts && res.shifts.length > 0) {
+                        res.shifts.forEach(s => {
+                            shiftSelect.append(`<option value="${s.shiftRegistrationId}">${s.dateStr} - ${s.shiftName} (${s.time})</option>`);
+                        });
+                    } else {
+                        shiftSelect.append('<option value="" disabled>-- Không có ca nào khả dụng --</option>');
+                    }
+                });
+            });
+
+            // Form Submit for Leave Request
+            $('#leaveRequestForm').submit(function(e) {
+                e.preventDefault();
+                var empId = $('#leaveEmployeeId').val();
+                if(!empId) empId = "0";
+
+                var data = {
+                    EmployeeId: parseInt(empId),
+                    StartDate: $('#leaveStartDate').val(),
+                    EndDate: $('#leaveEndDate').val(),
+                    LeaveType: parseInt($('input[name="leaveType"]:checked').val()),
+                    Reason: $('#leaveReason').val().trim()
+                };
+
+                $('#btnSubmitLeave').prop('disabled', true);
+
+                $.ajax({
+                    url: '/Request/CreateLeave',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    headers: {
+                        'RequestVerificationToken': $('#antiForgeryForm input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            $('#createLeaveRequestModal').modal('hide');
+                            toastr.success(res.message || '@Html.Raw(RequestResource.Leave_SubmitSuccess)');
+                            setTimeout(() => window.location.reload(), 1000);
+                        } else {
+                            toastr.error(res.message || '@Html.Raw(SharedResource.OperationFailed)');
+                            $('#btnSubmitLeave').prop('disabled', false);
+                        }
+                    },
+                    error: function(err) {
+                        toastr.error(err.responseJSON?.message || '@Html.Raw(SharedResource.OperationFailed)');
+                        $('#btnSubmitLeave').prop('disabled', false);
+                    }
+                });
+            });
+
+            // Date & LeaveType change event listeners for dynamic validation
+            $('#leaveStartDate, #leaveEndDate').change(function() {
+                var startVal = $('#leaveStartDate').val();
+                var endVal = $('#leaveEndDate').val();
+                if (startVal && !endVal) {
+                    $('#leaveEndDate').val(startVal);
+                }
+                validateLeaveDays();
+            });
+
+            $('input[name="leaveType"]').change(function() {
+                validateLeaveDays();
+            });
+
+            $('#leaveEmployeeId').change(function() {
+                var empId = $(this).val();
+                if (empId) {
+                    fetchLeaveBalance(empId);
+                }
+            });
         });
 
-        function showDetail(id) {
-            var req = requestsData.find(x => x.id === id);
+        function showDetail(id, type) {
+            var req = requestsData.find(x => x.id === id && x.requestType === type);
             if(req) {
                 currentSelectedId = id;
+                currentSelectedType = type;
+                $('#detailTypeName').text(req.requestTypeName);
                 $('#detailEmployeeName').text(req.employeeName);
                 $('#detailCreatedDate').text(req.createdDateStr);
                 $('#detailCode').text(req.code);
                 $('#detailCreator').text(req.employeeName);
-                $('#detailShiftName').text(req.shiftName);
                 $('#detailWorkDate').text(req.workDateStr);
                 $('#detailNote').text(req.note || '-');
-                
+
+                if (req.requestType === 'Leave') {
+                    $('#detailShiftLabel').text('@Html.Raw(RequestResource.Leave_Duration)');
+                    $('#detailShiftName').text(req.shiftName);
+                    $('#detailLeaveTypeDesc').html(`<strong>${req.leaveTypeName}</strong> (${req.leaveDays} @Html.Raw(RequestResource.Leave_DaysUnit))`);
+                    $('#detailLeaveBalanceBadge').text(`@Html.Raw(RequestResource.Leave_AnnualLeaveBalance): ${req.annualLeaveBalance} @Html.Raw(RequestResource.Leave_DaysUnit)`);
+                    $('#detailLeaveInfoRow').show();
+                } else {
+                    $('#detailShiftLabel').text('@Html.Raw(RequestResource.Shift)');
+                    $('#detailShiftName').text(req.shiftName);
+                    $('#detailLeaveInfoRow').hide();
+                }
+
                 var statusHtml = '';
-                if(req.status === 0) statusHtml = '<span class="badge bg-warning text-dark">Chá» duyá»‡t</span>';
-                else if(req.status === 1) statusHtml = '<span class="badge bg-success">ÄÃ£ duyá»‡t</span>';
-                else statusHtml = '<span class="badge bg-danger">Tá»« chá»‘i</span>';
+                if(req.status === 0) statusHtml = '<span class="badge bg-warning text-dark">@Html.Raw(RequestResource.Pending)</span>';
+                else if(req.status === 1) statusHtml = '<span class="badge bg-success">@Html.Raw(RequestResource.Approved)</span>';
+                else statusHtml = '<span class="badge bg-danger">@Html.Raw(RequestResource.Rejected)</span>';
                 $('#detailStatus').html(statusHtml);
+
+                if (req.requestType === 'ShiftSwap' && req.swapSummary) {
+                    $('#detailSwapSummary').text(req.swapSummary);
+                    $('#detailSwapTargetRow').show();
+                } else {
+                    $('#detailSwapTargetRow').hide();
+                }
+
+                if (req.rejectionReason) {
+                    $('#detailRejectionReason').text(req.rejectionReason);
+                    $('#detailRejectionRow').show();
+                } else {
+                    $('#detailRejectionRow').hide();
+                }
+
+                if (req.approvedBy) {
+                    $('#detailApprover').text(req.approvedBy);
+                    $('#detailApprovedAt').text(req.approvedAt ? `(lúc ${req.approvedAt})` : '');
+                    $('#detailApproverRow').show();
+                } else {
+                    $('#detailApproverRow').hide();
+                }
 
                 if(req.status === 0) {
                     $('.action-btn').show();
@@ -518,69 +1031,270 @@
         }
 
         function openShiftModal() {
-            // Close first modal
             $('#createRequestModal').modal('hide');
-            // Reset form
             $('#shiftRequestForm')[0].reset();
-            // Open second modal
             setTimeout(() => {
                 var modal = new bootstrap.Modal(document.getElementById('createShiftRequestModal'));
                 modal.show();
-            }, 300); // slight delay to allow first modal to fade out
+            }, 300);
         }
+
+        function openSwapModal() {
+            $('#createRequestModal').modal('hide');
+            $('#swapShiftForm')[0].reset();
+            $('#btnSubmitSwap').prop('disabled', false);
+            $('#swapPeerSection').show();
+            $('#swapDirectSection').hide();
+            $('#swapTypePeer').prop('checked', true);
+
+            var sourceSelect = $('#swapSourceRegistrationId');
+            var cowSelect = $('#swapTargetEmployeeId');
+            var shiftSelect = $('#swapTargetShiftId');
+
+            sourceSelect.empty().append('<option value="">@Html.Raw(RequestResource.Swap_SelectSourcePrompt)</option>');
+            cowSelect.empty().append('<option value="">@Html.Raw(RequestResource.Swap_SelectCoworkerPrompt)</option>');
+            shiftSelect.empty().append('<option value="">@Html.Raw(SharedResource.Req_SelectShift)</option>');
+
+            $.get('/Request/GetSwapFormData', function(res) {
+                if (res.success) {
+                    if (res.myShifts && res.myShifts.length > 0) {
+                        $('#swapNoShiftsAlert').addClass('d-none');
+                        res.myShifts.forEach(s => {
+                            sourceSelect.append(`<option value="${s.shiftRegistrationId}">${s.dateStr} - ${s.shiftName} (${s.time})</option>`);
+                        });
+                    } else {
+                        $('#swapNoShiftsAlert').removeClass('d-none');
+                    }
+
+                    if (res.coworkers) {
+                        res.coworkers.forEach(c => {
+                            cowSelect.append(`<option value="${c.employeeId}">${c.employeeCode} - ${c.fullName}</option>`);
+                        });
+                    }
+
+                    if (res.availableShifts) {
+                        res.availableShifts.forEach(s => {
+                            shiftSelect.append(`<option value="${s.shiftId}">${s.shiftName} (${s.time})</option>`);
+                        });
+                    }
+
+                    var modal = new bootstrap.Modal(document.getElementById('createSwapShiftModal'));
+                    modal.show();
+                } else {
+                    toastr.error(res.message || '@Html.Raw(SharedResource.OperationFailed)');
+                }
+            }).fail(function() {
+                toastr.error('@Html.Raw(SharedResource.OperationFailed)');
+            });
+        }
+
+        let currentAnnualBalance = 0;
+
+        function openLeaveModal() {
+            $('#createRequestModal').modal('hide');
+            $('#leaveRequestForm')[0].reset();
+            $('#btnSubmitLeave').prop('disabled', false);
+            $('#leaveBalanceAlert').addClass('d-none');
+
+            const today = new Date().toISOString().split('T')[0];
+            $('#leaveStartDate').val(today);
+            $('#leaveEndDate').val(today);
+            $('#leaveStartDate').attr('min', today);
+            $('#leaveEndDate').attr('min', today);
+
+            const empId = $('#leaveEmployeeId').val() || 0;
+            fetchLeaveBalance(empId);
+
+            setTimeout(() => {
+                var modal = new bootstrap.Modal(document.getElementById('createLeaveRequestModal'));
+                modal.show();
+            }, 300);
+        }
+
+        function fetchLeaveBalance(empId) {
+            $.get(`/Request/GetLeaveFormData?employeeId=${empId}`, function(res) {
+                if (res.success) {
+                    currentAnnualBalance = res.annualLeaveBalance;
+                    $('#leaveAnnualBalanceDisplay').text(currentAnnualBalance);
+                    validateLeaveDays();
+                }
+            });
+        }
+
+        function calculateLeaveDays() {
+            const startStr = $('#leaveStartDate').val();
+            const endStr = $('#leaveEndDate').val();
+            if (!startStr || !endStr) return 0;
+            const start = new Date(startStr);
+            const end = new Date(endStr);
+            if (end < start) return 0;
+            const diffTime = Math.abs(end - start);
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        }
+
+        function validateLeaveDays() {
+            const days = calculateLeaveDays();
+            $('#leaveDaysCount').text(days);
+
+            const leaveType = $('input[name="leaveType"]:checked').val();
+            if (days <= 0) {
+                $('#leaveBalanceAlertText').text('Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu.');
+                $('#leaveBalanceAlert').removeClass('d-none');
+                $('#btnSubmitLeave').prop('disabled', true);
+                return;
+            }
+
+            if (leaveType === '0') { // Paid
+                if (days > currentAnnualBalance) {
+                    $('#leaveBalanceAlertText').text(`Số ngày nghỉ (${days} ngày) vượt quá số ngày phép năm còn lại (${currentAnnualBalance} ngày)!`);
+                    $('#leaveBalanceAlert').removeClass('d-none');
+                    $('#btnSubmitLeave').prop('disabled', true);
+                    return;
+                }
+            }
+
+            $('#leaveBalanceAlert').addClass('d-none');
+            $('#btnSubmitLeave').prop('disabled', false);
+        }
+
+        let pendingRejectType = ''; // 'single' or 'bulk'
 
         function updateSelectedStatus(status) {
             if(currentSelectedId === 0) return;
-            var actionStr = status === 1 ? 'duyá»‡t' : 'tá»« chá»‘i';
-            if(!confirm(`Báº¡n cÃ³ cháº¯c cháº¯n muá»‘n ${actionStr} yÃªu cáº§u nÃ y?`)) return;
+
+            if (status === 2) {
+                pendingRejectType = 'single';
+                $('#modalRejectionReason').val('');
+                var modal = new bootstrap.Modal(document.getElementById('rejectReasonModal'));
+                modal.show();
+                return;
+            }
+
+            if(!confirm('@Html.Raw(RequestResource.ConfirmApproveMsg)')) return;
 
             $.ajax({
                 url: '/Request/UpdateStatus',
                 type: 'POST',
                 data: {
                     id: currentSelectedId,
-                    status: status
+                    status: status,
+                    requestType: currentSelectedType
                 },
                 headers: {
                     'RequestVerificationToken': $('#antiForgeryForm input[name="__RequestVerificationToken"]').val()
                 },
                 success: function(res) {
                     if (res.success) {
-                        toastr.success('Cáº­p nháº­t tráº¡ng thÃ¡i thÃ nh cÃ´ng');
+                        toastr.success(res.message || '@Html.Raw(SharedResource.Req_UpdateStatusSuccess)');
                         setTimeout(() => window.location.reload(), 1000);
                     } else {
-                        toastr.error('Lá»—i: ' + res.message);
+                        toastr.error('@Html.Raw(SharedResource.Req_ErrorPrefix)' + res.message);
                     }
                 },
                 error: function(err) {
-                    toastr.error('Lá»—i há»‡ thá»‘ng');
+                    toastr.error('@Html.Raw(SharedResource.Req_SysError)');
                 }
             });
         }
 
+        function submitRejection() {
+            var reason = $('#modalRejectionReason').val().trim();
+            if (!reason) {
+                toastr.warning('@Html.Raw(RequestResource.RejectReasonRequired)');
+                return;
+            }
+
+            $('#rejectReasonModal').modal('hide');
+
+            if (pendingRejectType === 'single') {
+                if(currentSelectedId === 0) return;
+                $.ajax({
+                    url: '/Request/UpdateStatus',
+                    type: 'POST',
+                    data: {
+                        id: currentSelectedId,
+                        status: 2,
+                        reason: reason,
+                        requestType: currentSelectedType
+                    },
+                    headers: {
+                        'RequestVerificationToken': $('#antiForgeryForm input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            toastr.success(res.message || '@Html.Raw(RequestResource.RejectSuccess)');
+                            setTimeout(() => window.location.reload(), 1000);
+                        } else {
+                            toastr.error('@Html.Raw(SharedResource.Req_ErrorPrefix)' + res.message);
+                        }
+                    },
+                    error: function(err) {
+                        toastr.error('@Html.Raw(SharedResource.Req_SysError)');
+                    }
+                });
+            } else if (pendingRejectType === 'bulk') {
+                var selectedIds = [];
+                $('.request-checkbox:checked').each(function() {
+                    selectedIds.push(parseInt($(this).val()));
+                });
+
+                var firstChecked = $('.request-checkbox:checked').first();
+                var reqType = firstChecked.data('type') || 'ShiftReg';
+
+                var data = {
+                    Ids: selectedIds,
+                    Status: 2,
+                    Reason: reason,
+                    RequestType: reqType
+                };
+
+                $.ajax({
+                    url: '/Request/UpdateBulkStatus',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    headers: {
+                        'RequestVerificationToken': $('#antiForgeryForm input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            toastr.success('@Html.Raw(RequestResource.BulkRejectSuccess)');
+                            setTimeout(() => window.location.reload(), 1000);
+                        } else {
+                            toastr.error('@Html.Raw(SharedResource.Req_ErrorPrefix)' + res.message);
+                        }
+                    },
+                    error: function(err) {
+                        toastr.error('@Html.Raw(SharedResource.Req_SysError)');
+                    }
+                });
+            }
+        }
+
         function deleteSelectedRequest() {
-            // For employee deleting their pending request. 
-            // In ShiftRegistrationController, there might be a delete endpoint. Let's assume /ShiftRegistration/Delete
             if(currentSelectedId === 0) return;
-            if(!confirm(`Báº¡n cÃ³ cháº¯c cháº¯n muá»‘n xÃ³a yÃªu cáº§u nÃ y?`)) return;
+            if(!confirm('@Html.Raw(RequestResource.ConfirmDeleteMsg)')) return;
 
             $.ajax({
-                url: '/ShiftRegistration/Delete',
+                url: '/Request/DeleteRequest',
                 type: 'POST',
-                data: { id: currentSelectedId },
+                data: {
+                    id: currentSelectedId,
+                    requestType: currentSelectedType
+                },
                 headers: {
                     'RequestVerificationToken': $('#antiForgeryForm input[name="__RequestVerificationToken"]').val()
                 },
                 success: function(res) {
                     if (res.success) {
-                        toastr.success('XÃ³a yÃªu cáº§u thÃ nh cÃ´ng');
+                        toastr.success(res.message || '@Html.Raw(SharedResource.Req_DeleteSuccess)');
                         setTimeout(() => window.location.reload(), 1000);
                     } else {
-                        toastr.error('Lá»—i: ' + res.message);
+                        toastr.error('@Html.Raw(SharedResource.Req_ErrorPrefix)' + res.message);
                     }
                 },
                 error: function(err) {
-                    toastr.error('Lá»—i há»‡ thá»‘ng');
+                    toastr.error('@Html.Raw(SharedResource.Req_SysError)');
                 }
             });
         }
@@ -606,13 +1320,25 @@
             });
 
             if (selectedIds.length === 0) return;
+
+            if (status === 2) {
+                pendingRejectType = 'bulk';
+                $('#modalRejectionReason').val('');
+                var modal = new bootstrap.Modal(document.getElementById('rejectReasonModal'));
+                modal.show();
+                return;
+            }
             
-            var actionStr = status === 1 ? 'cháº¥p thuáº­n' : 'tá»« chá»‘i';
-            if(!confirm(`Báº¡n cÃ³ cháº¯c cháº¯n muá»‘n ${actionStr} ${selectedIds.length} yÃªu cáº§u nÃ y?`)) return;
+            var confirmBulkMsg = '@Html.Raw(RequestResource.ConfirmBulkApproveMsg)'.replace('{0}', selectedIds.length);
+            if(!confirm(confirmBulkMsg)) return;
+
+            var firstChecked = $('.request-checkbox:checked').first();
+            var reqType = firstChecked.data('type') || 'ShiftReg';
 
             var data = {
                 Ids: selectedIds,
-                Status: status
+                Status: status,
+                RequestType: reqType
             };
 
             $.ajax({
@@ -625,14 +1351,14 @@
                 },
                 success: function(res) {
                     if (res.success) {
-                        toastr.success('Thao tÃ¡c hÃ ng loáº¡t thÃ nh cÃ´ng');
+                        toastr.success('@Html.Raw(SharedResource.Req_BulkActionSuccess)');
                         setTimeout(() => window.location.reload(), 1000);
                     } else {
-                        toastr.error('Lá»—i: ' + res.message);
+                        toastr.error('@Html.Raw(SharedResource.Req_ErrorPrefix)' + res.message);
                     }
                 },
                 error: function(err) {
-                    toastr.error('Lá»—i há»‡ thá»‘ng');
+                    toastr.error('@Html.Raw(SharedResource.Req_SysError)');
                 }
             });
         }

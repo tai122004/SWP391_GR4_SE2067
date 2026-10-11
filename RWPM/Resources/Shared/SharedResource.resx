@@ -800,4 +800,19 @@ Quick fix:
   <data name="Req_BulkActionSuccess" xml:space="preserve">
     <value>Bulk action successful</value>
   </data>
+  <data name="OperationFailed" xml:space="preserve">
+    <value>Operation failed</value>
+  </data>
+  <data name="Dropdown_SelectGender" xml:space="preserve">
+    <value>-- Select gender --</value>
+  </data>
+  <data name="Unit_VndPerHour" xml:space="preserve">
+    <value>VND/h</value>
+  </data>
+  <data name="Unit_VndPerMonth" xml:space="preserve">
+    <value>VND/month</value>
+  </data>
+  <data name="Unit_Days" xml:space="preserve">
+    <value>days</value>
+  </data>
 </root>

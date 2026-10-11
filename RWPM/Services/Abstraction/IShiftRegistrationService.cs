@@ -12,8 +12,8 @@ namespace RWPM.Services.Abstraction
         Task<List<ShiftRegistration>> CreateBatchAsync(List<ShiftRegistration> entities);
         Task<ShiftRegistration> UpdateAsync(ShiftRegistration entity);
         Task DeleteAsync(int id);
-        Task UpdateStatusAsync(int id, RegistrationStatus status);
-        Task UpdateBulkStatusAsync(List<int> ids, RegistrationStatus status);
+        Task UpdateStatusAsync(int id, RegistrationStatus status, string? rejectionReason = null, string? approver = null);
+        Task UpdateBulkStatusAsync(List<int> ids, RegistrationStatus status, string? rejectionReason = null, string? approver = null);
         Task SyncWeeklyRegistrationAsync(int employeeId, int storeId, DateTime startOfWeek, List<ShiftRegistration> desiredRegistrations);
     }
 }

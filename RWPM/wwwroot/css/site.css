@@ -110,40 +110,48 @@ body {
 .app-main .shift-grid-table { width: 100%; }
 .app-main .shift-grid-table thead th { background: #f4f7fa; }
 .app-page-Employee .modern-card, .app-page-Acc .modern-card, .app-page-Store .modern-card, .app-page-Shift .card { width: 100%; }
-.app-page-Employee .table-responsive, .app-page-Acc .table-responsive, .app-page-Store .table-responsive { overflow-x: visible; }
-.app-page-Employee table, .app-page-Acc table, .app-page-Store table { width: 100%; table-layout: fixed; }
-.app-page-Employee table th, .app-page-Employee table td { overflow-wrap: anywhere; }
-.app-page-Employee table th:nth-child(1) { width: 18%; }
-.app-page-Employee table th:nth-child(2) { width: 13%; }
-.app-page-Employee table th:nth-child(3) { width: 11%; }
-.app-page-Employee table th:nth-child(4) { width: 10%; }
-.app-page-Employee table th:nth-child(5) { width: 11%; }
-.app-page-Employee table th:nth-child(6) { width: 10%; }
-.app-page-Employee table th:nth-child(7) { width: 8%; }
-.app-page-Employee table th:nth-child(8) { width: 11%; }
-.app-page-Employee table th:nth-child(9) { width: 8%; }
+.app-page-Employee .table-responsive, .app-page-Acc .table-responsive, .app-page-Store .table-responsive { overflow-x: auto; }
+.management-table-card .table-responsive { overflow-x: auto; }
+
+/* Employee Table Layout */
+.app-page-Employee table { width: 100%; min-width: 1180px; }
+.app-page-Employee table th, .app-page-Employee table td { vertical-align: middle; }
+.app-page-Employee table th:nth-child(1), .app-page-Employee table td:nth-child(1) { min-width: 170px; }
+.app-page-Employee table th:nth-child(2), .app-page-Employee table td:nth-child(2) { min-width: 130px; }
+.app-page-Employee table th:nth-child(3), .app-page-Employee table td:nth-child(3) { min-width: 95px; }
+.app-page-Employee table th:nth-child(4), .app-page-Employee table td:nth-child(4) { min-width: 100px; }
+.app-page-Employee table th:nth-child(5), .app-page-Employee table td:nth-child(5) { min-width: 110px; }
+.app-page-Employee table th:nth-child(6), .app-page-Employee table td:nth-child(6) { min-width: 120px; white-space: nowrap; }
+.app-page-Employee table th:nth-child(7), .app-page-Employee table td:nth-child(7) { min-width: 100px; white-space: nowrap; }
+.app-page-Employee table th:nth-child(8), .app-page-Employee table td:nth-child(8) { min-width: 155px; width: 160px; white-space: nowrap; }
+.app-page-Employee table th:nth-child(9), .app-page-Employee table td:nth-child(9) { min-width: 125px; width: 130px; white-space: nowrap; padding-right: 12px; }
 .app-page-Employee table .avatar-initials { width: 32px; height: 32px; font-size: .75rem; }
 .app-page-Employee table .badge { white-space: normal; }
+
 .management-table-card { box-shadow: 0 1px 4px rgba(18,38,61,.04); }
-.management-table-card .table-responsive { overflow-x: visible; }
-.app-page-Acc table th, .app-page-Acc table td,
-.app-page-Store table th, .app-page-Store table td { overflow-wrap: anywhere; }
-.app-page-Acc table th:nth-child(1) { width: 23%; }
-.app-page-Acc table th:nth-child(2) { width: 12%; }
-.app-page-Acc table th:nth-child(3) { width: 13%; }
-.app-page-Acc table th:nth-child(4) { width: 13%; }
-.app-page-Acc table th:nth-child(5) { width: 13%; }
-.app-page-Acc table th:nth-child(6) { width: 10%; }
-.app-page-Acc table th:nth-child(7) { width: 16%; }
-.app-page-Store table th:nth-child(1) { width: 10%; }
-.app-page-Store table th:nth-child(2) { width: 19%; }
-.app-page-Store table th:nth-child(3) { width: 14%; }
-.app-page-Store table th:nth-child(4) { width: 18%; }
-.app-page-Store table th:nth-child(5) { width: 10%; }
-.app-page-Store table th:nth-child(6) { width: 12%; }
-.app-page-Store table th:nth-child(7) { width: 9%; }
-.app-page-Store table th:nth-child(8) { width: 8%; }
-.app-page-Acc .btn-action-group, .app-page-Store .btn-action-group, .app-page-Employee .btn-action-group { white-space: nowrap; }
+
+/* Acc Table Layout */
+.app-page-Acc table { width: 100%; min-width: 1000px; }
+.app-page-Acc table th:nth-child(1) { min-width: 200px; }
+.app-page-Acc table th:nth-child(2) { min-width: 120px; }
+.app-page-Acc table th:nth-child(3) { min-width: 130px; }
+.app-page-Acc table th:nth-child(4) { min-width: 130px; }
+.app-page-Acc table th:nth-child(5) { min-width: 130px; }
+.app-page-Acc table th:nth-child(6) { min-width: 100px; }
+.app-page-Acc table th:nth-child(7) { min-width: 140px; width: 150px; }
+
+/* Store Table Layout */
+.app-page-Store table { width: 100%; min-width: 1050px; }
+.app-page-Store table th:nth-child(1), .app-page-Store table td:nth-child(1) { min-width: 90px; }
+.app-page-Store table th:nth-child(2), .app-page-Store table td:nth-child(2) { min-width: 150px; }
+.app-page-Store table th:nth-child(3), .app-page-Store table td:nth-child(3) { min-width: 140px; }
+.app-page-Store table th:nth-child(4), .app-page-Store table td:nth-child(4) { min-width: 160px; }
+.app-page-Store table th:nth-child(5), .app-page-Store table td:nth-child(5) { min-width: 110px; }
+.app-page-Store table th:nth-child(6), .app-page-Store table td:nth-child(6) { min-width: 150px; white-space: nowrap; }
+.app-page-Store table th:nth-child(7), .app-page-Store table td:nth-child(7) { min-width: 155px; width: 160px; white-space: nowrap; }
+.app-page-Store table th:nth-child(8), .app-page-Store table td:nth-child(8) { min-width: 125px; width: 130px; white-space: nowrap; padding-right: 12px; }
+
+.app-page-Acc .btn-action-group, .app-page-Store .btn-action-group, .app-page-Employee .btn-action-group { white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; }
 .app-page-Acc .btn-action-group .btn, .app-page-Store .btn-action-group .btn, .app-page-Employee .btn-action-group .btn { border-color: #cbd8e6; color: #345779; }
 .app-page-Acc .btn-action-group .btn:hover, .app-page-Store .btn-action-group .btn:hover, .app-page-Employee .btn-action-group .btn:hover { background: #edf4fb; color: var(--app-blue); }
 .summary-card { background: #fff; border: 1px solid var(--app-border); border-left: 4px solid #7b9bc2; border-radius: .55rem; box-shadow: 0 1px 3px rgba(18,38,61,.035); }
