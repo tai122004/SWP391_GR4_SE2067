@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36511.14 d17.14
+VisualStudioVersion = 17.14.36511.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RWPM", "RWPM\RWPM.csproj", "{0E94079C-E88E-4471-9B5A-0D31C987DEEB}"
 EndProject
@@ -23,4 +23,3 @@ Global
 		SolutionGuid = {DF30FF50-444B-46CD-A831-12ABEF66FB11}
 	EndGlobalSection
 EndGlobal
-

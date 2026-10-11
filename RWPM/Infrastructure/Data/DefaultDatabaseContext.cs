@@ -111,6 +111,41 @@ namespace RWPM.Infrastructure.Data
                 .HasForeignKey(x => x.AttendanceRecordId)
                 .OnDelete(DeleteBehavior.Cascade);
             #endregion
+
+            #region ShiftSwapRequest
+            modelBuilder.Entity<ShiftSwapRequest>(e =>
+            {
+                e.HasOne(x => x.RequesterEmployee)
+                 .WithMany()
+                 .HasForeignKey(x => x.RequesterEmployeeId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+                e.HasOne(x => x.TargetEmployee)
+                 .WithMany()
+                 .HasForeignKey(x => x.TargetEmployeeId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+                e.HasOne(x => x.SourceRegistration)
+                 .WithMany()
+                 .HasForeignKey(x => x.SourceRegistrationId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+                e.HasOne(x => x.TargetRegistration)
+                 .WithMany()
+                 .HasForeignKey(x => x.TargetRegistrationId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+                e.HasOne(x => x.TargetShift)
+                 .WithMany()
+                 .HasForeignKey(x => x.TargetShiftId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+                e.HasOne(x => x.Store)
+                 .WithMany()
+                 .HasForeignKey(x => x.StoreId)
+                 .OnDelete(DeleteBehavior.Restrict);
+            });
+            #endregion
         }
 
         public DbSet<Acc> Acc { get; set; } = default!;
@@ -123,6 +158,7 @@ namespace RWPM.Infrastructure.Data
         public DbSet<AttendanceRecord> AttendanceRecord { get; set; } = default!;
         public DbSet<AttendanceAdjustmentHistory> AttendanceAdjustmentHistory { get; set; } = default!;
         public DbSet<ShiftRegistration> ShiftRegistration { get; set; } = default!;
+        public DbSet<ShiftSwapRequest> ShiftSwapRequest { get; set; } = default!;
 
         //public DbSet<IdCounter> IdCounter { get; set; } = default!;
 

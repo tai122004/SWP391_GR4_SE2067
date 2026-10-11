@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -141,5 +141,107 @@
   </data>
   <data name="RejectAll" xml:space="preserve">
     <value>Reject all</value>
+  </data>
+  <data name="RejectReasonTitle" xml:space="preserve">
+    <value>Rejection Reason</value>
+  </data>
+  <data name="RejectReasonPrompt" xml:space="preserve">
+    <value>Please provide a reason for rejecting the request</value>
+  </data>
+  <data name="RejectReasonPlaceholder" xml:space="preserve">
+    <value>Enter detailed reason...</value>
+  </data>
+  <data name="ConfirmRejectBtn" xml:space="preserve">
+    <value>Confirm Rejection</value>
+  </data>
+  <data name="RejectReasonRequired" xml:space="preserve">
+    <value>Please enter a rejection reason.</value>
+  </data>
+  <data name="RejectSuccess" xml:space="preserve">
+    <value>Request rejected successfully</value>
+  </data>
+  <data name="BulkRejectSuccess" xml:space="preserve">
+    <value>Bulk requests rejected successfully</value>
+  </data>
+  <data name="NotApprovedYet" xml:space="preserve">
+    <value>Not approved yet</value>
+  </data>
+  <data name="ConfirmApproveMsg" xml:space="preserve">
+    <value>Are you sure you want to approve this request?</value>
+  </data>
+  <data name="ConfirmBulkApproveMsg" xml:space="preserve">
+    <value>Are you sure you want to approve {0} requests?</value>
+  </data>
+  <data name="ConfirmDeleteMsg" xml:space="preserve">
+    <value>Are you sure you want to delete this request?</value>
+  </data>
+  <data name="ShiftSwap" xml:space="preserve">
+    <value>Shift Swap</value>
+  </data>
+  <data name="Swap_SourceShift" xml:space="preserve">
+    <value>My shift to swap</value>
+  </data>
+  <data name="Swap_SwapType" xml:space="preserve">
+    <value>Swap type</value>
+  </data>
+  <data name="Swap_WithCoworker" xml:space="preserve">
+    <value>Swap with coworker</value>
+  </data>
+  <data name="Swap_DirectChange" xml:space="preserve">
+    <value>Change to another shift</value>
+  </data>
+  <data name="Swap_SelectCoworker" xml:space="preserve">
+    <value>Select coworker in branch</value>
+  </data>
+  <data name="Swap_CoworkerShift" xml:space="preserve">
+    <value>Coworker's shift to swap with</value>
+  </data>
+  <data name="Swap_NewShift" xml:space="preserve">
+    <value>New shift</value>
+  </data>
+  <data name="Swap_NewDate" xml:space="preserve">
+    <value>New date</value>
+  </data>
+  <data name="Swap_Reason" xml:space="preserve">
+    <value>Reason for swap</value>
+  </data>
+  <data name="Swap_ReasonPlaceholder" xml:space="preserve">
+    <value>Enter reason for swap...</value>
+  </data>
+  <data name="Swap_SubmitSuccess" xml:space="preserve">
+    <value>Shift swap request created successfully!</value>
+  </data>
+  <data name="Swap_ApproveSuccess" xml:space="preserve">
+    <value>Shift swap approved and scheduled updated successfully!</value>
+  </data>
+  <data name="Swap_RejectSuccess" xml:space="preserve">
+    <value>Shift swap rejected successfully!</value>
+  </data>
+  <data name="Swap_DeleteSuccess" xml:space="preserve">
+    <value>Shift swap request cancelled successfully!</value>
+  </data>
+  <data name="Swap_NoEligibleShifts" xml:space="preserve">
+    <value>You have no approved upcoming shifts to swap.</value>
+  </data>
+  <data name="Swap_SelectSourcePrompt" xml:space="preserve">
+    <value>-- Select my shift --</value>
+  </data>
+  <data name="Swap_SelectCoworkerPrompt" xml:space="preserve">
+    <value>-- Select coworker --</value>
+  </data>
+  <data name="Swap_SelectCoworkerShiftPrompt" xml:space="preserve">
+    <value>-- Select coworker shift --</value>
+  </data>
+  <data name="Swap_TargetShiftInfo" xml:space="preserve">
+    <value>Swap to</value>
+  </data>
+  <data name="Filter_AllTypes" xml:space="preserve">
+    <value>All request types</value>
+  </data>
+  <data name="Filter_ShiftRegOnly" xml:space="preserve">
+    <value>Shift registrations</value>
+  </data>
+  <data name="Filter_ShiftSwapOnly" xml:space="preserve">
+    <value>Shift swaps</value>
   </data>
 </root>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -422,5 +422,14 @@
   </data>
   <data name="Profile_CreatedDate" xml:space="preserve">
     <value>Account Created Date</value>
+  </data>
+  <data name="Dropdown_SelectGender" xml:space="preserve">
+    <value>-- Select gender --</value>
+  </data>
+  <data name="Update_SubTitle" xml:space="preserve">
+    <value>Update account details and assigned roles for</value>
+  </data>
+  <data name="Update_Section_Role" xml:space="preserve">
+    <value>System Permissions &amp; Role</value>
   </data>
 </root>

@@ -27,7 +27,7 @@
     <div class="app-filter-panel">
         <form asp-action="Index" method="get" class="row g-2 align-items-center">
             <div class="col-md-6 col-lg-5">
-                <label class="form-label">Tìm kiếm</label>
+                <label class="form-label">@SharedResource.Button_Search</label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
                     <input type="text" asp-for="Search" class="form-control border-start-0 ps-0" placeholder="@StoreSharedResource.Placeholder_Search" />
@@ -35,7 +35,7 @@
             </div>
 
             <div class="col-md-4 col-lg-3">
-                <label class="form-label">Trạng thái</label>
+                <label class="form-label">@SharedResource.ObjectStatus</label>
                 <select asp-for="IsActive" class="form-select form-select-sm">
                     <option value="">-- @SharedResource.ObjectStatus_Default --</option>
                     <option value="true">@SharedResource.ObjectStatus_IsActive</option>
@@ -121,7 +121,7 @@
                                                data-id="@store.StoreId"
                                                @(store.IsActive ? "checked" : "") />
                                         <span class="status-dot @(store.IsActive ? "is-active" : "is-inactive")"></span>
-                                        <span class="status-choice-text">@(store.IsActive ? "Đang hoạt động" : "Ngừng hoạt động")</span>
+                                        <span class="status-choice-text">@(store.IsActive ? SharedResource.ObjectStatus_IsActive : SharedResource.ObjectStatus_IsInactive)</span>
                                     </label>
                                 </td>
                                 <td class="text-center">
@@ -183,7 +183,7 @@
                     success: function () {
                         var choice = checkbox.closest('.status-choice');
                         choice.find('.status-dot').toggleClass('is-active', isActive).toggleClass('is-inactive', !isActive);
-                        choice.find('.status-choice-text').text(isActive ? 'Đang hoạt động' : 'Ngừng hoạt động');
+                        choice.find('.status-choice-text').text(isActive ? '@Html.Raw(SharedResource.ObjectStatus_IsActive)' : '@Html.Raw(SharedResource.ObjectStatus_IsInactive)');
                         toastr.success('@StoreSharedResource.StatusUpdateSuccess');
                     },
                     error: function (xhr) {

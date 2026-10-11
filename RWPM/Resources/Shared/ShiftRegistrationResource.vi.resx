@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -159,5 +159,8 @@
   </data>
   <data name="CreateNewShift" xml:space="preserve">
     <value>Tạo ca làm mới</value>
+  </data>
+  <data name="Subtitle" xml:space="preserve">
+    <value>Theo dõi, đăng ký và quản lý lịch làm việc theo tuần.</value>
   </data>
 </root>

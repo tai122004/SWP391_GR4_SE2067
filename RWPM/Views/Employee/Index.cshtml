@@ -272,9 +272,9 @@
                                                data-name="@fullName"
                                                @(emp.IsActive ? "checked" : "")
                                                @(emp.Status == EmploymentStatus.Resigned ? "disabled" : "")
-                                               title="@(emp.IsActive ? "Đang làm việc" : "Đang tạm khóa")" />
+                                               title="@(emp.IsActive ? EmployeeSharedResource.Status_Active : EmployeeSharedResource.Status_Inactive)" />
                                         <span class="status-dot @(emp.IsActive ? "is-active" : "is-inactive")"></span>
-                                        <span class="status-choice-text">@(emp.IsActive ? "Đang hoạt động" : "Ngừng hoạt động")</span>
+                                        <span class="status-choice-text">@(emp.IsActive ? SharedResource.ObjectStatus_IsActive : SharedResource.ObjectStatus_IsInactive)</span>
                                     </label>
                                 </td>
                                 <td class="text-center">
@@ -534,12 +534,12 @@
                     success: function () {
                         var choice = checkbox.closest('.status-choice');
                         choice.find('.status-dot').toggleClass('is-active', isActive).toggleClass('is-inactive', !isActive);
-                        choice.find('.status-choice-text').text(isActive ? 'Đang hoạt động' : 'Ngừng hoạt động');
-                        toastr.success(isActive ? `Đã kích hoạt hồ sơ: ${employeeName}` : `Đã tạm khóa hồ sơ: ${employeeName}`);
+                        choice.find('.status-choice-text').text(isActive ? '@Html.Raw(SharedResource.ObjectStatus_IsActive)' : '@Html.Raw(SharedResource.ObjectStatus_IsInactive)');
+                        toastr.success(isActive ? `@Html.Raw(EmployeeSharedResource.Status_Active): ${employeeName}` : `@Html.Raw(EmployeeSharedResource.Status_Inactive): ${employeeName}`);
                     },
                     error: function (xhr) {
                         checkbox.prop('checked', !isActive);
-                        toastr.error('Cập nhật thất bại: ' + (xhr.responseText || 'Đã có lỗi xảy ra.'));
+                        toastr.error((xhr.responseText || '@Html.Raw(SharedResource.OperationFailed)'));
                     }
                 });
             });
@@ -572,7 +572,7 @@
             const employeeId = $('#deleteEmp_Id').val();
             const token = $('input[name="__RequestVerificationToken"]').val();
             const btn = $('#deleteEmp_BtnConfirm');
-            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Đang xóa...');
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> @Html.Raw(EmployeeSharedResource.Modal_DeleteConfirmBtn)...');
 
             $.ajax({
                 url: '/Employee/DeleteConfirmed',
@@ -582,13 +582,13 @@
                     $('#row-emp-' + employeeId).fadeOut(300, function () { $(this).remove(); });
                     const modalEl = document.getElementById('modalDeleteEmployee');
                     if (modalEl) { bootstrap.Modal.getInstance(modalEl)?.hide(); }
-                    toastr.success('Đã xóa hồ sơ nhân viên thành công!');
+                    toastr.success('@Html.Raw(SharedResource.Notification_DeletedSuccessfully)');
                 },
                 error: function (xhr) {
-                    toastr.error('Xóa thất bại: ' + (xhr.responseText || 'Đã có lỗi xảy ra.'));
+                    toastr.error((xhr.responseText || '@Html.Raw(SharedResource.OperationFailed)'));
                 },
                 complete: function () {
-                    btn.prop('disabled', false).html('<i class="bi bi-trash me-1"></i> Xác nhận xóa');
+                    btn.prop('disabled', false).html('<i class="bi bi-trash me-1"></i> @Html.Raw(EmployeeSharedResource.Confirm_Delete)');
                 }
             });
         }
@@ -611,13 +611,13 @@
             errBox.addClass('d-none').text('');
 
             if (!fileInput.files || fileInput.files.length === 0) {
-                errBox.removeClass('d-none').text('Vui lòng chọn một file Excel (.xlsx).');
+                errBox.removeClass('d-none').text('@Html.Raw(EmployeeSharedResource.Excel_SelectFile)');
                 return;
             }
 
             const file = fileInput.files[0];
             if (!file.name.toLowerCase().endsWith('.xlsx')) {
-                errBox.removeClass('d-none').text('Chỉ chấp nhận file định dạng Excel (.xlsx).');
+                errBox.removeClass('d-none').text('@Html.Raw(EmployeeSharedResource.Excel_SelectFile)');
                 return;
             }
 
@@ -639,7 +639,7 @@
             .then(r => r.json())
             .then(res => {
                 if (!res.success) {
-                    errBox.removeClass('d-none').text(res.message || 'Lỗi khi kiểm tra file Excel.');
+                    errBox.removeClass('d-none').text(res.message || '@Html.Raw(SharedResource.OperationFailed)');
                     return;
                 }
 
@@ -681,7 +681,7 @@
                         : `<span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>@EmployeeSharedResource.Excel_Status_Invalid</span>`;
 
                     const errHtml = row.isValid
-                        ? `<span class="text-success small"><i class="bi bi-check2 me-1"></i>Sẵn sàng nhập</span>`
+                        ? `<span class="text-success small"><i class="bi bi-check2 me-1"></i>@EmployeeSharedResource.Excel_Status_Valid</span>`
                         : `<span class="text-danger small fw-semibold"><i class="bi bi-exclamation-circle me-1"></i>${escapeHtml(row.errorMessage || '')}</span>`;
 
                     tr.html(`

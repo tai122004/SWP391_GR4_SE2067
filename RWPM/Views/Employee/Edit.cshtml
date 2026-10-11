@@ -1,4 +1,4 @@
-@model RWPM.Models.ViewModels.Employee.EmployeeEditVM
+﻿@model RWPM.Models.ViewModels.Employee.EmployeeEditVM
 @using RWPM.Resources.Shared
 @using RWPM.Common.Enums
 @using EmployeeModelResource = RWPM.Resources.Models.Employee;
@@ -136,7 +136,7 @@
                     <label class="form-label fw-semibold small" asp-for="HourlyRate">@EmployeeModelResource.HourlyRate</label>
                     <div class="input-group">
                         <input class="form-control" asp-for="HourlyRate" type="number" step="1000" placeholder="25000" />
-                        <span class="input-group-text small">VNĐ/h</span>
+                        <span class="input-group-text small">@SharedResource.Unit_VndPerHour</span>
                     </div>
                     <span asp-validation-for="HourlyRate" class="text-danger small"></span>
                 </div>
@@ -145,7 +145,7 @@
                     <label class="form-label fw-semibold small" asp-for="BaseSalary">@EmployeeModelResource.BaseSalary</label>
                     <div class="input-group">
                         <input class="form-control" asp-for="BaseSalary" type="number" step="100000" placeholder="7000000" />
-                        <span class="input-group-text small">VNĐ/tháng</span>
+                        <span class="input-group-text small">@SharedResource.Unit_VndPerMonth</span>
                     </div>
                     <span asp-validation-for="BaseSalary" class="text-danger small"></span>
                 </div>
@@ -154,7 +154,7 @@
                     <label class="form-label fw-semibold small" asp-for="AnnualLeaveBalance">@EmployeeModelResource.AnnualLeaveBalance</label>
                     <div class="input-group">
                         <input class="form-control" asp-for="AnnualLeaveBalance" type="number" min="0" max="365" />
-                        <span class="input-group-text small">ngày</span>
+                        <span class="input-group-text small">@SharedResource.Unit_Days</span>
                     </div>
                     <span asp-validation-for="AnnualLeaveBalance" class="text-danger small"></span>
                 </div>
@@ -177,7 +177,7 @@
 
                 <div class="col-md-4">
                     <label class="form-label fw-semibold small" asp-for="CitizenId">@EmployeeModelResource.CitizenId</label>
-                    <input class="form-control" asp-for="CitizenId" placeholder="Số CCCD 12 chữ số" />
+                    <input class="form-control" asp-for="CitizenId" placeholder="@EmployeeModelResource.CitizenId" />
                     <span asp-validation-for="CitizenId" class="text-danger small"></span>
                 </div>
 
@@ -192,7 +192,7 @@
                 <div class="col-md-4">
                     <label class="form-label fw-semibold small" asp-for="Gender">@AccModelResource.Gender</label>
                     <select class="form-select" asp-for="Gender" asp-items="Html.GetEnumSelectList<Gender>()">
-                        <option value="">-- Chọn giới tính --</option>
+                        <option value="">@SharedResource.Dropdown_SelectGender</option>
                     </select>
                 </div>
                 <div class="col-md-4">
@@ -201,7 +201,7 @@
                 </div>
                 <div class="col-md-4">
                     <label class="form-label fw-semibold small" asp-for="ResignReason">@EmployeeModelResource.ResignReason</label>
-                    <input class="form-control" asp-for="ResignReason" placeholder="Lý do thôi việc (nếu có)" />
+                    <input class="form-control" asp-for="ResignReason" placeholder="@EmployeeModelResource.ResignReason" />
                 </div>
             </div>
 

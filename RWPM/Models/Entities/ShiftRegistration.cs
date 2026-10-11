@@ -28,6 +28,14 @@ namespace RWPM.Models.Entities
         [Required]
         public int StoreId { get; set; }
 
+        [MaxLength(255)]
+        public string? RejectionReason { get; set; }
+
+        [MaxLength(50)]
+        public string? ApprovedBy { get; set; }
+
+        public DateTime? ApprovedAt { get; set; }
+
         // Navigation properties
         public Employee Employee { get; set; } = null!;
         public Shift Shift { get; set; } = null!;

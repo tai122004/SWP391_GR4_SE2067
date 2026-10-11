@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using RWPM.Common.Enums;
 using RWPM.Infrastructure.Data;
 using RWPM.Models.Entities;
@@ -148,7 +148,7 @@ namespace RWPM.Services
             }
         }
 
-        public async Task UpdateStatusAsync(int id, RegistrationStatus status)
+        public async Task UpdateStatusAsync(int id, RegistrationStatus status, string? rejectionReason = null, string? approver = null)
         {
             await using var transaction = await _context.Database.BeginTransactionAsync();
             var entity = await _context.ShiftRegistration
@@ -159,19 +159,24 @@ namespace RWPM.Services
             if (entity != null)
             {
                 if (status == RegistrationStatus.Approved)
-                    await ValidateScheduleConstraintsAsync(entity.EmployeeId, new List<ShiftRegistration> { entity }, new List<int> { id });
-                entity.Status = status;
-                await _context.SaveChangesAsync();
-
-                if (status == RegistrationStatus.Approved && entity.Employee?.Account?.Role == AccountRole.Employee)
                 {
-                    await AutoScheduleForEmployeeAsync(new List<ShiftRegistration> { entity });
+                    await ValidateScheduleConstraintsAsync(entity.EmployeeId, new List<ShiftRegistration> { entity }, new List<int> { id });
+                    entity.RejectionReason = null;
                 }
+                else if (status == RegistrationStatus.Rejected)
+                {
+                    entity.RejectionReason = rejectionReason;
+                }
+
+                entity.Status = status;
+                entity.ApprovedBy = approver;
+                entity.ApprovedAt = DateTime.Now;
+                await _context.SaveChangesAsync();
             }
             await transaction.CommitAsync();
         }
 
-        public async Task UpdateBulkStatusAsync(List<int> ids, RegistrationStatus status)
+        public async Task UpdateBulkStatusAsync(List<int> ids, RegistrationStatus status, string? rejectionReason = null, string? approver = null)
         {
             await using var transaction = await _context.Database.BeginTransactionAsync();
             var entities = await _context.ShiftRegistration
@@ -183,27 +188,27 @@ namespace RWPM.Services
             if (!entities.Any()) return;
 
             if (status == RegistrationStatus.Approved)
+            {
                 foreach (var group in entities.GroupBy(x => x.EmployeeId))
                     await ValidateScheduleConstraintsAsync(group.Key, group.ToList(), ids);
+            }
 
             foreach (var entity in entities)
             {
                 entity.Status = status;
+                entity.ApprovedBy = approver;
+                entity.ApprovedAt = DateTime.Now;
+                if (status == RegistrationStatus.Approved)
+                {
+                    entity.RejectionReason = null;
+                }
+                else if (status == RegistrationStatus.Rejected)
+                {
+                    entity.RejectionReason = rejectionReason;
+                }
             }
 
             await _context.SaveChangesAsync();
-
-            if (status == RegistrationStatus.Approved)
-            {
-                var EmployeeRegistrations = entities
-                    .Where(x => x.Employee?.Account?.Role == AccountRole.Employee)
-                    .ToList();
-
-                if (EmployeeRegistrations.Any())
-                {
-                    await AutoScheduleForEmployeeAsync(EmployeeRegistrations);
-                }
-            }
             await transaction.CommitAsync();
         }
 
