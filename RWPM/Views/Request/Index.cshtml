@@ -96,9 +96,36 @@
                                 <div class="card-body p-3 position-relative">
                                     @if (item.Status == RegistrationStatus.Pending)
                                     {
-                                        <div class="form-check position-absolute" style="top: 15px; right: 15px;">
-                                            <input class="form-check-input request-checkbox" type="checkbox" value="@item.Id" data-type="@item.RequestType">
-                                        </div>
+                                        bool isItemSelf = item.RequesterUsername == User.Identity?.Name;
+                                        bool isItemManagement = item.RequesterRole == AccountRole.StoreManager || item.RequesterRole == AccountRole.HR;
+                                        bool canUserBulkApprove = false;
+
+                                        if (!isItemSelf)
+                                        {
+                                            if (item.RequestType == "Attendance")
+                                            {
+                                                if (isItemManagement)
+                                                {
+                                                    canUserBulkApprove = (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"));
+                                                }
+                                                else
+                                                {
+                                                    canUserBulkApprove = (User.IsInRole("Admin") || User.IsInRole("SuperAdmin") || User.IsInRole("HR") ||
+                                                        (User.IsInRole("StoreManager") && item.StoreId == (ViewBag.CurrentUserStoreId ?? 0)));
+                                                }
+                                            }
+                                            else
+                                            {
+                                                canUserBulkApprove = ViewBag.IsManager;
+                                            }
+                                        }
+
+                                        if (canUserBulkApprove)
+                                        {
+                                            <div class="form-check position-absolute" style="top: 15px; right: 15px;">
+                                                <input class="form-check-input request-checkbox" type="checkbox" value="@item.Id" data-type="@item.RequestType">
+                                            </div>
+                                        }
                                     }
                                     <div class="d-flex align-items-center justify-content-between mb-1">
                                         <h6 class="fw-bold mb-0 text-dark">@item.RequestTypeName</h6>
@@ -168,16 +195,11 @@
                 <!-- Detail View (Right Column) -->
                 <div class="col-md-7 ps-4" id="requestDetailPane" style="display: none;">
                     
-                    <div class="d-flex gap-2 mb-4">
-                        @if (ViewBag.IsManager)
-                        {
-                            <button class="btn btn-success px-4 action-btn" id="btnApproveDetail" onclick="updateSelectedStatus(1)">@RequestResource.Approve</button>
-                            <button class="btn btn-outline-danger px-4 action-btn" id="btnRejectDetail" onclick="updateSelectedStatus(2)">@RequestResource.Reject</button>
-                        }
-                        else
-                        {
-                            <button class="btn btn-outline-danger px-4 action-btn" id="btnDeleteDetail" onclick="deleteSelectedRequest()">@RequestResource.Delete</button>
-                        }
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                        <button class="btn btn-success px-4 action-btn" id="btnApproveDetail" onclick="updateSelectedStatus(1)" style="display: none;">@RequestResource.Approve</button>
+                        <button class="btn btn-outline-danger px-4 action-btn" id="btnRejectDetail" onclick="updateSelectedStatus(2)" style="display: none;">@RequestResource.Reject</button>
+                        <button class="btn btn-outline-danger px-4 action-btn" id="btnDeleteDetail" onclick="deleteSelectedRequest()" style="display: none;">@RequestResource.Delete</button>
+                        <div id="requestApprovalNotice" class="alert alert-warning py-2 px-3 small mb-0 align-items-center" style="display: none;"></div>
                     </div>
                     
                     <h5 class="fw-bold text-dark mb-4" id="detailTypeName">@RequestResource.ShiftRegistration</h5>
@@ -873,8 +895,17 @@
             actualCheckOutTimeStr = x.ActualCheckOutTimeStr ?? "",
             requestedCheckInTimeStr = x.RequestedCheckInTimeStr ?? "",
             requestedCheckOutTimeStr = x.RequestedCheckOutTimeStr ?? "",
-            adjustmentSummary = x.AdjustmentSummary ?? ""
+            adjustmentSummary = x.AdjustmentSummary ?? "",
+            requesterUsername = x.RequesterUsername ?? "",
+            requesterRole = (int?)x.RequesterRole,
+            storeId = x.StoreId
         })));
+
+        var currentUsername = '@(User.Identity?.Name ?? "")';
+        var isCurrentUserAdmin = @((User.IsInRole("Admin") || User.IsInRole("SuperAdmin")) ? "true" : "false");
+        var isCurrentUserHR = @(User.IsInRole("HR") ? "true" : "false");
+        var isCurrentUserStoreManager = @(User.IsInRole("StoreManager") ? "true" : "false");
+        var currentUserStoreId = @(ViewBag.CurrentUserStoreId ?? 0);
 
         let currentSelectedId = 0;
         let currentSelectedType = 'ShiftReg';
@@ -1200,10 +1231,69 @@
                     $('#detailApproverRow').hide();
                 }
 
-                if(req.status === 0) {
-                    $('.action-btn').show();
-                } else {
-                    $('.action-btn').hide();
+                $('#btnApproveDetail').hide();
+                $('#btnRejectDetail').hide();
+                $('#btnDeleteDetail').hide();
+                $('#requestApprovalNotice').hide();
+
+                if (req.status === 0) { // Pending
+                    var isSelf = (req.requesterUsername && req.requesterUsername.toLowerCase() === currentUsername.toLowerCase());
+                    var canApprove = false;
+                    var cannotApproveReason = '';
+
+                    if (isSelf) {
+                        canApprove = false;
+                        cannotApproveReason = 'self';
+                    } else if (req.requestType === 'Attendance') {
+                        // Đơn sửa chấm công:
+                        var isRequesterManagement = (req.requesterRole === 2 || req.requesterRole === 4); // HR = 2, StoreManager = 4
+                        if (isRequesterManagement) {
+                            // Đơn của Quản lý / HR: Chỉ Admin duyệt
+                            if (isCurrentUserAdmin) {
+                                canApprove = true;
+                            } else {
+                                canApprove = false;
+                                cannotApproveReason = 'admin_only';
+                            }
+                        } else {
+                            // Đơn của Nhân viên bình thường:
+                            if (isCurrentUserAdmin || isCurrentUserHR) {
+                                canApprove = true;
+                            } else if (isCurrentUserStoreManager) {
+                                if (currentUserStoreId > 0 && req.storeId === currentUserStoreId) {
+                                    canApprove = true;
+                                } else {
+                                    canApprove = false;
+                                    cannotApproveReason = 'store_mismatch';
+                                }
+                            }
+                        }
+                    } else {
+                        // Các loại đơn khác (ShiftReg, ShiftSwap, Leave)
+                        if (isCurrentUserAdmin || isCurrentUserHR) {
+                            canApprove = true;
+                        } else if (isCurrentUserStoreManager) {
+                            if (currentUserStoreId > 0 && req.storeId === currentUserStoreId) {
+                                canApprove = true;
+                            } else {
+                                canApprove = false;
+                                cannotApproveReason = 'store_mismatch';
+                            }
+                        }
+                    }
+
+                    if (canApprove) {
+                        $('#btnApproveDetail').show();
+                        $('#btnRejectDetail').show();
+                    } else {
+                        if (isSelf) {
+                            $('#btnDeleteDetail').show();
+                        } else if (cannotApproveReason === 'admin_only') {
+                            $('#requestApprovalNotice').html('<i class="bi bi-shield-lock-fill me-2 fs-6"></i>Đơn của Quản lý / HR — Chờ Admin phê duyệt').show();
+                        } else if (cannotApproveReason === 'store_mismatch') {
+                            $('#requestApprovalNotice').html('<i class="bi bi-info-circle me-2 fs-6"></i>Đơn thuộc chi nhánh khác').show();
+                        }
+                    }
                 }
 
                 $('#requestDetailPane').fadeIn(200);

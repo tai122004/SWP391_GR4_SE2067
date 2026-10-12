@@ -35,14 +35,27 @@ namespace RWPM.Infrastructure.DependencyInjection
             #endregion
 
             #region Authentication
+            var keysPath = Path.Combine(Directory.GetCurrentDirectory(), "Keys");
+            if (!Directory.Exists(keysPath))
+            {
+                Directory.CreateDirectory(keysPath);
+            }
+
             services.AddDataProtection()
-                .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "Keys")));
+                .SetApplicationName("RWPM")
+                .PersistKeysToFileSystem(new DirectoryInfo(keysPath));
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
-                    options.ExpireTimeSpan = TimeSpan.FromDays(1); // cookie expires in 1 day
-                    options.SlidingExpiration = false;  // disables renewing expiration on each request
+                    options.Cookie.Name = "RWPM_Auth_Cookie";
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.IsEssential = true;
+                    options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
+                    options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest;
+
+                    options.ExpireTimeSpan = TimeSpan.FromDays(7); // Duy trì đăng nhập 7 ngày
+                    options.SlidingExpiration = true;             // Tự động gia hạn khi người dùng thao tác
 
                     options.LoginPath = "/Auth/Login";
                     options.AccessDeniedPath = "/Auth/AccessDenied";
