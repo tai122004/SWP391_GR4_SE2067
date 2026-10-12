@@ -4,6 +4,7 @@
     ViewData["Title"] = SharedResource.ResourceManager.GetString("Attendance_Title");
     var todayRecord = ViewBag.TodayRecord as RWPM.Models.Entities.AttendanceRecord;
     bool isAdmin = ViewBag.IsAdmin ?? false;
+    bool canManage = ViewBag.CanManage ?? false;
     string searchQuery = ViewBag.SearchQuery as string;
     
     var activeShifts = ViewBag.ActiveShifts as List<RWPM.Models.Entities.Shift>;
@@ -132,6 +133,24 @@
                             <i class="bi bi-exclamation-triangle-fill text-warning me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_WarningNoShift")
                         </div>
                     }
+
+                    @if (canManage && empList != null && empList.Count > 0)
+                    {
+                        <div class="mt-4 text-start border-top pt-3">
+                            <label class="form-label small fw-semibold text-secondary">@SharedResource.ResourceManager.GetString("Attendance_EmployeeList")</label>
+                            <div class="list-group list-group-flush border rounded small" style="max-height: 250px; overflow-y: auto;">
+                                <a href="@Url.Action("Index", new { searchQuery = "" })" class="list-group-item list-group-item-action py-2 @(string.IsNullOrEmpty(searchQuery) ? "active" : "")">
+                                    <i class="bi bi-people me-2"></i> <strong>@SharedResource.ResourceManager.GetString("Attendance_AllEmployees")</strong>
+                                </a>
+                                @foreach(var emp in empList)
+                                {
+                                    <a href="@Url.Action("Index", new { searchQuery = emp.Username })" class="list-group-item list-group-item-action py-2 @(searchQuery == emp.Username ? "active fw-bold" : "")">
+                                        <i class="bi bi-person me-2"></i> @emp.FullName <span class="text-muted">(@emp.Username)</span>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    }
                 }
                 else
                 {
@@ -165,11 +184,11 @@
             <div class="mb-3 d-flex justify-content-between align-items-center">
                 <h4 class="fw-semibold text-dark d-flex align-items-center mb-0">
                     <i class="bi bi-clock-history me-2"></i>
-                    @(isAdmin ? SharedResource.ResourceManager.GetString("Attendance_AllHistory") : SharedResource.ResourceManager.GetString("Attendance_MyHistory"))
+                    @(canManage ? SharedResource.ResourceManager.GetString("Attendance_AllHistory") : SharedResource.ResourceManager.GetString("Attendance_MyHistory"))
                 </h4>
             </div>
 
-            @if (isAdmin)
+            @if (canManage)
             {
                 <!-- Search form -->
                 <div class="modern-card p-3 mb-3">
@@ -199,7 +218,7 @@
                         <thead>
                             <tr>
                             <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Date")</th>
-                            @if (isAdmin)
+                            @if (canManage)
                             {
                                 <th class="text-nowrap">@SharedResource.ResourceManager.GetString("Attendance_EmployeeCol")</th>
                             }
@@ -209,7 +228,7 @@
                             <th class="text-nowrap text-center">@RWPM.Resources.Shared.Shift.ResourceManager.GetString("HoursWorked")</th>
                             <th class="text-nowrap text-center"><i class="bi bi-image me-1"></i>@SharedResource.ResourceManager.GetString("Attendance_PhotoCol")</th>
                             <th class="text-nowrap text-center"><i class="bi bi-geo-alt me-1"></i>@SharedResource.ResourceManager.GetString("Attendance_DistanceCol")</th>
-                            @if (isAdmin)
+                            @if (canManage)
                             {
                                 <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Button_Action")</th>
                             }
@@ -222,7 +241,7 @@
                             {
                                 <tr>
                                     <td class="text-center"><strong>@item.Date.ToString("dd/MM/yyyy")</strong></td>
-                                    @if (isAdmin)
+                                    @if (canManage)
                                     {
                                         <td>@item.Username</td>
                                     }
@@ -282,7 +301,7 @@
                                             <span class="text-muted">-</span>
                                         }
                                     </td>
-                                    @if (isAdmin)
+                                    @if (canManage)
                                     {
                                         <td class="text-center">
                                             <button type="button" class="btn btn-sm btn-outline-warning" title="@SharedResource.ResourceManager.GetString("Attendance_AdjustButton")" data-bs-toggle="modal" data-bs-target="#adjustModal_@item.AttendanceId">
@@ -334,7 +353,7 @@
                         else
                         {
                             <tr>
-                                <td colspan="@(isAdmin ? 9 : 8)" class="text-center text-muted py-4">
+                                <td colspan="@(canManage ? 9 : 8)" class="text-center text-muted py-4">
                                     <i class="bi bi-inbox fs-3 d-block mb-2"></i>
                                     @SharedResource.ResourceManager.GetString("Attendance_NoData")
                                 </td>

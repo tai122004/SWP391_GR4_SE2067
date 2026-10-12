@@ -38,8 +38,12 @@ namespace RWPM.Controllers
             if (string.IsNullOrEmpty(username)) return RedirectToAction("Login", "Auth");
 
             ViewBag.TodayRecord = await _attendanceService.GetTodayRecordAsync(username);
-            bool isAdmin = User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin");
-            ViewBag.IsAdmin = isAdmin;
+            // Only pure System Admin has no requirement to clock in. HR and StoreManager can clock in as employees.
+            bool isSystemAdmin = (User.IsInRole("Admin") || User.IsInRole("SuperAdmin")) && !User.IsInRole("HR") && !User.IsInRole("StoreManager");
+            bool canManage = User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin");
+            
+            ViewBag.IsAdmin = isSystemAdmin;
+            ViewBag.CanManage = canManage;
 
             var today = DateTime.Today;
             var employee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
@@ -69,7 +73,7 @@ namespace RWPM.Controllers
             ViewBag.SearchQuery = searchQuery;
 
             List<AttendanceRecord> history;
-            if (isAdmin)
+            if (canManage)
             {
                 ViewBag.Employees = await _accService.GetAllAsync();
                 history = await _attendanceService.GetAllHistoryAsync(searchQuery);

@@ -209,8 +209,11 @@ namespace RWPM.Controllers
             }
             else if (isHrRole)
             {
-                // HR không cần chọn Store và EmploymentType (mặc định FullTime)
-                viewModel.StoreId = null;
+                // HR có thể chọn chi nhánh hoặc mặc định chi nhánh đầu tiên
+                if (!viewModel.StoreId.HasValue || viewModel.StoreId <= 0)
+                {
+                    viewModel.StoreId = await _context.Store.Where(s => s.IsActive).Select(s => (int?)s.StoreId).FirstOrDefaultAsync();
+                }
                 viewModel.EmploymentType = RWPM.Common.Enums.EmploymentType.FullTime;
 
                 if (string.IsNullOrWhiteSpace(viewModel.EmployeeCode))
@@ -250,7 +253,7 @@ namespace RWPM.Controllers
                     {
                         EmployeeCode = (viewModel.EmployeeCode ?? $"NV{DateTime.Now:yyMMddHHmm}").Trim(),
                         Username = createdAcc.Username,
-                        StoreId = isStoreRole ? viewModel.StoreId : null,
+                        StoreId = viewModel.StoreId,
                         JoinDate = viewModel.JoinDate?.Date ?? DateTime.Today,
                         EmploymentType = isHrRole ? RWPM.Common.Enums.EmploymentType.FullTime : viewModel.EmploymentType,
                         HourlyRate = viewModel.HourlyRate,
@@ -348,7 +351,11 @@ namespace RWPM.Controllers
             }
             else if (isHrRole)
             {
-                viewModel.StoreId = null;
+                if (!viewModel.StoreId.HasValue || viewModel.StoreId <= 0)
+                {
+                    var existingStore = await _context.Employee.Where(e => e.Username == viewModel.Username).Select(e => e.StoreId).FirstOrDefaultAsync();
+                    viewModel.StoreId = existingStore ?? await _context.Store.Where(s => s.IsActive).Select(s => (int?)s.StoreId).FirstOrDefaultAsync();
+                }
                 viewModel.EmploymentType = EmploymentType.FullTime;
 
                 if (string.IsNullOrWhiteSpace(viewModel.EmployeeCode))
@@ -387,7 +394,7 @@ namespace RWPM.Controllers
                 {
                     if (isStoreRole || isHrRole)
                     {
-                        existingEmp.StoreId = isStoreRole ? viewModel.StoreId : null;
+                        existingEmp.StoreId = viewModel.StoreId;
                         if (!string.IsNullOrWhiteSpace(viewModel.EmployeeCode))
                         {
                             existingEmp.EmployeeCode = viewModel.EmployeeCode.Trim();
@@ -412,7 +419,7 @@ namespace RWPM.Controllers
                     {
                         EmployeeCode = (viewModel.EmployeeCode ?? $"NV{DateTime.Now:yyMMddHHmm}").Trim(),
                         Username = viewModel.Username,
-                        StoreId = isStoreRole ? viewModel.StoreId : null,
+                        StoreId = viewModel.StoreId,
                         JoinDate = viewModel.JoinDate?.Date ?? DateTime.Today,
                         EmploymentType = isHrRole ? EmploymentType.FullTime : viewModel.EmploymentType,
                         HourlyRate = viewModel.HourlyRate,

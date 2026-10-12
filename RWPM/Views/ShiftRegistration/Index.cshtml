@@ -15,6 +15,34 @@
     <div class="row gx-0">
         <div class="col-12">
             <div class="app-content-card shift-registration-card mb-4">
+                @if (ViewBag.IsManager)
+                {
+                    <div class="d-flex align-items-center justify-content-between px-3 pt-3 pb-2 border-bottom flex-wrap gap-2 bg-light bg-opacity-50">
+                        <div class="nav nav-pills gap-2" id="shiftModeTabs" role="tablist">
+                            <button class="btn btn-sm btn-primary rounded-pill px-3 py-1 fw-semibold text-sm shadow-none" id="tabMyRegistration" type="button" onclick="switchViewMode('my')">
+                                <i class="fas fa-user-clock me-1"></i> Đăng ký ca của tôi
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-semibold text-sm shadow-none" id="tabManagerSchedule" type="button" onclick="switchViewMode('manager')">
+                                <i class="fas fa-users-cog me-1"></i> Quản lý lịch ca
+                            </button>
+                        </div>
+                        @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin"))
+                        {
+                            @if (ViewBag.AllStores != null)
+                            {
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="small text-muted fw-semibold"><i class="fas fa-store me-1"></i>Cửa hàng:</span>
+                                    <select id="switchStoreSelect" class="tanca-select py-1" style="min-width: 180px;" onchange="changeStoreFilter(this.value)">
+                                        @foreach (var st in ViewBag.AllStores)
+                                        {
+                                            <option value="@st.StoreId" selected="@(st.StoreId == ViewBag.CurrentStoreId ? "selected" : null)">@st.StoreName</option>
+                                        }
+                                    </select>
+                                </div>
+                            }
+                        }
+                    </div>
+                }
                 <div class="card-header pb-0 border-bottom bg-transparent pt-3 shift-registration-toolbar">
                     <div class="d-flex align-items-center justify-content-between mb-3 w-100 flex-wrap gap-2">
                         <!-- Left side controls -->
@@ -59,16 +87,18 @@
 
                             @if (ViewBag.IsManager)
                             {
-                                <select id="filterEmployeeId" class="tanca-select" style="min-width: 150px;">
-                                    <option value="">@ShiftRegistrationResource.FilterByEmployee</option>
-                                    @if (ViewBag.Employees != null)
-                                    {
-                                        foreach (var emp in ViewBag.Employees)
+                                <div id="managerFilterEmployeeContainer" style="display: none;">
+                                    <select id="filterEmployeeId" class="tanca-select" style="min-width: 150px;">
+                                        <option value="">@ShiftRegistrationResource.FilterByEmployee</option>
+                                        @if (ViewBag.Employees != null)
                                         {
-                                            <option value="@emp.EmployeeId">@emp.EmployeeCode - @(emp.Account?.FullName ?? emp.Username)</option>
+                                            foreach (var emp in ViewBag.Employees)
+                                            {
+                                                <option value="@emp.EmployeeId">@emp.EmployeeCode - @(emp.Account?.FullName ?? emp.Username)</option>
+                                            }
                                         }
-                                    }
-                                </select>
+                                    </select>
+                                </div>
                             }
 
                             <select id="filterTimekeeping" class="tanca-select">
@@ -87,18 +117,16 @@
                         <!-- Right side controls -->
                         <div class="d-flex align-items-center gap-2">
                             <button class="tanca-btn" onclick="fetchEvents()" title="@SharedResource.ResourceManager.GetString("Shift_Refresh")"><i class="fas fa-sync-alt"></i></button>
-                            @if (ViewBag.IsManager)
-                            {
+                            <div id="managerActionBtns" class="d-flex align-items-center gap-2" style="display: none;">
                                 <button class="tanca-btn" title="@SharedResource.ResourceManager.GetString("Shift_Warning")"><i class="fas fa-exclamation-triangle"></i></button>
                                 <button class="tanca-btn" title="@SharedResource.ResourceManager.GetString("Shift_Tools")"><i class="fas fa-tools"></i></button>
                                 <button class="tanca-btn" title="@SharedResource.ResourceManager.GetString("Shift_Settings")"><i class="fas fa-cog"></i></button>
                                 <button class="btn btn-sm btn-primary mb-0 ms-2" onclick="openCreateModal(new Date())">@ShiftRegistrationResource.CreateShift</button>
-                            }
-                            else
-                            {
+                            </div>
+                            <div id="employeeActionBtns" class="d-flex align-items-center gap-2">
                                 <button class="btn btn-sm btn-outline-primary mb-0 ms-2" onclick="copyPreviousWeek()" style="border-radius: 8px; padding: 8px 16px;"><i class="fas fa-copy"></i> @SharedResource.ResourceManager.GetString("Shift_CopyPrev")</button>
                                 <button class="btn btn-sm btn-primary mb-0 ms-2" onclick="syncWeeklySchedule()"><i class="fas fa-save"></i> @SharedResource.ResourceManager.GetString("Shift_RegisterWeek")</button>
-                            }
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -437,7 +465,31 @@
         let employeesList = [];
         let wpCurrentMonth = new Date();
         let isManager = @((ViewBag.IsManager == true).ToString().ToLower());
+        let activeMode = isManager ? 'my' : 'my'; // Mặc định mở ở chế độ đăng ký ca của tôi
         let shiftsList = [];
+
+        function switchViewMode(mode) {
+            activeMode = mode;
+            if (mode === 'my') {
+                $('#tabMyRegistration').removeClass('btn-outline-secondary').addClass('btn-primary');
+                $('#tabManagerSchedule').removeClass('btn-primary').addClass('btn-outline-secondary');
+                $('#managerFilterEmployeeContainer').hide();
+                $('#managerActionBtns').hide();
+                $('#employeeActionBtns').show();
+            } else {
+                $('#tabMyRegistration').removeClass('btn-primary').addClass('btn-outline-secondary');
+                $('#tabManagerSchedule').removeClass('btn-outline-secondary').addClass('btn-primary');
+                $('#managerFilterEmployeeContainer').show();
+                $('#managerActionBtns').show();
+                $('#employeeActionBtns').hide();
+            }
+            renderHeader();
+            fetchEvents();
+        }
+
+        function changeStoreFilter(storeId) {
+            window.location.href = '/ShiftRegistration?storeId=' + storeId;
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
             @if (ViewBag.Shifts != null)
@@ -467,8 +519,12 @@
                 </text>
             }
 
-            updateWeekDisplay();
-            fetchEvents();
+            if (isManager) {
+                switchViewMode(activeMode);
+            } else {
+                updateWeekDisplay();
+                fetchEvents();
+            }
 
             $('#btnPrevWeek').click(function() {
                 currentWeekStart.setDate(currentWeekStart.getDate() - 7);
@@ -626,7 +682,7 @@
         }
 
         function renderHeader() {
-            if (isManager) {
+            if (activeMode === 'manager') {
                 let tr = '<th class="emp-col"><div class="input-group input-group-sm"><span class="input-group-text bg-transparent border-0"><i class="fas fa-search"></i></span><input type="text" class="form-control border-0 bg-transparent ps-1" placeholder="@Html.Raw(ShiftRegistrationResource.SearchBtn)" onkeyup="filterEmployeesLocally(this.value)"></div></th>';
                 
                 let tempDate = new Date(currentWeekStart);
@@ -670,7 +726,8 @@
         }
 
         function fetchEvents() {
-            var empId = $('#filterEmployeeId').val() || '';
+            let isMyMode = (activeMode === 'my');
+            let empId = isMyMode ? '' : ($('#filterEmployeeId').val() || '');
             let startStr = getISODateString(currentWeekStart);
             let endStr = new Date(currentWeekStart);
             endStr.setDate(endStr.getDate() + 7);
@@ -681,7 +738,8 @@
                 data: {
                     start: startStr,
                     end: getISODateString(endStr),
-                    employeeId: empId
+                    employeeId: empId,
+                    myOnly: isMyMode
                 },
                 success: function(events) {
                     renderGrid(events);
@@ -695,7 +753,7 @@
         function renderGrid(events) {
             let tbody = '';
             
-            if (isManager) {
+            if (activeMode === 'manager') {
                 // Filter employees to render based on dropdown
                 var selectedEmpId = $('#filterEmployeeId').val();
                 var empsToRender = employeesList;
@@ -895,7 +953,8 @@
                 data: {
                     start: startStr,
                     end: getISODateString(endStr),
-                    employeeId: '' // self
+                    employeeId: '', // self
+                    myOnly: true
                 },
                 success: function(events) {
                     if (events.length === 0) {
@@ -1026,7 +1085,7 @@
                 $('#vApproverRow').hide();
             }
 
-            if (!isManager) {
+            if (!isManager || activeMode === 'my') {
                 if (eventObj.statusId === 1) { // Approved
                     $('#btnCancelRegistration').hide();
                     $('#txtApprovedNotice').show();

@@ -259,15 +259,15 @@
                 $('#employeeSectionTitleText').text('@Html.Raw(AccountSharedResource.Create_Section_StoreInfo)');
             } else if (isHrRole) {
                 $('#storeAssignmentSection').slideDown(200);
-                // HR không làm việc tại chi nhánh cửa hàng bán lẻ
-                $('#storeSelectCol').hide();
+                // HR có thể chọn chi nhánh làm việc để chấm công và đăng ký ca
+                $('#storeSelectCol').show();
                 $('#employmentTypeCol').hide();
 
-                $('#empCodeCol').removeClass('col-md-4').addClass('col-md-6');
-                $('#joinDateCol').removeClass('col-md-4').addClass('col-md-6');
-                $('#hourlyRateCol').removeClass('col-md-6').addClass('col-md-12');
+                $('#empCodeCol').removeClass('col-md-6').addClass('col-md-4');
+                $('#joinDateCol').removeClass('col-md-6').addClass('col-md-4');
+                $('#hourlyRateCol').removeClass('col-md-12').addClass('col-md-6');
 
-                $('#storeSelectInput').prop('disabled', true);
+                $('#storeSelectInput').prop('disabled', false);
                 $('#employeeSectionTitleText').text('2. Hồ sơ nhân viên & Lương (Nhân sự - HR)');
             } else {
                 $('#storeAssignmentSection').slideUp(200);

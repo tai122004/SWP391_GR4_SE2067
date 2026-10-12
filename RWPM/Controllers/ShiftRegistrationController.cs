@@ -27,7 +27,7 @@ namespace RWPM.Controllers
         }
 
         // GET: ShiftRegistration
-        public IActionResult Index()
+        public async Task<IActionResult> Index(int? storeId = null)
         {
             var role = User.FindFirstValue(ClaimTypes.Role);
             var isAdmin = role == "Admin" || role == "HR" || role == "AreaManager";
@@ -35,39 +35,51 @@ namespace RWPM.Controllers
             
             ViewBag.IsManager = isAdmin || isStoreManager;
 
-            int? userStoreId = null;
-            if (!isAdmin)
+            var username = User.Identity?.Name;
+            var currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
+            
+            // Tự động đảm bảo HR hoặc nhân viên có liên kết cửa hàng hợp lệ
+            if (currentEmployee != null && !currentEmployee.StoreId.HasValue)
             {
-                var username = User.Identity?.Name;
-                var currentEmployee = _context.Employee.FirstOrDefault(e => e.Username == username);
-                if (currentEmployee != null)
+                var firstActiveStore = await _context.Store.FirstOrDefaultAsync(s => s.IsActive);
+                if (firstActiveStore != null)
                 {
-                    userStoreId = currentEmployee.StoreId;
+                    currentEmployee.StoreId = firstActiveStore.StoreId;
+                    await _context.SaveChangesAsync();
                 }
             }
 
+            int? userStoreId = storeId ?? currentEmployee?.StoreId;
+            if (!userStoreId.HasValue)
+            {
+                userStoreId = await _context.Store.Where(s => s.IsActive).Select(s => (int?)s.StoreId).FirstOrDefaultAsync();
+            }
+
+            ViewBag.CurrentStoreId = userStoreId;
+            ViewBag.AllStores = await _context.Store.Where(s => s.IsActive).ToListAsync();
+
             if (userStoreId.HasValue)
             {
-                ViewBag.Shifts = _context.Shift
+                ViewBag.Shifts = await _context.Shift
                     .Include(x => x.StoreShifts)
                     .Where(x => x.IsActive && x.StoreShifts.Any(link => link.IsActive && link.StoreId == userStoreId.Value && link.Store.IsActive))
-                    .ToList();
+                    .ToListAsync();
             }
             else
             {
-                ViewBag.Shifts = isAdmin ? _context.Shift.Include(x => x.StoreShifts).Where(x => x.IsActive).ToList() : new List<Shift>();
+                ViewBag.Shifts = await _context.Shift.Include(x => x.StoreShifts).Where(x => x.IsActive).ToListAsync();
             }
             
             if (isAdmin)
             {
-                ViewBag.Employees = _context.Employee.Include(e => e.Account).Where(x => x.IsActive).ToList();
+                ViewBag.Employees = await _context.Employee.Include(e => e.Account).Where(x => x.IsActive).ToListAsync();
             }
             else if (isStoreManager)
             {
                 if (userStoreId.HasValue)
                 {
-                    ViewBag.Employees = _context.Employee.Include(e => e.Account)
-                        .Where(x => x.IsActive && x.StoreId == userStoreId.Value).ToList();
+                    ViewBag.Employees = await _context.Employee.Include(e => e.Account)
+                        .Where(x => x.IsActive && x.StoreId == userStoreId.Value).ToListAsync();
                 }
             }
 
@@ -87,44 +99,48 @@ namespace RWPM.Controllers
             var employee = await _context.Employee.AsNoTracking().FirstOrDefaultAsync(x => x.EmployeeId == employeeId && x.IsActive);
             if (employee == null) return NotFound();
             if (!chainAccess && User.IsInRole("StoreManager") && (current == null || current.StoreId != employee.StoreId)) return Forbid();
+            
+            var targetStoreId = employee.StoreId ?? current?.StoreId ?? await _context.Store.Where(s => s.IsActive).Select(s => (int?)s.StoreId).FirstOrDefaultAsync();
+
             var day = workDate.Date;
-            var shifts = await _context.Shift.AsNoTracking().Where(x => x.IsActive && x.EffectiveFrom <= day
-                && (x.EffectiveTo == null || x.EffectiveTo >= day)
-                && x.StoreShifts.Any(link => link.StoreId == employee.StoreId && link.IsActive && link.Store.IsActive))
-                .OrderBy(x => x.StartTime).ToListAsync();
+            var shiftsQuery = _context.Shift.AsNoTracking().Where(x => x.IsActive && x.EffectiveFrom <= day
+                && (x.EffectiveTo == null || x.EffectiveTo >= day));
+
+            if (targetStoreId.HasValue)
+            {
+                shiftsQuery = shiftsQuery.Where(x => x.StoreShifts.Any(link => link.StoreId == targetStoreId.Value && link.IsActive && link.Store.IsActive));
+            }
+
+            var shifts = await shiftsQuery.OrderBy(x => x.StartTime).ToListAsync();
             return Json(shifts.Select(x => new { id = x.ShiftId, name = x.ShiftName,
                 time = $"{x.StartTime:hh\\:mm} – {x.EndTime:hh\\:mm}{(x.EndDayOffset == 1 ? " (+1)" : "")}" }));
         }
 
         // GET: ShiftRegistration/GetEvents
         [HttpGet]
-        public async Task<IActionResult> GetEvents(DateTime start, DateTime end, int? storeId = null)
+        public async Task<IActionResult> GetEvents(DateTime start, DateTime end, int? storeId = null, int? employeeId = null, bool myOnly = false)
         {
-            int? employeeId = null;
             var role = User.FindFirstValue(ClaimTypes.Role);
             var isAdmin = role == "Admin" || role == "HR" || role == "AreaManager";
             var isStoreManager = role == "StoreManager";
+            var username = User.Identity?.Name;
+            var currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
 
-            if (isStoreManager)
+            if (myOnly || (!isAdmin && !isStoreManager))
             {
-                var username = User.Identity?.Name;
-                var currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
+                employeeId = currentEmployee?.EmployeeId ?? 0;
+                storeId = null;
+            }
+            else if (isStoreManager)
+            {
                 if (currentEmployee != null)
                 {
-                    storeId = currentEmployee.StoreId; // Force storeId to the manager's store
+                    storeId = currentEmployee.StoreId;
                 }
             }
-            else if (!isAdmin)
+            else if (employeeId.HasValue)
             {
-                var username = User.Identity?.Name;
-                if (!string.IsNullOrEmpty(username))
-                {
-                    var employee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
-                    if (employee != null)
-                    {
-                        employeeId = employee.EmployeeId;
-                    }
-                }
+                // filter by specific employee
             }
 
             var events = await _registrationService.GetEventsAsync(start, end, employeeId, storeId);
@@ -152,7 +168,7 @@ namespace RWPM.Controllers
                 var isManager = isAdmin || isStoreManager;
 
                 Employee employee = null;
-                if (!isManager)
+                if (!isManager || viewModel.EmployeeId <= 0)
                 {
                     var username = User.Identity?.Name;
                     employee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
@@ -176,6 +192,16 @@ namespace RWPM.Controllers
                     }
                 }
 
+                if (!employee.StoreId.HasValue)
+                {
+                    var firstStore = await _context.Store.FirstOrDefaultAsync(s => s.IsActive);
+                    if (firstStore != null)
+                    {
+                        employee.StoreId = firstStore.StoreId;
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
                 var shiftIds = viewModel.ShiftIds != null && viewModel.ShiftIds.Any() 
                     ? viewModel.ShiftIds 
                     : new List<int> { viewModel.ShiftId };
@@ -189,7 +215,7 @@ namespace RWPM.Controllers
                     {
                         return BadRequest(new { success = false, message = $"Ca làm việc có ID {sId} không tồn tại hoặc đã ngừng hoạt động." });
                     }
-                    if (!await _context.StoreShift.AnyAsync(link => link.ShiftId == sId && link.StoreId == employee.StoreId && link.IsActive && link.Store.IsActive))
+                    if (employee.StoreId.HasValue && !await _context.StoreShift.AnyAsync(link => link.ShiftId == sId && link.StoreId == employee.StoreId.Value && link.IsActive && link.Store.IsActive))
                     {
                         return BadRequest(new { success = false, message = $"Ca làm việc {shift.ShiftName} không áp dụng cho chi nhánh của nhân viên." });
                     }
@@ -308,23 +334,38 @@ namespace RWPM.Controllers
 
             try
             {
-                var role = User.FindFirstValue(ClaimTypes.Role);
-                var isAdmin = role == "Admin" || role == "HR" || role == "AreaManager";
-                var isStoreManager = role == "StoreManager";
-                var isManager = isAdmin || isStoreManager;
-
-                if (isManager)
-                {
-                    return BadRequest(new { success = false, message = "Only employees can sync their weekly schedule." });
-                }
-
                 var username = User.Identity?.Name;
                 var employee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
-                if (employee == null) return Unauthorized();
+                if (employee == null) return Unauthorized(new { success = false, message = "Không tìm thấy hồ sơ nhân viên của bạn để đăng ký ca." });
+
+                if (!employee.StoreId.HasValue)
+                {
+                    var firstStore = await _context.Store.FirstOrDefaultAsync(s => s.IsActive);
+                    if (firstStore != null)
+                    {
+                        employee.StoreId = firstStore.StoreId;
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                int storeId = employee.StoreId ?? 0;
+                if (storeId == 0)
+                {
+                    var firstShiftId = viewModel.Registrations.FirstOrDefault()?.ShiftId;
+                    if (firstShiftId.HasValue)
+                    {
+                        storeId = await _context.StoreShift.Where(ss => ss.ShiftId == firstShiftId.Value && ss.IsActive && ss.Store.IsActive)
+                            .Select(ss => ss.StoreId).FirstOrDefaultAsync();
+                    }
+                    if (storeId == 0)
+                    {
+                        storeId = await _context.Store.Where(s => s.IsActive).Select(s => s.StoreId).FirstOrDefaultAsync();
+                    }
+                }
 
                 var entities = viewModel.Registrations.Select(x => x.ToEntity()).ToList();
                 
-                await _registrationService.SyncWeeklyRegistrationAsync(employee.EmployeeId, employee.StoreId ?? 0, viewModel.StartOfWeek, entities);
+                await _registrationService.SyncWeeklyRegistrationAsync(employee.EmployeeId, storeId, viewModel.StartOfWeek, entities);
 
                 return Ok(new { success = true });
             }
