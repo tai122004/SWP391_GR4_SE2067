@@ -205,6 +205,7 @@ namespace RWPM.Infrastructure.Data
             modelBuilder.Entity<PayrollDetail>(e =>
             {
                 e.HasIndex(x => new { x.PayrollId, x.EmployeeId })
+                 .IsUnique()
                  .HasDatabaseName("IX_PayrollDetail_PayrollId_EmployeeId");
 
                 e.HasOne(x => x.Employee)
@@ -216,6 +217,36 @@ namespace RWPM.Infrastructure.Data
                  .WithMany()
                  .HasForeignKey(x => x.StoreId)
                  .OnDelete(DeleteBehavior.Restrict);
+
+                e.HasMany(x => x.ItemSnapshots)
+                 .WithOne(x => x.PayrollDetail)
+                 .HasForeignKey(x => x.PayrollDetailId)
+                 .OnDelete(DeleteBehavior.Cascade);
+            });
+            #endregion
+
+            #region PayrollItemSnapshot
+            modelBuilder.Entity<PayrollItemSnapshot>(e =>
+            {
+                e.HasOne(x => x.PayrollDetail)
+                 .WithMany(x => x.ItemSnapshots)
+                 .HasForeignKey(x => x.PayrollDetailId)
+                 .OnDelete(DeleteBehavior.Cascade);
+
+                e.HasOne(x => x.Shift)
+                 .WithMany()
+                 .HasForeignKey(x => x.ShiftId)
+                 .OnDelete(DeleteBehavior.SetNull);
+            });
+            #endregion
+
+            #region PayrollAuditLog
+            modelBuilder.Entity<PayrollAuditLog>(e =>
+            {
+                e.HasOne(x => x.Payroll)
+                 .WithMany(x => x.AuditLogs)
+                 .HasForeignKey(x => x.PayrollId)
+                 .OnDelete(DeleteBehavior.Cascade);
             });
             #endregion
         }
@@ -235,6 +266,8 @@ namespace RWPM.Infrastructure.Data
         public DbSet<LeaveRequest> LeaveRequest { get; set; } = default!;
         public DbSet<Payroll> Payroll { get; set; } = default!;
         public DbSet<PayrollDetail> PayrollDetail { get; set; } = default!;
+        public DbSet<PayrollItemSnapshot> PayrollItemSnapshot { get; set; } = default!;
+        public DbSet<PayrollAuditLog> PayrollAuditLog { get; set; } = default!;
 
         //public DbSet<IdCounter> IdCounter { get; set; } = default!;
 

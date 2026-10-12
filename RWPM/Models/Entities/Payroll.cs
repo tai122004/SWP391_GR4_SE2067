@@ -46,5 +46,6 @@ namespace RWPM.Models.Entities
 
         // Navigation
         public virtual ICollection<PayrollDetail> Details { get; set; } = new List<PayrollDetail>();
+        public virtual ICollection<PayrollAuditLog> AuditLogs { get; set; } = new List<PayrollAuditLog>();
     }
 }

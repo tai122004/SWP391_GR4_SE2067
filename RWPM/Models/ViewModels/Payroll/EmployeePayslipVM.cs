@@ -23,5 +23,6 @@ namespace RWPM.Models.ViewModels.Payroll
         public RWPM.Models.Entities.Employee Employee { get; set; } = null!;
         public List<AttendanceRecord> AttendanceRecords { get; set; } = new();
         public List<LeaveRequest> LeaveRequests { get; set; } = new();
+        public List<PayrollItemSnapshot> ItemSnapshots { get; set; } = new();
     }
 }

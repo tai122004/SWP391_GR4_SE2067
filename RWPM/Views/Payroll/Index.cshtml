@@ -4,6 +4,7 @@
 @{
     ViewData["Title"] = "Quản lý Bảng lương";
     bool isAdminOrHR = ViewBag.IsAdminOrHR ?? false;
+    bool isStoreManager = ViewBag.IsStoreManager ?? false;
 }
 
 <div class="container-fluid py-4">
@@ -12,7 +13,14 @@
             <h2 class="h3 font-weight-bold mb-1 text-primary">
                 <i class="bi bi-cash-stack me-2"></i>Quản lý Bảng lương
             </h2>
-            <p class="text-muted mb-0">Tính lương và theo dõi quỹ lương định kỳ cho nhân viên toàn hệ thống</p>
+            @if (isStoreManager)
+            {
+                <p class="text-muted mb-0"><i class="bi bi-geo-alt me-1 text-primary"></i>Phạm vi: <strong>Chi nhánh được phân công quản lý</strong></p>
+            }
+            else
+            {
+                <p class="text-muted mb-0">Tính lương và theo dõi quỹ lương định kỳ cho nhân viên toàn hệ thống</p>
+            }
         </div>
         <div class="d-flex gap-2 align-items-center">
             <form method="get" asp-action="Index" class="d-flex align-items-center">

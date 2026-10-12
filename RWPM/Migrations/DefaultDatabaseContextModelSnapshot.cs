@@ -547,6 +547,51 @@ namespace RWPM.Migrations
                     b.ToTable("Payroll");
                 });
 
+            modelBuilder.Entity("RWPM.Models.Entities.PayrollAuditLog", b =>
+                {
+                    b.Property<int>("PayrollAuditLogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PayrollAuditLogId"), 1L, 1);
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Details")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<byte?>("FromStatus")
+                        .HasColumnType("tinyint");
+
+                    b.Property<string>("OperatorUsername")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("PayrollId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<byte?>("ToStatus")
+                        .HasColumnType("tinyint");
+
+                    b.HasKey("PayrollAuditLogId");
+
+                    b.HasIndex("PayrollId");
+
+                    b.ToTable("PayrollAuditLog");
+                });
+
             modelBuilder.Entity("RWPM.Models.Entities.PayrollDetail", b =>
                 {
                     b.Property<int>("PayrollDetailId")
@@ -580,6 +625,9 @@ namespace RWPM.Migrations
                     b.Property<int>("MissingAttendanceCount")
                         .HasColumnType("int");
 
+                    b.Property<double>("PaidLeaveHours")
+                        .HasColumnType("float");
+
                     b.Property<int>("PayrollId")
                         .HasColumnType("int");
 
@@ -603,6 +651,9 @@ namespace RWPM.Migrations
                     b.Property<double>("TotalWorkHours")
                         .HasColumnType("float");
 
+                    b.Property<int>("UnpaidLeaveDays")
+                        .HasColumnType("int");
+
                     b.Property<string>("WarningNotes")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -614,9 +665,81 @@ namespace RWPM.Migrations
                     b.HasIndex("StoreId");
 
                     b.HasIndex("PayrollId", "EmployeeId")
+                        .IsUnique()
                         .HasDatabaseName("IX_PayrollDetail_PayrollId_EmployeeId");
 
                     b.ToTable("PayrollDetail");
+                });
+
+            modelBuilder.Entity("RWPM.Models.Entities.PayrollItemSnapshot", b =>
+                {
+                    b.Property<int>("PayrollItemSnapshotId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PayrollItemSnapshotId"), 1L, 1);
+
+                    b.Property<double>("ActualWorkHours")
+                        .HasColumnType("float");
+
+                    b.Property<TimeSpan?>("CheckInTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan?>("CheckOutTime")
+                        .HasColumnType("time");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<TimeSpan?>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<decimal>("HourlyRate")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<double>("PaidLeaveHours")
+                        .HasColumnType("float");
+
+                    b.Property<int>("PayrollDetailId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ShiftId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ShiftName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("SourceType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<TimeSpan?>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<double>("TotalPayableHours")
+                        .HasColumnType("float");
+
+                    b.HasKey("PayrollItemSnapshotId");
+
+                    b.HasIndex("PayrollDetailId");
+
+                    b.HasIndex("ShiftId");
+
+                    b.ToTable("PayrollItemSnapshot");
                 });
 
             modelBuilder.Entity("RWPM.Models.Entities.Shift", b =>
@@ -1078,6 +1201,17 @@ namespace RWPM.Migrations
                     b.Navigation("Store");
                 });
 
+            modelBuilder.Entity("RWPM.Models.Entities.PayrollAuditLog", b =>
+                {
+                    b.HasOne("RWPM.Models.Entities.Payroll", "Payroll")
+                        .WithMany("AuditLogs")
+                        .HasForeignKey("PayrollId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Payroll");
+                });
+
             modelBuilder.Entity("RWPM.Models.Entities.PayrollDetail", b =>
                 {
                     b.HasOne("RWPM.Models.Entities.Employee", "Employee")
@@ -1103,6 +1237,24 @@ namespace RWPM.Migrations
                     b.Navigation("Payroll");
 
                     b.Navigation("Store");
+                });
+
+            modelBuilder.Entity("RWPM.Models.Entities.PayrollItemSnapshot", b =>
+                {
+                    b.HasOne("RWPM.Models.Entities.PayrollDetail", "PayrollDetail")
+                        .WithMany("ItemSnapshots")
+                        .HasForeignKey("PayrollDetailId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RWPM.Models.Entities.Shift", "Shift")
+                        .WithMany()
+                        .HasForeignKey("ShiftId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("PayrollDetail");
+
+                    b.Navigation("Shift");
                 });
 
             modelBuilder.Entity("RWPM.Models.Entities.ShiftRegistration", b =>
@@ -1218,7 +1370,14 @@ namespace RWPM.Migrations
 
             modelBuilder.Entity("RWPM.Models.Entities.Payroll", b =>
                 {
+                    b.Navigation("AuditLogs");
+
                     b.Navigation("Details");
+                });
+
+            modelBuilder.Entity("RWPM.Models.Entities.PayrollDetail", b =>
+                {
+                    b.Navigation("ItemSnapshots");
                 });
 
             modelBuilder.Entity("RWPM.Models.Entities.Shift", b =>
