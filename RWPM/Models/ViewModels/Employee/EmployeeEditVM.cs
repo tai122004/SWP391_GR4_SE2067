@@ -86,7 +86,7 @@ namespace RWPM.Models.ViewModels.Employee
             EmployeeCode = entity.EmployeeCode;
             Username = entity.Username;
             FullName = entity.Account?.FullName ?? string.Empty;
-            StoreId = entity.StoreId;
+            StoreId = entity.StoreId ?? 0;
             JoinDate = entity.JoinDate;
             EmploymentType = entity.EmploymentType;
             Status = entity.Status;

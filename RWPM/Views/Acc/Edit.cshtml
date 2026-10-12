@@ -104,42 +104,42 @@
                 </div>
             </div>
 
-            <!-- KHỐI THÔNG TIN CỬA HÀNG & HỒ SƠ NHÂN VIÊN (TỰ ĐỘNG HIỂN THỊ KHI CHỌN VAI TRÒ NHÂN SỰ CỬA HÀNG) -->
+            <!-- KHỐI THÔNG TIN CỬA HÀNG & HỒ SƠ NHÂN VIÊN (TỰ ĐỘNG HIỂN THỊ KHI CHỌN VAI TRÒ NHÂN SỰ CỬA HÀNG HOẶC HR) -->
             <div id="storeAssignmentSection">
                 <div class="form-section-title mt-4 text-primary">
-                    <i class="bi bi-shop"></i> @AccountSharedResource.Create_Section_StoreInfo
+                    <i class="bi bi-person-badge"></i> <span id="employeeSectionTitleText">@AccountSharedResource.Create_Section_StoreInfo</span>
                 </div>
 
                 @if (Model.HasExistingEmployee)
                 {
                     <div class="alert alert-success bg-success bg-opacity-10 border-0 py-2 px-3 small mb-3 text-dark d-flex align-items-center">
                         <i class="bi bi-check-circle-fill text-success me-2 fs-5 flex-shrink-0"></i>
-                        <div>@AccountSharedResource.Edit_StoreInfoLinked</div>
+                        <div id="storeInfoLinkedText">@AccountSharedResource.Edit_StoreInfoLinked</div>
                     </div>
                 }
                 else
                 {
                     <div class="alert alert-warning bg-warning bg-opacity-10 border-0 py-2 px-3 small mb-3 text-dark d-flex align-items-center">
                         <i class="bi bi-exclamation-triangle-fill text-warning me-2 fs-5 flex-shrink-0"></i>
-                        <div>@AccountSharedResource.Edit_StoreInfoNotLinked</div>
+                        <div id="storeInfoNotLinkedText">@AccountSharedResource.Edit_StoreInfoNotLinked</div>
                     </div>
                 }
 
                 <div class="row g-3 mb-3">
-                    <div class="col-md-4">
+                    <div class="col-md-4" id="empCodeCol">
                         <label class="form-label fw-semibold small required" asp-for="EmployeeCode">@EmployeeSharedResource.Column_EmployeeCode</label>
                         <input class="form-control font-monospace" asp-for="EmployeeCode" id="empCodeInput" placeholder="NV..." autocomplete="off" />
                         <span asp-validation-for="EmployeeCode" class="text-danger small"></span>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-4" id="storeSelectCol">
                         <label class="form-label fw-semibold small required" asp-for="StoreId">@EmployeeSharedResource.Column_Store</label>
                         <select class="form-select" asp-for="StoreId" asp-items="Model.StoreSelectList" id="storeSelectInput">
                         </select>
                         <span asp-validation-for="StoreId" class="text-danger small"></span>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-4" id="joinDateCol">
                         <label class="form-label fw-semibold small required" asp-for="JoinDate">@EmployeeSharedResource.Column_JoinDate</label>
                         <input class="form-control" type="date" asp-for="JoinDate" value="@(Model.JoinDate.HasValue ? Model.JoinDate.Value.ToString("yyyy-MM-dd") : "")" />
                         <span asp-validation-for="JoinDate" class="text-danger small"></span>
@@ -147,17 +147,18 @@
                 </div>
 
                 <div class="row g-3 mb-3">
-                    <div class="col-md-6">
+                    <div class="col-md-6" id="employmentTypeCol">
                         <label class="form-label fw-semibold small" asp-for="EmploymentType">@EmployeeModelResource.EmploymentType</label>
                         <select class="form-select" asp-for="EmploymentType" asp-items="Html.GetEnumSelectList<RWPM.Common.Enums.EmploymentType>()">
                         </select>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold small" asp-for="HourlyRate">@EmployeeModelResource.HourlyRate</label>
+                    <div class="col-md-6" id="hourlyRateCol">
+                        <label class="form-label fw-semibold small required" asp-for="HourlyRate">@EmployeeModelResource.HourlyRate</label>
                         <div class="input-group">
                             <input class="form-control" asp-for="HourlyRate" type="number" step="1000" placeholder="25000" />
                             <span class="input-group-text small">@SharedResource.Unit_VndPerHour</span>
                         </div>
+                        <span asp-validation-for="HourlyRate" class="text-danger small"></span>
                     </div>
                 </div>
             </div>
@@ -241,14 +242,36 @@
     <script>
         function updateStoreSectionVisibility() {
             const roleVal = $('#accRoleSelect').val();
-            // StoreManager = 4, Employee = 6, PartTimeStaff = 7 (hoặc text tương ứng)
-            const isStoreRole = (roleVal == '4' || roleVal == '6' || roleVal == '7' || 
-                                 roleVal == 'StoreManager' || roleVal == 'Employee' || roleVal == 'PartTimeStaff');
-            
+            // StoreManager = 4, Employee = 6
+            const isStoreRole = (roleVal == '4' || roleVal == '6' || roleVal == 'StoreManager' || roleVal == 'Employee');
+            const isHrRole = (roleVal == '2' || roleVal == 'HR');
+
             if (isStoreRole) {
                 $('#storeAssignmentSection').slideDown(200);
+                $('#storeSelectCol').show();
+                $('#employmentTypeCol').show();
+
+                $('#empCodeCol').removeClass('col-md-6').addClass('col-md-4');
+                $('#joinDateCol').removeClass('col-md-6').addClass('col-md-4');
+                $('#hourlyRateCol').removeClass('col-md-12').addClass('col-md-6');
+
+                $('#storeSelectInput').prop('disabled', false);
+                $('#employeeSectionTitleText').text('@Html.Raw(AccountSharedResource.Create_Section_StoreInfo)');
+            } else if (isHrRole) {
+                $('#storeAssignmentSection').slideDown(200);
+                // HR không làm việc tại chi nhánh cửa hàng bán lẻ
+                $('#storeSelectCol').hide();
+                $('#employmentTypeCol').hide();
+
+                $('#empCodeCol').removeClass('col-md-4').addClass('col-md-6');
+                $('#joinDateCol').removeClass('col-md-4').addClass('col-md-6');
+                $('#hourlyRateCol').removeClass('col-md-6').addClass('col-md-12');
+
+                $('#storeSelectInput').prop('disabled', true);
+                $('#employeeSectionTitleText').text('2. Hồ sơ nhân viên & Lương (Nhân sự - HR)');
             } else {
                 $('#storeAssignmentSection').slideUp(200);
+                $('#storeSelectInput').prop('disabled', true);
             }
         }
 

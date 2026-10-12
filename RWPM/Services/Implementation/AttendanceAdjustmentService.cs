@@ -101,7 +101,7 @@ namespace RWPM.Services.Implementation
             {
                 AttendanceRecordId = record?.AttendanceId,
                 EmployeeId = employee.EmployeeId,
-                StoreId = employee.StoreId,
+                StoreId = employee.StoreId ?? 0,
                 WorkDate = record != null ? record.Date : targetWorkDate.Date,
                 ShiftId = record != null ? record.ShiftId : model.ShiftId,
                 CurrentCheckInTime = record?.CheckInTime,

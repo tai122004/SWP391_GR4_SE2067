@@ -51,6 +51,7 @@ namespace RWPM.Infrastructure.Data
                 e.HasOne(x => x.Store)
                  .WithMany()
                  .HasForeignKey(x => x.StoreId)
+                 .IsRequired(false)
                  .OnDelete(DeleteBehavior.Restrict);
             });
             #endregion
@@ -216,6 +217,7 @@ namespace RWPM.Infrastructure.Data
                 e.HasOne(x => x.Store)
                  .WithMany()
                  .HasForeignKey(x => x.StoreId)
+                 .IsRequired(false)
                  .OnDelete(DeleteBehavior.Restrict);
 
                 e.HasMany(x => x.ItemSnapshots)

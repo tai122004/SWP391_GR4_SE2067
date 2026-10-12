@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using RWPM.Common.Attributes;
@@ -173,7 +173,9 @@ namespace RWPM.Controllers
             {
                 AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync(),
                 StoreSelectList = storeList,
-                EmployeeCode = $"NV{DateTime.Now:yyMMddHHmm}"
+                EmployeeCode = $"NV{DateTime.Now:yyMMddHHmm}",
+                HourlyRate = 25000,
+                JoinDate = DateTime.Today
             });
         }
 
@@ -184,6 +186,7 @@ namespace RWPM.Controllers
         {
             var isStoreRole = viewModel.Role == RWPM.Common.Enums.AccountRole.StoreManager ||
                               viewModel.Role == RWPM.Common.Enums.AccountRole.Employee;
+            var isHrRole = viewModel.Role == RWPM.Common.Enums.AccountRole.HR;
 
             if (isStoreRole)
             {
@@ -194,6 +197,38 @@ namespace RWPM.Controllers
                 if (string.IsNullOrWhiteSpace(viewModel.EmployeeCode))
                 {
                     ModelState.AddModelError(nameof(viewModel.EmployeeCode), "Vui lòng nhập mã nhân viên.");
+                }
+                else
+                {
+                    var codeExists = await _context.Employee.AnyAsync(e => e.EmployeeCode == viewModel.EmployeeCode.Trim());
+                    if (codeExists)
+                    {
+                        ModelState.AddModelError(nameof(viewModel.EmployeeCode), $"Mã nhân viên '{viewModel.EmployeeCode}' đã tồn tại trong hệ thống.");
+                    }
+                }
+            }
+            else if (isHrRole)
+            {
+                // HR không cần chọn Store và EmploymentType (mặc định FullTime)
+                viewModel.StoreId = null;
+                viewModel.EmploymentType = RWPM.Common.Enums.EmploymentType.FullTime;
+
+                if (string.IsNullOrWhiteSpace(viewModel.EmployeeCode))
+                {
+                    ModelState.AddModelError(nameof(viewModel.EmployeeCode), "Vui lòng nhập mã nhân viên cho nhân sự HR.");
+                }
+                else
+                {
+                    var codeExists = await _context.Employee.AnyAsync(e => e.EmployeeCode == viewModel.EmployeeCode.Trim());
+                    if (codeExists)
+                    {
+                        ModelState.AddModelError(nameof(viewModel.EmployeeCode), $"Mã nhân viên '{viewModel.EmployeeCode}' đã tồn tại trong hệ thống.");
+                    }
+                }
+
+                if (!viewModel.HourlyRate.HasValue || viewModel.HourlyRate <= 0)
+                {
+                    ModelState.AddModelError(nameof(viewModel.HourlyRate), "Vui lòng nhập mức lương theo giờ để có thể tính lương cho HR.");
                 }
             }
 
@@ -208,16 +243,16 @@ namespace RWPM.Controllers
             {
                 var createdAcc = await _accService.CreateAsync(viewModel.ToEntity());
 
-                // Nếu là vai trò nhân viên làm việc tại cửa hàng, tự động tạo luôn bản ghi Employee
-                if (isStoreRole && viewModel.StoreId.HasValue)
+                // Nếu là vai trò nhân viên làm việc tại cửa hàng hoặc HR, tự động tạo hồ sơ Employee
+                if (isStoreRole || isHrRole)
                 {
                     var emp = new Employee
                     {
                         EmployeeCode = (viewModel.EmployeeCode ?? $"NV{DateTime.Now:yyMMddHHmm}").Trim(),
                         Username = createdAcc.Username,
-                        StoreId = viewModel.StoreId.Value,
+                        StoreId = isStoreRole ? viewModel.StoreId : null,
                         JoinDate = viewModel.JoinDate?.Date ?? DateTime.Today,
-                        EmploymentType = viewModel.EmploymentType,
+                        EmploymentType = isHrRole ? RWPM.Common.Enums.EmploymentType.FullTime : viewModel.EmploymentType,
                         HourlyRate = viewModel.HourlyRate,
                         IsActive = true
                     };
@@ -274,6 +309,7 @@ namespace RWPM.Controllers
                 vm.HasExistingEmployee = false;
                 vm.EmployeeCode = $"NV{DateTime.Now:yyMMddHHmm}";
                 vm.JoinDate = DateTime.Today;
+                vm.HourlyRate = 25000;
             }
 
             return View(vm);
@@ -289,6 +325,7 @@ namespace RWPM.Controllers
 
             var isStoreRole = viewModel.Role == AccountRole.StoreManager ||
                               viewModel.Role == AccountRole.Employee;
+            var isHrRole = viewModel.Role == AccountRole.HR;
 
             if (isStoreRole)
             {
@@ -309,6 +346,29 @@ namespace RWPM.Controllers
                     }
                 }
             }
+            else if (isHrRole)
+            {
+                viewModel.StoreId = null;
+                viewModel.EmploymentType = EmploymentType.FullTime;
+
+                if (string.IsNullOrWhiteSpace(viewModel.EmployeeCode))
+                {
+                    ModelState.AddModelError(nameof(viewModel.EmployeeCode), "Vui lòng nhập mã nhân viên cho nhân sự HR.");
+                }
+                else
+                {
+                    var duplicateEmp = await _context.Employee.AnyAsync(e => e.EmployeeCode == viewModel.EmployeeCode.Trim() && e.Username != viewModel.Username);
+                    if (duplicateEmp)
+                    {
+                        ModelState.AddModelError(nameof(viewModel.EmployeeCode), $"Mã nhân viên '{viewModel.EmployeeCode}' đã được sử dụng bởi nhân viên khác.");
+                    }
+                }
+
+                if (!viewModel.HourlyRate.HasValue || viewModel.HourlyRate <= 0)
+                {
+                    ModelState.AddModelError(nameof(viewModel.HourlyRate), "Vui lòng nhập mức lương theo giờ để tính lương cho HR.");
+                }
+            }
 
             if (!ModelState.IsValid)
             {
@@ -325,9 +385,9 @@ namespace RWPM.Controllers
                 var existingEmp = await _context.Employee.FirstOrDefaultAsync(e => e.Username == viewModel.Username);
                 if (existingEmp != null)
                 {
-                    if (isStoreRole)
+                    if (isStoreRole || isHrRole)
                     {
-                        existingEmp.StoreId = viewModel.StoreId!.Value;
+                        existingEmp.StoreId = isStoreRole ? viewModel.StoreId : null;
                         if (!string.IsNullOrWhiteSpace(viewModel.EmployeeCode))
                         {
                             existingEmp.EmployeeCode = viewModel.EmployeeCode.Trim();
@@ -336,7 +396,7 @@ namespace RWPM.Controllers
                         {
                             existingEmp.JoinDate = viewModel.JoinDate.Value.Date;
                         }
-                        existingEmp.EmploymentType = viewModel.EmploymentType;
+                        existingEmp.EmploymentType = isHrRole ? EmploymentType.FullTime : viewModel.EmploymentType;
                         existingEmp.HourlyRate = viewModel.HourlyRate;
                         existingEmp.UpdatedDate = DateTime.Now;
                         existingEmp.UpdatedBy = AccountHelper.GetCurrentUsername(HttpContext.User);
@@ -345,16 +405,16 @@ namespace RWPM.Controllers
                         await _context.SaveChangesAsync();
                     }
                 }
-                else if (isStoreRole && viewModel.StoreId.HasValue)
+                else if (isStoreRole || isHrRole)
                 {
                     // Trường hợp tài khoản chưa có hoặc từng bị xóa hồ sơ nhân viên: Tự động tái tạo và liên kết lại
                     var newEmp = new Employee
                     {
                         EmployeeCode = (viewModel.EmployeeCode ?? $"NV{DateTime.Now:yyMMddHHmm}").Trim(),
                         Username = viewModel.Username,
-                        StoreId = viewModel.StoreId.Value,
+                        StoreId = isStoreRole ? viewModel.StoreId : null,
                         JoinDate = viewModel.JoinDate?.Date ?? DateTime.Today,
-                        EmploymentType = viewModel.EmploymentType,
+                        EmploymentType = isHrRole ? EmploymentType.FullTime : viewModel.EmploymentType,
                         HourlyRate = viewModel.HourlyRate,
                         IsActive = true
                     };

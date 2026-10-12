@@ -25,7 +25,7 @@ namespace RWPM.Models.Entities
         [MaxLength(100)]
         public string EmployeeName { get; set; } = string.Empty;
 
-        public int StoreId { get; set; }
+        public int? StoreId { get; set; }
 
         [MaxLength(150)]
         public string StoreName { get; set; } = string.Empty;
@@ -66,7 +66,7 @@ namespace RWPM.Models.Entities
         public virtual Employee Employee { get; set; } = null!;
 
         [ForeignKey("StoreId")]
-        public virtual global::Store Store { get; set; } = null!;
+        public virtual global::Store? Store { get; set; }
 
         public virtual ICollection<PayrollItemSnapshot> ItemSnapshots { get; set; } = new List<PayrollItemSnapshot>();
     }
