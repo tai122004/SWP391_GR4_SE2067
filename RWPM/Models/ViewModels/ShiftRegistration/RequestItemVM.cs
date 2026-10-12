@@ -43,5 +43,7 @@ namespace RWPM.Models.ViewModels.ShiftRegistration
         public string? RequestedCheckInTimeStr { get; set; }
         public string? RequestedCheckOutTimeStr { get; set; }
         public string? AdjustmentSummary { get; set; }
+        public AccountRole? RequesterRole { get; set; }
+        public string? RequesterUsername { get; set; }
     }
 }

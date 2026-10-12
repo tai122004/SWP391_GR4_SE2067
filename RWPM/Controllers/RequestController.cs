@@ -55,12 +55,15 @@ namespace RWPM.Controllers
                 regStatus = (RegistrationStatus)status.Value;
             }
 
-            bool isAdmin = User.IsInRole("Admin") || User.IsInRole("SuperAdmin") || User.IsInRole("AreaManager") || User.IsInRole("HR");
+            bool isSuperOrAdmin = User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
+            bool isAdmin = isSuperOrAdmin || User.IsInRole("AreaManager") || User.IsInRole("HR");
             bool isStoreManager = User.IsInRole("StoreManager");
             ViewBag.IsManager = isAdmin || isStoreManager;
+            ViewBag.IsAdminOnly = isSuperOrAdmin;
 
             var username = User.Identity?.Name;
             var currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
+            ViewBag.CurrentUserStoreId = currentEmployee?.StoreId ?? 0;
 
             // 1. Fetch Shift Registrations
             var allRegistrations = await _shiftRegistrationService.GetRequestsAsync(startDate, endDate, null);
@@ -121,7 +124,9 @@ namespace RWPM.Controllers
                     Note = r.Note,
                     RejectionReason = r.RejectionReason,
                     ApprovedBy = r.ApprovedBy,
-                    ApprovedAtStr = r.ApprovedAt?.ToString("dd/MM/yyyy HH:mm")
+                    ApprovedAtStr = r.ApprovedAt?.ToString("dd/MM/yyyy HH:mm"),
+                    RequesterUsername = r.Employee?.Username,
+                    RequesterRole = r.Employee?.Account?.Role
                 });
             }
 
@@ -154,7 +159,9 @@ namespace RWPM.Controllers
                     TargetEmployeeName = s.TargetEmployee != null ? (s.TargetEmployee.Account?.FullName ?? s.TargetEmployee.Username) : null,
                     TargetShiftName = s.TargetRegistration != null ? s.TargetRegistration.Shift?.ShiftName : s.TargetShift?.ShiftName,
                     TargetWorkDateStr = s.TargetRegistration != null ? s.TargetRegistration.WorkDate.ToString("dd/MM/yyyy") : (s.TargetWorkDate?.ToString("dd/MM/yyyy")),
-                    SwapSummary = targetDesc
+                    SwapSummary = targetDesc,
+                    RequesterUsername = s.RequesterEmployee?.Username,
+                    RequesterRole = s.RequesterEmployee?.Account?.Role
                 });
             }
 
@@ -191,7 +198,9 @@ namespace RWPM.Controllers
                     LeaveType = l.LeaveType,
                     LeaveTypeName = typeText,
                     LeaveDays = days,
-                    AnnualLeaveBalance = l.Employee?.AnnualLeaveBalance ?? 0
+                    AnnualLeaveBalance = l.Employee?.AnnualLeaveBalance ?? 0,
+                    RequesterUsername = l.Employee?.Username,
+                    RequesterRole = l.Employee?.Account?.Role
                 });
             }
 
@@ -222,7 +231,9 @@ namespace RWPM.Controllers
                     ActualCheckOutTimeStr = a.CurrentCheckOutTime?.ToString(@"hh\:mm") ?? "-",
                     RequestedCheckInTimeStr = a.RequestedCheckInTime?.ToString(@"hh\:mm") ?? "-",
                     RequestedCheckOutTimeStr = a.RequestedCheckOutTime?.ToString(@"hh\:mm") ?? "-",
-                    AdjustmentSummary = inOutDesc
+                    AdjustmentSummary = inOutDesc,
+                    RequesterUsername = a.Employee?.Username,
+                    RequesterRole = a.Employee?.Account?.Role
                 });
             }
 
@@ -462,14 +473,40 @@ namespace RWPM.Controllers
                 }
                 else if (requestType == "Attendance")
                 {
-                    if (User.IsInRole("StoreManager") && !User.IsInRole("Admin") && !User.IsInRole("SuperAdmin") && !User.IsInRole("AreaManager") && !User.IsInRole("HR"))
+                    var request = await _attendanceAdjustmentService.GetByIdAsync(id);
+                    if (request == null)
                     {
-                        var username = User.Identity?.Name;
-                        var currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
-                        var request = await _attendanceAdjustmentService.GetByIdAsync(id);
-                        if (request == null || currentEmployee == null || request.StoreId != currentEmployee.StoreId)
+                        return Json(new { success = false, message = "Không tìm thấy yêu cầu điều chỉnh chấm công." });
+                    }
+
+                    var currentUsername = User.Identity?.Name;
+                    var requesterUsername = request.Employee?.Username;
+                    var requesterRole = request.Employee?.Account?.Role;
+
+                    // 1. Chống tự duyệt: Không ai được tự phê duyệt đơn của chính mình
+                    if (!string.IsNullOrEmpty(currentUsername) && currentUsername == requesterUsername)
+                    {
+                        return Json(new { success = false, message = "Bạn không thể tự phê duyệt đơn sửa chấm công của chính mình!" });
+                    }
+
+                    // 2. Nếu người làm đơn là Quản lý cửa hàng hoặc HR: CHỈ DUY NHẤT Admin / SuperAdmin mới có quyền duyệt
+                    bool isRequesterManagement = requesterRole == AccountRole.StoreManager || requesterRole == AccountRole.HR;
+                    if (isRequesterManagement)
+                    {
+                        if (!User.IsInRole("Admin") && !User.IsInRole("SuperAdmin"))
                         {
-                            return Json(new { success = false, message = "Bạn không có quyền duyệt yêu cầu của cửa hàng khác." });
+                            return Json(new { success = false, message = "Đơn sửa chấm công của Quản lý cửa hàng và HR chỉ có Quản trị viên (Admin) mới có quyền phê duyệt!" });
+                        }
+                    }
+
+                    // 3. Nếu người làm đơn là Nhân viên:
+                    // Quản lý cửa hàng chỉ được duyệt cho nhân viên thuộc cùng cửa hàng mình
+                    if (User.IsInRole("StoreManager") && !User.IsInRole("Admin") && !User.IsInRole("SuperAdmin") && !User.IsInRole("HR"))
+                    {
+                        var currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == currentUsername);
+                        if (currentEmployee == null || request.StoreId != currentEmployee.StoreId)
+                        {
+                            return Json(new { success = false, message = "Bạn không có quyền duyệt yêu cầu của nhân viên cửa hàng khác." });
                         }
                     }
 
@@ -478,12 +515,12 @@ namespace RWPM.Controllers
                         var parsedIn = AttendanceAdjustmentCreateVM.ParseTime(approvedCheckInTime);
                         var parsedOut = AttendanceAdjustmentCreateVM.ParseTime(approvedCheckOutTime);
 
-                        await _attendanceAdjustmentService.ApproveAsync(id, User.Identity?.Name ?? "manager", parsedIn, parsedOut, approverNote);
+                        await _attendanceAdjustmentService.ApproveAsync(id, currentUsername ?? "manager", parsedIn, parsedOut, approverNote);
                         return Json(new { success = true, message = "Phê duyệt và cập nhật giờ chấm công thành công!" });
                     }
                     else
                     {
-                        await _attendanceAdjustmentService.RejectAsync(id, reason ?? "", User.Identity?.Name ?? "manager");
+                        await _attendanceAdjustmentService.RejectAsync(id, reason ?? "", currentUsername ?? "manager");
                         return Json(new { success = true, message = "Đã từ chối yêu cầu điều chỉnh chấm công." });
                     }
                 }
@@ -573,15 +610,50 @@ namespace RWPM.Controllers
 
                 if (model.RequestType == "Attendance")
                 {
+                    var currentUsername = User.Identity?.Name;
+                    var isSuperOrAdmin = User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
+                    var isHR = User.IsInRole("HR");
+                    var currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == currentUsername);
+
                     foreach (var adjId in model.Ids)
                     {
+                        var request = await _attendanceAdjustmentService.GetByIdAsync(adjId);
+                        if (request == null) continue;
+
+                        var requesterUsername = request.Employee?.Username;
+                        var requesterRole = request.Employee?.Account?.Role;
+
+                        // Chống tự duyệt
+                        if (currentUsername == requesterUsername)
+                        {
+                            return Json(new { success = false, message = "Bạn không thể tự duyệt đơn của chính mình!" });
+                        }
+
+                        // Đơn của StoreManager hoặc HR: Chỉ Admin duyệt
+                        if (requesterRole == AccountRole.StoreManager || requesterRole == AccountRole.HR)
+                        {
+                            if (!isSuperOrAdmin)
+                            {
+                                return Json(new { success = false, message = "Đơn sửa chấm công của Quản lý cửa hàng và HR chỉ có Quản trị viên (Admin) mới có quyền phê duyệt!" });
+                            }
+                        }
+
+                        // StoreManager chỉ duyệt đơn trong cửa hàng mình
+                        if (User.IsInRole("StoreManager") && !isSuperOrAdmin && !isHR)
+                        {
+                            if (currentEmployee == null || request.StoreId != currentEmployee.StoreId)
+                            {
+                                return Json(new { success = false, message = "Bạn không có quyền duyệt yêu cầu của nhân viên cửa hàng khác." });
+                            }
+                        }
+
                         if (model.Status == 1)
                         {
-                            await _attendanceAdjustmentService.ApproveAsync(adjId, User.Identity?.Name ?? "manager");
+                            await _attendanceAdjustmentService.ApproveAsync(adjId, currentUsername ?? "manager");
                         }
                         else
                         {
-                            await _attendanceAdjustmentService.RejectAsync(adjId, model.Reason ?? "", User.Identity?.Name ?? "manager");
+                            await _attendanceAdjustmentService.RejectAsync(adjId, model.Reason ?? "", currentUsername ?? "manager");
                         }
                     }
                     return Json(new { success = true });

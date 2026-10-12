@@ -34,10 +34,6 @@ localizationOptions.RequestCultureProviders.Insert(0, new CookieRequestCulturePr
 app.UseRequestLocalization(localizationOptions);
 #endregion
 
-#region Hub
-app.MapHub<ApplicationHub>("/hub/notifications");
-#endregion
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -53,6 +49,10 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+#region Hub
+app.MapHub<ApplicationHub>("/hub/notifications");
+#endregion
 
 app.MapControllerRoute(
     name: "default",

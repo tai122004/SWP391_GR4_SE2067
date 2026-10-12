@@ -32,25 +32,26 @@ namespace RWPM.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string? searchQuery = null)
+        public async Task<IActionResult> Index(string? searchQuery = null, string? view = null)
         {
-            var username = User.Identity?.Name;
-            if (string.IsNullOrEmpty(username)) return RedirectToAction("Login", "Auth");
+            var username = User.Identity?.Name ?? User.FindFirstValue(ClaimTypes.Name);
+            if (string.IsNullOrEmpty(username)) return Challenge();
 
             ViewBag.TodayRecord = await _attendanceService.GetTodayRecordAsync(username);
-            // Only pure System Admin has no requirement to clock in. HR and StoreManager can clock in as employees.
+            
+            // Pure System Admin has no requirement to clock in. HR and StoreManager can clock in as employees.
             bool isSystemAdmin = (User.IsInRole("Admin") || User.IsInRole("SuperAdmin")) && !User.IsInRole("HR") && !User.IsInRole("StoreManager");
-            bool canManage = User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin");
+            bool canManage = User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("StoreManager") || User.IsInRole("SuperAdmin");
             
             ViewBag.IsAdmin = isSystemAdmin;
             ViewBag.CanManage = canManage;
 
             var today = DateTime.Today;
-            var employee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
-            if (employee != null)
+            var currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
+            if (currentEmployee != null)
             {
                 var registeredShiftIds = await _context.Set<ShiftRegistration>()
-                    .Where(sr => sr.EmployeeId == employee.EmployeeId && sr.WorkDate == today && sr.Status == RWPM.Common.Enums.RegistrationStatus.Approved)
+                    .Where(sr => sr.EmployeeId == currentEmployee.EmployeeId && sr.WorkDate == today && sr.Status == RWPM.Common.Enums.RegistrationStatus.Approved)
                     .Select(sr => sr.ShiftId)
                     .ToListAsync();
 
@@ -71,26 +72,90 @@ namespace RWPM.Controllers
             }
             
             ViewBag.SearchQuery = searchQuery;
+            ViewBag.CurrentView = view;
+            bool isEmployeeTab = view == "employees" || !string.IsNullOrWhiteSpace(searchQuery);
+            ViewBag.ActiveTab = isEmployeeTab ? "employees" : "my";
 
-            List<AttendanceRecord> history;
+            // 1. Luôn tải lịch sử cá nhân của người đang đăng nhập (trừ Quản trị viên hệ thống không chấm công)
+            var myHistory = isSystemAdmin ? new List<AttendanceRecord>() : await _attendanceService.GetHistoryAsync(username);
+            ViewBag.MyHistory = myHistory;
+
+            // 2. Nếu có quyền quản lý (HR, Quản lý cửa hàng, Admin): Tải lịch sử nhân viên
+            var employeeHistory = new List<AttendanceRecord>();
+            var empList = new List<RWPM.Models.Entities.Acc>();
             if (canManage)
             {
-                ViewBag.Employees = await _accService.GetAllAsync();
-                history = await _attendanceService.GetAllHistoryAsync(searchQuery);
-            }
-            else
-            {
-                history = await _attendanceService.GetHistoryAsync(username);
-            }
+                IQueryable<AttendanceRecord> empQuery = _context.AttendanceRecord
+                    .Include(x => x.Shift)
+                    .Include(x => x.Account)
+                    .Include(x => x.AdjustmentHistories)
+                    .AsQueryable();
 
-            return View(history);
+                IQueryable<RWPM.Models.Entities.Employee> empListQuery = _context.Employee
+                    .Include(e => e.Account)
+                    .Where(e => e.IsActive);
+
+                // Nếu là StoreManager (không phải Admin/HR): Chỉ xem nhân viên thuộc cùng cửa hàng
+                if (User.IsInRole("StoreManager") && !User.IsInRole("Admin") && !User.IsInRole("SuperAdmin") && !User.IsInRole("HR"))
+                {
+                    if (currentEmployee != null && currentEmployee.StoreId.HasValue)
+                    {
+                        var storeUsernames = await _context.Employee
+                            .Where(e => e.StoreId == currentEmployee.StoreId)
+                            .Select(e => e.Username)
+                            .ToListAsync();
+
+                        empQuery = empQuery.Where(x => storeUsernames.Contains(x.Username));
+                        empListQuery = empListQuery.Where(e => e.StoreId == currentEmployee.StoreId);
+
+                        var store = await _context.Store.FirstOrDefaultAsync(s => s.StoreId == currentEmployee.StoreId);
+                        ViewBag.ScopeTitle = store != null ? $"Chi nhánh {store.StoreName}" : "Cửa hàng của bạn";
+                    }
+                    else
+                    {
+                        empQuery = empQuery.Where(x => false);
+                        empListQuery = empListQuery.Where(e => false);
+                        ViewBag.ScopeTitle = "Cửa hàng của bạn";
+                    }
+                }
+                else
+                {
+                    ViewBag.ScopeTitle = "Toàn công ty";
+                }
+
+                if (!string.IsNullOrWhiteSpace(searchQuery))
+                {
+                    empQuery = empQuery.Where(x => x.Username.Contains(searchQuery) || (x.Account != null && x.Account.FullName.Contains(searchQuery)));
+                }
+
+                employeeHistory = await empQuery
+                    .OrderByDescending(x => x.Date)
+                    .ThenByDescending(x => x.CheckInTime)
+                    .ThenByDescending(x => x.AttendanceId)
+                    .ToListAsync();
+
+                var rawAccounts = await empListQuery
+                    .Select(e => e.Account)
+                    .Where(a => a != null)
+                    .ToListAsync();
+
+                empList = rawAccounts
+                    .GroupBy(a => a.Username)
+                    .Select(g => g.First())
+                    .OrderBy(a => a.FullName)
+                    .ToList();
+            }
+            ViewBag.EmployeeHistory = employeeHistory;
+            ViewBag.Employees = empList;
+
+            return View(isSystemAdmin ? employeeHistory : myHistory);
         }
 
         [HttpPost]
         public async Task<IActionResult> CheckIn(string? userLatitude = null, string? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
         {
-            var username = User.Identity?.Name;
-            if (string.IsNullOrEmpty(username)) return RedirectToAction("Login", "Auth");
+            var username = User.Identity?.Name ?? User.FindFirstValue(ClaimTypes.Name);
+            if (string.IsNullOrEmpty(username)) return Challenge();
 
             double? parsedLat = null;
             double? parsedLng = null;
@@ -120,8 +185,8 @@ namespace RWPM.Controllers
         [HttpPost]
         public async Task<IActionResult> CheckOut(string? userLatitude = null, string? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
         {
-            var username = User.Identity?.Name;
-            if (string.IsNullOrEmpty(username)) return RedirectToAction("Login", "Auth");
+            var username = User.Identity?.Name ?? User.FindFirstValue(ClaimTypes.Name);
+            if (string.IsNullOrEmpty(username)) return Challenge();
 
             double? parsedLat = null;
             double? parsedLng = null;

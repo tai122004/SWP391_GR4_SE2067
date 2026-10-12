@@ -281,6 +281,7 @@ namespace RWPM.Services.Implementation
         {
             return await _context.AttendanceRecord
                 .Include(x => x.Shift)
+                .Include(x => x.Account)
                 .Include(x => x.AdjustmentHistories)
                 .Where(x => x.Username == username)
                 .OrderByDescending(x => x.Date)
