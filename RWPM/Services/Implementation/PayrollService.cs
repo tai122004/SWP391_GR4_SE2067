@@ -406,7 +406,7 @@ namespace RWPM.Services.Implementation
                     EmployeeCode = emp.EmployeeCode,
                     EmployeeName = emp.Account?.FullName ?? emp.Username,
                     StoreId = emp.StoreId,
-                    StoreName = emp.Store?.StoreName ?? string.Empty,
+                    StoreName = emp.Store?.StoreName ?? "Văn phòng / HR",
                     EmploymentType = emp.EmploymentType,
                     HourlyRate = hourlyRate,
                     TotalStandardHours = Math.Round(totalStandardHours, 2),

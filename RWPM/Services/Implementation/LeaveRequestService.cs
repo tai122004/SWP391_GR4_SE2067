@@ -88,7 +88,7 @@ namespace RWPM.Services.Implementation
             var entity = new LeaveRequest
             {
                 EmployeeId = emp.EmployeeId,
-                StoreId = emp.StoreId,
+                StoreId = emp.StoreId ?? 0,
                 StartDate = model.StartDate.Date,
                 EndDate = model.EndDate.Date,
                 LeaveType = model.LeaveType,

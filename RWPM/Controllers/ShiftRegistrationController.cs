@@ -196,7 +196,7 @@ namespace RWPM.Controllers
 
                     var entity = viewModel.ToEntity();
                     entity.ShiftId = sId;
-                    entity.StoreId = employee.StoreId;
+                    entity.StoreId = employee.StoreId ?? 0;
                     entity.CreatedDate = DateTime.Now;
                     entity.CreatedBy = User.Identity?.Name ?? "system";
                     
@@ -324,7 +324,7 @@ namespace RWPM.Controllers
 
                 var entities = viewModel.Registrations.Select(x => x.ToEntity()).ToList();
                 
-                await _registrationService.SyncWeeklyRegistrationAsync(employee.EmployeeId, employee.StoreId, viewModel.StartOfWeek, entities);
+                await _registrationService.SyncWeeklyRegistrationAsync(employee.EmployeeId, employee.StoreId ?? 0, viewModel.StartOfWeek, entities);
 
                 return Ok(new { success = true });
             }

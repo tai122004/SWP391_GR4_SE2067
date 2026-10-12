@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RWPM.Common;
 using RWPM.Common.Enums;
@@ -935,7 +935,7 @@ namespace RWPM.Services.Implementation
                 throw new ModelValidationException("Username_Exists", entity.Username);
             }
 
-            if (!await _ctx.Store.AnyAsync(s => s.StoreId == entity.StoreId))
+            if (entity.StoreId.HasValue && !await _ctx.Store.AnyAsync(s => s.StoreId == entity.StoreId.Value))
             {
                 throw new ModelValidationException("Store_NotFound");
             }

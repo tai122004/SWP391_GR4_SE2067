@@ -17,7 +17,7 @@ namespace RWPM.Models.Entities
         [MaxLength(30)] 
         public string Username { get; set; } = string.Empty;
 
-        public int StoreId { get; set; }
+        public int? StoreId { get; set; }
 
         [Column(TypeName = "date")] 
         public DateTime JoinDate { get; set; }
@@ -46,6 +46,6 @@ namespace RWPM.Models.Entities
         public bool IsActive { get; set; } = true;
 
         public Acc Account { get; set; } = null!;
-        public Store Store { get; set; } = null!;
+        public Store? Store { get; set; }
     }
 }

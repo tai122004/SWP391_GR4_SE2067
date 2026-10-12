@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using RWPM.Common.Attributes;
 using RWPM.Common;
 using System.ComponentModel.DataAnnotations;
@@ -63,7 +63,7 @@ namespace RWPM.Models.ViewModels.Acc
         public EmploymentType EmploymentType { get; set; } = EmploymentType.FullTime;
 
         [Display(Name = "HourlyRate", ResourceType = typeof(Resources.Models.Employee))]
-        public decimal? HourlyRate { get; set; }
+        public decimal? HourlyRate { get; set; } = 25000;
 
         public SelectList? StoreSelectList { get; set; }
 

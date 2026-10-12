@@ -280,7 +280,7 @@ namespace RWPM.Controllers
             if (emp == null) return NotFound(new { success = false, message = "Employee profile not found." });
 
             var myShifts = await _shiftSwapService.GetEligibleShiftsToSwapAsync(emp.EmployeeId);
-            var coworkers = await _shiftSwapService.GetStoreCoworkersAsync(emp.EmployeeId, emp.StoreId);
+            var coworkers = await _shiftSwapService.GetStoreCoworkersAsync(emp.EmployeeId, emp.StoreId ?? 0);
             var allStoreShifts = await _context.Shift
                 .Where(s => s.IsActive && s.StoreShifts.Any(ss => ss.StoreId == emp.StoreId && ss.IsActive))
                 .OrderBy(s => s.StartTime)
