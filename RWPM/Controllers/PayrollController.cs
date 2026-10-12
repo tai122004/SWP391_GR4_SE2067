@@ -41,8 +41,18 @@ namespace RWPM.Controllers
                 return RedirectToAction(nameof(MyPayslips));
             }
 
+            int? effectiveStoreId = null;
+            if (IsStoreManager)
+            {
+                effectiveStoreId = await GetCurrentStoreIdAsync();
+                if (!effectiveStoreId.HasValue || effectiveStoreId.Value <= 0)
+                {
+                    return Forbid();
+                }
+            }
+
             var currentYear = year ?? DateTime.Now.Year;
-            var payrolls = await _payrollService.GetPayrollsAsync(currentYear);
+            var payrolls = await _payrollService.GetPayrollsAsync(currentYear, effectiveStoreId);
 
             var availableYears = await _context.Payroll
                 .Select(p => p.PeriodYear)
@@ -63,6 +73,8 @@ namespace RWPM.Controllers
             };
 
             ViewBag.IsAdminOrHR = IsAdminOrHR;
+            ViewBag.IsStoreManager = IsStoreManager;
+            ViewBag.CurrentStoreId = effectiveStoreId;
             return View(vm);
         }
 
@@ -77,7 +89,12 @@ namespace RWPM.Controllers
             int? effectiveStoreId = storeId;
             if (IsStoreManager)
             {
-                effectiveStoreId = await GetCurrentStoreIdAsync();
+                var mgrStoreId = await GetCurrentStoreIdAsync();
+                if (!mgrStoreId.HasValue || mgrStoreId.Value <= 0)
+                {
+                    return Forbid();
+                }
+                effectiveStoreId = mgrStoreId.Value; // Luôn áp dụng store của Store Manager
             }
 
             try
@@ -86,6 +103,7 @@ namespace RWPM.Controllers
                 ViewBag.IsAdminOrHR = IsAdminOrHR;
                 ViewBag.IsStoreManager = IsStoreManager;
                 ViewBag.CurrentStoreId = effectiveStoreId;
+                ViewBag.AuditLogs = await _payrollService.GetPayrollAuditLogsAsync(id);
                 return View(vm);
             }
             catch (KeyNotFoundException)
@@ -245,7 +263,7 @@ namespace RWPM.Controllers
             if (IsStoreManager)
             {
                 var mgrStoreId = await GetCurrentStoreIdAsync();
-                if (vm.Detail.StoreId != mgrStoreId)
+                if (!mgrStoreId.HasValue || mgrStoreId.Value <= 0 || vm.Detail.StoreId != mgrStoreId.Value)
                 {
                     return Forbid();
                 }
@@ -266,7 +284,12 @@ namespace RWPM.Controllers
             int? effectiveStoreId = storeId;
             if (IsStoreManager)
             {
-                effectiveStoreId = await GetCurrentStoreIdAsync();
+                var mgrStoreId = await GetCurrentStoreIdAsync();
+                if (!mgrStoreId.HasValue || mgrStoreId.Value <= 0)
+                {
+                    return Forbid();
+                }
+                effectiveStoreId = mgrStoreId.Value; // Luôn áp dụng store của Store Manager
             }
 
             try

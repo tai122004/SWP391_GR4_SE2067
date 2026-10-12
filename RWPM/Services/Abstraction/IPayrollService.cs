@@ -6,7 +6,7 @@ namespace RWPM.Services.Abstraction
 {
     public interface IPayrollService
     {
-        Task<List<Payroll>> GetPayrollsAsync(int? year = null);
+        Task<List<Payroll>> GetPayrollsAsync(int? year = null, int? storeId = null);
         Task<Payroll?> GetPayrollByIdAsync(int id);
         Task<PayrollDetailVM> GetPayrollDetailAsync(int payrollId, int? storeId = null, string? search = null, PayrollDetailStatus? status = null);
         Task<Payroll> CalculatePayrollAsync(int month, int year, string operatorUsername);
@@ -17,5 +17,6 @@ namespace RWPM.Services.Abstraction
         Task<EmployeePayslipVM?> GetEmployeePayslipByIdAsync(int payrollId, int employeeId);
         Task<List<EmployeePayslipSummaryVM>> GetEmployeePayslipHistoryAsync(string username);
         Task<byte[]> ExportPayrollToExcelAsync(int payrollId, int? storeId = null);
+        Task<List<PayrollAuditLog>> GetPayrollAuditLogsAsync(int payrollId);
     }
 }

@@ -219,10 +219,11 @@
                         <th>Họ và tên</th>
                         <th>Chi nhánh</th>
                         <th>Hình thức</th>
-                        <th class="text-end">Giờ theo lịch</th>
-                        <th class="text-end">Giờ thực tế</th>
-                        <th class="text-center">Nghỉ phép</th>
                         <th class="text-end">Đơn giá / Giờ</th>
+                        <th class="text-end">Giờ thực tế</th>
+                        <th class="text-end">Giờ nghỉ phép</th>
+                        <th class="text-center">Nghỉ K.Lương</th>
+                        <th class="text-end">Tổng giờ tính lương</th>
                         <th class="text-end">Tổng tiền lương</th>
                         <th class="text-center">Trạng thái</th>
                         <th class="text-end pe-4">Chi tiết</th>
@@ -232,7 +233,7 @@
                     @if (Model.Details.Count == 0)
                     {
                         <tr>
-                            <td colspan="11" class="text-center py-5 text-muted">
+                            <td colspan="12" class="text-center py-5 text-muted">
                                 <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary"></i>
                                 Không tìm thấy nhân viên nào phù hợp với bộ lọc.
                             </td>
@@ -249,18 +250,6 @@
                                 <td>
                                     <span class="badge bg-light text-secondary border">@item.EmploymentType</span>
                                 </td>
-                                <td class="text-end text-muted">@item.TotalStandardHours.ToString("#,##0.00")</td>
-                                <td class="text-end fw-bold text-dark">@item.TotalWorkHours.ToString("#,##0.00")</td>
-                                <td class="text-center">
-                                    @if (item.ApprovedLeaveDays > 0)
-                                    {
-                                        <span class="badge bg-info-subtle text-info">@item.ApprovedLeaveDays ngày</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted">-</span>
-                                    }
-                                </td>
                                 <td class="text-end">
                                     @if (item.HourlyRate > 0)
                                     {
@@ -270,6 +259,23 @@
                                     {
                                         <span class="text-danger fw-bold">Chưa có</span>
                                     }
+                                </td>
+                                <td class="text-end fw-bold text-dark">@item.TotalWorkHours.ToString("#,##0.00")</td>
+                                <td class="text-end text-info fw-semibold">
+                                    @if (item.PaidLeaveHours > 0)
+                                    {
+                                        <span>@item.PaidLeaveHours.ToString("#,##0.00") h (@item.ApprovedLeaveDays ngày)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td class="text-center text-muted">
+                                    @(item.UnpaidLeaveDays > 0 ? $"{item.UnpaidLeaveDays} ngày" : "-")
+                                </td>
+                                <td class="text-end fw-bold text-primary">
+                                    @((item.TotalWorkHours + item.PaidLeaveHours).ToString("#,##0.00")) h
                                 </td>
                                 <td class="text-end fw-bold text-success fs-6">
                                     @item.TotalSalary.ToString("#,##0") đ
@@ -307,11 +313,11 @@
                 {
                     <tfoot class="table-light fw-bold">
                         <tr>
-                            <td colspan="4" class="ps-4">TỔNG CỘNG (@Model.Details.Count nhân viên)</td>
-                            <td class="text-end">@Model.Details.Sum(d => d.TotalStandardHours).ToString("#,##0.00")</td>
-                            <td class="text-end text-primary">@Model.Details.Sum(d => d.TotalWorkHours).ToString("#,##0.00")</td>
-                            <td class="text-center">@Model.Details.Sum(d => d.ApprovedLeaveDays) ngày</td>
-                            <td></td>
+                            <td colspan="5" class="ps-4">TỔNG CỘNG (@Model.Details.Count nhân viên)</td>
+                            <td class="text-end text-dark">@Model.Details.Sum(d => d.TotalWorkHours).ToString("#,##0.00")</td>
+                            <td class="text-end text-info">@Model.Details.Sum(d => d.PaidLeaveHours).ToString("#,##0.00")</td>
+                            <td class="text-center">@Model.Details.Sum(d => d.UnpaidLeaveDays) ngày</td>
+                            <td class="text-end text-primary">@Model.Details.Sum(d => d.TotalWorkHours + d.PaidLeaveHours).ToString("#,##0.00") h</td>
                             <td class="text-end text-success fs-6">@Model.Details.Sum(d => d.TotalSalary).ToString("#,##0") đ</td>
                             <td colspan="2"></td>
                         </tr>
@@ -320,6 +326,56 @@
             </table>
         </div>
     </div>
+
+    <!-- Audit Logs Section -->
+    @{
+        var auditLogs = ViewBag.AuditLogs as List<RWPM.Models.Entities.PayrollAuditLog>;
+    }
+    @if (auditLogs != null && auditLogs.Count > 0)
+    {
+        <div class="card border-0 shadow-sm rounded-3 mt-4">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h5 class="card-title mb-0 fw-bold text-dark">
+                    <i class="bi bi-clock-history me-2 text-primary"></i>Nhật ký thao tác kỳ lương (Audit Trail)
+                </h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 small">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Thời gian</th>
+                            <th>Hành động</th>
+                            <th>Người thực hiện</th>
+                            <th>Trạng thái</th>
+                            <th>Chi tiết / Lý do</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var log in auditLogs)
+                        {
+                            <tr>
+                                <td class="ps-4 text-nowrap fw-semibold">@log.Timestamp.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                                <td>
+                                    <span class="badge @(log.Action == "Lock" ? "bg-success" : log.Action == "Unlock" ? "bg-warning text-dark" : "bg-primary")">
+                                        @log.Action
+                                    </span>
+                                </td>
+                                <td class="fw-semibold">@log.OperatorUsername</td>
+                                <td>@(log.FromStatus.HasValue ? $"{log.FromStatus} → {log.ToStatus}" : log.ToStatus.ToString())</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(log.Reason))
+                                    {
+                                        <div class="fw-bold text-danger">Lý do: @log.Reason</div>
+                                    }
+                                    <span class="text-muted">@log.Details</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
 </div>
 
 <!-- Modal Mở khóa -->

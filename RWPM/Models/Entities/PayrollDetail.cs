@@ -38,13 +38,18 @@ namespace RWPM.Models.Entities
 
         public double TotalStandardHours { get; set; } = 0; // Giờ theo lịch phân ca
 
-        public double TotalWorkHours { get; set; } = 0; // Giờ thực tế tính lương
+        // Giờ làm & Giờ nghỉ phép hưởng lương
+        public double TotalWorkHours { get; set; } = 0; // Giờ làm việc thực tế từ chấm công
+
+        public double PaidLeaveHours { get; set; } = 0; // Giờ nghỉ phép hưởng lương
 
         [Column(TypeName = "decimal(18,2)")]
-        public decimal TotalSalary { get; set; } = 0; // TotalWorkHours * HourlyRate
+        public decimal TotalSalary { get; set; } = 0; // (TotalWorkHours + PaidLeaveHours) * HourlyRate
 
         // Đối chiếu & Cảnh báo
-        public int ApprovedLeaveDays { get; set; } = 0; // Số ngày nghỉ phép đã duyệt
+        public int ApprovedLeaveDays { get; set; } = 0; // Số ngày nghỉ phép có lương
+
+        public int UnpaidLeaveDays { get; set; } = 0; // Số ngày nghỉ không lương
 
         public int MissingAttendanceCount { get; set; } = 0; // Số ca bất thường/thiếu vào ra
 
@@ -62,5 +67,7 @@ namespace RWPM.Models.Entities
 
         [ForeignKey("StoreId")]
         public virtual global::Store Store { get; set; } = null!;
+
+        public virtual ICollection<PayrollItemSnapshot> ItemSnapshots { get; set; } = new List<PayrollItemSnapshot>();
     }
 }

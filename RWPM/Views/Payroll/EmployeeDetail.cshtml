@@ -4,6 +4,8 @@
 @{
     ViewData["Title"] = $"Chi tiết chấm công & lương: {Model.Detail.EmployeeName}";
     bool isAdminOrHR = ViewBag.IsAdminOrHR ?? false;
+    bool hasSnapshots = Model.ItemSnapshots != null && Model.ItemSnapshots.Count > 0;
+    double totalPayableHours = Model.Detail.TotalWorkHours + Model.Detail.PaidLeaveHours;
 }
 
 <div class="container-fluid py-4">
@@ -22,7 +24,18 @@
             <h2 class="h3 font-weight-bold mb-1 text-dark">
                 Chi tiết Bảng lương: @Model.Detail.EmployeeName
             </h2>
-            <p class="text-muted mb-0">Mã NV: <strong>@Model.Detail.EmployeeCode</strong> | Chi nhánh: <strong>@Model.Detail.StoreName</strong> | Kỳ: <strong>@Model.Payroll.Title</strong></p>
+            <p class="text-muted mb-0">
+                Mã NV: <strong>@Model.Detail.EmployeeCode</strong> | 
+                Chi nhánh: <strong>@Model.Detail.StoreName</strong> | 
+                Hình thức: <span class="badge bg-light text-secondary border">@Model.Detail.EmploymentType</span> | 
+                Kỳ: <strong>@Model.Payroll.Title</strong>
+                @if (Model.Payroll.Status == PayrollStatus.Locked)
+                {
+                    <span class="badge bg-success-subtle text-success border border-success-subtle ms-2">
+                        <i class="bi bi-shield-check me-1"></i>Dữ liệu đã khóa (Bất biến)
+                    </span>
+                }
+            </p>
         </div>
         <div>
             <a asp-action="Detail" asp-route-id="@Model.Payroll.PayrollId" class="btn btn-outline-secondary btn-sm">
@@ -33,7 +46,7 @@
 
     <!-- Summary Cards -->
     <div class="row g-3 mb-4">
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-sm-6 col-xl">
             <div class="card border-0 shadow-sm rounded-3 h-100">
                 <div class="card-body">
                     <span class="text-muted text-uppercase fw-semibold small">Mức lương / Giờ</span>
@@ -44,29 +57,40 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-sm-6 col-xl">
             <div class="card border-0 shadow-sm rounded-3 h-100">
                 <div class="card-body">
-                    <span class="text-muted text-uppercase fw-semibold small">Tổng giờ thực tế</span>
-                    <h4 class="fw-bold mb-0 mt-1 text-info">
+                    <span class="text-muted text-uppercase fw-semibold small">Giờ làm thực tế</span>
+                    <h4 class="fw-bold mb-0 mt-1 text-dark">
                         @Model.Detail.TotalWorkHours.ToString("#,##0.00") <small class="fs-6">giờ</small>
                     </h4>
                     <small class="text-muted">Lịch phân ca: @Model.Detail.TotalStandardHours.ToString("#,##0.00") h</small>
                 </div>
             </div>
         </div>
-        <div class="col-12 col-md-3">
-            <div class="card border-0 shadow-sm rounded-3 h-100">
+        <div class="col-12 col-sm-6 col-xl">
+            <div class="card border-0 shadow-sm rounded-3 h-100 border-start border-4 border-info">
                 <div class="card-body">
-                    <span class="text-muted text-uppercase fw-semibold small">Tổng thu nhập kỳ</span>
-                    <h4 class="fw-bold mb-0 mt-1 text-success">
-                        @Model.Detail.TotalSalary.ToString("#,##0") <small class="fs-6">VNĐ</small>
+                    <span class="text-muted text-uppercase fw-semibold small">Nghỉ phép hưởng lương</span>
+                    <h4 class="fw-bold mb-0 mt-1 text-info">
+                        @Model.Detail.PaidLeaveHours.ToString("#,##0.00") <small class="fs-6">giờ</small>
                     </h4>
-                    <small class="text-muted">@Model.Detail.TotalWorkHours.ToString("#,##0.00") h × @Model.Detail.HourlyRate.ToString("#,##0") đ</small>
+                    <small class="text-muted">Đã duyệt: @Model.Detail.ApprovedLeaveDays ngày (@(Model.Detail.UnpaidLeaveDays > 0 ? $"{Model.Detail.UnpaidLeaveDays} ngày K.Lương" : "0 ngày K.Lương"))</small>
                 </div>
             </div>
         </div>
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-sm-6 col-xl">
+            <div class="card border-0 shadow-sm rounded-3 h-100 border-start border-4 border-success">
+                <div class="card-body">
+                    <span class="text-muted text-uppercase fw-semibold small">Tổng tiền lương kỳ</span>
+                    <h4 class="fw-bold mb-0 mt-1 text-success">
+                        @Model.Detail.TotalSalary.ToString("#,##0") <small class="fs-6">VNĐ</small>
+                    </h4>
+                    <small class="text-muted">@totalPayableHours.ToString("#,##0.00") h tính lương × @Model.Detail.HourlyRate.ToString("#,##0") đ</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl">
             <div class="card border-0 shadow-sm rounded-3 h-100">
                 <div class="card-body">
                     <span class="text-muted text-uppercase fw-semibold small">Trạng thái dữ liệu</span>
@@ -99,12 +123,18 @@
         </div>
     </div>
 
-    <!-- Attendance Details Table -->
+    <!-- Daily Details Table (From Snapshot or Fallback) -->
     <div class="card border-0 shadow-sm rounded-3 mb-4">
         <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0 fw-bold text-dark">
-                <i class="bi bi-clock-history me-2 text-primary"></i>Chi tiết ca chấm công trong kỳ (@Model.AttendanceRecords.Count ca)
+                <i class="bi bi-clock-history me-2 text-primary"></i>Chi tiết ca & ngày công trong kỳ (@(hasSnapshots ? Model.ItemSnapshots.Count : Model.AttendanceRecords.Count) mục)
             </h5>
+            @if (hasSnapshots)
+            {
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                    <i class="bi bi-camera me-1"></i>Dữ liệu Snapshot lưu vết
+                </span>
+            }
         </div>
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
@@ -115,21 +145,135 @@
                         <th>Khung giờ ca</th>
                         <th>Giờ vào</th>
                         <th>Giờ ra</th>
-                        <th class="text-end">Giờ làm tính lương</th>
-                        <th class="text-center">Điều chỉnh HR</th>
-                        <th class="text-center">Trạng thái ca</th>
+                        <th class="text-end">Giờ làm thực tế</th>
+                        <th class="text-end">Giờ nghỉ phép</th>
+                        <th class="text-end">Giờ tính lương</th>
+                        <th class="text-center">Loại nguồn</th>
+                        <th class="text-center pe-4">Trạng thái</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @if (Model.AttendanceRecords.Count == 0)
+                    @if (hasSnapshots)
                     {
-                        <tr>
-                            <td colspan="8" class="text-center py-4 text-muted">
-                                Không có bản ghi chấm công nào trong kỳ này.
-                            </td>
-                        </tr>
+                        @foreach (var item in Model.ItemSnapshots)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-semibold">@item.Date.ToString("dd/MM/yyyy") (@item.Date.ToString("ddd"))</td>
+                                <td>@(item.ShiftName ?? "Không xác định")</td>
+                                <td class="text-muted small">
+                                    @if (item.StartTime.HasValue && item.EndTime.HasValue)
+                                    {
+                                        <span>@item.StartTime.Value.ToString(@"hh\:mm") - @item.EndTime.Value.ToString(@"hh\:mm")</span>
+                                    }
+                                    else
+                                    {
+                                        <span>-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.CheckInTime.HasValue)
+                                    {
+                                        <span>@item.CheckInTime.Value.ToString(@"hh\:mm")</span>
+                                    }
+                                    else if (item.SourceType == "PaidLeave")
+                                    {
+                                        <span class="text-info small">Nghỉ phép</span>
+                                    }
+                                    else if (item.SourceType == "UnpaidLeave")
+                                    {
+                                        <span class="text-muted small">Nghỉ K.Lương</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger fw-bold">Thiếu</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.CheckOutTime.HasValue)
+                                    {
+                                        <span>@item.CheckOutTime.Value.ToString(@"hh\:mm")</span>
+                                    }
+                                    else if (item.SourceType == "PaidLeave")
+                                    {
+                                        <span class="text-info small">Nghỉ phép</span>
+                                    }
+                                    else if (item.SourceType == "UnpaidLeave")
+                                    {
+                                        <span class="text-muted small">Nghỉ K.Lương</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger fw-bold">Thiếu</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    @if (item.ActualWorkHours > 0)
+                                    {
+                                        <span class="text-dark fw-semibold">@item.ActualWorkHours.ToString("#,##0.00") h</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    @if (item.PaidLeaveHours > 0)
+                                    {
+                                        <span class="text-info fw-semibold">@item.PaidLeaveHours.ToString("#,##0.00") h</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td class="text-end fw-bold">
+                                    @if (item.TotalPayableHours > 0)
+                                    {
+                                        <span class="text-success">@item.TotalPayableHours.ToString("#,##0.00") h</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger">0.00 h</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @switch (item.SourceType)
+                                    {
+                                        case "Attendance":
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Chấm công</span>
+                                            break;
+                                        case "PaidLeave":
+                                            <span class="badge bg-info-subtle text-info border border-info-subtle">Phép có lương</span>
+                                            break;
+                                        case "UnpaidLeave":
+                                            <span class="badge bg-secondary-subtle text-secondary border">Phép không lương</span>
+                                            break;
+                                        case "MissingAttendance":
+                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Thiếu chấm công</span>
+                                            break;
+                                        default:
+                                            <span class="badge bg-light text-dark">@item.SourceType</span>
+                                            break;
+                                    }
+                                </td>
+                                <td class="text-center pe-4">
+                                    @if (item.Status == "Hợp lệ" || item.Status == "Nghỉ phép hưởng lương")
+                                    {
+                                        <span class="badge bg-success-subtle text-success">@item.Status</span>
+                                    }
+                                    else if (item.Status == "Nghỉ không lương")
+                                    {
+                                        <span class="badge bg-secondary-subtle text-secondary">@item.Status</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger-subtle text-danger" title="@item.Note">@item.Status</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
                     }
-                    else
+                    else if (Model.AttendanceRecords.Count > 0)
                     {
                         @foreach (var ar in Model.AttendanceRecords)
                         {
@@ -147,11 +291,29 @@
                                     }
                                 </td>
                                 <td>
-                                    @(ar.CheckInTime.HasValue ? ar.CheckInTime.Value.ToString(@"hh\:mm") : "<span class='text-danger fw-bold'>Thiếu</span>")
+                                    @if (ar.CheckInTime.HasValue)
+                                    {
+                                        <span>@ar.CheckInTime.Value.ToString(@"hh\:mm")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger fw-bold">Thiếu</span>
+                                    }
                                 </td>
                                 <td>
-                                    @(ar.CheckOutTime.HasValue ? ar.CheckOutTime.Value.ToString(@"hh\:mm") : "<span class='text-danger fw-bold'>Thiếu</span>")
+                                    @if (ar.CheckOutTime.HasValue)
+                                    {
+                                        <span>@ar.CheckOutTime.Value.ToString(@"hh\:mm")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger fw-bold">Thiếu</span>
+                                    }
                                 </td>
+                                <td class="text-end fw-bold text-dark">
+                                    @(ar.WorkHours.HasValue ? ar.WorkHours.Value.ToString("#,##0.00") + " h" : "0.00 h")
+                                </td>
+                                <td class="text-end text-muted">-</td>
                                 <td class="text-end fw-bold">
                                     @if (ar.WorkHours.HasValue)
                                     {
@@ -163,16 +325,9 @@
                                     }
                                 </td>
                                 <td class="text-center">
-                                    @if (ar.IsAdjusted)
-                                    {
-                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Đã duyệt điều chỉnh</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted small">Tự động</span>
-                                    }
+                                    <span class="badge bg-primary-subtle text-primary">Chấm công</span>
                                 </td>
-                                <td class="text-center">
+                                <td class="text-center pe-4">
                                     @if (ar.WorkHours.HasValue)
                                     {
                                         <span class="badge bg-success-subtle text-success">Hợp lệ</span>
@@ -184,6 +339,14 @@
                                 </td>
                             </tr>
                         }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="10" class="text-center py-4 text-muted">
+                                Không có bản ghi chấm công nào trong kỳ này.
+                            </td>
+                        </tr>
                     }
                 </tbody>
             </table>
@@ -205,6 +368,7 @@
                         <tr>
                             <th class="ps-4">Từ ngày</th>
                             <th>Đến ngày</th>
+                            <th>Loại nghỉ</th>
                             <th>Lý do</th>
                             <th class="text-center">Trạng thái</th>
                         </tr>
@@ -215,6 +379,16 @@
                             <tr>
                                 <td class="ps-4 fw-semibold">@l.StartDate.ToString("dd/MM/yyyy")</td>
                                 <td class="fw-semibold">@l.EndDate.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    @if (l.LeaveType == LeaveType.Paid)
+                                    {
+                                        <span class="badge bg-info-subtle text-info border border-info-subtle">Nghỉ phép hưởng lương</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary-subtle text-secondary border">Nghỉ không lương</span>
+                                    }
+                                </td>
                                 <td>@l.Reason</td>
                                 <td class="text-center">
                                     <span class="badge bg-success-subtle text-success">Đã phê duyệt</span>
