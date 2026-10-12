@@ -184,11 +184,11 @@
                         var choice = checkbox.closest('.status-choice');
                         choice.find('.status-dot').toggleClass('is-active', isActive).toggleClass('is-inactive', !isActive);
                         choice.find('.status-choice-text').text(isActive ? '@Html.Raw(SharedResource.ObjectStatus_IsActive)' : '@Html.Raw(SharedResource.ObjectStatus_IsInactive)');
-                        toastr.success('@StoreSharedResource.StatusUpdateSuccess');
+                        toastr.success('@Html.Raw(StoreSharedResource.StatusUpdateSuccess)');
                     },
                     error: function (xhr) {
                         checkbox.prop('checked', !isActive);
-                        toastr.error('@StoreSharedResource.StatusUpdateFailed ' + (xhr.responseText || ''));
+                        toastr.error('@Html.Raw(StoreSharedResource.StatusUpdateFailed) ' + (xhr.responseText || ''));
                     }
                 });
             });

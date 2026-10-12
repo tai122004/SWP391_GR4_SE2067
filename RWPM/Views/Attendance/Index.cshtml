@@ -7,7 +7,7 @@
     string searchQuery = ViewBag.SearchQuery as string;
     
     var activeShifts = ViewBag.ActiveShifts as List<RWPM.Models.Entities.Shift>;
-    var todayRecords = Model?.Where(x => x.Date == DateTime.Today).ToList();
+    var todayRecords = Model?.Where(x => x.Date.Date == DateTime.Today.Date).ToList();
     bool hasCompletedShiftToday = todayRecords != null && todayRecords.Any(x => x.CheckOutTime.HasValue);
     
     bool canCheckOut = todayRecord != null && todayRecord.CheckInTime.HasValue && !todayRecord.CheckOutTime.HasValue;
@@ -44,12 +44,46 @@
                 {
                     if (isFullyCompleted)
                     {
-                        var lastCompleted = todayRecords?.Where(x => x.CheckOutTime.HasValue).OrderByDescending(x => x.CheckOutTime).FirstOrDefault();
-                        <div class="alert alert-info small text-start">
-                            <i class="bi bi-check-circle-fill text-success me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_AllCompletedToday")
-                            <hr class="my-2"/>
-                            <strong>@SharedResource.ResourceManager.GetString("Attendance_CheckInTime")</strong> @lastCompleted?.CheckInTime?.ToString(@"hh\:mm") <br />
-                            <strong>@SharedResource.ResourceManager.GetString("Attendance_CheckOutTime")</strong> @lastCompleted?.CheckOutTime?.ToString(@"hh\:mm")
+                        var completedList = todayRecords?
+                            .Where(x => x.CheckOutTime.HasValue)
+                            .OrderBy(x => x.CheckInTime)
+                            .ToList();
+
+                        <div class="alert alert-info small text-start mb-3 p-3" style="border-radius: 10px;">
+                            <div class="d-flex align-items-center fw-bold text-success mb-2">
+                                <i class="bi bi-check-circle-fill fs-6 me-2"></i>
+                                <span>@SharedResource.ResourceManager.GetString("Attendance_AllCompletedToday")</span>
+                            </div>
+
+                            @if (completedList != null && completedList.Any())
+                            {
+                                <div class="d-flex flex-column gap-2 mt-2">
+                                    @foreach (var rec in completedList)
+                                    {
+                                        <div class="bg-white bg-opacity-75 p-2 rounded border" style="font-size: 0.85rem;">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span class="fw-bold text-dark">
+                                                    <i class="bi bi-clock-history text-primary me-1"></i>@(rec.Shift?.ShiftName ?? "Ca làm việc")
+                                                </span>
+                                                @if (rec.WorkHours.HasValue)
+                                                {
+                                                    <span class="badge bg-success-subtle text-success border border-success-subtle">@rec.WorkHours.Value.ToString("0.##")h</span>
+                                                }
+                                            </div>
+                                            <div class="row g-1 text-muted" style="font-size: 0.8rem;">
+                                                <div class="col-6">
+                                                    <span>@SharedResource.ResourceManager.GetString("Attendance_CheckInTime")</span> 
+                                                    <strong class="text-dark">@(rec.CheckInTime?.ToString(@"hh\:mm") ?? "--:--")</strong>
+                                                </div>
+                                                <div class="col-6">
+                                                    <span>@SharedResource.ResourceManager.GetString("Attendance_CheckOutTime")</span> 
+                                                    <strong class="text-dark">@(rec.CheckOutTime?.ToString(@"hh\:mm") ?? "--:--")</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
                         </div>
                     }
                     else if (canCheckIn || canCheckOut)
@@ -195,11 +229,31 @@
                                     <td class="text-center">@(item.Shift != null ? item.Shift.ShiftName : "-")</td>
                                     <td class="text-center text-success fw-bold">
                                         @(item.CheckInTime.HasValue ? item.CheckInTime.Value.ToString(@"hh\:mm") : "--:--")
-                                        @if (item.IsAdjusted) { <i class="bi bi-info-circle text-primary ms-1" title="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")"></i> }
+                                        @if (item.IsAdjusted)
+                                        {
+                                            <button type="button" 
+                                                    class="btn btn-link p-0 text-primary ms-1 align-baseline border-0 bg-transparent" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#historyModal_@item.AttendanceId" 
+                                                    title="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")"
+                                                    style="cursor: pointer; font-size: 0.95rem; text-decoration: none;">
+                                                <i class="bi bi-info-circle"></i>
+                                            </button>
+                                        }
                                     </td>
                                     <td class="text-center text-danger fw-bold">
                                         @(item.CheckOutTime.HasValue ? item.CheckOutTime.Value.ToString(@"hh\:mm") : "--:--")
-                                        @if (item.IsAdjusted) { <i class="bi bi-info-circle text-primary ms-1" title="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")"></i> }
+                                        @if (item.IsAdjusted)
+                                        {
+                                            <button type="button" 
+                                                    class="btn btn-link p-0 text-primary ms-1 align-baseline border-0 bg-transparent" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#historyModal_@item.AttendanceId" 
+                                                    title="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")"
+                                                    style="cursor: pointer; font-size: 0.95rem; text-decoration: none;">
+                                                <i class="bi bi-info-circle"></i>
+                                            </button>
+                                        }
                                     </td>
                                     <td class="text-center">@(item.WorkHours?.ToString("0.##") ?? "—")</td>
                                     <td class="text-center">
@@ -234,13 +288,13 @@
                                             <button type="button" class="btn btn-sm btn-outline-warning" title="@SharedResource.ResourceManager.GetString("Attendance_AdjustButton")" data-bs-toggle="modal" data-bs-target="#adjustModal_@item.AttendanceId">
                                                 <i class="bi bi-pencil-square"></i>
                                             </button>
-                                            <form method="post" asp-action="Delete" asp-route-id="@item.AttendanceId" onsubmit="return confirm('@SharedResource.ResourceManager.GetString("ConfirmDelete")');" class="d-inline">
+                                            <form method="post" asp-action="Delete" asp-route-id="@item.AttendanceId" onsubmit="return confirm('@Html.Raw(SharedResource.ResourceManager.GetString("ConfirmDelete"))');" class="d-inline">
                                                 <button type="submit" class="btn btn-sm btn-outline-danger" title="@SharedResource.ResourceManager.GetString("Button_Delete")">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
                                             
-                                            <!-- Modal Adjust -->
+                                            <!-- Modal Adjust Admin -->
                                             <div class="modal fade" id="adjustModal_@item.AttendanceId" tabindex="-1" aria-labelledby="adjustModalLabel_@item.AttendanceId" aria-hidden="true">
                                               <div class="modal-dialog">
                                                 <div class="modal-content text-start">
@@ -280,7 +334,7 @@
                         else
                         {
                             <tr>
-                                <td colspan="@(isAdmin ? 9 : 7)" class="text-center text-muted py-4">
+                                <td colspan="@(isAdmin ? 9 : 8)" class="text-center text-muted py-4">
                                     <i class="bi bi-inbox fs-3 d-block mb-2"></i>
                                     @SharedResource.ResourceManager.GetString("Attendance_NoData")
                                 </td>
@@ -293,6 +347,103 @@
         </div>
     </div>
 </div>
+
+@if (Model != null && Model.Any())
+{
+    foreach (var item in Model)
+    {
+        if (item.IsAdjusted)
+        {
+            <div class="modal fade" id="historyModal_@item.AttendanceId" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+                        <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
+                            <h5 class="modal-title fw-bold text-dark fs-5">
+                                <i class="bi bi-clock-history text-primary me-2"></i>Chi tiết điều chỉnh chấm công
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-4 text-start">
+                            <div class="p-3 mb-3 rounded-3 bg-light border">
+                                <div class="row g-2 mb-2">
+                                    <div class="col-6">
+                                        <span class="text-muted small d-block">Ngày làm việc:</span>
+                                        <span class="fw-bold text-dark">@item.Date.ToString("dd/MM/yyyy")</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="text-muted small d-block">Ca làm việc:</span>
+                                        <span class="fw-bold text-dark">@(item.Shift?.ShiftName ?? "Ca làm việc")</span>
+                                    </div>
+                                </div>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <span class="text-muted small d-block">Giờ vào hiện tại:</span>
+                                        <span class="fw-bold text-success">@(item.CheckInTime.HasValue ? item.CheckInTime.Value.ToString(@"hh\:mm") : "--:--")</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="text-muted small d-block">Giờ ra hiện tại:</span>
+                                        <span class="fw-bold text-danger">@(item.CheckOutTime.HasValue ? item.CheckOutTime.Value.ToString(@"hh\:mm") : "--:--")</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if (item.AdjustmentHistories != null && item.AdjustmentHistories.Any())
+                            {
+                                <h6 class="fw-bold small text-muted text-uppercase mb-2">Lịch sử điều chỉnh:</h6>
+                                <div class="list-group list-group-flush border rounded-3 overflow-hidden">
+                                    @foreach (var hist in item.AdjustmentHistories.OrderByDescending(h => h.ModifiedAt))
+                                    {
+                                        <div class="list-group-item p-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                                    <i class="bi bi-person-check me-1"></i>Người điều chỉnh: @hist.ModifiedBy
+                                                </span>
+                                                <span class="small text-muted">
+                                                    <i class="bi bi-clock me-1"></i>@hist.ModifiedAt.ToString("HH:mm dd/MM/yyyy")
+                                                </span>
+                                            </div>
+                                            <div class="row g-2 small mb-2 bg-light p-2 rounded">
+                                                <div class="col-6">
+                                                    <span class="text-muted">Giờ trước khi sửa:</span>
+                                                    <div class="fw-semibold text-secondary">
+                                                        @(hist.OldCheckInTime.HasValue ? hist.OldCheckInTime.Value.ToString(@"hh\:mm") : "--:--")
+                                                        ~
+                                                        @(hist.OldCheckOutTime.HasValue ? hist.OldCheckOutTime.Value.ToString(@"hh\:mm") : "--:--")
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <span class="text-muted">Giờ sau điều chỉnh:</span>
+                                                    <div class="fw-bold text-success">
+                                                        @(hist.NewCheckInTime.HasValue ? hist.NewCheckInTime.Value.ToString(@"hh\:mm") : "--:--")
+                                                        ~
+                                                        @(hist.NewCheckOutTime.HasValue ? hist.NewCheckOutTime.Value.ToString(@"hh\:mm") : "--:--")
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="small">
+                                                <span class="text-muted">Lý do điều chỉnh / Ghi chú:</span>
+                                                <div class="text-dark mt-1 fst-italic">@hist.Reason</div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-info py-2 small mb-0">
+                                    <i class="bi bi-info-circle me-1"></i> Bản ghi chấm công này đã được quản lý phê duyệt và cập nhật giờ làm việc.
+                                </div>
+                            }
+                        </div>
+                        <div class="modal-footer border-top-0 pt-0 px-4 pb-4">
+                            <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal" style="border-radius: 8px;">Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {

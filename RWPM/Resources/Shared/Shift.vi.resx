@@ -171,6 +171,6 @@
   <data name="SelectAllStores" xml:space="preserve"><value>Chọn tất cả</value></data>
   <data name="ClearAllStores" xml:space="preserve"><value>Bỏ chọn tất cả</value></data>
   <data name="ViewSelectedStores" xml:space="preserve"><value>Xem chi nhánh đã chọn</value></data>
-  <data name="LatenessTolerance" xml:space="preserve"><value>Dung sai đi muộn (phút)</value></data>
-  <data name="EarlyDepartureTolerance" xml:space="preserve"><value>Dung sai về sớm (phút)</value></data>
+  <data name="LatenessTolerance" xml:space="preserve"><value>Thời gian cho phép đi muộn (phút)</value></data>
+  <data name="EarlyDepartureTolerance" xml:space="preserve"><value>Thời gian cho phép về sớm (phút)</value></data>
 </root>

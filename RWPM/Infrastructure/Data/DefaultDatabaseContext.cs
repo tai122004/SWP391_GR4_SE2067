@@ -112,6 +112,31 @@ namespace RWPM.Infrastructure.Data
                 .OnDelete(DeleteBehavior.Cascade);
             #endregion
 
+            #region AttendanceAdjustmentRequest
+            modelBuilder.Entity<AttendanceAdjustmentRequest>(e =>
+            {
+                e.HasOne(x => x.AttendanceRecord)
+                 .WithMany(x => x.AdjustmentRequests)
+                 .HasForeignKey(x => x.AttendanceRecordId)
+                 .OnDelete(DeleteBehavior.SetNull);
+
+                e.HasOne(x => x.Employee)
+                 .WithMany()
+                 .HasForeignKey(x => x.EmployeeId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+                e.HasOne(x => x.Store)
+                 .WithMany()
+                 .HasForeignKey(x => x.StoreId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+                e.HasOne(x => x.Shift)
+                 .WithMany()
+                 .HasForeignKey(x => x.ShiftId)
+                 .OnDelete(DeleteBehavior.Restrict);
+            });
+            #endregion
+
             #region ShiftSwapRequest
             modelBuilder.Entity<ShiftSwapRequest>(e =>
             {
@@ -204,6 +229,7 @@ namespace RWPM.Infrastructure.Data
 
         public DbSet<AttendanceRecord> AttendanceRecord { get; set; } = default!;
         public DbSet<AttendanceAdjustmentHistory> AttendanceAdjustmentHistory { get; set; } = default!;
+        public DbSet<AttendanceAdjustmentRequest> AttendanceAdjustmentRequest { get; set; } = default!;
         public DbSet<ShiftRegistration> ShiftRegistration { get; set; } = default!;
         public DbSet<ShiftSwapRequest> ShiftSwapRequest { get; set; } = default!;
         public DbSet<LeaveRequest> LeaveRequest { get; set; } = default!;

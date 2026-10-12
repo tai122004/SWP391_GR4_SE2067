@@ -627,7 +627,7 @@
 
         function renderHeader() {
             if (isManager) {
-                let tr = '<th class="emp-col"><div class="input-group input-group-sm"><span class="input-group-text bg-transparent border-0"><i class="fas fa-search"></i></span><input type="text" class="form-control border-0 bg-transparent ps-1" placeholder="@ShiftRegistrationResource.SearchBtn" onkeyup="filterEmployeesLocally(this.value)"></div></th>';
+                let tr = '<th class="emp-col"><div class="input-group input-group-sm"><span class="input-group-text bg-transparent border-0"><i class="fas fa-search"></i></span><input type="text" class="form-control border-0 bg-transparent ps-1" placeholder="@Html.Raw(ShiftRegistrationResource.SearchBtn)" onkeyup="filterEmployeesLocally(this.value)"></div></th>';
                 
                 let tempDate = new Date(currentWeekStart);
                 let days = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
@@ -639,7 +639,7 @@
                 }
                 $('#gridHeaderRow').html(tr);
             } else {
-                let tr = '<th class="emp-col" style="text-align: center; vertical-align: middle;">@SharedResource.ResourceManager.GetString("Shift_Shift")</th>';
+                let tr = '<th class="emp-col" style="text-align: center; vertical-align: middle;">@Html.Raw(SharedResource.ResourceManager.GetString("Shift_Shift"))</th>';
                 let tempDate = new Date(currentWeekStart);
                 let days = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
                 
@@ -793,7 +793,7 @@
                         if (dayEvent) {
                             let isApproved = dayEvent.statusName !== "Pending";
                             let disabled = isApproved ? "disabled" : "";
-                            let label = isApproved ? "<br><small class='text-success fw-bold'>@SharedResource.ResourceManager.GetString("Shift_Approved")</small>" : "<br><small class='text-warning'>@SharedResource.ResourceManager.GetString("Shift_Pending")</small>";
+                            let label = isApproved ? "<br><small class='text-success fw-bold'>@Html.Raw(SharedResource.ResourceManager.GetString("Shift_Approved"))</small>" : "<br><small class='text-warning'>@Html.Raw(SharedResource.ResourceManager.GetString("Shift_Pending"))</small>";
                             let titleStr = isApproved ? "@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ApprovedCannotChange"))" : "";
                             tbody += `
                                 <td class="shift-cell" style="text-align: center; vertical-align: middle;" title="${titleStr}">
@@ -810,7 +810,7 @@
                             let cellDateObj = new Date(tempDate);
                             let unavailable = cellDateStr < shift.from || (shift.to && cellDateStr > shift.to);
                             let disabled = cellDateObj < today || unavailable ? "disabled" : "";
-                            let label = cellDateObj < today ? "<br><small class='text-muted'>@SharedResource.ResourceManager.GetString("Shift_Overdue")</small>" : "";
+                            let label = cellDateObj < today ? "<br><small class='text-muted'>@Html.Raw(SharedResource.ResourceManager.GetString("Shift_Overdue"))</small>" : "";
                             let titleStr = cellDateObj < today ? "@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrPast"))" : "";
 
                             tbody += `
@@ -871,7 +871,7 @@
                 },
                 success: function(res) {
                     if (res.success) {
-                        alert('@SharedResource.ResourceManager.GetString("Shift_RegisterWeek") thành công!');
+                        alert('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_RegSuccess"))');
                         fetchEvents();
                     }
                 },
@@ -926,7 +926,7 @@
                         }
                     });
 
-                    alert(`Đã sao chép ${checkedCount} ca hợp lệ. Vui lòng bấm '@SharedResource.ResourceManager.GetString("Shift_RegisterWeek")' để lưu lại.`);
+                    alert(`Đã sao chép ${checkedCount} ca hợp lệ. Vui lòng bấm '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_RegisterWeek"))' để lưu lại.`);
                 },
                 error: function() {
                     alert('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrLoadPrev"))');

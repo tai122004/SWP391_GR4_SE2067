@@ -1,4 +1,4 @@
-﻿@model AccUpdateVM
+@model AccUpdateVM
 
 @using AccountModelResource = RWPM.Resources.Models.Acc
 @using AccountSharedResource = RWPM.Resources.Shared.Acc
@@ -220,7 +220,7 @@
                         <i class="bi bi-clipboard me-1 text-muted"></i>
                         <span id="quickResetModal_CopyText" class="text-secondary font-monospace"></span>
                     </div>
-                    <button type="button" class="btn btn-sm btn-outline-dark text-nowrap" onclick="copyToClipboard($('#quickResetModal_CopyText').text(), '@AccountSharedResource.Toast_CopiedAccountPassword')">
+                    <button type="button" class="btn btn-sm btn-outline-dark text-nowrap" onclick="copyToClipboard($('#quickResetModal_CopyText').text(), '@Html.Raw(AccountSharedResource.Toast_CopiedAccountPassword)')">
                         <i class="bi bi-copy me-1"></i> @AccountSharedResource.Button_Copy
                     </button>
                 </div>

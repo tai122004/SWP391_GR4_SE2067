@@ -182,13 +182,10 @@ namespace RWPM.Services.Implementation
                 .OrderBy(time => Math.Abs((time - shiftRange.StartAt).TotalMinutes)).First();
                 
             int lateMins = (int)(checkInActual - shiftRange.StartAt).TotalMinutes;
-            if (lateMins > 60)
+            int gracePeriod = matchedShift.GracePeriodMinutes ?? RWPM.Common.Constants.ShiftDefaults.GracePeriodMinutes;
+            if (lateMins > gracePeriod)
             {
-                warningMsg = $"Bạn đã chấm công vào làm thành công! NHƯNG bạn đã đi muộn {lateMins} phút (Vượt quá 1 tiếng). Ca làm việc này của bạn sẽ KHÔNG ĐƯỢC TÍNH LƯƠNG!";
-            }
-            else if (lateMins > RWPM.Common.Constants.ShiftDefaults.GracePeriodMinutes)
-            {
-                warningMsg = $"Bạn đã chấm công vào làm thành công! NHƯNG bạn đã đi muộn {lateMins} phút (Vượt quá {RWPM.Common.Constants.ShiftDefaults.GracePeriodMinutes} phút cho phép). Ca này bạn sẽ bị trừ lương tương ứng với {lateMins} phút đi muộn.";
+                warningMsg = $"Bạn đã chấm công vào làm thành công! (Đi muộn {lateMins} phút, vượt quá {gracePeriod} phút cho phép của ca). Thời gian tính giờ làm việc sẽ được bắt đầu từ thời điểm bạn vào làm.";
             }
 
             return (record, warningMsg);
@@ -270,9 +267,10 @@ namespace RWPM.Services.Implementation
                     .Where(time => time >= record.Date.Add(record.CheckInTime.Value)).OrderBy(time => time).First();
                     
                 int earlyMins = (int)(shiftRange.EndAt - checkOutActual).TotalMinutes;
-                if (earlyMins > RWPM.Common.Constants.ShiftDefaults.EarlyCheckOutMinutes)
+                int earlyOutLimit = shift.EarlyCheckOutMinutes ?? RWPM.Common.Constants.ShiftDefaults.EarlyCheckOutMinutes;
+                if (earlyMins > earlyOutLimit)
                 {
-                    warningMsg = $"Bạn đã chấm công tan làm thành công! NHƯNG bạn đã về sớm {earlyMins} phút (Vượt quá {RWPM.Common.Constants.ShiftDefaults.EarlyCheckOutMinutes} phút cho phép). Ca này bạn sẽ bị trừ lương tương ứng với {earlyMins} phút về sớm.";
+                    warningMsg = $"Bạn đã chấm công tan làm thành công! (Về sớm {earlyMins} phút, vượt quá thời gian cho phép {earlyOutLimit} phút của ca). Thời gian tính giờ làm việc sẽ kết thúc tại thời điểm bạn tan làm.";
                 }
             }
 
@@ -283,19 +281,29 @@ namespace RWPM.Services.Implementation
         {
             return await _context.AttendanceRecord
                 .Include(x => x.Shift)
+                .Include(x => x.AdjustmentHistories)
                 .Where(x => x.Username == username)
                 .OrderByDescending(x => x.Date)
+                .ThenByDescending(x => x.CheckInTime)
+                .ThenByDescending(x => x.AttendanceId)
                 .ToListAsync();
         }
 
         public async Task<List<AttendanceRecord>> GetAllHistoryAsync(string? searchQuery = null)
         {
-            var query = _context.AttendanceRecord.Include(x => x.Shift).AsQueryable();
+            var query = _context.AttendanceRecord
+                .Include(x => x.Shift)
+                .Include(x => x.AdjustmentHistories)
+                .AsQueryable();
             if (!string.IsNullOrWhiteSpace(searchQuery))
             {
                 query = query.Where(x => x.Username.Contains(searchQuery));
             }
-            return await query.OrderByDescending(x => x.Date).ToListAsync();
+            return await query
+                .OrderByDescending(x => x.Date)
+                .ThenByDescending(x => x.CheckInTime)
+                .ThenByDescending(x => x.AttendanceId)
+                .ToListAsync();
         }
 
         public async Task AdjustAttendanceAsync(int recordId, TimeSpan? newCheckIn, TimeSpan? newCheckOut, string reason, string modifierUsername)
