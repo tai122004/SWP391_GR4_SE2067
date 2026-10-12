@@ -28,7 +28,7 @@
                     <button class="btn btn-light mb-0 dropdown-toggle text-dark w-100 text-start d-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown">
                         <span>
                             <i class="fas fa-filter me-1 text-muted"></i>
-                            @(currentType == "ShiftSwap" ? RequestResource.Filter_ShiftSwapOnly : (currentType == "ShiftReg" ? RequestResource.Filter_ShiftRegOnly : (currentType == "Leave" ? RequestResource.Filter_LeaveOnly : RequestResource.Filter_AllTypes)))
+                            @(currentType == "ShiftSwap" ? RequestResource.Filter_ShiftSwapOnly : (currentType == "ShiftReg" ? RequestResource.Filter_ShiftRegOnly : (currentType == "Leave" ? RequestResource.Filter_LeaveOnly : (currentType == "Attendance" ? "Sửa chấm công" : RequestResource.Filter_AllTypes))))
                         </span>
                     </button>
                     <ul class="dropdown-menu w-100 shadow-sm">
@@ -36,6 +36,7 @@
                         <li><a class="dropdown-item @(currentType == "ShiftReg" ? "active" : "")" href="?status=@currentStatus&type=ShiftReg&start=@ViewBag.StartDate&end=@ViewBag.EndDate">@RequestResource.Filter_ShiftRegOnly</a></li>
                         <li><a class="dropdown-item @(currentType == "ShiftSwap" ? "active" : "")" href="?status=@currentStatus&type=ShiftSwap&start=@ViewBag.StartDate&end=@ViewBag.EndDate">@RequestResource.Filter_ShiftSwapOnly</a></li>
                         <li><a class="dropdown-item @(currentType == "Leave" ? "active" : "")" href="?status=@currentStatus&type=Leave&start=@ViewBag.StartDate&end=@ViewBag.EndDate">@RequestResource.Filter_LeaveOnly</a></li>
+                        <li><a class="dropdown-item @(currentType == "Attendance" ? "active" : "")" href="?status=@currentStatus&type=Attendance&start=@ViewBag.StartDate&end=@ViewBag.EndDate">Sửa chấm công</a></li>
                     </ul>
                 </div>
             </div>
@@ -113,6 +114,12 @@
                                                 <i class="fas fa-bed me-1 text-success"></i>@RequestResource.LeaveRequest
                                             </span>
                                         }
+                                        else if (item.RequestType == "Attendance")
+                                        {
+                                            <span class="badge bg-warning bg-opacity-10 text-dark border border-warning" style="font-size: 10px;">
+                                                <i class="fas fa-clock me-1 text-warning"></i>Sửa chấm công
+                                            </span>
+                                        }
                                         else
                                         {
                                             <span class="badge bg-info bg-opacity-10 text-primary border border-info" style="font-size: 10px;">
@@ -133,6 +140,10 @@
                                     @if (item.RequestType == "ShiftSwap" && !string.IsNullOrEmpty(item.SwapSummary))
                                     {
                                         <div class="small mb-1 text-primary text-truncate fw-semibold"><i class="fas fa-arrow-right me-1 small"></i> @item.SwapSummary</div>
+                                    }
+                                    else if (item.RequestType == "Attendance" && !string.IsNullOrEmpty(item.AdjustmentSummary))
+                                    {
+                                        <div class="small mb-1 text-primary text-truncate fw-semibold"><i class="fas fa-clock me-1 small"></i> @item.AdjustmentSummary</div>
                                     }
 
                                     <div class="small mb-2 text-dark"><span class="text-muted">@RequestResource.Approver:</span> <span class="text-primary">@(string.IsNullOrEmpty(item.ApprovedBy) ? (item.Status == RegistrationStatus.Pending ? RequestResource.NotApprovedYet : "-") : item.ApprovedBy)</span></div>
@@ -243,6 +254,16 @@
                             </div>
                         </div>
 
+                        <!-- Thông tin điều chỉnh chấm công (chỉ hiện khi requestType == 'Attendance') -->
+                        <div class="row mt-3" id="detailAttendanceRow" style="display: none;">
+                            <div class="col-12">
+                                <div class="p-3 bg-white rounded border border-warning">
+                                    <div class="text-warning small fw-bold mb-2"><i class="fas fa-clock me-1"></i> Chi tiết điều chỉnh giờ vào / ra</div>
+                                    <div id="detailAttendanceSummary"></div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="row mt-3" id="detailRejectionRow" style="display: none;">
                             <div class="col-12">
                                 <div class="alert alert-danger mb-0 py-2">
@@ -308,7 +329,12 @@
                 <div class="mb-4">
                     <h6 class="text-primary fw-bold mb-3" style="font-size: 13px;">@SharedResource.Req_Shift</h6>
                     <div class="row g-3">
-                        <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="far fa-calendar-alt text-warning fs-5"></i><span>@SharedResource.Req_ChangeInOut</span></div></div>
+                        <div class="col-md-4">
+                            <div class="request-type-btn active-btn" onclick="openAttendanceModal()">
+                                <i class="far fa-calendar-alt text-warning fs-5"></i>
+                                <span>@SharedResource.Req_ChangeInOut</span>
+                            </div>
+                        </div>
                         <div class="col-md-4"><div class="request-type-btn disabled-btn"><i class="fas fa-hamburger text-warning fs-5"></i><span>@SharedResource.Req_Meal</span></div></div>
                         
                         <div class="col-md-4">
@@ -639,6 +665,136 @@
     </div>
 </div>
 
+<!-- Modal Yêu Cầu Điều Chỉnh Chấm Công (Nested) -->
+<div class="modal fade" id="createAttendanceModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+            <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
+                <h5 class="modal-title fw-bold text-dark fs-5">
+                    <i class="far fa-calendar-alt text-warning me-2"></i>@SharedResource.Req_ChangeInOut
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="attendanceAdjustmentForm">
+                <div class="modal-body p-4">
+                    <div class="alert alert-info py-2 small mb-3">
+                        <i class="bi bi-info-circle me-1"></i> Chọn bản ghi ca làm gần đây cần sửa chấm công và nhập lý do giải trình để gửi quản lý phê duyệt.
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-dark fw-bold small">Chọn ca làm việc cần sửa <span class="text-danger">*</span></label>
+                        <select class="form-select" id="adjRecordSelect" required style="border-radius: 8px;">
+                            <option value="">-- Đang tải danh sách ca gần đây... --</option>
+                        </select>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label text-dark fw-bold small">Giờ vào mong muốn</label>
+                            <input type="time" class="form-control" id="adjRequestedCheckIn" style="border-radius: 8px;" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-dark fw-bold small">Giờ ra mong muốn</label>
+                            <input type="time" class="form-control" id="adjRequestedCheckOut" style="border-radius: 8px;" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-dark fw-bold small">Lý do điều chỉnh / giải trình <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="adjReason" rows="3" required placeholder="Ví dụ: Quên check-out khi tan ca, sự cố mạng/GPS..." style="border-radius: 8px;"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 pt-0 px-4 pb-4">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius: 8px;">@SharedResource.Button_Cancel</button>
+                    <button type="submit" class="btn btn-warning px-4" id="btnSubmitAdj" style="border-radius: 8px;">@SharedResource.Button_Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Phê Duyệt Điều Chỉnh Chấm Công (Dành cho Quản lý / Phê duyệt) -->
+<div class="modal fade" id="approveAttendanceModal" tabindex="-1" aria-hidden="true" style="z-index: 1070;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+            <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
+                <h5 class="modal-title fw-bold text-success fs-5">
+                    <i class="bi bi-clock-history me-2"></i>Phê duyệt điều chỉnh chấm công
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="approveAttendanceForm" onsubmit="event.preventDefault(); submitApproveAttendance();">
+                <div class="modal-body p-4">
+                    <!-- Thông tin ca làm & nhân viên -->
+                    <div class="bg-light p-3 rounded-3 mb-3 border">
+                        <div class="row g-2 mb-2">
+                            <div class="col-6">
+                                <span class="text-muted small">Nhân viên:</span>
+                                <div class="fw-bold text-primary" id="apprModal_EmpName"></div>
+                            </div>
+                            <div class="col-6">
+                                <span class="text-muted small">Ngày làm việc:</span>
+                                <div class="fw-bold text-dark" id="apprModal_WorkDate"></div>
+                            </div>
+                        </div>
+                        <div class="row g-2 mb-2">
+                            <div class="col-12">
+                                <span class="text-muted small">Ca làm:</span>
+                                <div class="fw-semibold text-dark" id="apprModal_ShiftName"></div>
+                            </div>
+                        </div>
+                        <div class="row g-2 mb-2 pt-2 border-top">
+                            <div class="col-6">
+                                <span class="text-muted small">Giờ gốc (thực tế):</span>
+                                <div class="fw-semibold text-danger" id="apprModal_OldInOut">--:-- ~ --:--</div>
+                            </div>
+                            <div class="col-6">
+                                <span class="text-muted small">Nhân viên xin đổi:</span>
+                                <div class="fw-semibold text-primary" id="apprModal_ReqInOut">--:-- ~ --:--</div>
+                            </div>
+                        </div>
+                        <div class="pt-2 border-top">
+                            <span class="text-muted small">Lý do giải trình của nhân viên:</span>
+                            <div class="small fst-italic text-secondary" id="apprModal_Reason"></div>
+                        </div>
+                    </div>
+
+                    <!-- Khung duyệt & điều chỉnh giờ của Quản lý -->
+                    <div class="card p-3 border-success border-opacity-25 bg-success bg-opacity-10 mb-3" style="border-radius: 10px;">
+                        <label class="form-label text-success fw-bold small mb-2">
+                            <i class="bi bi-pencil-square me-1"></i>Giờ chấm công phê duyệt (Quản lý có thể điều chỉnh):
+                        </label>
+                        <div class="row g-2 mb-2">
+                            <div class="col-6">
+                                <label class="form-label small text-dark fw-semibold mb-1">Giờ vào phê duyệt <span class="text-danger">*</span></label>
+                                <input type="time" class="form-control" id="apprModal_ApprovedCheckIn" required style="border-radius: 8px;" />
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small text-dark fw-semibold mb-1">Giờ ra phê duyệt <span class="text-danger">*</span></label>
+                                <input type="time" class="form-control" id="apprModal_ApprovedCheckOut" required style="border-radius: 8px;" />
+                            </div>
+                        </div>
+                        <small class="text-muted" style="font-size: 11px;">
+                            * Bản ghi chấm công sẽ được cập nhật chính xác theo giờ được phê duyệt ở trên.
+                        </small>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label text-dark small fw-semibold">Ghi chú của người duyệt (tùy chọn):</label>
+                        <textarea class="form-control" id="apprModal_ApproverNote" rows="2" placeholder="Ví dụ: Đã xác nhận camera, chốt vào lúc 08:30..." style="border-radius: 8px;"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 pt-0 px-4 pb-4">
+                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal" style="border-radius: 8px;">@SharedResource.Button_Cancel</button>
+                    <button type="submit" class="btn btn-success px-4" id="btnConfirmApproveAttendance" style="border-radius: 8px;">
+                        <i class="bi bi-check-circle me-1"></i>Xác nhận duyệt
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <form id="antiForgeryForm">
     @Html.AntiForgeryToken()
 </form>
@@ -712,7 +868,12 @@
             leaveType = (int?)x.LeaveType,
             leaveTypeName = x.LeaveTypeName ?? "",
             leaveDays = x.LeaveDays,
-            annualLeaveBalance = x.AnnualLeaveBalance
+            annualLeaveBalance = x.AnnualLeaveBalance,
+            actualCheckInTimeStr = x.ActualCheckInTimeStr ?? "",
+            actualCheckOutTimeStr = x.ActualCheckOutTimeStr ?? "",
+            requestedCheckInTimeStr = x.RequestedCheckInTimeStr ?? "",
+            requestedCheckOutTimeStr = x.RequestedCheckOutTimeStr ?? "",
+            adjustmentSummary = x.AdjustmentSummary ?? ""
         })));
 
         let currentSelectedId = 0;
@@ -986,10 +1147,29 @@
                     $('#detailLeaveTypeDesc').html(`<strong>${req.leaveTypeName}</strong> (${req.leaveDays} @Html.Raw(RequestResource.Leave_DaysUnit))`);
                     $('#detailLeaveBalanceBadge').text(`@Html.Raw(RequestResource.Leave_AnnualLeaveBalance): ${req.annualLeaveBalance} @Html.Raw(RequestResource.Leave_DaysUnit)`);
                     $('#detailLeaveInfoRow').show();
+                    $('#detailAttendanceRow').hide();
+                } else if (req.requestType === 'Attendance') {
+                    $('#detailShiftLabel').text('@Html.Raw(RequestResource.Shift)');
+                    $('#detailShiftName').text(req.shiftName);
+                    $('#detailLeaveInfoRow').hide();
+                    $('#detailAttendanceSummary').html(`
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="text-muted small">Giờ chấm công gốc:</div>
+                                <div class="fw-bold text-danger">${req.actualCheckInTimeStr || '--:--'} ~ ${req.actualCheckOutTimeStr || '--:--'}</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-muted small">Giờ đề xuất sửa:</div>
+                                <div class="fw-bold text-success">${req.requestedCheckInTimeStr || '--:--'} ~ ${req.requestedCheckOutTimeStr || '--:--'}</div>
+                            </div>
+                        </div>
+                    `);
+                    $('#detailAttendanceRow').show();
                 } else {
                     $('#detailShiftLabel').text('@Html.Raw(RequestResource.Shift)');
                     $('#detailShiftName').text(req.shiftName);
                     $('#detailLeaveInfoRow').hide();
+                    $('#detailAttendanceRow').hide();
                 }
 
                 var statusHtml = '';
@@ -1167,6 +1347,12 @@
                 $('#modalRejectionReason').val('');
                 var modal = new bootstrap.Modal(document.getElementById('rejectReasonModal'));
                 modal.show();
+                return;
+            }
+
+            // Nếu là yêu cầu sửa chấm công (Đổi giờ vào / ra), mở Modal để người phê duyệt kiểm tra & chỉnh sửa giờ
+            if (currentSelectedType === 'Attendance' && status === 1) {
+                openApproveAttendanceModal(currentSelectedId);
                 return;
             }
 
@@ -1359,6 +1545,183 @@
                 },
                 error: function(err) {
                     toastr.error('@Html.Raw(SharedResource.Req_SysError)');
+                }
+            });
+        }
+
+        function openAttendanceModal() {
+            $('#createRequestModal').modal('hide');
+            $('#attendanceAdjustmentForm')[0].reset();
+            $('#btnSubmitAdj').prop('disabled', false);
+
+            var select = $('#adjRecordSelect');
+            select.empty().append('<option value="">-- Đang tải danh sách ca gần đây... --</option>');
+
+            $.get('/Request/GetAttendanceAdjustmentFormData', function(res) {
+                select.empty();
+                if (res.success && res.records && res.records.length > 0) {
+                    select.append('<option value="">-- Chọn ca làm việc --</option>');
+                    res.records.forEach(r => {
+                        var inOut = (r.checkIn ? r.checkIn : '--:--') + ' ~ ' + (r.checkOut ? r.checkOut : '--:--');
+                        select.append(`<option value="${r.attendanceId}" data-date="${r.workDate}" data-shift="${r.shiftId || ''}" data-in="${r.checkIn}" data-out="${r.checkOut}">${r.dateStr} - ${r.shiftName} (${inOut})</option>`);
+                    });
+                } else {
+                    select.append('<option value="" disabled>-- Chưa có bản ghi chấm công nào trong 30 ngày qua --</option>');
+                }
+            });
+
+            setTimeout(() => {
+                var modal = new bootstrap.Modal(document.getElementById('createAttendanceModal'));
+                modal.show();
+            }, 300);
+        }
+
+        $('#adjRecordSelect').change(function() {
+            var selected = $(this).find(':selected');
+            var inTime = selected.data('in');
+            var outTime = selected.data('out');
+            $('#adjRequestedCheckIn').val(inTime || '');
+            $('#adjRequestedCheckOut').val(outTime || '');
+        });
+
+        $('#attendanceAdjustmentForm').submit(function(e) {
+            e.preventDefault();
+            var selected = $('#adjRecordSelect').find(':selected');
+            var attId = parseInt(selected.val()) || 0;
+            var workDate = selected.data('date');
+            var shiftId = parseInt(selected.data('shift')) || null;
+
+            if (!attId && !workDate) {
+                toastr.error('Vui lòng chọn ca làm việc cần sửa.');
+                return;
+            }
+
+            var inVal = $('#adjRequestedCheckIn').val() || null;
+            var outVal = $('#adjRequestedCheckOut').val() || null;
+            var reasonVal = $('#adjReason').val().trim();
+
+            if (!reasonVal) {
+                toastr.error('Vui lòng nhập lý do giải trình.');
+                return;
+            }
+
+            if (!inVal && !outVal) {
+                toastr.error('Vui lòng nhập ít nhất giờ vào hoặc giờ ra mong muốn.');
+                return;
+            }
+
+            if (inVal && inVal.length === 5) {
+                inVal += ':00';
+            }
+            if (outVal && outVal.length === 5) {
+                outVal += ':00';
+            }
+
+            var data = {
+                AttendanceRecordId: attId > 0 ? attId : null,
+                WorkDate: workDate,
+                ShiftId: shiftId,
+                RequestedCheckInTime: inVal,
+                RequestedCheckOutTime: outVal,
+                Reason: reasonVal
+            };
+
+            $('#btnSubmitAdj').prop('disabled', true);
+
+            $.ajax({
+                url: '/Request/CreateAttendanceAdjustment',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                headers: {
+                    'RequestVerificationToken': $('#antiForgeryForm input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(res) {
+                    if (res.success) {
+                        $('#createAttendanceModal').modal('hide');
+                        toastr.success(res.message);
+                        setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                        toastr.error(res.message || 'Thao tác không thành công.');
+                        $('#btnSubmitAdj').prop('disabled', false);
+                    }
+                },
+                error: function(err) {
+                    toastr.error(err.responseJSON?.message || 'Lỗi hệ thống.');
+                    $('#btnSubmitAdj').prop('disabled', false);
+                }
+            });
+        });
+
+        function openApproveAttendanceModal(id) {
+            var req = requestsData.find(x => x.id === id && x.requestType === 'Attendance');
+            if (!req) return;
+
+            $('#apprModal_EmpName').text(req.employeeName || '-');
+            $('#apprModal_WorkDate').text(req.workDateStr || '-');
+            $('#apprModal_ShiftName').text(req.shiftName || '-');
+            $('#apprModal_OldInOut').text((req.actualCheckInTimeStr || '--:--') + ' ~ ' + (req.actualCheckOutTimeStr || '--:--'));
+            $('#apprModal_ReqInOut').text((req.requestedCheckInTimeStr || '--:--') + ' ~ ' + (req.requestedCheckOutTimeStr || '--:--'));
+            $('#apprModal_Reason').text(req.note || 'Không có');
+
+            // Mặc định điền sẵn giờ nhân viên xin để người duyệt có thể kiểm tra hoặc điều chỉnh
+            var inVal = (req.requestedCheckInTimeStr && req.requestedCheckInTimeStr !== '-') ? req.requestedCheckInTimeStr : '';
+            var outVal = (req.requestedCheckOutTimeStr && req.requestedCheckOutTimeStr !== '-') ? req.requestedCheckOutTimeStr : '';
+            $('#apprModal_ApprovedCheckIn').val(inVal);
+            $('#apprModal_ApprovedCheckOut').val(outVal);
+            $('#apprModal_ApproverNote').val('');
+            $('#btnConfirmApproveAttendance').prop('disabled', false).html('<i class="bi bi-check-circle me-1"></i>Xác nhận duyệt');
+
+            var modal = new bootstrap.Modal(document.getElementById('approveAttendanceModal'));
+            modal.show();
+        }
+
+        function submitApproveAttendance() {
+            var inTime = $('#apprModal_ApprovedCheckIn').val();
+            var outTime = $('#apprModal_ApprovedCheckOut').val();
+            var note = $('#apprModal_ApproverNote').val().trim();
+
+            if (!inTime && !outTime) {
+                toastr.error('Vui lòng nhập ít nhất giờ vào hoặc giờ ra được phê duyệt.');
+                return;
+            }
+
+            if (inTime && inTime.length === 5) {
+                inTime += ':00';
+            }
+            if (outTime && outTime.length === 5) {
+                outTime += ':00';
+            }
+
+            $('#btnConfirmApproveAttendance').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Đang xử lý...');
+
+            $.ajax({
+                url: '/Request/UpdateStatus',
+                type: 'POST',
+                data: {
+                    id: currentSelectedId,
+                    status: 1,
+                    requestType: 'Attendance',
+                    approvedCheckInTime: inTime || null,
+                    approvedCheckOutTime: outTime || null,
+                    approverNote: note || null
+                },
+                headers: {
+                    'RequestVerificationToken': $('#antiForgeryForm input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(res) {
+                    if (res.success) {
+                        $('#approveAttendanceModal').modal('hide');
+                        toastr.success(res.message || 'Phê duyệt và cập nhật giờ chấm công thành công!');
+                        setTimeout(() => window.location.reload(), 800);
+                    } else {
+                        $('#btnConfirmApproveAttendance').prop('disabled', false).html('<i class="bi bi-check-circle me-1"></i>Xác nhận duyệt');
+                        toastr.error('@Html.Raw(SharedResource.Req_ErrorPrefix)' + res.message);
+                    }
+                },
+                error: function(err) {
+                    $('#btnConfirmApproveAttendance').prop('disabled', false).html('<i class="bi bi-check-circle me-1"></i>Xác nhận duyệt');
+                    toastr.error(err.responseJSON?.message || '@Html.Raw(SharedResource.Req_SysError)');
                 }
             });
         }

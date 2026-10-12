@@ -622,7 +622,7 @@
             }
 
             const btn = $('#empBtnPreview');
-            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> @EmployeeSharedResource.Excel_Btn_Verifying');
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> @Html.Raw(EmployeeSharedResource.Excel_Btn_Verifying)');
 
             const formData = new FormData();
             formData.append('file', file);
@@ -677,11 +677,11 @@
                     }
 
                     const statusBadge = row.isValid
-                        ? `<span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>@EmployeeSharedResource.Excel_Status_Valid</span>`
-                        : `<span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>@EmployeeSharedResource.Excel_Status_Invalid</span>`;
+                        ? `<span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>@Html.Raw(EmployeeSharedResource.Excel_Status_Valid)</span>`
+                        : `<span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>@Html.Raw(EmployeeSharedResource.Excel_Status_Invalid)</span>`;
 
                     const errHtml = row.isValid
-                        ? `<span class="text-success small"><i class="bi bi-check2 me-1"></i>@EmployeeSharedResource.Excel_Status_Valid</span>`
+                        ? `<span class="text-success small"><i class="bi bi-check2 me-1"></i>@Html.Raw(EmployeeSharedResource.Excel_Status_Valid)</span>`
                         : `<span class="text-danger small fw-semibold"><i class="bi bi-exclamation-circle me-1"></i>${escapeHtml(row.errorMessage || '')}</span>`;
 
                     tr.html(`
@@ -709,7 +709,7 @@
                 errBox.removeClass('d-none').text('Lỗi kết nối máy chủ: ' + err.message);
             })
             .finally(() => {
-                btn.prop('disabled', false).html('<i class="bi bi-search me-1"></i> @EmployeeSharedResource.Excel_Btn_Preview');
+                btn.prop('disabled', false).html('<i class="bi bi-search me-1"></i> @Html.Raw(EmployeeSharedResource.Excel_Btn_Preview)');
             });
         }
 
@@ -724,7 +724,7 @@
             if (!currentEmpImportToken) return;
 
             const btn = $('#empBtnConfirm');
-            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> @EmployeeSharedResource.Excel_Btn_Saving');
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> @Html.Raw(EmployeeSharedResource.Excel_Btn_Saving)');
 
             const token = $('input[name="__RequestVerificationToken"]').first().val();
 
@@ -755,7 +755,7 @@
                     } else {
                         alert(res.message || 'Lưu dữ liệu thất bại.');
                     }
-                    btn.prop('disabled', false).html('<i class="bi bi-check2-circle me-1"></i> @EmployeeSharedResource.Excel_Btn_Confirm');
+                    btn.prop('disabled', false).html('<i class="bi bi-check2-circle me-1"></i> @Html.Raw(EmployeeSharedResource.Excel_Btn_Confirm)');
                 }
             })
             .catch(err => {
@@ -764,7 +764,7 @@
                 } else {
                     alert('Lỗi khi lưu: ' + err.message);
                 }
-                btn.prop('disabled', false).html('<i class="bi bi-check2-circle me-1"></i> @EmployeeSharedResource.Excel_Btn_Confirm');
+                btn.prop('disabled', false).html('<i class="bi bi-check2-circle me-1"></i> @Html.Raw(EmployeeSharedResource.Excel_Btn_Confirm)');
             });
         }
 

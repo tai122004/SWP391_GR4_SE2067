@@ -57,6 +57,13 @@ namespace RWPM.Infrastructure.DependencyInjection
             #endregion
             #endregion
 
+            #region Web Encoders (Support Vietnamese Unicode)
+            services.AddSingleton<System.Text.Encodings.Web.HtmlEncoder>(
+                System.Text.Encodings.Web.HtmlEncoder.Create(System.Text.Unicode.UnicodeRanges.All));
+            services.AddSingleton<System.Text.Encodings.Web.JavaScriptEncoder>(
+                System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All));
+            #endregion
+
             #region Localization
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services
@@ -73,6 +80,7 @@ namespace RWPM.Infrastructure.DependencyInjection
             services.AddScoped<IShiftService, ShiftService>();
 
             services.AddScoped<IAttendanceService, AttendanceService>();
+            services.AddScoped<IAttendanceAdjustmentService, AttendanceAdjustmentService>();
             services.AddScoped<IShiftRegistrationService, ShiftRegistrationService>();
             services.AddScoped<IShiftSwapService, ShiftSwapService>();
             services.AddScoped<ILeaveRequestService, LeaveRequestService>();

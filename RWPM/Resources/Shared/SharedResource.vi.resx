@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -708,7 +708,7 @@ Cách bật lại nhanh:
     <value>Ca làm</value>
   </data>
   <data name="Req_ChangeInOut" xml:space="preserve">
-    <value>Thay đổi giờ vào/ra</value>
+    <value>Sửa chấm công</value>
   </data>
   <data name="Req_Meal" xml:space="preserve">
     <value>Suất ăn</value>

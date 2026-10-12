@@ -36,5 +36,12 @@ namespace RWPM.Models.ViewModels.ShiftRegistration
         public string? LeaveTypeName { get; set; }
         public int LeaveDays { get; set; }
         public int AnnualLeaveBalance { get; set; }
+
+        // Specific to AttendanceAdjustmentRequest:
+        public string? ActualCheckInTimeStr { get; set; }
+        public string? ActualCheckOutTimeStr { get; set; }
+        public string? RequestedCheckInTimeStr { get; set; }
+        public string? RequestedCheckOutTimeStr { get; set; }
+        public string? AdjustmentSummary { get; set; }
     }
 }

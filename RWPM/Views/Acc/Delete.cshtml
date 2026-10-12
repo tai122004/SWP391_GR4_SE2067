@@ -1,4 +1,4 @@
-﻿@model AccCreateVM
+@model AccCreateVM
 
 @using AccModelResource = RWPM.Resources.Models.Acc
 @using AccSharedResource = RWPM.Resources.Shared.Acc
@@ -45,7 +45,7 @@
 		
 	</div>
 	
-	<form asp-action="DeleteConfirmed" method="post" onsubmit="return confirm('@SharedResource.ConfirmDelete');">
+	<form asp-action="DeleteConfirmed" method="post" onsubmit="return confirm('@Html.Raw(SharedResource.ConfirmDelete)');">
 		@Html.AntiForgeryToken()
 
 		<input type="hidden" asp-for="Username" />

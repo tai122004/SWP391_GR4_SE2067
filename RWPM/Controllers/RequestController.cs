@@ -14,6 +14,7 @@ namespace RWPM.Controllers
         private readonly IShiftRegistrationService _shiftRegistrationService;
         private readonly IShiftSwapService _shiftSwapService;
         private readonly ILeaveRequestService _leaveRequestService;
+        private readonly IAttendanceAdjustmentService _attendanceAdjustmentService;
         private readonly RWPM.Infrastructure.Data.DefaultDatabaseContext _context;
         private readonly IShiftService _shiftService;
 
@@ -21,12 +22,14 @@ namespace RWPM.Controllers
             IShiftRegistrationService shiftRegistrationService,
             IShiftSwapService shiftSwapService,
             ILeaveRequestService leaveRequestService,
+            IAttendanceAdjustmentService attendanceAdjustmentService,
             RWPM.Infrastructure.Data.DefaultDatabaseContext context,
             IShiftService shiftService)
         {
             _shiftRegistrationService = shiftRegistrationService;
             _shiftSwapService = shiftSwapService;
             _leaveRequestService = leaveRequestService;
+            _attendanceAdjustmentService = attendanceAdjustmentService;
             _context = context;
             _shiftService = shiftService;
         }
@@ -73,6 +76,9 @@ namespace RWPM.Controllers
             // 3. Fetch Leave Requests
             var allLeaves = await _leaveRequestService.GetLeaveRequestsAsync(startDate, endDate, storeFilter, null);
 
+            // 4. Fetch Attendance Adjustment Requests
+            var allAdjustments = await _attendanceAdjustmentService.GetRequestsAsync(startDate, endDate, storeFilter, null);
+
             // Filter for regular employees (only see own requests)
             if (!isAdmin && !isStoreManager)
             {
@@ -81,12 +87,14 @@ namespace RWPM.Controllers
                     allRegistrations = allRegistrations.Where(x => x.Employee?.Username == username).ToList();
                     allSwaps = allSwaps.Where(x => x.RequesterEmployee?.Username == username).ToList();
                     allLeaves = allLeaves.Where(x => x.Employee?.Username == username).ToList();
+                    allAdjustments = allAdjustments.Where(x => x.Employee?.Username == username).ToList();
                 }
             }
             else if (isStoreManager && !isAdmin && currentEmployee != null)
             {
                 allRegistrations = allRegistrations.Where(x => x.StoreId == currentEmployee.StoreId).ToList();
                 allLeaves = allLeaves.Where(x => x.StoreId == currentEmployee.StoreId).ToList();
+                allAdjustments = allAdjustments.Where(x => x.StoreId == currentEmployee.StoreId).ToList();
             }
 
             // Map to unified items
@@ -184,6 +192,37 @@ namespace RWPM.Controllers
                     LeaveTypeName = typeText,
                     LeaveDays = days,
                     AnnualLeaveBalance = l.Employee?.AnnualLeaveBalance ?? 0
+                });
+            }
+
+            foreach (var a in allAdjustments)
+            {
+                string inOutDesc = $"Vào: {(a.RequestedCheckInTime.HasValue ? a.RequestedCheckInTime.Value.ToString(@"hh\:mm") : "-")} | Ra: {(a.RequestedCheckOutTime.HasValue ? a.RequestedCheckOutTime.Value.ToString(@"hh\:mm") : "-")}";
+                unifiedList.Add(new RequestItemVM
+                {
+                    Id = a.AttendanceAdjustmentRequestId,
+                    RequestType = "Attendance",
+                    RequestTypeName = "Sửa chấm công",
+                    Code = "YCDC" + a.CreatedDate.ToString("yyMMdd") + "-" + a.AttendanceAdjustmentRequestId.ToString("D3"),
+                    EmployeeId = a.EmployeeId,
+                    EmployeeName = a.Employee?.Account?.FullName ?? a.Employee?.Username ?? "N/A",
+                    EmployeeCode = a.Employee?.EmployeeCode ?? "",
+                    StoreId = a.StoreId,
+                    StoreName = a.Store?.StoreName ?? "",
+                    CreatedDate = a.CreatedDate,
+                    CreatedDateStr = a.CreatedDate.ToString("dd/MM/yyyy HH:mm"),
+                    Status = a.Status,
+                    ShiftName = a.Shift?.ShiftName ?? "Ca làm việc",
+                    WorkDateStr = a.WorkDate.ToString("dd/MM/yyyy"),
+                    Note = a.Reason,
+                    RejectionReason = a.RejectionReason,
+                    ApprovedBy = a.ApprovedBy,
+                    ApprovedAtStr = a.ApprovedAt?.ToString("dd/MM/yyyy HH:mm"),
+                    ActualCheckInTimeStr = a.CurrentCheckInTime?.ToString(@"hh\:mm") ?? "-",
+                    ActualCheckOutTimeStr = a.CurrentCheckOutTime?.ToString(@"hh\:mm") ?? "-",
+                    RequestedCheckInTimeStr = a.RequestedCheckInTime?.ToString(@"hh\:mm") ?? "-",
+                    RequestedCheckOutTimeStr = a.RequestedCheckOutTime?.ToString(@"hh\:mm") ?? "-",
+                    AdjustmentSummary = inOutDesc
                 });
             }
 
@@ -373,7 +412,14 @@ namespace RWPM.Controllers
         [HttpPost]
         [Authorize(Roles = "Admin,HR,AreaManager,SuperAdmin,StoreManager")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateStatus(int id, int status, string? reason = null, string requestType = "ShiftReg")
+        public async Task<IActionResult> UpdateStatus(
+            int id, 
+            int status, 
+            string? reason = null, 
+            string requestType = "ShiftReg",
+            string? approvedCheckInTime = null,
+            string? approvedCheckOutTime = null,
+            string? approverNote = null)
         {
             try
             {
@@ -412,6 +458,33 @@ namespace RWPM.Controllers
                     {
                         await _leaveRequestService.RejectLeaveRequestAsync(id, reason, User.Identity?.Name ?? "manager");
                         return Json(new { success = true, message = RequestResource.Leave_RejectSuccess });
+                    }
+                }
+                else if (requestType == "Attendance")
+                {
+                    if (User.IsInRole("StoreManager") && !User.IsInRole("Admin") && !User.IsInRole("SuperAdmin") && !User.IsInRole("AreaManager") && !User.IsInRole("HR"))
+                    {
+                        var username = User.Identity?.Name;
+                        var currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
+                        var request = await _attendanceAdjustmentService.GetByIdAsync(id);
+                        if (request == null || currentEmployee == null || request.StoreId != currentEmployee.StoreId)
+                        {
+                            return Json(new { success = false, message = "Bạn không có quyền duyệt yêu cầu của cửa hàng khác." });
+                        }
+                    }
+
+                    if (status == 1)
+                    {
+                        var parsedIn = AttendanceAdjustmentCreateVM.ParseTime(approvedCheckInTime);
+                        var parsedOut = AttendanceAdjustmentCreateVM.ParseTime(approvedCheckOutTime);
+
+                        await _attendanceAdjustmentService.ApproveAsync(id, User.Identity?.Name ?? "manager", parsedIn, parsedOut, approverNote);
+                        return Json(new { success = true, message = "Phê duyệt và cập nhật giờ chấm công thành công!" });
+                    }
+                    else
+                    {
+                        await _attendanceAdjustmentService.RejectAsync(id, reason ?? "", User.Identity?.Name ?? "manager");
+                        return Json(new { success = true, message = "Đã từ chối yêu cầu điều chỉnh chấm công." });
                     }
                 }
                 else
@@ -453,6 +526,11 @@ namespace RWPM.Controllers
                     await _leaveRequestService.DeleteLeaveRequestAsync(id, User.Identity?.Name ?? "system");
                     return Json(new { success = true, message = RequestResource.Leave_DeleteSuccess });
                 }
+                else if (requestType == "Attendance")
+                {
+                    await _attendanceAdjustmentService.DeleteAsync(id, User.Identity?.Name ?? "system");
+                    return Json(new { success = true, message = "Xóa yêu cầu điều chỉnh chấm công thành công." });
+                }
                 else
                 {
                     await _shiftRegistrationService.DeleteAsync(id);
@@ -493,6 +571,22 @@ namespace RWPM.Controllers
                     return Json(new { success = true });
                 }
 
+                if (model.RequestType == "Attendance")
+                {
+                    foreach (var adjId in model.Ids)
+                    {
+                        if (model.Status == 1)
+                        {
+                            await _attendanceAdjustmentService.ApproveAsync(adjId, User.Identity?.Name ?? "manager");
+                        }
+                        else
+                        {
+                            await _attendanceAdjustmentService.RejectAsync(adjId, model.Reason ?? "", User.Identity?.Name ?? "manager");
+                        }
+                    }
+                    return Json(new { success = true });
+                }
+
                 if (User.IsInRole("StoreManager") && !User.IsInRole("Admin") && !User.IsInRole("SuperAdmin") && !User.IsInRole("AreaManager") && !User.IsInRole("HR"))
                 {
                     var username = User.Identity?.Name;
@@ -507,6 +601,59 @@ namespace RWPM.Controllers
 
                 await _shiftRegistrationService.UpdateBulkStatusAsync(model.Ids, (RegistrationStatus)model.Status, model.Reason, User.Identity?.Name);
                 return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAttendanceAdjustmentFormData()
+        {
+            var username = User.Identity?.Name;
+            var emp = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
+            if (emp == null) return NotFound(new { success = false, message = "Employee profile not found." });
+
+            var recentDays = DateTime.Today.AddDays(-30);
+            var records = await _context.AttendanceRecord
+                .Include(r => r.Shift)
+                .Where(r => r.Username == username && r.Date >= recentDays)
+                .OrderByDescending(r => r.Date)
+                .ThenByDescending(r => r.CheckInTime)
+                .ThenByDescending(r => r.AttendanceId)
+                .ToListAsync();
+
+            return Json(new
+            {
+                success = true,
+                records = records.Select(r => new
+                {
+                    attendanceId = r.AttendanceId,
+                    dateStr = r.Date.ToString("dd/MM/yyyy"),
+                    workDate = r.Date.ToString("yyyy-MM-dd"),
+                    shiftName = r.Shift?.ShiftName ?? "Ca làm việc",
+                    shiftId = r.ShiftId,
+                    checkIn = r.CheckInTime.HasValue ? r.CheckInTime.Value.ToString(@"hh\:mm") : "",
+                    checkOut = r.CheckOutTime.HasValue ? r.CheckOutTime.Value.ToString(@"hh\:mm") : ""
+                })
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateAttendanceAdjustment([FromBody] AttendanceAdjustmentCreateVM? model)
+        {
+            try
+            {
+                if (model == null)
+                {
+                    return Json(new { success = false, message = "Dữ liệu yêu cầu không hợp lệ hoặc thiếu thông tin." });
+                }
+
+                var username = User.Identity?.Name ?? "system";
+                await _attendanceAdjustmentService.CreateRequestAsync(model, username);
+                return Json(new { success = true, message = "Gửi yêu cầu điều chỉnh chấm công thành công! Vui lòng chờ quản lý phê duyệt." });
             }
             catch (Exception ex)
             {

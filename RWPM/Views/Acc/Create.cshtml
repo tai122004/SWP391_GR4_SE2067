@@ -1,4 +1,4 @@
-﻿@model AccCreateVM
+@model AccCreateVM
 
 @using AccountModelResource = RWPM.Resources.Models.Acc
 @using AccountSharedResource = RWPM.Resources.Shared.Acc
@@ -107,7 +107,7 @@
 
                     <div id="passwordCopyAlert" class="alert alert-light border mt-2 py-2 px-3 small d-none justify-content-between align-items-center">
                         <span class="text-secondary"><i class="bi bi-key me-1"></i> @AccountModelResource.Password: <strong id="generatedPassText" class="font-monospace text-dark"></strong></span>
-                        <button type="button" class="btn btn-sm btn-outline-dark" onclick="copyToClipboard($('#generatedPassText').text(), '@AccountSharedResource.Toast_CopiedPassword')">
+                        <button type="button" class="btn btn-sm btn-outline-dark" onclick="copyToClipboard($('#generatedPassText').text(), '@Html.Raw(AccountSharedResource.Toast_CopiedPassword)')">
                             <i class="bi bi-copy me-1"></i> @AccountSharedResource.Button_Copy
                         </button>
                     </div>

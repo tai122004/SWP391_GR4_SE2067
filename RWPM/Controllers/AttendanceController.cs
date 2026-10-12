@@ -16,12 +16,18 @@ namespace RWPM.Controllers
     public class AttendanceController : Controller
     {
         private readonly IAttendanceService _attendanceService;
+        private readonly IAttendanceAdjustmentService _attendanceAdjustmentService;
         private readonly IAccService _accService;
         private readonly DefaultDatabaseContext _context;
 
-        public AttendanceController(IAttendanceService attendanceService, IAccService accService, DefaultDatabaseContext context)
+        public AttendanceController(
+            IAttendanceService attendanceService,
+            IAttendanceAdjustmentService attendanceAdjustmentService,
+            IAccService accService,
+            DefaultDatabaseContext context)
         {
             _attendanceService = attendanceService;
+            _attendanceAdjustmentService = attendanceAdjustmentService;
             _accService = accService;
             _context = context;
         }

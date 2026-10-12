@@ -59,7 +59,7 @@
                 </div>
             </div>
             <div>
-                <button type="button" class="btn btn-sm btn-outline-success me-2" onclick="copyToClipboard('@TempData["CreatedAccountNotice"]', '@AccountSharedResource.Toast_CopiedAccountPassword')">
+                <button type="button" class="btn btn-sm btn-outline-success me-2" onclick="copyToClipboard('@TempData["CreatedAccountNotice"]', '@Html.Raw(AccountSharedResource.Toast_CopiedAccountPassword)')">
                     <i class="bi bi-copy me-1"></i> @AccountSharedResource.Button_Copy
                 </button>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -269,7 +269,7 @@
                         <i class="bi bi-clipboard me-1 text-muted"></i>
                         <span id="quickResetModal_CopyText" class="text-secondary font-monospace"></span>
                     </div>
-                    <button type="button" class="btn btn-sm btn-outline-dark text-nowrap" onclick="copyToClipboard($('#quickResetModal_CopyText').text(), '@AccountSharedResource.Toast_CopiedAccountPassword')">
+                    <button type="button" class="btn btn-sm btn-outline-dark text-nowrap" onclick="copyToClipboard($('#quickResetModal_CopyText').text(), '@Html.Raw(AccountSharedResource.Toast_CopiedAccountPassword)')">
                         <i class="bi bi-copy me-1"></i> @AccountSharedResource.Button_Copy
                     </button>
                 </div>
@@ -423,7 +423,7 @@
             }
 
             const btn = $('#accBtnPreview');
-            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> @AccountSharedResource.Excel_Btn_Verifying');
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> @Html.Raw(AccountSharedResource.Excel_Btn_Verifying)');
 
             const formData = new FormData();
             formData.append('file', file);
@@ -478,11 +478,11 @@
                     }
 
                     const statusBadge = row.isValid
-                        ? `<span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>@AccountSharedResource.Excel_Status_Valid</span>`
-                        : `<span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>@AccountSharedResource.Excel_Status_Invalid</span>`;
+                        ? `<span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>@Html.Raw(AccountSharedResource.Excel_Status_Valid)</span>`
+                        : `<span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>@Html.Raw(AccountSharedResource.Excel_Status_Invalid)</span>`;
 
                     const errHtml = row.isValid
-                        ? `<span class="text-success small"><i class="bi bi-check2 me-1"></i>@AccountSharedResource.Excel_Status_Valid</span>`
+                        ? `<span class="text-success small"><i class="bi bi-check2 me-1"></i>@Html.Raw(AccountSharedResource.Excel_Status_Valid)</span>`
                         : `<span class="text-danger small fw-semibold"><i class="bi bi-exclamation-circle me-1"></i>${escapeHtml(row.errorMessage || '')}</span>`;
 
                     tr.html(`
@@ -510,7 +510,7 @@
                 errBox.removeClass('d-none').text('@Html.Raw(SharedResource.OperationFailed): ' + err.message);
             })
             .finally(() => {
-                btn.prop('disabled', false).html('<i class="bi bi-search me-1"></i> @AccountSharedResource.Excel_Btn_Preview');
+                btn.prop('disabled', false).html('<i class="bi bi-search me-1"></i> @Html.Raw(AccountSharedResource.Excel_Btn_Preview)');
             });
         }
 
@@ -525,7 +525,7 @@
             if (!currentAccImportToken) return;
 
             const btn = $('#accBtnConfirm');
-            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> @AccountSharedResource.Excel_Btn_Saving');
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> @Html.Raw(AccountSharedResource.Excel_Btn_Saving)');
 
             const token = $('input[name="__RequestVerificationToken"]').first().val();
 
@@ -556,7 +556,7 @@
                     } else {
                         alert(res.message || '@Html.Raw(SharedResource.OperationFailed)');
                     }
-                    btn.prop('disabled', false).html('<i class="bi bi-check2-circle me-1"></i> @AccountSharedResource.Excel_Btn_Confirm');
+                    btn.prop('disabled', false).html('<i class="bi bi-check2-circle me-1"></i> @Html.Raw(AccountSharedResource.Excel_Btn_Confirm)');
                 }
             })
             .catch(err => {
@@ -565,7 +565,7 @@
                 } else {
                     alert('@Html.Raw(SharedResource.OperationFailed): ' + err.message);
                 }
-                btn.prop('disabled', false).html('<i class="bi bi-check2-circle me-1"></i> @AccountSharedResource.Excel_Btn_Confirm');
+                btn.prop('disabled', false).html('<i class="bi bi-check2-circle me-1"></i> @Html.Raw(AccountSharedResource.Excel_Btn_Confirm)');
             });
         }
 
