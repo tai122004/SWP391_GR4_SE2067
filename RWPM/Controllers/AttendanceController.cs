@@ -39,8 +39,13 @@ namespace RWPM.Controllers
 
             ViewBag.TodayRecord = await _attendanceService.GetTodayRecordAsync(username);
             
-            // Pure System Admin has no requirement to clock in. HR and StoreManager can clock in as employees.
+            // Pure System Admin has no requirement to clock in or manage daily attendance.
             bool isSystemAdmin = (User.IsInRole("Admin") || User.IsInRole("SuperAdmin")) && !User.IsInRole("HR") && !User.IsInRole("StoreManager");
+            if (isSystemAdmin)
+            {
+                return RedirectToAction("Index", "Acc");
+            }
+
             bool canManage = User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("StoreManager") || User.IsInRole("SuperAdmin");
             
             ViewBag.IsAdmin = isSystemAdmin;
