@@ -29,6 +29,12 @@ namespace RWPM.Controllers
         // GET: ShiftRegistration
         public async Task<IActionResult> Index(int? storeId = null)
         {
+            bool isSystemAdmin = (User.IsInRole("Admin") || User.IsInRole("SuperAdmin")) && !User.IsInRole("HR") && !User.IsInRole("StoreManager");
+            if (isSystemAdmin)
+            {
+                return RedirectToAction("Index", "Acc");
+            }
+
             var role = User.FindFirstValue(ClaimTypes.Role);
             var isAdmin = role == "Admin" || role == "HR" || role == "AreaManager";
             var isStoreManager = role == "StoreManager";

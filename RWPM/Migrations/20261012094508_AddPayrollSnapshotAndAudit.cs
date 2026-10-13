@@ -9,9 +9,7 @@ namespace RWPM.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_PayrollDetail_PayrollId_EmployeeId",
-                table: "PayrollDetail");
+            
 
             migrationBuilder.AddColumn<double>(
                 name: "PaidLeaveHours",
