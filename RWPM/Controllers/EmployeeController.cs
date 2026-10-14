@@ -260,6 +260,16 @@ namespace RWPM.Controllers
                 return NotFound();
             }
 
+            if (!string.IsNullOrWhiteSpace(viewModel.PhoneNumber))
+            {
+                var trimmedPhone = viewModel.PhoneNumber.Trim();
+                var phoneExists = await _context.Acc.AnyAsync(a => a.Username != viewModel.Username && a.PhoneNumber == trimmedPhone);
+                if (phoneExists)
+                {
+                    ModelState.AddModelError(nameof(viewModel.PhoneNumber), $"Số điện thoại '{viewModel.PhoneNumber}' đã được sử dụng bởi một tài khoản khác.");
+                }
+            }
+
             if (!ModelState.IsValid)
             {
                 ViewBag.AccountList = await _employeeService.GetAvailableAccountsSelectListAsync(viewModel.Username);
