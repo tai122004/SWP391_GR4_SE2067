@@ -235,6 +235,28 @@ namespace RWPM.Controllers
                 }
             }
 
+            // Kiểm tra trùng Email
+            if (!string.IsNullOrWhiteSpace(viewModel.Email))
+            {
+                var trimmedEmail = viewModel.Email.Trim().ToLower();
+                var emailExists = await _context.Acc.AnyAsync(a => a.Email.ToLower() == trimmedEmail);
+                if (emailExists)
+                {
+                    ModelState.AddModelError(nameof(viewModel.Email), $"Email '{viewModel.Email}' đã được sử dụng bởi một tài khoản khác.");
+                }
+            }
+
+            // Kiểm tra trùng Số điện thoại
+            if (!string.IsNullOrWhiteSpace(viewModel.PhoneNumber))
+            {
+                var trimmedPhone = viewModel.PhoneNumber.Trim();
+                var phoneExists = await _context.Acc.AnyAsync(a => a.PhoneNumber == trimmedPhone);
+                if (phoneExists)
+                {
+                    ModelState.AddModelError(nameof(viewModel.PhoneNumber), $"Số điện thoại '{viewModel.PhoneNumber}' đã được sử dụng bởi một tài khoản khác.");
+                }
+            }
+
             if (!ModelState.IsValid)
             {
                 viewModel.AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync();
@@ -374,6 +396,28 @@ namespace RWPM.Controllers
                 if (!viewModel.HourlyRate.HasValue || viewModel.HourlyRate <= 0)
                 {
                     ModelState.AddModelError(nameof(viewModel.HourlyRate), "Vui lòng nhập mức lương theo giờ để tính lương cho HR.");
+                }
+            }
+
+            // Kiểm tra trùng Email
+            if (!string.IsNullOrWhiteSpace(viewModel.Email))
+            {
+                var trimmedEmail = viewModel.Email.Trim().ToLower();
+                var emailExists = await _context.Acc.AnyAsync(a => a.Username != id && a.Email.ToLower() == trimmedEmail);
+                if (emailExists)
+                {
+                    ModelState.AddModelError(nameof(viewModel.Email), $"Email '{viewModel.Email}' đã được sử dụng bởi một tài khoản khác.");
+                }
+            }
+
+            // Kiểm tra trùng Số điện thoại
+            if (!string.IsNullOrWhiteSpace(viewModel.PhoneNumber))
+            {
+                var trimmedPhone = viewModel.PhoneNumber.Trim();
+                var phoneExists = await _context.Acc.AnyAsync(a => a.Username != id && a.PhoneNumber == trimmedPhone);
+                if (phoneExists)
+                {
+                    ModelState.AddModelError(nameof(viewModel.PhoneNumber), $"Số điện thoại '{viewModel.PhoneNumber}' đã được sử dụng bởi một tài khoản khác.");
                 }
             }
 
