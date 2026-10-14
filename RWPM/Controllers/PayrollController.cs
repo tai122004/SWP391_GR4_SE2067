@@ -116,7 +116,7 @@ namespace RWPM.Controllers
         // POST: /Payroll/Calculate
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Calculate(int month, int year)
+        public async Task<IActionResult> Calculate(DateTime startDate, DateTime endDate)
         {
             if (!IsAdminOrHR)
             {
@@ -125,8 +125,8 @@ namespace RWPM.Controllers
 
             try
             {
-                var payroll = await _payrollService.CalculatePayrollAsync(month, year, CurrentUsername);
-                TempData["SuccessMessage"] = $"Tính lương kỳ Tháng {month:D2}/{year} thành công với {payroll.TotalEmployees} nhân viên!";
+                var payroll = await _payrollService.CalculatePayrollAsync(startDate, endDate, CurrentUsername);
+                TempData["SuccessMessage"] = $"Tính lương kỳ {payroll.StartDate:dd/MM/yyyy} - {payroll.EndDate:dd/MM/yyyy} thành công với {payroll.TotalEmployees} nhân viên!";
                 return RedirectToAction(nameof(Detail), new { id = payroll.PayrollId });
             }
             catch (Exception ex)
@@ -155,8 +155,8 @@ namespace RWPM.Controllers
 
             try
             {
-                await _payrollService.CalculatePayrollAsync(payroll.PeriodMonth, payroll.PeriodYear, CurrentUsername);
-                TempData["SuccessMessage"] = $"Tính lại bảng lương Tháng {payroll.PeriodMonth:D2}/{payroll.PeriodYear} thành công!";
+                await _payrollService.CalculatePayrollAsync(payroll.StartDate, payroll.EndDate, CurrentUsername);
+                TempData["SuccessMessage"] = $"Tính lại bảng lương {payroll.StartDate:dd/MM/yyyy} - {payroll.EndDate:dd/MM/yyyy} thành công!";
             }
             catch (Exception ex)
             {
@@ -302,7 +302,7 @@ namespace RWPM.Controllers
                 }
 
                 var excelBytes = await _payrollService.ExportPayrollToExcelAsync(id, effectiveStoreId);
-                var fileName = $"BangLuong_{payroll.PeriodMonth:D2}_{payroll.PeriodYear}.xlsx";
+                var fileName = $"BangLuong_{payroll.StartDate:ddMMyy}_{payroll.EndDate:ddMMyy}.xlsx";
                 return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
             }
             catch (Exception ex)

@@ -191,9 +191,9 @@ namespace RWPM.Infrastructure.Data
             #region Payroll
             modelBuilder.Entity<Payroll>(e =>
             {
-                e.HasIndex(x => new { x.PeriodMonth, x.PeriodYear })
+                e.HasIndex(x => new { x.StartDate, x.EndDate })
                  .IsUnique()
-                 .HasDatabaseName("IX_Payroll_PeriodMonth_PeriodYear");
+                 .HasDatabaseName("IX_Payroll_StartDate_EndDate");
 
                 e.HasMany(x => x.Details)
                  .WithOne(x => x.Payroll)

@@ -49,11 +49,13 @@
             }
 
             <!-- Optional: Previous/Next buttons -->
+            @{ var previousLabel = SharedResource.ResourceManager.GetString("Pagination_Previous") ?? "Previous";
+               var nextLabel = SharedResource.ResourceManager.GetString("Pagination_Next") ?? "Next"; }
             <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
-                <a class="page-link" asp-all-route-data="Model.RouteData" asp-route-PageNumber="@(currentPage - 1)">Previous</a>
+                <a class="page-link" asp-all-route-data="Model.RouteData" asp-route-PageNumber="@(currentPage - 1)">@previousLabel</a>
             </li>
             <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
-                <a class="page-link" asp-all-route-data="Model.RouteData" asp-route-PageNumber="@(currentPage + 1)">Next</a>
+                <a class="page-link" asp-all-route-data="Model.RouteData" asp-route-PageNumber="@(currentPage + 1)">@nextLabel</a>
             </li>
         </ul>
     </nav>
