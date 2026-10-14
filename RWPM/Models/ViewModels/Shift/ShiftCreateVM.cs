@@ -8,8 +8,10 @@ public class ShiftCreateVM : IValidatableObject
 {
     [RequiredLocalization, MaxLengthLocalized(100)]
     public string ShiftName { get; set; } = string.Empty;
-    public TimeSpan StartTime { get; set; }
-    public TimeSpan EndTime { get; set; }
+    [Required(ErrorMessage = "Vui lòng nhập giờ bắt đầu.")]
+    public TimeSpan? StartTime { get; set; }
+    [Required(ErrorMessage = "Vui lòng nhập giờ kết thúc.")]
+    public TimeSpan? EndTime { get; set; }
     public bool EndsNextDay { get; set; }
     public TimeSpan? BreakStartTime { get; set; }
     public TimeSpan? BreakEndTime { get; set; }
@@ -33,7 +35,7 @@ public class ShiftCreateVM : IValidatableObject
 
     public Entities.Shift ToEntity() => new()
     {
-        ShiftName = ShiftName?.Trim() ?? string.Empty, StartTime = StartTime, EndTime = EndTime,
+        ShiftName = ShiftName?.Trim() ?? string.Empty, StartTime = StartTime ?? TimeSpan.Zero, EndTime = EndTime ?? TimeSpan.Zero,
         EndDayOffset = (byte)(EndsNextDay ? 1 : 0),
         BreakStartTime = BreakStartTime, BreakEndTime = BreakEndTime,
         BreakStartDayOffset = BreakStartTime.HasValue ? (byte)(BreakStartsNextDay ? 1 : 0) : null,

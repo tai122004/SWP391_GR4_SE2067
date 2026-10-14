@@ -27,9 +27,9 @@ public class Store : AuditableEntity, IActivatable
 
     public double? Longitude { get; set; }
 
-    public int MinAllowedDistanceMeters { get; set; } = 0;
+    public int MinAllowedDistanceMeters { get; set; } = 3;
 
-    public int AllowedRadiusMeters { get; set; } = 100;
+    public int AllowedRadiusMeters { get; set; } = 200;
 
     // === Extended Fields ===
     public int? ManagerId { get; set; }

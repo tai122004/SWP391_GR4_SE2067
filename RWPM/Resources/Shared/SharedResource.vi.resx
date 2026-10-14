@@ -815,4 +815,6 @@ Cách bật lại nhanh:
   <data name="Unit_Days" xml:space="preserve">
     <value>ngày</value>
   </data>
+  <data name="Pagination_Previous" xml:space="preserve"><value>Trước</value></data>
+  <data name="Pagination_Next" xml:space="preserve"><value>Sau</value></data>
 </root>

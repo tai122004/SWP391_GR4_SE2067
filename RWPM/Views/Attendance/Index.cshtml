@@ -1055,6 +1055,8 @@
 
         // --- PHÂN TRANG CHO TẤT CẢ CÁC BẢNG LỊCH SỬ (10 DÒNG / TRANG) ---
         var totalRecordBarTemplate = `@Html.Raw(SharedResource.ResourceManager.GetString("TotalRecordBar") ?? "Hiển thị từ {0}–{1} của {2} dòng dữ liệu")`;
+        var previousAriaLabel = '@Html.Raw(SharedResource.ResourceManager.GetString("Pagination_Previous") ?? "Previous")';
+        var nextAriaLabel = '@Html.Raw(SharedResource.ResourceManager.GetString("Pagination_Next") ?? "Next")';
 
         function initTablePagination(tableId, paginationContainerId, pageSize) {
             if (!pageSize) pageSize = 10;
@@ -1110,7 +1112,7 @@
                     <nav class="table-pagination">
                         <ul class="pagination pagination-sm mb-0">
                             <li class="page-item ${currentPage <= 1 ? 'disabled' : ''}">
-                                <a class="page-link" href="javascript:void(0)" data-page="${currentPage - 1}" aria-label="Previous">
+                                <a class="page-link" href="javascript:void(0)" data-page="${currentPage - 1}" aria-label="${previousAriaLabel}">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
@@ -1148,7 +1150,7 @@
 
                 paginationHtml += `
                             <li class="page-item ${currentPage >= totalPages ? 'disabled' : ''}">
-                                <a class="page-link" href="javascript:void(0)" data-page="${currentPage + 1}" aria-label="Next">
+                                <a class="page-link" href="javascript:void(0)" data-page="${currentPage + 1}" aria-label="${nextAriaLabel}">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li>
