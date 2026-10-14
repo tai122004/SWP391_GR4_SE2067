@@ -1,457 +1,706 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @using RWPM.Resources.Shared
+@using System.Globalization
 
 @{
     ViewData["Title"] = ShiftRegistrationResource.ShiftRegistration;
+    var currentStoreId = ViewBag.CurrentStoreId as int?;
+    string? currentStoreName = null;
+    if (ViewBag.AllStores != null && currentStoreId.HasValue)
+    {
+        foreach (var st in ViewBag.AllStores)
+        {
+            if (st.StoreId == currentStoreId)
+            {
+                currentStoreName = st.StoreName;
+                break;
+            }
+        }
+    }
+    bool isManager = (ViewBag.IsManager == true);
 }
 
 <div class="container-fluid px-0 shift-registration-page">
-    <div class="app-page-header">
+    @Html.AntiForgeryToken()
+
+    <!-- Page Header -->
+    <div class="app-page-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
         <div>
-            <h1 class="fw-bold text-dark mb-1">@ShiftRegistrationResource.ShiftRegistration</h1>
-            <div class="text-muted small">@ShiftRegistrationResource.Subtitle</div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h1 class="h3 fw-bold text-dark mb-0">@ShiftRegistrationResource.ShiftRegistration</h1>
+                @if (!string.IsNullOrEmpty(currentStoreName))
+                {
+                    <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 fs-7 fw-semibold d-inline-flex align-items-center gap-1">
+                        <i class="bi bi-shop"></i>
+                        <span>Chi nhánh: <strong>@currentStoreName</strong></span>
+                    </span>
+                }
+            </div>
+            <p class="text-muted small mb-0">Lựa chọn các ca làm việc phù hợp trong tuần và gửi yêu cầu đăng ký tới Quản lý để được phê duyệt.</p>
+        </div>
+
+        <!-- Legend / Chú thích trạng thái -->
+        <div class="status-legend-bar d-flex flex-wrap align-items-center gap-2 p-2 bg-white rounded-3 border shadow-xs small">
+            <span class="legend-item"><span class="legend-dot dot-available"></span> Chưa đăng ký</span>
+            <span class="legend-item"><span class="legend-dot dot-selected"></span> Mới chọn</span>
+            <span class="legend-item"><span class="legend-dot dot-pending"></span> Chờ duyệt</span>
+            <span class="legend-item"><span class="legend-dot dot-approved"></span> Đã duyệt</span>
+            <span class="legend-item"><span class="legend-dot dot-past"></span> Quá hạn</span>
         </div>
     </div>
-    <div class="row gx-0">
-        <div class="col-12">
-            <div class="app-content-card shift-registration-card mb-4">
-                @if (ViewBag.IsManager)
+
+    <!-- Main Content Card -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 shift-main-card">
+        @if (isManager)
+        {
+            <div class="d-flex align-items-center justify-content-between px-3 pt-3 pb-2 border-bottom flex-wrap gap-2 bg-light bg-opacity-50">
+                <div class="nav nav-pills gap-2" id="shiftModeTabs" role="tablist">
+                    <button class="btn btn-sm btn-primary rounded-pill px-3 py-1 fw-semibold text-sm shadow-none" id="tabMyRegistration" type="button" onclick="switchViewMode('my')">
+                        <i class="bi bi-person-badge me-1"></i> Đăng ký ca của tôi
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-semibold text-sm shadow-none" id="tabManagerSchedule" type="button" onclick="switchViewMode('manager')">
+                        <i class="bi bi-people-fill me-1"></i> Quản lý lịch ca
+                    </button>
+                </div>
+                @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin"))
                 {
-                    <div class="d-flex align-items-center justify-content-between px-3 pt-3 pb-2 border-bottom flex-wrap gap-2 bg-light bg-opacity-50">
-                        <div class="nav nav-pills gap-2" id="shiftModeTabs" role="tablist">
-                            <button class="btn btn-sm btn-primary rounded-pill px-3 py-1 fw-semibold text-sm shadow-none" id="tabMyRegistration" type="button" onclick="switchViewMode('my')">
-                                <i class="fas fa-user-clock me-1"></i> Đăng ký ca của tôi
-                            </button>
-                            <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-semibold text-sm shadow-none" id="tabManagerSchedule" type="button" onclick="switchViewMode('manager')">
-                                <i class="fas fa-users-cog me-1"></i> Quản lý lịch ca
-                            </button>
-                        </div>
-                        @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin"))
-                        {
-                            @if (ViewBag.AllStores != null)
-                            {
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="small text-muted fw-semibold"><i class="fas fa-store me-1"></i>Cửa hàng:</span>
-                                    <select id="switchStoreSelect" class="tanca-select py-1" style="min-width: 180px;" onchange="changeStoreFilter(this.value)">
-                                        @foreach (var st in ViewBag.AllStores)
-                                        {
-                                            <option value="@st.StoreId" selected="@(st.StoreId == ViewBag.CurrentStoreId ? "selected" : null)">@st.StoreName</option>
-                                        }
-                                    </select>
-                                </div>
-                            }
-                        }
-                    </div>
-                }
-                <div class="card-header pb-0 border-bottom bg-transparent pt-3 shift-registration-toolbar">
-                    <div class="d-flex align-items-center justify-content-between mb-3 w-100 flex-wrap gap-2">
-                        <!-- Left side controls -->
-                        <div class="d-flex align-items-center gap-2 flex-wrap">
-                            <button class="tanca-btn"><i class="fas fa-sliders-h"></i></button>
-                            <button class="tanca-btn"><i class="fas fa-map-marker-alt"></i></button>
-                            
-                            <div class="tanca-week-picker d-flex align-items-center position-relative">
-                                <span class="btn-icon" id="btnPrevWeek"><i class="fas fa-chevron-left"></i></span>
-                                <span id="currentWeekDisplay" class="fw-bold px-2" style="min-width: 130px; text-align: center; cursor: pointer;"></span>
-                                <span class="btn-icon" id="btnNextWeek"><i class="fas fa-chevron-right"></i></span>
-                                <i class="far fa-calendar-alt ms-2 text-primary" style="cursor: pointer;" id="btnToggleWeekPicker"></i>
-                                
-                                <!-- Custom Calendar Dropdown -->
-                                <div id="weekPickerDropdown" class="week-picker-dropdown shadow rounded" style="display: none;">
-                                    <div class="wp-header d-flex justify-content-between align-items-center p-2 border-bottom">
-                                        <div>
-                                            <button class="btn btn-sm btn-light wp-prev-year px-2"><i class="fas fa-angle-double-left"></i></button>
-                                            <button class="btn btn-sm btn-light wp-prev-month px-2"><i class="fas fa-angle-left"></i></button>
-                                        </div>
-                                        <strong id="wpMonthYearDisplay">Th.9 2026</strong>
-                                        <div>
-                                            <button class="btn btn-sm btn-light wp-next-month px-2"><i class="fas fa-angle-right"></i></button>
-                                            <button class="btn btn-sm btn-light wp-next-year px-2"><i class="fas fa-angle-double-right"></i></button>
-                                        </div>
-                                    </div>
-                                    <div class="wp-body p-2">
-                                        <table class="table table-borderless text-center mb-0 wp-table">
-                                            <thead>
-                                                <tr>
-                                                    <th class="text-muted" style="width: 30px;"></th>
-                                                    <th>T2</th><th>T3</th><th>T4</th><th>T5</th><th>T6</th><th>T7</th><th>CN</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="wpCalendarBody">
-                                                <!-- Calendar rows generated by JS -->
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-
-                            @if (ViewBag.IsManager)
-                            {
-                                <div id="managerFilterEmployeeContainer" style="display: none;">
-                                    <select id="filterEmployeeId" class="tanca-select" style="min-width: 150px;">
-                                        <option value="">@ShiftRegistrationResource.FilterByEmployee</option>
-                                        @if (ViewBag.Employees != null)
-                                        {
-                                            foreach (var emp in ViewBag.Employees)
-                                            {
-                                                <option value="@emp.EmployeeId">@emp.EmployeeCode - @(emp.Account?.FullName ?? emp.Username)</option>
-                                            }
-                                        }
-                                    </select>
-                                </div>
-                            }
-
-                            <select id="filterTimekeeping" class="tanca-select">
-                                <option value="">@ShiftRegistrationResource.AttendanceFilter</option>
-                                <option value="ontime">@ShiftRegistrationResource.OnTimeAttendance</option>
-                                <option value="late">@ShiftRegistrationResource.LateEarly</option>
-                                <option value="missing">@ShiftRegistrationResource.NotCheckedInOut</option>
-                            </select>
-
-                            <select id="filterEmployeeStatus" class="tanca-select">
-                                <option value="active">@ShiftRegistrationResource.ActiveEmployees</option>
-                                <option value="inactive">@SharedResource.ResourceManager.GetString("Shift_InactiveEmployees")</option>
-                            </select>
-                        </div>
-
-                        <!-- Right side controls -->
+                    @if (ViewBag.AllStores != null)
+                    {
                         <div class="d-flex align-items-center gap-2">
-                            <button class="tanca-btn" onclick="fetchEvents()" title="@SharedResource.ResourceManager.GetString("Shift_Refresh")"><i class="fas fa-sync-alt"></i></button>
-                            <div id="managerActionBtns" class="d-flex align-items-center gap-2" style="display: none;">
-                                <button class="tanca-btn" title="@SharedResource.ResourceManager.GetString("Shift_Warning")"><i class="fas fa-exclamation-triangle"></i></button>
-                                <button class="tanca-btn" title="@SharedResource.ResourceManager.GetString("Shift_Tools")"><i class="fas fa-tools"></i></button>
-                                <button class="tanca-btn" title="@SharedResource.ResourceManager.GetString("Shift_Settings")"><i class="fas fa-cog"></i></button>
-                                <button class="btn btn-sm btn-primary mb-0 ms-2" onclick="openCreateModal(new Date())">@ShiftRegistrationResource.CreateShift</button>
+                            <span class="small text-muted fw-semibold"><i class="bi bi-shop me-1"></i>Cửa hàng:</span>
+                            <select id="switchStoreSelect" class="form-select form-select-sm py-1" style="min-width: 180px;" onchange="changeStoreFilter(this.value)">
+                                @foreach (var st in ViewBag.AllStores)
+                                {
+                                    <option value="@st.StoreId" selected="@(st.StoreId == ViewBag.CurrentStoreId ? "selected" : null)">@st.StoreName</option>
+                                }
+                            </select>
+                        </div>
+                    }
+                }
+            </div>
+        }
+
+        <!-- Navigation Toolbar -->
+        <div class="card-header bg-white border-bottom py-3 px-3 px-md-4">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <!-- Left: Week Navigation Controls -->
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <div class="btn-group btn-group-sm shadow-xs" role="group">
+                        <button type="button" class="btn btn-outline-secondary" id="btnPrevWeek" title="Tuần trước">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary fw-semibold px-2 px-md-3" id="btnTodayWeek" title="Chuyển đến tuần hiện tại">
+                            Tuần này
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" id="btnNextWeek" title="Tuần sau">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+
+                    <!-- Week Display Pill with Popover Picker -->
+                    <div class="position-relative">
+                        <button type="button" class="btn btn-sm btn-light border d-flex align-items-center gap-2 px-3 py-1 text-dark shadow-xs" id="btnToggleWeekPicker">
+                            <i class="bi bi-calendar3 text-primary"></i>
+                            <span id="currentWeekDisplay" class="fw-bold"></span>
+                            <span id="currentWeekRangeDisplay" class="text-muted small"></span>
+                            <i class="bi bi-chevron-down text-muted small ms-1"></i>
+                        </button>
+
+                        <!-- Custom Calendar Popover Dropdown -->
+                        <div id="weekPickerDropdown" class="week-picker-dropdown shadow-lg rounded-3 border bg-white p-3" style="display: none;">
+                            <div class="wp-header d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-light wp-prev-year px-2" title="Năm trước"><i class="bi bi-chevron-double-left"></i></button>
+                                    <button type="button" class="btn btn-light wp-prev-month px-2" title="Tháng trước"><i class="bi bi-chevron-left"></i></button>
+                                </div>
+                                <strong id="wpMonthYearDisplay" class="text-dark fs-6"></strong>
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-light wp-next-month px-2" title="Tháng sau"><i class="bi bi-chevron-right"></i></button>
+                                    <button type="button" class="btn btn-light wp-next-year px-2" title="Năm sau"><i class="bi bi-chevron-double-right"></i></button>
+                                </div>
                             </div>
-                            <div id="employeeActionBtns" class="d-flex align-items-center gap-2">
-                                <button class="btn btn-sm btn-outline-primary mb-0 ms-2" onclick="copyPreviousWeek()" style="border-radius: 8px; padding: 8px 16px;"><i class="fas fa-copy"></i> @SharedResource.ResourceManager.GetString("Shift_CopyPrev")</button>
-                                <button class="btn btn-sm btn-primary mb-0 ms-2" onclick="syncWeeklySchedule()"><i class="fas fa-save"></i> @SharedResource.ResourceManager.GetString("Shift_RegisterWeek")</button>
+                            <div class="wp-body">
+                                <table class="table table-borderless table-sm text-center mb-0 wp-table">
+                                    <thead>
+                                        <tr class="text-muted small">
+                                            <th style="width: 28px;">#</th>
+                                            <th>T2</th><th>T3</th><th>T4</th><th>T5</th><th>T6</th><th>T7</th><th>CN</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="wpCalendarBody">
+                                        <!-- Calendar rows generated by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="text-center pt-2 mt-2 border-top">
+                                <small class="text-muted">Nhấp vào một dòng tuần bất kỳ để chọn</small>
                             </div>
                         </div>
                     </div>
+
+                    @if (isManager)
+                    {
+                        <div id="managerFilterEmployeeContainer" style="display: none;">
+                            <select id="filterEmployeeId" class="form-select form-select-sm" style="min-width: 170px;">
+                                <option value="">@ShiftRegistrationResource.FilterByEmployee</option>
+                                @if (ViewBag.Employees != null)
+                                {
+                                    foreach (var emp in ViewBag.Employees)
+                                    {
+                                        <option value="@emp.EmployeeId">@emp.EmployeeCode - @(emp.Account?.FullName ?? emp.Username)</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    }
                 </div>
-                <div class="card-body px-0 pt-0 pb-2 mt-2">
-                    <div class="table-responsive p-0" style="overflow-x: auto;">
-                        <table class="table modern-table align-middle mb-0 shift-grid-table table-bordered" style="min-width: 1000px;">
-                            <thead>
-                                <tr id="gridHeaderRow">
-                                    <!-- Days will be generated here -->
-                                </tr>
-                            </thead>
-                            <tbody id="gridBody">
-                                <!-- Employee rows will be generated here -->
-                            </tbody>
-                        </table>
+
+                <!-- Right: Action Buttons -->
+                <div class="d-flex align-items-center gap-2 ms-auto">
+                    <button type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 shadow-xs" onclick="fetchEvents()" title="Tải lại dữ liệu">
+                        <i class="bi bi-arrow-clockwise" id="iconRefresh"></i>
+                        <span class="d-none d-sm-inline">Làm mới</span>
+                    </button>
+
+                    @if (isManager)
+                    {
+                        <div id="managerActionBtns" class="d-flex align-items-center gap-2" style="display: none;">
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="copyPreviousWeek()">
+                                <i class="bi bi-copy me-1"></i> Sao chép tuần
+                            </button>
+                            <button type="button" class="btn btn-sm btn-primary" onclick="openCreateModal(new Date())">
+                                <i class="bi bi-plus-lg me-1"></i> @ShiftRegistrationResource.CreateShift
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Matrix Schedule Table Area -->
+        <div class="card-body p-0 position-relative">
+            <div class="table-responsive shift-table-container">
+                <table class="table modern-shift-table align-middle mb-0" id="shiftGridTable">
+                    <thead>
+                        <tr id="gridHeaderRow">
+                            <!-- Column headers generated by JS -->
+                        </tr>
+                    </thead>
+                    <tbody id="gridBody">
+                        <!-- Employee or Shift rows generated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Sticky Bottom Summary Bar -->
+        <div class="weekly-summary-bar p-3 bg-white border-top d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-muted small fw-bold text-uppercase">Tóm tắt ca tuần:</span>
+                    <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">
+                        <i class="bi bi-plus-circle me-1"></i><strong id="summaryNewCount">0</strong> mới chọn
+                    </span>
+                    <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1">
+                        <i class="bi bi-hourglass-split me-1"></i><strong id="summaryPendingCount">0</strong> chờ duyệt
+                    </span>
+                    <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2 py-1">
+                        <i class="bi bi-check-circle-fill me-1"></i><strong id="summaryApprovedCount">0</strong> đã duyệt
+                    </span>
+                </div>
+                <div class="vr text-secondary d-none d-md-block" style="height: 20px;"></div>
+                <div class="d-flex align-items-center gap-1 small text-dark">
+                    <i class="bi bi-clock-history text-primary"></i>
+                    <span>Tổng giờ dự kiến: <strong id="summaryTotalHours" class="text-primary">0.0 giờ</strong></span>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 ms-auto">
+                <button type="button" class="btn btn-outline-secondary btn-sm px-3" onclick="fetchEvents()" title="Đặt lại các thay đổi chưa lưu">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i> Đặt lại
+                </button>
+                <button type="button" id="btnSubmitWeekly" class="btn btn-primary btn-sm px-4 fw-semibold shadow-xs" onclick="syncWeeklySchedule()">
+                    <i class="bi bi-send-fill me-1"></i> @SharedResource.ResourceManager.GetString("Shift_RegisterWeek")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Đăng ký ca đơn lẻ theo ngày (#shiftModal) -->
+<div class="modal fade" id="shiftModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 460px;">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header bg-light border-bottom py-3">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="modal-icon-badge bg-primary text-white rounded-3 p-2 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-calendar-plus fs-5"></i>
                     </div>
-                    
-                    <!-- Legend -->
-                    <div class="d-flex justify-content-center gap-4 py-3 mt-2 flex-wrap" style="font-size: 12px; border-top: 1px solid #e9ecef;">
-                        <span class="d-flex align-items-center gap-1"><i class="far fa-circle text-secondary"></i> @SharedResource.ResourceManager.GetString("Shift_NotArrived")</span>
-                        <span class="d-flex align-items-center gap-1"><i class="far fa-circle text-success"></i> @SharedResource.ResourceManager.GetString("Shift_OnTime")</span>
-                        <span class="d-flex align-items-center gap-1"><i class="far fa-circle text-warning"></i> @SharedResource.ResourceManager.GetString("Shift_LateEarly")</span>
-                        <span class="d-flex align-items-center gap-1"><i class="far fa-circle text-danger"></i> @SharedResource.ResourceManager.GetString("Shift_NotChecked")</span>
-                        <span class="d-flex align-items-center gap-1"><i class="far fa-circle text-primary"></i> @SharedResource.ResourceManager.GetString("Shift_OnLeave")</span>
+                    <div>
+                        <h5 class="modal-title fw-bold text-dark mb-0">Đăng ký ca làm việc</h5>
+                        <small class="text-muted" id="modalDateDisplay"></small>
                     </div>
                 </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3 d-flex align-items-center justify-content-between p-2 rounded-3 bg-light border">
+                    <span class="small text-muted">Nhân viên:</span>
+                    <strong class="text-dark small" id="modalEmpName">Tôi</strong>
+                </div>
+
+                <div class="mb-3">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" class="form-control border-start-0 ps-0" id="searchShiftInput" placeholder="@ShiftRegistrationResource.SearchBtn" onkeyup="filterShifts(this.value)">
+                    </div>
+                </div>
+
+                <form id="shiftForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="EmployeeId" name="EmployeeId" />
+                    <input type="hidden" id="WorkDate" name="WorkDate" />
+
+                    <label class="form-label small fw-semibold text-muted mb-2">Chọn ca làm việc khả dụng:</label>
+                    <div class="shift-list-container pe-1" style="max-height: 240px; overflow-y: auto;">
+                        <!-- Shift options rendered via AJAX -->
+                    </div>
+
+                    @if (isManager)
+                    {
+                        <div class="mt-3 pt-2 border-top">
+                            <a href="@Url.Action("Create", "Shift")" class="text-primary small text-decoration-none fw-semibold">
+                                <i class="bi bi-plus-circle me-1"></i> @ShiftRegistrationResource.CreateNewShift
+                            </a>
+                        </div>
+                    }
+
+                    <div class="mt-4 d-flex justify-content-end gap-2" id="saveShiftBtnContainer" style="display: none;">
+                        <button type="button" class="btn btn-sm btn-outline-secondary px-3" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-sm btn-primary px-4 fw-semibold">
+                            <i class="bi bi-check-lg me-1"></i> Lưu đăng ký
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Xem chi tiết ca / Hủy ca / Đổi ca (#viewModal) -->
+<div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header bg-light border-bottom py-3">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="modal-icon-badge bg-primary text-white rounded-3 p-2 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-card-checklist fs-5"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold text-dark mb-0">@ShiftRegistrationResource.ShiftDetails</h5>
+                        <small class="text-muted">Thông tin chi tiết ca làm việc đã đăng ký</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="detail-group mb-3 pb-3 border-bottom">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted small"><i class="bi bi-person me-1"></i> @ShiftRegistrationResource.Employee:</span>
+                        <strong class="text-dark" id="vEmployee"></strong>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted small"><i class="bi bi-shop me-1"></i> @RWPM.Resources.Models.Employee.Store:</span>
+                        <span class="text-dark fw-medium" id="vStore"></span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted small"><i class="bi bi-clock-history me-1"></i> @ShiftRegistrationResource.Shift:</span>
+                        <strong class="text-primary" id="vShift"></strong>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted small"><i class="bi bi-calendar-event me-1"></i> @ShiftRegistrationResource.Time:</span>
+                        <span class="text-dark fw-medium" id="vTime"></span>
+                    </div>
+                </div>
+
+                <div class="detail-group mb-3 pb-3 border-bottom">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted small">@ShiftRegistrationResource.Status:</span>
+                        <div id="vStatusBadge"></div>
+                    </div>
+                    <div class="d-none">
+                        <span id="vStatus"></span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-start">
+                        <span class="text-muted small">@ShiftRegistrationResource.Note:</span>
+                        <span class="text-dark text-end small" id="vNote">-</span>
+                    </div>
+                </div>
+
+                <div id="vRejectionReasonRow" class="alert alert-danger py-2 px-3 mb-3 small" style="display: none;">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                    <strong>Lý do từ chối:</strong>
+                    <span id="vRejectionReason" class="ms-1"></span>
+                </div>
+
+                <div id="vApproverRow" class="p-2 bg-light rounded-3 small text-muted mb-0" style="display: none;">
+                    <i class="bi bi-person-check me-1 text-success"></i>
+                    <span>Người duyệt: <strong id="vApprover" class="text-dark"></strong></span>
+                    <span id="vApprovedAt" class="ms-1"></span>
+                </div>
+            </div>
+            <div class="modal-footer bg-light border-top py-2 px-4 d-flex justify-content-between">
+                <input type="hidden" id="vRegistrationId" />
+                @if (isManager)
+                {
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteRegistration()">Hủy ca</button>
+                    <button type="button" class="btn btn-sm btn-secondary ms-auto" data-bs-dismiss="modal">@ShiftRegistrationResource.Close</button>
+                }
+                else
+                {
+                    <a href="/Request" class="btn btn-sm btn-outline-warning text-dark" id="btnGoToSwapShift" style="display: none;">
+                        <i class="bi bi-arrow-left-right me-1"></i> @SharedResource.Req_ChangeShift
+                    </a>
+                    <button type="button" class="btn btn-sm btn-danger" id="btnCancelRegistration" onclick="deleteRegistration()">
+                        <i class="bi bi-trash3 me-1"></i> @ShiftRegistrationResource.Cancel
+                    </button>
+                    <span id="txtApprovedNotice" class="text-muted small" style="display: none;">
+                        <i class="bi bi-shield-lock me-1"></i> Ca đã duyệt, không thể tự hủy.
+                    </span>
+                    <button type="button" class="btn btn-sm btn-secondary ms-auto" data-bs-dismiss="modal">@ShiftRegistrationResource.Close</button>
+                }
             </div>
         </div>
     </div>
 </div>
 
 <style>
-    .shift-registration-page .shift-registration-card { box-shadow: 0 1px 4px rgba(18,38,61,.04); }
-    .shift-registration-page .shift-registration-toolbar { padding: 1rem 1.15rem .85rem !important; }
-    .shift-registration-page .tanca-btn, .shift-registration-page .tanca-select, .shift-registration-page .tanca-week-picker { background: #fff; border: 1px solid #dbe3eb; border-radius: .4rem; color: #40546e; }
-    .shift-registration-page .tanca-btn { min-height: 38px; padding: .45rem .7rem; }
-    .shift-registration-page .tanca-select { min-height: 38px; padding: .45rem 2rem .45rem .7rem; }
-    .shift-registration-page .tanca-week-picker { min-height: 38px; padding: .45rem .7rem; }
-    .shift-registration-page .tanca-btn:hover, .shift-registration-page .tanca-select:hover { border-color: #9db7d2; background: #f8fbfe; }
-    .shift-registration-page .shift-grid-table { border-color: #e1e7ee; }
-    .shift-registration-page .shift-grid-table th { background: #f4f7fa; color: #344861; border-color: #e1e7ee; }
-    .shift-registration-page .emp-col { width: 250px; border-right: 1px solid #e1e7ee !important; }
-    .shift-registration-page .shift-filled { background: #f7f9fc; border-color: #d9e2ec; border-radius: .4rem; }
-    .shift-registration-page .shift-filled:hover { background: #eef4fa; box-shadow: none; }
-    .shift-registration-page .shift-name { color: #243950; font-weight: 600; }
-    .shift-registration-page .shift-time { color: #687991; }
-    .shift-registration-page .shift-empty-box { border-color: #dbe3eb; }
-    .shift-registration-page .shift-cell:hover .shift-empty-box { border-color: #9db7d2; color: #55789d; background: #f8fbfe; }
-    .shift-registration-page .card-body > .d-flex { color: #687991; border-top-color: #e1e7ee !important; }
-    .shift-registration-page .card-body > .d-flex i { font-size: .65rem; }
+    /* Scoped Modern Styles for Shift Registration */
+    .shift-registration-page {
+        --slot-available-bg: #ffffff;
+        --slot-available-border: #e2e8f0;
+        --slot-selected-bg: #eff6ff;
+        --slot-selected-border: #3b82f6;
+        --slot-pending-bg: #fffbeb;
+        --slot-pending-border: #fde68a;
+        --slot-approved-bg: #f0fdf4;
+        --slot-approved-border: #86efac;
+        --slot-rejected-bg: #fef2f2;
+        --slot-rejected-border: #fca5a5;
+        --slot-past-bg: #f8fafc;
+        --slot-past-border: #e2e8f0;
+    }
 
-    .shift-grid-table th, .shift-grid-table td {
-        vertical-align: top;
-        padding: 0 !important;
-        border: 1px solid #e9ecef;
+    /* Status Legend */
+    .status-legend-bar .legend-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #475569;
+        font-weight: 500;
     }
-    .shift-grid-table th {
-        text-align: center;
-        padding: 12px 8px !important;
-        background-color: #f8f9fa;
+    .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    .dot-available { background-color: #cbd5e1; border: 1px solid #94a3b8; }
+    .dot-selected { background-color: #3b82f6; }
+    .dot-pending { background-color: #f59e0b; }
+    .dot-approved { background-color: #10b981; }
+    .dot-past { background-color: #94a3b8; opacity: 0.5; }
+
+    /* Modern Table Container */
+    .shift-table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        min-height: 380px;
+    }
+    .modern-shift-table {
+        min-width: 980px;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    .modern-shift-table th {
+        background: #f8fafc;
+        color: #334155;
         font-weight: 600;
-        color: #495057;
+        font-size: 0.84rem;
+        padding: 12px 10px;
+        border-bottom: 2px solid #e2e8f0;
+        border-right: 1px solid #edf2f7;
+        text-align: center;
+        position: sticky;
+        top: 0;
+        z-index: 2;
     }
-    .emp-col {
+    .modern-shift-table th.th-today {
+        background: #eff6ff !important;
+        color: #1d4ed8 !important;
+        border-bottom-color: #3b82f6 !important;
+    }
+    .modern-shift-table th.th-shift-col {
+        width: 220px;
+        min-width: 220px;
+        left: 0;
+        z-index: 5;
+        text-align: left;
+        padding-left: 16px;
+        border-right: 2px solid #e2e8f0;
+    }
+    .modern-shift-table td.shift-name-col {
         position: sticky;
         left: 0;
-        z-index: 2;
-        background-color: #fff;
-        border-right: 2px solid #e9ecef !important;
-        width: 250px;
-        padding: 12px 16px !important;
-        vertical-align: middle !important;
+        z-index: 4;
+        background: #ffffff;
+        width: 220px;
+        min-width: 220px;
+        padding: 12px 14px;
+        border-right: 2px solid #e2e8f0;
+        border-bottom: 1px solid #edf2f7;
+        box-shadow: 2px 0 6px rgba(0,0,0,0.02);
     }
-    .shift-cell {
-        min-height: 70px;
-        height: auto;
-        min-width: 120px;
-        position: relative;
-        padding: 4px;
-        cursor: pointer;
-    }
-    .shift-empty {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .modern-shift-table td.shift-grid-cell {
+        padding: 6px;
+        border-right: 1px solid #edf2f7;
+        border-bottom: 1px solid #edf2f7;
+        vertical-align: stretch;
         height: 100%;
-        color: #adb5bd;
     }
-    .shift-empty-box {
-        border: 1px dashed #dee2e6;
-        border-radius: 6px;
-        width: 80%;
-        height: 80%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
+    .modern-shift-table tr:hover td.shift-name-col {
+        background: #fbfcfe;
     }
-    .shift-cell:hover .shift-empty-box {
-        border-color: #0dcaf0;
-        color: #0dcaf0;
-        background-color: rgba(13, 202, 240, 0.05);
-    }
-    .shift-filled {
-        background-color: #f1f3f5;
-        border: 1px solid #dee2e6;
-        border-radius: 6px;
-        padding: 6px 8px;
-        height: 100%;
+
+    /* Shift Master Column Card */
+    .shift-info-card {
         display: flex;
         flex-direction: column;
-        transition: all 0.2s ease;
+        gap: 3px;
     }
-    .shift-filled:hover {
-        background-color: #e9ecef;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    .shift-color-bar {
+        width: 4px;
+        height: 14px;
+        border-radius: 2px;
+        background-color: #2563eb;
+        display: inline-block;
     }
-    .shift-name {
-        font-weight: 600;
-        font-size: 13px;
-        color: #343a40;
-        margin-bottom: 2px;
+    .shift-name-text {
+        font-size: 0.92rem;
+        color: #0f172a;
     }
-    .shift-time {
-        font-size: 11px;
-        color: #6c757d;
+    .shift-time-text {
+        font-size: 0.8rem;
+        color: #475569;
+        font-weight: 500;
     }
-    .tanca-btn {
-        background-color: #f4f5f7;
-        border: none;
-        border-radius: 8px;
-        padding: 8px 12px;
-        color: #00b14f;
-        cursor: pointer;
-        transition: background 0.2s;
-        font-size: 14px;
+    .shift-hours-text {
+        font-size: 0.75rem;
+        color: #64748b;
+    }
+
+    /* Individual Slot Cards inside Grid */
+    .shift-slot {
+        min-height: 84px;
+        height: 100%;
+        border-radius: 10px;
+        padding: 8px 10px;
         display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        cursor: pointer;
+        transition: all 0.16s ease-in-out;
+        position: relative;
+        user-select: none;
+    }
+    .shift-slot .slot-time-text {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #334155;
+        margin-top: 4px;
+    }
+    .shift-slot .slot-sub-text {
+        font-size: 0.72rem;
+        margin-top: 2px;
+    }
+    .shift-slot .btn-view-slot {
+        cursor: pointer;
+        padding: 2px 4px;
+        border-radius: 4px;
+        transition: background 0.15s;
+    }
+    .shift-slot .btn-view-slot:hover {
+        background-color: rgba(0,0,0,0.06);
+    }
+
+    /* State: Available (Chưa đăng ký) */
+    .shift-slot.is-available {
+        background-color: var(--slot-available-bg);
+        border: 1px dashed var(--slot-available-border);
+    }
+    .shift-slot.is-available:hover {
+        border-color: #93c5fd;
+        background-color: #f8fbff;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px rgba(37,99,235,0.08);
+    }
+
+    /* State: Selected (Mới chọn) */
+    .shift-slot.is-selected {
+        background-color: var(--slot-selected-bg) !important;
+        border: 1.5px solid var(--slot-selected-border) !important;
+        box-shadow: 0 2px 6px rgba(37,99,235,0.12);
+    }
+
+    /* State: Pending (Chờ duyệt) */
+    .shift-slot.is-pending {
+        background-color: var(--slot-pending-bg);
+        border: 1.5px solid var(--slot-pending-border);
+    }
+    .shift-slot.is-pending:hover {
+        border-color: #f59e0b;
+        box-shadow: 0 3px 8px rgba(245,158,11,0.12);
+    }
+
+    /* State: Pending but unchecked (Sắp hủy khi lưu) */
+    .shift-slot.is-pending-cancelled {
+        background-color: #f8fafc !important;
+        border: 1px dashed #cbd5e1 !important;
+        opacity: 0.75;
+    }
+
+    /* State: Approved (Đã duyệt) */
+    .shift-slot.is-approved {
+        background-color: var(--slot-approved-bg);
+        border: 1.5px solid var(--slot-approved-border);
+        cursor: pointer;
+    }
+    .shift-slot.is-approved:hover {
+        box-shadow: 0 3px 8px rgba(16,185,129,0.14);
+    }
+
+    /* State: Rejected (Bị từ chối) */
+    .shift-slot.is-rejected {
+        background-color: var(--slot-rejected-bg);
+        border: 1.5px solid var(--slot-rejected-border);
+    }
+
+    /* State: Past / Overdue (Quá hạn) */
+    .shift-slot.is-past {
+        background-color: var(--slot-past-bg);
+        border: 1px solid var(--slot-past-border);
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    /* State: Unavailable (Không áp dụng) */
+    .shift-slot.is-unavailable {
+        background-color: #f1f5f9;
+        border: 1px dashed #cbd5e1;
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
+    /* Badges */
+    .badge-status {
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 3px 7px;
+        border-radius: 6px;
+        display: inline-flex;
         align-items: center;
-        justify-content: center;
+        gap: 4px;
+        line-height: 1.2;
     }
-    .tanca-btn:hover {
-        background-color: #e2e4e8;
+    .status-available {
+        color: #64748b;
+        background-color: #f1f5f9;
     }
-    .tanca-select {
-        background-color: #f4f5f7;
-        border: none;
-        border-radius: 8px;
-        padding: 8px 30px 8px 12px;
-        color: #495057;
-        font-size: 13px;
+    .status-selected {
+        color: #1d4ed8;
+        background-color: #dbeafe;
+    }
+    .status-pending {
+        color: #b45309;
+        background-color: #fef3c7;
+    }
+    .status-approved {
+        color: #047857;
+        background-color: #d1fae5;
+    }
+    .status-rejected {
+        color: #b91c1c;
+        background-color: #fee2e2;
+    }
+    .status-past {
+        color: #64748b;
+        background-color: #e2e8f0;
+    }
+    .status-unavailable {
+        color: #94a3b8;
+        background-color: #e2e8f0;
+    }
+
+    /* Custom Checkbox within Matrix */
+    .weekly-shift-cb {
+        width: 17px;
+        height: 17px;
         cursor: pointer;
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2300b14f' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 10px center;
+        border-radius: 4px;
+        border-color: #94a3b8;
     }
-    .tanca-select:focus {
-        outline: none;
-        box-shadow: 0 0 0 2px rgba(0, 177, 79, 0.2);
+    .weekly-shift-cb:checked {
+        background-color: #2563eb;
+        border-color: #2563eb;
     }
-    .tanca-week-picker {
-        background-color: #f4f5f7;
-        border-radius: 8px;
-        padding: 6px 12px;
-        font-size: 13px;
-        color: #495057;
+
+    /* Sticky Bottom Summary Bar */
+    .weekly-summary-bar {
+        position: sticky;
+        bottom: 0;
+        z-index: 10;
+        box-shadow: 0 -4px 14px rgba(18, 38, 61, 0.05);
     }
-    .tanca-week-picker .btn-icon {
-        background: transparent;
-        border: none;
-        color: #6c757d;
-        cursor: pointer;
-        padding: 0 4px;
-    }
-    .tanca-week-picker .btn-icon:hover {
-        color: #00b14f;
-    }
-    
-    /* Week Picker Popover Styles */
+
+    /* Week Picker Popover */
     .week-picker-dropdown {
         position: absolute;
-        top: 100%;
+        top: calc(100% + 6px);
         left: 0;
-        margin-top: 8px;
-        background: #fff;
-        border: 1px solid #e9ecef;
-        z-index: 1000;
-        width: 340px;
+        z-index: 1050;
+        width: 320px;
     }
-    .wp-table th {
-        font-size: 12px;
-        color: #495057;
-        padding: 4px;
-        font-weight: 600;
-    }
+    .wp-table th { padding: 4px; }
     .wp-table td {
-        font-size: 13px;
         padding: 6px 4px;
         cursor: pointer;
-        color: #495057;
         border-radius: 4px;
+        font-size: 0.85rem;
     }
     .wp-week-row {
-        transition: background-color 0.2s;
+        transition: background-color 0.15s;
     }
     .wp-week-row:hover td {
-        background-color: rgba(0, 177, 79, 0.1);
-        color: #00b14f;
+        background-color: #eff6ff;
+        color: #2563eb;
     }
     .wp-week-row.active td {
-        background-color: #00b14f;
-        color: #fff;
+        background-color: #2563eb;
+        color: #ffffff !important;
+        font-weight: 600;
     }
     .wp-week-num {
-        color: #adb5bd !important;
-        font-size: 11px !important;
-        background-color: transparent !important;
-    }
-    .wp-week-row:hover .wp-week-num {
-        color: #00b14f !important;
+        color: #94a3b8 !important;
+        font-size: 0.72rem !important;
     }
     .wp-week-row.active .wp-week-num {
-        color: #00b14f !important;
+        color: #bfdbfe !important;
     }
-    .wp-header button {
-        background: transparent;
-        border: none;
-        color: #6c757d;
-        box-shadow: none;
-    }
-    .wp-header button:hover {
-        color: #00b14f;
-    }
+
+    /* Shadow utility */
+    .shadow-xs { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04); }
+    .cursor-pointer { cursor: pointer; }
 </style>
-
-<!-- Modal Create -->
-<div class="modal fade" id="shiftModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-sm" style="max-width: 450px;">
-    <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-      <div class="modal-body p-4 position-relative">
-        <button type="button" class="btn-close position-absolute top-0 end-0 mt-3 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
-        
-        <h5 class="fw-bold mb-1 text-dark" id="modalEmpName" style="font-size: 1.1rem;"></h5>
-        <div class="text-secondary mb-4" id="modalDateDisplay" style="font-size: 0.9rem;"></div>
-        
-        <div class="d-flex gap-2 mb-3">
-            <div class="input-group input-group-sm">
-                <span class="input-group-text bg-light border-end-0" style="border-radius: 8px 0 0 8px;"><i class="fas fa-search text-muted"></i></span>
-                <input type="text" class="form-control bg-light border-start-0 ps-0" id="searchShiftInput" placeholder="@ShiftRegistrationResource.SearchBtn" onkeyup="filterShifts(this.value)" style="border-radius: 0 8px 8px 0; box-shadow: none;">
-            </div>
-            <button type="button" class="btn btn-sm btn-outline-success mb-0 text-nowrap" style="border-radius: 8px;"><i class="fas fa-sync-alt"></i> @SharedResource.ResourceManager.GetString("Shift_Reload")</button>
-        </div>
-
-        <form id="shiftForm">
-            @Html.AntiForgeryToken()
-            <input type="hidden" id="EmployeeId" name="EmployeeId" />
-            <input type="hidden" id="WorkDate" name="WorkDate" />
-            
-            <div class="shift-list-container pe-2" style="max-height: 250px; overflow-y: auto;">
-                @if (ViewBag.Shifts != null)
-                {
-                    foreach (var shift in ViewBag.Shifts)
-                    {
-                        <div class="shift-item d-flex justify-content-between align-items-center py-3 border-bottom shift-option" data-shift-name="@shift.ShiftName">
-                            <div>
-                                <div class="text-dark" style="font-size: 13px;">@shift.ShiftName (@shift.StartTime.ToString(@"hh\:mm") - @shift.EndTime.ToString(@"hh\:mm"))</div>
-                            </div>
-                            <div class="form-check mb-0">
-                                <input class="form-check-input shift-checkbox" type="checkbox" name="ShiftId" id="shift_@shift.ShiftId" value="@shift.ShiftId" style="border-radius: 4px; border-color: #00b14f; cursor: pointer; width: 1.2em; height: 1.2em;">
-                            </div>
-                        </div>
-                    }
-                }
-            </div>
-            
-            <div class="mt-4">
-                <a href="@Url.Action("Create", "Shift")" class="text-success p-0 text-decoration-none fw-bold" style="font-size: 13px;"><i class="fas fa-plus"></i> @ShiftRegistrationResource.CreateNewShift</a>
-            </div>
-            
-            <div class="mt-3 text-end" id="saveShiftBtnContainer" style="display: none;">
-                <button type="submit" class="btn btn-success mb-0 px-4" style="border-radius: 8px;">Lưu</button>
-            </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal View/Approve -->
-<div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="viewModalLabel">@ShiftRegistrationResource.ShiftDetails</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-          <p><strong>@ShiftRegistrationResource.Employee:</strong> <span id="vEmployee"></span></p>
-          <p><strong>@RWPM.Resources.Models.Employee.Store:</strong> <span id="vStore"></span></p>
-          <p><strong>@ShiftRegistrationResource.Shift:</strong> <span id="vShift"></span></p>
-          <p><strong>@ShiftRegistrationResource.Time:</strong> <span id="vTime"></span></p>
-          <p><strong>@ShiftRegistrationResource.Status:</strong> <span id="vStatus"></span></p>
-          <p><strong>@ShiftRegistrationResource.Note:</strong> <span id="vNote"></span></p>
-          <p id="vRejectionReasonRow" class="text-danger" style="display: none;"><strong>Lý do từ chối:</strong> <span id="vRejectionReason"></span></p>
-          <p id="vApproverRow" style="display: none;"><strong>Người duyệt:</strong> <span id="vApprover"></span> <span id="vApprovedAt" class="text-muted small"></span></p>
-      </div>
-      <div class="modal-footer">
-        <input type="hidden" id="vRegistrationId" />
-        @if (ViewBag.IsManager)
-        {
-            // Approval is now handled in the Requests page
-        }
-        else
-        {
-            <a href="/Request" class="btn btn-warning text-dark btn-sm me-auto" id="btnGoToSwapShift" style="display: none;">
-                <i class="fas fa-exchange-alt me-1"></i> @SharedResource.Req_ChangeShift
-            </a>
-            <button type="button" class="btn btn-danger" id="btnCancelRegistration" onclick="deleteRegistration()">@ShiftRegistrationResource.Cancel</button>
-            <span id="txtApprovedNotice" class="text-muted small" style="display: none;">@RequestResource.ShiftSwap</span>
-        }
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ShiftRegistrationResource.Close</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 @section Scripts {
     <script>
@@ -464,9 +713,10 @@
 
         let employeesList = [];
         let wpCurrentMonth = new Date();
-        let isManager = @((ViewBag.IsManager == true).ToString().ToLower());
-        let activeMode = isManager ? 'my' : 'my'; // Mặc định mở ở chế độ đăng ký ca của tôi
+        let isManager = @((isManager).ToString().ToLower());
+        let activeMode = 'my'; // Default to my shift registration
         let shiftsList = [];
+        let currentFetchedEvents = [];
 
         function switchViewMode(mode) {
             activeMode = mode;
@@ -475,13 +725,13 @@
                 $('#tabManagerSchedule').removeClass('btn-primary').addClass('btn-outline-secondary');
                 $('#managerFilterEmployeeContainer').hide();
                 $('#managerActionBtns').hide();
-                $('#employeeActionBtns').show();
+                $('.weekly-summary-bar').show();
             } else {
                 $('#tabMyRegistration').removeClass('btn-primary').addClass('btn-outline-secondary');
                 $('#tabManagerSchedule').removeClass('btn-outline-secondary').addClass('btn-primary');
                 $('#managerFilterEmployeeContainer').show();
                 $('#managerActionBtns').show();
-                $('#employeeActionBtns').hide();
+                $('.weekly-summary-bar').hide();
             }
             renderHeader();
             fetchEvents();
@@ -495,18 +745,25 @@
             @if (ViewBag.Shifts != null)
             {
                 <text>
-                shiftsList = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(((IEnumerable<RWPM.Models.Entities.Shift>)ViewBag.Shifts).Select(s => new { id = s.ShiftId, name = s.ShiftName, from = s.EffectiveFrom.ToString("yyyy-MM-dd"), to = s.EffectiveTo?.ToString("yyyy-MM-dd") })));
+                shiftsList = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(((IEnumerable<RWPM.Models.Entities.Shift>)ViewBag.Shifts).Select(s => new {
+                    id = s.ShiftId,
+                    name = s.ShiftName,
+                    from = s.EffectiveFrom.ToString("yyyy-MM-dd"),
+                    to = s.EffectiveTo?.ToString("yyyy-MM-dd"),
+                    start = s.StartTime.ToString(@"hh\:mm"),
+                    end = s.EndTime.ToString(@"hh\:mm") + (s.EndDayOffset > 0 ? " (+1)" : ""),
+                    hours = s.ScheduledWorkHours
+                })));
                 </text>
             }
-            
-            // Initialize employees list from ViewBag
+
             @if (ViewBag.Employees != null)
             {
                 <text>
                 employeesList = [
                     @foreach (var emp in ViewBag.Employees)
                     {
-                        @:{ id: '@emp.EmployeeId', code: '@emp.EmployeeCode', name: '@Html.Raw(emp.Account?.FullName ?? emp.Username)' },
+                        @:{ id: '@emp.EmployeeId', code: '@emp.EmployeeCode', name: '@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(emp.Account?.FullName ?? emp.Username))' },
                     }
                 ];
                 </text>
@@ -514,8 +771,7 @@
             else
             {
                 <text>
-                // If not manager, just add the current user as one row (if we had the ID, but we can rely on backend returning only their events)
-                employeesList = [{ id: 'me', name: '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_Me"))' }];
+                employeesList = [{ id: 'me', name: '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_Me") ?? "Tôi")' }];
                 </text>
             }
 
@@ -526,6 +782,7 @@
                 fetchEvents();
             }
 
+            // Week Navigation
             $('#btnPrevWeek').click(function() {
                 currentWeekStart.setDate(currentWeekStart.getDate() - 7);
                 updateWeekDisplay();
@@ -538,10 +795,21 @@
                 fetchEvents();
             });
 
+            $('#btnTodayWeek').click(function() {
+                let now = new Date();
+                let day = now.getDay();
+                let diff = now.getDate() - day + (day === 0 ? -6 : 1);
+                currentWeekStart = new Date(now.setDate(diff));
+                currentWeekStart.setHours(0, 0, 0, 0);
+                updateWeekDisplay();
+                fetchEvents();
+            });
+
             $('#filterEmployeeId').change(function() {
                 fetchEvents();
             });
 
+            // Single day shift registration form submission
             $('#shiftForm').submit(function(e) {
                 e.preventDefault();
                 var selectedShifts = [];
@@ -550,7 +818,7 @@
                 });
 
                 if (selectedShifts.length === 0) {
-                    alert('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrSelectOne"))');
+                    showAppToast('warning', '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrSelectOne") ?? "Vui lòng chọn ít nhất một ca làm việc.")');
                     return;
                 }
 
@@ -560,7 +828,7 @@
 
                 var data = {
                     EmployeeId: empId,
-                    ShiftId: selectedShifts[0], // fallback for backward compatibility
+                    ShiftId: selectedShifts[0],
                     ShiftIds: selectedShifts.map(id => parseInt(id)),
                     WorkDate: workDate,
                     Note: ""
@@ -571,35 +839,52 @@
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(data),
-                    headers: {
-                        'RequestVerificationToken': token
-                    },
+                    headers: { 'RequestVerificationToken': token },
                     success: function(res) {
                         if (res.success) {
                             $('#shiftModal').modal('hide');
+                            showAppToast('success', 'Đăng ký ca làm việc thành công!');
                             fetchEvents();
                             $('#shiftForm')[0].reset();
                         } else {
-                            alert(res.message || '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrOccurred"))');
+                            showAppToast('error', res.message || '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrOccurred"))');
                         }
                     },
                     error: function(err) {
-                        alert('@Html.Raw(ShiftRegistrationResource.ErrorPrefix)' + (err.responseJSON?.message || err.responseText || '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_SysError"))'));
+                        var msg = err.responseJSON?.message || err.responseText || '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_SysError"))';
+                        showAppToast('error', '@Html.Raw(ShiftRegistrationResource.ErrorPrefix)' + msg);
                     }
                 });
             });
 
-            // Show save button when a shift is selected
+            // Toggle single day save button
             $(document).on('change', '.shift-checkbox', function() {
                 if ($('.shift-checkbox:checked').length > 0) {
-                    $('#saveShiftBtnContainer').fadeIn(200);
+                    $('#saveShiftBtnContainer').fadeIn(150);
                 } else {
-                    $('#saveShiftBtnContainer').fadeOut(200);
+                    $('#saveShiftBtnContainer').fadeOut(150);
+                }
+            });
+
+            // Weekly Checkbox toggle & slot click handlers
+            $(document).on('change', '.weekly-shift-cb', function(e) {
+                updateSlotCardVisual($(this));
+                updateWeeklySummary();
+            });
+
+            // Clicking available slot toggles checkbox
+            $(document).on('click', '.shift-slot.is-available, .shift-slot.is-pending', function(e) {
+                if ($(e.target).is('input[type="checkbox"]') || $(e.target).closest('.btn-view-slot').length > 0 || $(e.target).is('label')) {
+                    return;
+                }
+                let cb = $(this).find('.weekly-shift-cb:not(:disabled)');
+                if (cb.length > 0) {
+                    cb.prop('checked', !cb.prop('checked')).trigger('change');
                 }
             });
 
             // Week Picker Popover logic
-            $('#currentWeekDisplay, #btnToggleWeekPicker').click(function(e) {
+            $('#btnToggleWeekPicker').click(function(e) {
                 e.stopPropagation();
                 $('#weekPickerDropdown').toggle();
                 if ($('#weekPickerDropdown').is(':visible')) {
@@ -610,7 +895,7 @@
             });
 
             $(document).click(function(e) {
-                if (!$(e.target).closest('.tanca-week-picker').length) {
+                if (!$(e.target).closest('#btnToggleWeekPicker, #weekPickerDropdown').length) {
                     $('#weekPickerDropdown').hide();
                 }
             });
@@ -621,8 +906,64 @@
             $('.wp-next-year').click(function(e){ e.stopPropagation(); wpCurrentMonth.setFullYear(wpCurrentMonth.getFullYear() + 1); renderWeekPickerCalendar(); });
         });
 
+        function updateSlotCardVisual(cb) {
+            let slot = cb.closest('.shift-slot');
+            let isChecked = cb.is(':checked');
+
+            if (slot.hasClass('was-pending')) {
+                if (!isChecked) {
+                    slot.addClass('is-pending-cancelled');
+                    slot.find('.badge-status').removeClass('status-pending').addClass('status-unavailable').html('<i class="bi bi-x-circle"></i> Bỏ đăng ký');
+                } else {
+                    slot.removeClass('is-pending-cancelled');
+                    slot.find('.badge-status').removeClass('status-unavailable').addClass('status-pending').html('<i class="bi bi-hourglass-split"></i> Chờ duyệt');
+                }
+            } else if (!slot.hasClass('is-approved') && !slot.hasClass('is-past') && !slot.hasClass('is-unavailable')) {
+                if (isChecked) {
+                    slot.addClass('is-selected');
+                    slot.find('.badge-status').removeClass('status-available').addClass('status-selected').html('<i class="bi bi-check-circle-fill"></i> Mới chọn');
+                } else {
+                    slot.removeClass('is-selected');
+                    slot.find('.badge-status').removeClass('status-selected').addClass('status-available').html('<i class="bi bi-circle"></i> Chưa đăng ký');
+                }
+            }
+        }
+
+        function updateWeeklySummary() {
+            let newSelectedCount = 0;
+            let pendingCount = 0;
+            let approvedCount = 0;
+            let totalHours = 0;
+
+            let shiftMap = {};
+            shiftsList.forEach(s => { shiftMap[s.id] = s; });
+
+            $('.weekly-shift-cb:checked').each(function() {
+                let slot = $(this).closest('.shift-slot');
+                let val = $(this).val();
+                let shiftId = parseInt(val.split('_')[0]);
+                let sObj = shiftMap[shiftId];
+                let hours = (sObj && sObj.hours) ? sObj.hours : 0;
+
+                totalHours += hours;
+
+                if (slot.hasClass('is-approved') || $(this).prop('disabled')) {
+                    approvedCount++;
+                } else if (slot.hasClass('was-pending')) {
+                    pendingCount++;
+                } else {
+                    newSelectedCount++;
+                }
+            });
+
+            $('#summaryNewCount').text(newSelectedCount);
+            $('#summaryPendingCount').text(pendingCount);
+            $('#summaryApprovedCount').text(approvedCount);
+            $('#summaryTotalHours').text(totalHours.toFixed(1) + ' giờ');
+        }
+
         function renderWeekPickerCalendar() {
-            $('#wpMonthYearDisplay').text('Th.' + (wpCurrentMonth.getMonth() + 1) + ' ' + wpCurrentMonth.getFullYear());
+            $('#wpMonthYearDisplay').text('Tháng ' + (wpCurrentMonth.getMonth() + 1) + ' / ' + wpCurrentMonth.getFullYear());
             
             let firstDay = new Date(wpCurrentMonth.getFullYear(), wpCurrentMonth.getMonth(), 1);
             let dayOfWeek = firstDay.getDay();
@@ -634,11 +975,9 @@
             
             for (let w = 0; w < 6; w++) {
                 let rowMonday = new Date(startDate);
-                
                 let firstDayOfYear = new Date(rowMonday.getFullYear(), 0, 1);
                 let pastDaysOfYear = (rowMonday - firstDayOfYear) / 86400000;
                 let weekNum = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-                
                 let isActive = (rowMonday.getTime() === currentWeekStart.getTime()) ? 'active' : '';
                 
                 tbody += `<tr class="wp-week-row ${isActive}" data-monday="${rowMonday.toISOString()}">`;
@@ -647,8 +986,7 @@
                 for (let d = 0; d < 7; d++) {
                     let cellDate = new Date(startDate);
                     let isCurrentMonth = cellDate.getMonth() === wpCurrentMonth.getMonth();
-                    let opacity = isCurrentMonth ? '1' : '0.3';
-                    
+                    let opacity = isCurrentMonth ? '1' : '0.35';
                     tbody += `<td style="opacity: ${opacity}">${cellDate.getDate()}</td>`;
                     startDate.setDate(startDate.getDate() + 1);
                 }
@@ -671,37 +1009,43 @@
             let weekEnd = new Date(currentWeekStart);
             weekEnd.setDate(currentWeekStart.getDate() + 6);
             
-            // Format: @Html.Raw(SharedResource.ResourceManager.GetString("Shift_Week"))39 - 2026 (Calculate week number)
             let firstDayOfYear = new Date(currentWeekStart.getFullYear(), 0, 1);
             let pastDaysOfYear = (currentWeekStart - firstDayOfYear) / 86400000;
             let weekNum = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 
-            $('#currentWeekDisplay').text('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_Week"))' + weekNum + ' - ' + currentWeekStart.getFullYear());
+            let startStr = currentWeekStart.getDate().toString().padStart(2, '0') + '/' + (currentWeekStart.getMonth() + 1).toString().padStart(2, '0');
+            let endStr = weekEnd.getDate().toString().padStart(2, '0') + '/' + (weekEnd.getMonth() + 1).toString().padStart(2, '0') + '/' + weekEnd.getFullYear();
+
+            $('#currentWeekDisplay').text('Tuần ' + weekNum);
+            $('#currentWeekRangeDisplay').text(`(${startStr} – ${endStr})`);
 
             renderHeader();
         }
 
         function renderHeader() {
+            let tempDate = new Date(currentWeekStart);
+            let today = new Date();
+            let todayIso = getISODateString(today);
+            let days = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'];
+            
             if (activeMode === 'manager') {
-                let tr = '<th class="emp-col"><div class="input-group input-group-sm"><span class="input-group-text bg-transparent border-0"><i class="fas fa-search"></i></span><input type="text" class="form-control border-0 bg-transparent ps-1" placeholder="@Html.Raw(ShiftRegistrationResource.SearchBtn)" onkeyup="filterEmployeesLocally(this.value)"></div></th>';
-                
-                let tempDate = new Date(currentWeekStart);
-                let days = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
-                
+                let tr = '<th class="th-shift-col"><div class="input-group input-group-sm"><span class="input-group-text bg-transparent border-0"><i class="bi bi-search"></i></span><input type="text" class="form-control border-0 bg-transparent ps-1" placeholder="@Html.Raw(ShiftRegistrationResource.SearchBtn)" onkeyup="filterEmployeesLocally(this.value)"></div></th>';
                 for (let i = 0; i < 7; i++) {
-                    let dateStr = tempDate.getDate() + '/' + (tempDate.getMonth() + 1);
-                    tr += `<th>${days[i]} ${dateStr}</th>`;
+                    let cellDateIso = getISODateString(tempDate);
+                    let isToday = (cellDateIso === todayIso);
+                    let dateStr = tempDate.getDate().toString().padStart(2, '0') + '/' + (tempDate.getMonth() + 1).toString().padStart(2, '0');
+                    tr += `<th class="${isToday ? 'th-today' : ''}"><div>${days[i]}</div><div class="small fw-normal text-muted">${dateStr}</div></th>`;
                     tempDate.setDate(tempDate.getDate() + 1);
                 }
                 $('#gridHeaderRow').html(tr);
             } else {
-                let tr = '<th class="emp-col" style="text-align: center; vertical-align: middle;">@Html.Raw(SharedResource.ResourceManager.GetString("Shift_Shift"))</th>';
-                let tempDate = new Date(currentWeekStart);
-                let days = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
-                
+                let tr = '<th class="th-shift-col"><div class="d-flex align-items-center gap-1"><i class="bi bi-clock-history text-primary"></i><span>Ca làm việc</span></div></th>';
                 for (let i = 0; i < 7; i++) {
-                    let dateStr = tempDate.getDate() + '/' + (tempDate.getMonth() + 1);
-                    tr += `<th>${days[i]} ${dateStr}</th>`;
+                    let cellDateIso = getISODateString(tempDate);
+                    let isToday = (cellDateIso === todayIso);
+                    let dateStr = tempDate.getDate().toString().padStart(2, '0') + '/' + (tempDate.getMonth() + 1).toString().padStart(2, '0');
+                    let todayBadge = isToday ? '<span class="badge bg-primary rounded-pill px-2 py-0 ms-1" style="font-size: 10px;">Hôm nay</span>' : '';
+                    tr += `<th class="${isToday ? 'th-today' : ''}"><div>${days[i]} ${todayBadge}</div><div class="small fw-normal text-muted">${dateStr}</div></th>`;
                     tempDate.setDate(tempDate.getDate() + 1);
                 }
                 $('#gridHeaderRow').html(tr);
@@ -711,7 +1055,7 @@
         function filterEmployeesLocally(text) {
             text = text.toLowerCase();
             $('#gridBody tr').each(function() {
-                var empName = $(this).find('.emp-col').text().toLowerCase();
+                var empName = $(this).find('.shift-name-col').text().toLowerCase();
                 if (empName.indexOf(text) > -1) {
                     $(this).show();
                 } else {
@@ -725,13 +1069,20 @@
             return (new Date(date - tzoffset)).toISOString().split('T')[0];
         }
 
+        function escapeHtml(str) {
+            if (!str) return '';
+            return $('<div>').text(str).html();
+        }
+
         function fetchEvents() {
             let isMyMode = (activeMode === 'my');
             let empId = isMyMode ? '' : ($('#filterEmployeeId').val() || '');
             let startStr = getISODateString(currentWeekStart);
             let endStr = new Date(currentWeekStart);
             endStr.setDate(endStr.getDate() + 7);
-            
+
+            $('#iconRefresh').addClass('spin-animation');
+
             $.ajax({
                 url: '/ShiftRegistration/GetEvents',
                 type: 'GET',
@@ -742,23 +1093,28 @@
                     myOnly: isMyMode
                 },
                 success: function(events) {
+                    currentFetchedEvents = events;
                     renderGrid(events);
+                    updateWeeklySummary();
                 },
                 error: function() {
-                    alert('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrLoadShift"))');
+                    showAppToast('error', '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrLoadShift"))');
+                },
+                complete: function() {
+                    $('#iconRefresh').removeClass('spin-animation');
                 }
             });
         }
 
         function renderGrid(events) {
             let tbody = '';
-            
+            let today = new Date();
+            today.setHours(0, 0, 0, 0);
+
             if (activeMode === 'manager') {
-                // Filter employees to render based on dropdown
                 var selectedEmpId = $('#filterEmployeeId').val();
                 var empsToRender = employeesList;
-                
-                // If standard user, extract from events if employeesList is empty
+
                 if (employeesList.length === 1 && employeesList[0].id === 'me') {
                     let uniqueEmps = {};
                     events.forEach(e => {
@@ -774,117 +1130,222 @@
 
                 empsToRender.forEach(emp => {
                     tbody += `<tr>`;
-                    
-                    // Employee Column
                     tbody += `
-                        <td class="emp-col">
-                            <div class="d-flex align-items-center">
-                                <h6 class="mb-0 text-sm">${emp.name}</h6>
-                                <i class="fas fa-check-circle text-success ms-auto" style="font-size: 12px;"></i>
+                        <td class="shift-name-col">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="avatar-sm bg-light text-primary rounded-circle d-flex align-items-center justify-content-center p-2" style="width: 32px; height: 32px;">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                                <h6 class="mb-0 text-dark small fw-bold">${escapeHtml(emp.name)}</h6>
                             </div>
                         </td>
                     `;
 
-                    // Days Columns
                     let tempDate = new Date(currentWeekStart);
                     for (let i = 0; i < 7; i++) {
                         let cellDateStr = getISODateString(tempDate);
-                        
-                        // Find events for this employee and date
                         let dayEvents = events.filter(e => {
                             let eDate = e.start.split('T')[0];
                             return (e.employeeId == emp.id || !emp.id) && eDate === cellDateStr;
                         });
 
                         if (dayEvents.length > 0) {
-                            tbody += `<td class="shift-cell" onclick="openCreateModal(new Date('${cellDateStr}'), '${emp.id}')" style="vertical-align: top; padding: 4px;">`;
+                            tbody += `<td class="shift-grid-cell" onclick="openCreateModal(new Date('${cellDateStr}'), '${emp.id}')">`;
                             tbody += `<div class="d-flex flex-column gap-1 h-100">`;
                             dayEvents.forEach(dayEvent => {
                                 let eJson = JSON.stringify(dayEvent).replace(/'/g, "&#39;");
                                 let timeDisplay = (dayEvent.startTime && dayEvent.endTime) ? `${dayEvent.startTime} - ${dayEvent.endTime}` : '';
                                 let badgeHtml = dayEvent.statusId === 1 
-                                    ? '<span class="badge bg-success" style="font-size: 10px;">Đã duyệt</span>' 
+                                    ? '<span class="badge-status status-approved"><i class="bi bi-check-circle-fill"></i> Đã duyệt</span>' 
                                     : (dayEvent.statusId === 2 
-                                        ? '<span class="badge bg-danger" style="font-size: 10px;">Từ chối</span>' 
-                                        : '<span class="badge bg-warning text-dark" style="font-size: 10px;">Chờ duyệt</span>');
+                                        ? '<span class="badge-status status-rejected"><i class="bi bi-x-circle-fill"></i> Từ chối</span>' 
+                                        : '<span class="badge-status status-pending"><i class="bi bi-hourglass-split"></i> Chờ duyệt</span>');
                                 tbody += `
-                                    <div class="shift-filled" style="height: auto; min-height: 50px;" onclick='event.stopPropagation(); openViewModal(${eJson})'>
-                                        <div class="shift-name d-flex justify-content-between align-items-center">
-                                            <span>${dayEvent.title}</span>
+                                    <div class="shift-slot is-approved" onclick='event.stopPropagation(); openViewModal(${eJson})'>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="slot-time-text">${escapeHtml(dayEvent.title)}</span>
                                             ${badgeHtml}
                                         </div>
-                                        <div class="shift-time">${timeDisplay}</div>
+                                        <div class="slot-sub-text text-muted">${timeDisplay}</div>
                                     </div>
                                 `;
                             });
                             tbody += `</div></td>`;
                         } else {
-                            // Empty slot
                             tbody += `
-                                <td class="shift-cell" onclick="openCreateModal(new Date('${cellDateStr}'), '${emp.id}')">
-                                    <div class="shift-empty">
-                                        <div class="shift-empty-box"><i class="fas fa-plus"></i></div>
+                                <td class="shift-grid-cell" onclick="openCreateModal(new Date('${cellDateStr}'), '${emp.id}')">
+                                    <div class="shift-slot is-available justify-content-center align-items-center text-muted">
+                                        <i class="bi bi-plus-lg fs-5"></i>
                                     </div>
                                 </td>
                             `;
                         }
-                        
                         tempDate.setDate(tempDate.getDate() + 1);
                     }
-                    
                     tbody += `</tr>`;
                 });
             } else {
-                shiftsList.forEach(shift => {
-                    tbody += `<tr>`;
-                    tbody += `<td class="emp-col"><h6 class="mb-0 text-sm text-center">${shift.name}</h6></td>`;
-                    
-                    let tempDate = new Date(currentWeekStart);
-                    for (let i = 0; i < 7; i++) {
-                        let cellDateStr = getISODateString(tempDate);
+                // Employee Mode: Shifts List as Rows
+                if (shiftsList.length === 0) {
+                    tbody += `
+                        <tr>
+                            <td colspan="8" class="text-center py-5">
+                                <div class="text-muted mb-2"><i class="bi bi-calendar-x fs-1"></i></div>
+                                <h6 class="text-dark">Không có ca làm việc nào khả dụng</h6>
+                                <p class="text-muted small mb-0">Chi nhánh hiện tại chưa được cấu hình ca làm việc hoạt động.</p>
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    shiftsList.forEach(shift => {
+                        tbody += `<tr>`;
                         
-                        let dayEvent = events.find(e => {
-                            let eDate = e.start.split('T')[0];
-                            return e.shiftId == shift.id && eDate === cellDateStr;
-                        });
+                        // Sticky Left Column: Shift Name & Working Hours
+                        tbody += `
+                            <td class="shift-name-col">
+                                <div class="shift-info-card">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <span class="shift-color-bar"></span>
+                                        <strong class="shift-name-text text-truncate" title="${escapeHtml(shift.name)}">${escapeHtml(shift.name)}</strong>
+                                    </div>
+                                    <div class="shift-time-text">
+                                        <i class="bi bi-clock me-1 text-primary"></i>${shift.start} – ${shift.end}
+                                    </div>
+                                    ${shift.hours ? `<div class="shift-hours-text"><i class="bi bi-hourglass-split me-1 text-muted"></i>${shift.hours.toFixed(1)}h làm việc</div>` : ''}
+                                </div>
+                            </td>
+                        `;
 
-                        if (dayEvent) {
-                            let isApproved = dayEvent.statusName !== "Pending";
-                            let disabled = isApproved ? "disabled" : "";
-                            let label = isApproved ? "<br><small class='text-success fw-bold'>@Html.Raw(SharedResource.ResourceManager.GetString("Shift_Approved"))</small>" : "<br><small class='text-warning'>@Html.Raw(SharedResource.ResourceManager.GetString("Shift_Pending"))</small>";
-                            let titleStr = isApproved ? "@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ApprovedCannotChange"))" : "";
-                            tbody += `
-                                <td class="shift-cell" style="text-align: center; vertical-align: middle;" title="${titleStr}">
-                                    <input type="checkbox" class="form-check-input weekly-shift-cb" style="width: 22px; height: 22px; cursor: pointer; border-color: #00b14f;" 
-                                        value="${shift.id}_${cellDateStr}" checked ${disabled}>
-                                    ${label}
-                                </td>
-                            `;
-                        } else {
-                            // Empty slot check
-                            // Check if date is in the past
-                            let today = new Date();
-                            today.setHours(0,0,0,0);
+                        // Day Columns
+                        let tempDate = new Date(currentWeekStart);
+                        for (let i = 0; i < 7; i++) {
+                            let cellDateStr = getISODateString(tempDate);
                             let cellDateObj = new Date(tempDate);
-                            let unavailable = cellDateStr < shift.from || (shift.to && cellDateStr > shift.to);
-                            let disabled = cellDateObj < today || unavailable ? "disabled" : "";
-                            let label = cellDateObj < today ? "<br><small class='text-muted'>@Html.Raw(SharedResource.ResourceManager.GetString("Shift_Overdue"))</small>" : "";
-                            let titleStr = cellDateObj < today ? "@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrPast"))" : "";
+                            cellDateObj.setHours(0, 0, 0, 0);
 
-                            tbody += `
-                                <td class="shift-cell" style="text-align: center; vertical-align: middle;" title="${titleStr}">
-                                    <input type="checkbox" class="form-check-input weekly-shift-cb" style="width: 22px; height: 22px; cursor: pointer; border-color: #adb5bd;" 
-                                        value="${shift.id}_${cellDateStr}" ${disabled}>
-                                    ${label}
-                                </td>
-                            `;
+                            let dayEvent = events.find(e => {
+                                let eDate = e.start.split('T')[0];
+                                return e.shiftId == shift.id && eDate === cellDateStr;
+                            });
+
+                            let isPast = cellDateObj < today;
+                            let isUnavailable = cellDateStr < shift.from || (shift.to && cellDateStr > shift.to);
+
+                            if (dayEvent) {
+                                let isApproved = (dayEvent.statusId === 1 || dayEvent.statusName === "Approved");
+                                let isRejected = (dayEvent.statusId === 2 || dayEvent.statusName === "Rejected");
+                                let eJson = JSON.stringify(dayEvent).replace(/'/g, "&#39;");
+
+                                if (isApproved) {
+                                    tbody += `
+                                        <td class="shift-grid-cell">
+                                            <div class="shift-slot is-approved" onclick='event.stopPropagation(); openViewModal(${eJson})' title="Ca đã được duyệt · Nhấp để xem chi tiết">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <span class="badge-status status-approved">
+                                                        <i class="bi bi-check-circle-fill"></i> Đã duyệt
+                                                    </span>
+                                                    <i class="bi bi-info-circle text-success small btn-view-slot" title="Xem chi tiết"></i>
+                                                </div>
+                                                <div class="slot-time-text">${shift.start} – ${shift.end}</div>
+                                                <input type="checkbox" class="form-check-input weekly-shift-cb d-none" 
+                                                    value="${shift.id}_${cellDateStr}" checked disabled>
+                                            </div>
+                                        </td>
+                                    `;
+                                } else if (isRejected) {
+                                    tbody += `
+                                        <td class="shift-grid-cell">
+                                            <div class="shift-slot is-rejected" onclick='event.stopPropagation(); openViewModal(${eJson})' title="Ca bị từ chối · Nhấp để xem lý do">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <span class="badge-status status-rejected">
+                                                        <i class="bi bi-x-circle-fill"></i> Từ chối
+                                                    </span>
+                                                    <i class="bi bi-info-circle text-danger small btn-view-slot" title="Xem chi tiết"></i>
+                                                </div>
+                                                <div class="slot-time-text">${shift.start} – ${shift.end}</div>
+                                                <input type="checkbox" class="form-check-input weekly-shift-cb d-none" 
+                                                    value="${shift.id}_${cellDateStr}">
+                                            </div>
+                                        </td>
+                                    `;
+                                } else {
+                                    // Pending
+                                    tbody += `
+                                        <td class="shift-grid-cell">
+                                            <div class="shift-slot is-pending was-pending" title="Ca chờ phê duyệt · Bỏ chọn nếu muốn hủy yêu cầu">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <div class="form-check mb-0 p-0 d-flex align-items-center">
+                                                        <input type="checkbox" class="form-check-input weekly-shift-cb m-0 me-2" 
+                                                            id="cb_${shift.id}_${cellDateStr}"
+                                                            value="${shift.id}_${cellDateStr}" checked>
+                                                        <label class="form-check-label badge-status status-pending m-0 cursor-pointer" for="cb_${shift.id}_${cellDateStr}">
+                                                            <i class="bi bi-hourglass-split"></i> Chờ duyệt
+                                                        </label>
+                                                    </div>
+                                                    <i class="bi bi-info-circle text-warning-emphasis small btn-view-slot" title="Chi tiết" onclick='event.stopPropagation(); openViewModal(${eJson})'></i>
+                                                </div>
+                                                <div class="slot-time-text">${shift.start} – ${shift.end}</div>
+                                            </div>
+                                        </td>
+                                    `;
+                                }
+                            } else if (isPast) {
+                                tbody += `
+                                    <td class="shift-grid-cell">
+                                        <div class="shift-slot is-past" title="Không thể đăng ký ca cho những ngày trong quá khứ">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span class="badge-status status-past">
+                                                    <i class="bi bi-lock-fill"></i> Quá hạn
+                                                </span>
+                                            </div>
+                                            <div class="slot-time-text text-muted">${shift.start} – ${shift.end}</div>
+                                            <input type="checkbox" class="form-check-input weekly-shift-cb d-none" 
+                                                value="${shift.id}_${cellDateStr}" disabled>
+                                        </div>
+                                    </td>
+                                `;
+                            } else if (isUnavailable) {
+                                tbody += `
+                                    <td class="shift-grid-cell">
+                                        <div class="shift-slot is-unavailable" title="Ca làm việc chưa hoặc không còn hiệu lực">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span class="badge-status status-unavailable">
+                                                    <i class="bi bi-dash-circle"></i> Không áp dụng
+                                                </span>
+                                            </div>
+                                            <div class="slot-time-text text-muted">${shift.start} – ${shift.end}</div>
+                                            <input type="checkbox" class="form-check-input weekly-shift-cb d-none" 
+                                                value="${shift.id}_${cellDateStr}" disabled>
+                                        </div>
+                                    </td>
+                                `;
+                            } else {
+                                // Available slot
+                                tbody += `
+                                    <td class="shift-grid-cell">
+                                        <div class="shift-slot is-available" title="Nhấp để chọn đăng ký ca làm việc này">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <div class="form-check mb-0 p-0 d-flex align-items-center">
+                                                    <input type="checkbox" class="form-check-input weekly-shift-cb m-0 me-2" 
+                                                        id="cb_${shift.id}_${cellDateStr}"
+                                                        value="${shift.id}_${cellDateStr}">
+                                                    <label class="form-check-label badge-status status-available m-0 cursor-pointer" for="cb_${shift.id}_${cellDateStr}">
+                                                        <i class="bi bi-circle"></i> Chưa đăng ký
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="slot-time-text">${shift.start} – ${shift.end}</div>
+                                        </div>
+                                    </td>
+                                `;
+                            }
+                            tempDate.setDate(tempDate.getDate() + 1);
                         }
-                        tempDate.setDate(tempDate.getDate() + 1);
-                    }
-                    tbody += `</tr>`;
-                });
+                        tbody += `</tr>`;
+                    });
+                }
             }
-            
+
             $('#gridBody').html(tbody);
         }
 
@@ -902,8 +1363,7 @@
                 });
             });
 
-            // If there are disabled checkboxes that are checked (approved shifts), we also need to include them
-            // so they don't get deleted by the sync API.
+            // Retain approved shifts so they aren't removed by sync
             $('.weekly-shift-cb:checked:disabled').each(function() {
                 var parts = $(this).val().split('_');
                 registrations.push({
@@ -919,22 +1379,30 @@
                 Registrations: registrations
             };
 
+            var btn = $('#btnSubmitWeekly');
+            var originalBtnHtml = btn.html();
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1" role="status"></span> Đang gửi...');
+
             $.ajax({
                 url: '/ShiftRegistration/SyncWeekly',
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(data),
-                headers: {
-                    'RequestVerificationToken': token
-                },
+                headers: { 'RequestVerificationToken': token },
                 success: function(res) {
                     if (res.success) {
-                        alert('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_RegSuccess"))');
+                        showAppToast('success', '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_RegSuccess") ?? "Lưu đăng ký ca tuần thành công!")');
                         fetchEvents();
+                    } else {
+                        showAppToast('error', res.message || '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrOccurred"))');
                     }
                 },
                 error: function(err) {
-                    alert('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrPrefix"))' + (err.responseJSON?.message || err.responseText || '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_SysError"))'));
+                    var msg = err.responseJSON?.message || err.responseText || '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_SysError"))';
+                    showAppToast('error', '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrPrefix"))' + msg);
+                },
+                complete: function() {
+                    btn.prop('disabled', false).html(originalBtnHtml);
                 }
             });
         }
@@ -953,24 +1421,21 @@
                 data: {
                     start: startStr,
                     end: getISODateString(endStr),
-                    employeeId: '', // self
+                    employeeId: '',
                     myOnly: true
                 },
                 success: function(events) {
                     if (events.length === 0) {
-                        alert('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrNoPrevShifts"))');
+                        showAppToast('warning', '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrNoPrevShifts") ?? "Không có ca tuần trước để sao chép.")');
                         return;
                     }
                     
-                    // Uncheck all non-disabled first
                     $('.weekly-shift-cb:not(:disabled)').prop('checked', false);
-                    
                     let today = new Date();
                     today.setHours(0,0,0,0);
                     let checkedCount = 0;
 
                     events.forEach(e => {
-                        // Offset by +7 days
                         let eDate = new Date(e.start.split('T')[0]);
                         eDate.setDate(eDate.getDate() + 7);
                         let targetDateStr = getISODateString(eDate);
@@ -978,17 +1443,16 @@
                         if (eDate >= today) {
                             let cb = $(`.weekly-shift-cb[value="${e.shiftId}_${targetDateStr}"]`);
                             if (cb.length > 0 && !cb.prop('disabled')) {
-                                cb.prop('checked', true);
-                                cb.css('border-color', '#00b14f');
+                                cb.prop('checked', true).trigger('change');
                                 checkedCount++;
                             }
                         }
                     });
 
-                    alert(`Đã sao chép ${checkedCount} ca hợp lệ. Vui lòng bấm '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_RegisterWeek"))' để lưu lại.`);
+                    showAppToast('success', `Đã sao chép ${checkedCount} ca hợp lệ. Vui lòng bấm 'Lưu đăng ký ca tuần' để gửi.`);
                 },
                 error: function() {
-                    alert('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrLoadPrev"))');
+                    showAppToast('error', '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrLoadPrev"))');
                 }
             });
         }
@@ -1010,7 +1474,7 @@
             today.setHours(0, 0, 0, 0);
             
             if (dateObj < today) {
-                alert('@Html.Raw(ShiftRegistrationResource.PastDateError)');
+                showAppToast('warning', '@Html.Raw(ShiftRegistrationResource.PastDateError)');
                 return;
             }
 
@@ -1019,7 +1483,7 @@
             let displayDate = dateObj.getDate().toString().padStart(2, '0') + '/' + 
                               (dateObj.getMonth() + 1).toString().padStart(2, '0') + '/' + 
                               dateObj.getFullYear();
-            $('#modalDateDisplay').text(displayDate);
+            $('#modalDateDisplay').text('Ngày: ' + displayDate);
 
             if (empId) {
                 $('#EmployeeId').val(empId);
@@ -1032,7 +1496,7 @@
                     let firstEmp = employeesList[0];
                     if (firstEmp.id === 'me') {
                         $('#EmployeeId').val(0);
-                        $('#modalEmpName').text('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_Me"))');
+                        $('#modalEmpName').text('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_Me") ?? "Tôi")');
                     } else {
                         $('#EmployeeId').val(firstEmp.id);
                         $('#modalEmpName').text(firstEmp.name);
@@ -1043,18 +1507,26 @@
             $('.shift-checkbox').prop('checked', false);
             $('#saveShiftBtnContainer').hide();
             $('#searchShiftInput').val('');
-            $('.shift-list-container').empty();
+            $('.shift-list-container').html('<div class="text-center py-3 text-muted small"><span class="spinner-border spinner-border-sm me-1"></span> Đang tải danh sách ca...</div>');
+
             $.get('@Url.Action("AvailableShifts", "ShiftRegistration")', { employeeId: $('#EmployeeId').val(), workDate: $('#WorkDate').val() })
                 .done(function(shifts) {
                     const container = $('.shift-list-container').empty();
-                    if (!shifts.length) container.text(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(RWPM.Resources.Shared.Shift.ResourceManager.GetString("NoResults"))));
+                    if (!shifts.length) {
+                        container.html('<div class="text-center py-3 text-muted small">Không có ca làm việc khả dụng cho ngày này.</div>');
+                        return;
+                    }
                     shifts.forEach(function(shift) {
-                        const row = $('<div>').addClass('shift-item d-flex justify-content-between align-items-center py-3 border-bottom shift-option').attr('data-shift-name', shift.name);
-                        const label = $('<label>').attr('for', 'shift_' + shift.id).text(shift.name + ' (' + shift.time + ')');
-                        const input = $('<input>').attr({ type: 'checkbox', id: 'shift_' + shift.id, name: 'ShiftId', value: shift.id }).addClass('form-check-input shift-checkbox');
-                        row.append(label, input); container.append(row);
+                        const row = $('<div>').addClass('shift-item d-flex justify-content-between align-items-center py-2 px-2 border-bottom shift-option rounded-2').attr('data-shift-name', shift.name);
+                        const label = $('<label>').attr('for', 'shift_' + shift.id).addClass('form-check-label small fw-medium text-dark cursor-pointer mb-0').text(shift.name + ' (' + shift.time + ')');
+                        const input = $('<input>').attr({ type: 'checkbox', id: 'shift_' + shift.id, name: 'ShiftId', value: shift.id }).addClass('form-check-input shift-checkbox m-0');
+                        row.append(label, input);
+                        container.append(row);
                     });
-                }).fail(function() { $('.shift-list-container').text(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(SharedResource.ResourceManager.GetString("Shift_SysError")))); });
+                })
+                .fail(function() {
+                    $('.shift-list-container').html('<div class="text-center py-3 text-danger small">Lỗi tải danh sách ca làm việc.</div>');
+                });
 
             var modal = new bootstrap.Modal(document.getElementById('shiftModal'));
             modal.show();
@@ -1064,8 +1536,18 @@
             $('#vEmployee').text(eventObj.employeeName);
             $('#vStore').text(eventObj.storeName);
             $('#vShift').text(eventObj.title);
-            let timeText = (eventObj.startTime && eventObj.endTime) ? `${eventObj.startTime} - ${eventObj.endTime}` : (eventObj.start.replace('T', ' ') + ' - ' + eventObj.end.replace('T', ' '));
+            let timeText = (eventObj.startTime && eventObj.endTime) ? `${eventObj.startTime} – ${eventObj.endTime}` : (eventObj.start.replace('T', ' ') + ' – ' + eventObj.end.replace('T', ' '));
             $('#vTime').text(timeText);
+            
+            let statusHtml = '';
+            if (eventObj.statusId === 1 || eventObj.statusName === 'Approved') {
+                statusHtml = '<span class="badge-status status-approved"><i class="bi bi-check-circle-fill"></i> Đã duyệt</span>';
+            } else if (eventObj.statusId === 2 || eventObj.statusName === 'Rejected') {
+                statusHtml = '<span class="badge-status status-rejected"><i class="bi bi-x-circle-fill"></i> Bị từ chối</span>';
+            } else {
+                statusHtml = '<span class="badge-status status-pending"><i class="bi bi-hourglass-split"></i> Chờ duyệt</span>';
+            }
+            $('#vStatusBadge').html(statusHtml);
             $('#vStatus').text(eventObj.statusName || '');
             $('#vNote').text(eventObj.note || '-');
             $('#vRegistrationId').val(eventObj.id);
@@ -1086,7 +1568,7 @@
             }
 
             if (!isManager || activeMode === 'my') {
-                if (eventObj.statusId === 1) { // Approved
+                if (eventObj.statusId === 1 || eventObj.statusName === 'Approved') {
                     $('#btnCancelRegistration').hide();
                     $('#txtApprovedNotice').show();
                     $('#btnGoToSwapShift').show();
@@ -1101,30 +1583,6 @@
             modal.show();
         }
 
-        function updateStatus(status) {
-            var id = $('#vRegistrationId').val();
-            $.ajax({
-                url: '/ShiftRegistration/UpdateStatus',
-                type: 'POST',
-                data: {
-                    id: id,
-                    status: status
-                },
-                headers: {
-                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-                },
-                success: function(res) {
-                    if (res.success) {
-                        $('#viewModal').modal('hide');
-                        fetchEvents();
-                    }
-                },
-                error: function(err) {
-                    alert('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrPrefix"))' + (err.responseJSON?.message || err.responseText));
-                }
-            });
-        }
-
         function deleteRegistration() {
             if(!confirm('@Html.Raw(ShiftRegistrationResource.ConfirmCancel)')) return;
             var id = $('#vRegistrationId').val();
@@ -1132,19 +1590,31 @@
                 url: '/ShiftRegistration/Delete',
                 type: 'POST',
                 data: { id: id },
-                headers: {
-                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-                },
+                headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
                 success: function(res) {
                     if (res.success) {
                         $('#viewModal').modal('hide');
+                        showAppToast('success', 'Hủy đăng ký ca thành công!');
                         fetchEvents();
+                    } else {
+                        showAppToast('error', res.message || 'Không thể hủy ca.');
                     }
                 },
                 error: function(err) {
-                    alert('@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrPrefix"))' + (err.responseJSON?.message || err.responseText));
+                    var msg = err.responseJSON?.message || err.responseText || 'Lỗi hệ thống';
+                    showAppToast('error', '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrPrefix"))' + msg);
                 }
             });
+        }
+
+        function showAppToast(type, message) {
+            if (typeof toastr !== 'undefined') {
+                if (type === 'success') toastr.success(message);
+                else if (type === 'warning') toastr.warning(message);
+                else toastr.error(message);
+            } else {
+                alert(message);
+            }
         }
     </script>
 }
