@@ -43,6 +43,24 @@ namespace RWPM.Services.Implementation
             if (await ExistsAsync(entity.Username))
                 throw new ModelValidationException("Acc_UsernameExists", entity.Username);
 
+            if (!string.IsNullOrWhiteSpace(entity.Email))
+            {
+                var trimmedEmail = entity.Email.Trim().ToLower();
+                if (await _ctx.Acc.AnyAsync(a => a.Email.ToLower() == trimmedEmail))
+                {
+                    throw new InvalidOperationException($"Email '{entity.Email}' đã được sử dụng bởi một tài khoản khác.");
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(entity.PhoneNumber))
+            {
+                var trimmedPhone = entity.PhoneNumber.Trim();
+                if (await _ctx.Acc.AnyAsync(a => a.PhoneNumber == trimmedPhone))
+                {
+                    throw new InvalidOperationException($"Số điện thoại '{entity.PhoneNumber}' đã được sử dụng bởi một tài khoản khác.");
+                }
+            }
+
             await NavigationValidationAsync(entity);
 
             //III. Insert
@@ -177,6 +195,25 @@ namespace RWPM.Services.Implementation
             {
                 NoTracking = false,
             });
+
+            if (!string.IsNullOrWhiteSpace(entity.Email))
+            {
+                var trimmedEmail = entity.Email.Trim().ToLower();
+                if (await _ctx.Acc.AnyAsync(a => a.Username != entity.Username && a.Email.ToLower() == trimmedEmail))
+                {
+                    throw new InvalidOperationException($"Email '{entity.Email}' đã được sử dụng bởi một tài khoản khác.");
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(entity.PhoneNumber))
+            {
+                var trimmedPhone = entity.PhoneNumber.Trim();
+                if (await _ctx.Acc.AnyAsync(a => a.Username != entity.Username && a.PhoneNumber == trimmedPhone))
+                {
+                    throw new InvalidOperationException($"Số điện thoại '{entity.PhoneNumber}' đã được sử dụng bởi một tài khoản khác.");
+                }
+            }
+
             await NavigationValidationAsync(entity);
 
             // III. Update

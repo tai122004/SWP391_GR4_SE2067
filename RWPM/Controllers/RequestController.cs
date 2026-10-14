@@ -436,6 +436,17 @@ namespace RWPM.Controllers
             {
                 if (requestType == "ShiftSwap")
                 {
+                    if (User.IsInRole("StoreManager") && !User.IsInRole("Admin") && !User.IsInRole("SuperAdmin") && !User.IsInRole("AreaManager") && !User.IsInRole("HR"))
+                    {
+                        var username = User.Identity?.Name;
+                        var currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
+                        var swapReq = await _shiftSwapService.GetByIdAsync(id);
+                        if (swapReq == null || currentEmployee == null || swapReq.StoreId != currentEmployee.StoreId)
+                        {
+                            return Json(new { success = false, message = "Bạn không có quyền duyệt yêu cầu đổi ca của cửa hàng khác." });
+                        }
+                    }
+
                     if (status == 1)
                     {
                         await _shiftSwapService.ApproveSwapAsync(id, User.Identity?.Name ?? "manager");
@@ -543,7 +554,15 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                var message = ex.Message;
+                if (ex.InnerException != null && !string.IsNullOrWhiteSpace(ex.InnerException.Message))
+                {
+                    if (ex is DbUpdateException)
+                    {
+                        message = "Lỗi cơ sở dữ liệu: " + ex.InnerException.Message;
+                    }
+                }
+                return Json(new { success = false, message = message });
             }
         }
 
@@ -555,6 +574,17 @@ namespace RWPM.Controllers
             {
                 if (requestType == "ShiftSwap")
                 {
+                    if (User.IsInRole("StoreManager") && !User.IsInRole("Admin") && !User.IsInRole("SuperAdmin") && !User.IsInRole("AreaManager") && !User.IsInRole("HR"))
+                    {
+                        var username = User.Identity?.Name;
+                        var currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
+                        var swapReq = await _shiftSwapService.GetByIdAsync(id);
+                        if (swapReq == null || currentEmployee == null || swapReq.StoreId != currentEmployee.StoreId)
+                        {
+                            return Json(new { success = false, message = "Bạn không có quyền xóa yêu cầu đổi ca của cửa hàng khác." });
+                        }
+                    }
+
                     await _shiftSwapService.DeleteSwapAsync(id, User.Identity?.Name ?? "system");
                     return Json(new { success = true, message = RequestResource.Swap_DeleteSuccess });
                 }
@@ -590,6 +620,41 @@ namespace RWPM.Controllers
                 if (model?.Ids == null || !model.Ids.Any())
                 {
                     return Json(new { success = false, message = "Không có yêu cầu nào được chọn." });
+                }
+
+                if (model.RequestType == "ShiftSwap")
+                {
+                    var currentUsername = User.Identity?.Name ?? "manager";
+                    var isStoreManagerOnly = User.IsInRole("StoreManager") && !User.IsInRole("Admin") && !User.IsInRole("SuperAdmin") && !User.IsInRole("AreaManager") && !User.IsInRole("HR");
+                    RWPM.Models.Entities.Employee? currentEmployee = null;
+                    if (isStoreManagerOnly)
+                    {
+                        currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == currentUsername);
+                    }
+
+                    foreach (var swapId in model.Ids)
+                    {
+                        var swapReq = await _shiftSwapService.GetByIdAsync(swapId);
+                        if (swapReq == null) continue;
+
+                        if (isStoreManagerOnly)
+                        {
+                            if (currentEmployee == null || swapReq.StoreId != currentEmployee.StoreId)
+                            {
+                                return Json(new { success = false, message = "Bạn không có quyền duyệt yêu cầu đổi ca của cửa hàng khác." });
+                            }
+                        }
+
+                        if (model.Status == 1)
+                        {
+                            await _shiftSwapService.ApproveSwapAsync(swapId, currentUsername);
+                        }
+                        else
+                        {
+                            await _shiftSwapService.RejectSwapAsync(swapId, model.Reason, currentUsername);
+                        }
+                    }
+                    return Json(new { success = true });
                 }
 
                 if (model.RequestType == "Leave")
@@ -676,7 +741,15 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                var message = ex.Message;
+                if (ex.InnerException != null && !string.IsNullOrWhiteSpace(ex.InnerException.Message))
+                {
+                    if (ex is DbUpdateException)
+                    {
+                        message = "Lỗi cơ sở dữ liệu: " + ex.InnerException.Message;
+                    }
+                }
+                return Json(new { success = false, message = message });
             }
         }
 
