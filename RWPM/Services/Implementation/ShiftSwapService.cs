@@ -58,6 +58,7 @@ namespace RWPM.Services.Implementation
         {
             var sourceReg = await _context.ShiftRegistration
                 .Include(x => x.Employee)
+                .Include(x => x.Shift)
                 .FirstOrDefaultAsync(x => x.ShiftRegistrationId == model.SourceRegistrationId);
 
             if (sourceReg == null)
@@ -88,7 +89,19 @@ namespace RWPM.Services.Implementation
                     throw new InvalidOperationException("Vui lòng chọn đồng nghiệp và ca làm việc muốn đổi cùng.");
                 }
 
+                if (model.SourceRegistrationId == model.TargetRegistrationId.Value)
+                {
+                    throw new InvalidOperationException("Không thể chọn cùng một ca làm việc để đổi.");
+                }
+
+                if (model.TargetEmployeeId.Value == sourceReg.EmployeeId)
+                {
+                    throw new InvalidOperationException("Không thể đổi ca với chính mình theo hình thức đổi ca với đồng nghiệp.");
+                }
+
                 var targetReg = await _context.ShiftRegistration
+                    .Include(x => x.Shift)
+                    .Include(x => x.Employee)
                     .FirstOrDefaultAsync(x => x.ShiftRegistrationId == model.TargetRegistrationId.Value 
                                            && x.EmployeeId == model.TargetEmployeeId.Value);
 
@@ -97,9 +110,55 @@ namespace RWPM.Services.Implementation
                     throw new InvalidOperationException("Ca làm việc của đồng nghiệp không tồn tại.");
                 }
 
+                if (targetReg.Status != RegistrationStatus.Approved)
+                {
+                    throw new InvalidOperationException("Ca làm việc của đồng nghiệp không ở trạng thái đã được phê duyệt.");
+                }
+
                 if (targetReg.StoreId != sourceReg.StoreId)
                 {
                     throw new InvalidOperationException("Chỉ có thể đổi ca với đồng nghiệp trong cùng một chi nhánh.");
+                }
+
+                if (sourceReg.ShiftId == targetReg.ShiftId && sourceReg.WorkDate.Date == targetReg.WorkDate.Date)
+                {
+                    throw new InvalidOperationException("Hai ca làm việc này cùng ca và cùng ngày, không cần đổi.");
+                }
+
+                // Kiểm tra xem đồng nghiệp đã có ca trùng với ca gốc của người yêu cầu chưa
+                var targetHasDuplicate = await _context.ShiftRegistration.AnyAsync(x =>
+                    x.EmployeeId == targetReg.EmployeeId &&
+                    x.ShiftId == sourceReg.ShiftId &&
+                    x.WorkDate == sourceReg.WorkDate.Date &&
+                    x.ShiftRegistrationId != targetReg.ShiftRegistrationId &&
+                    x.Status != RegistrationStatus.Rejected);
+                if (targetHasDuplicate)
+                {
+                    throw new InvalidOperationException($"Đồng nghiệp đã có lịch làm việc trong ca ngày {sourceReg.WorkDate:dd/MM/yyyy}, không thể nhận đổi ca này.");
+                }
+
+                // Kiểm tra xem người yêu cầu đã có ca trùng với ca đích của đồng nghiệp chưa
+                var requesterHasDuplicate = await _context.ShiftRegistration.AnyAsync(x =>
+                    x.EmployeeId == sourceReg.EmployeeId &&
+                    x.ShiftId == targetReg.ShiftId &&
+                    x.WorkDate == targetReg.WorkDate.Date &&
+                    x.ShiftRegistrationId != sourceReg.ShiftRegistrationId &&
+                    x.Status != RegistrationStatus.Rejected);
+                if (requesterHasDuplicate)
+                {
+                    throw new InvalidOperationException($"Bạn đã có lịch làm việc trong ca ngày {targetReg.WorkDate:dd/MM/yyyy}, không thể nhận ca này.");
+                }
+
+                // Kiểm tra xem một trong hai ca có đơn đổi ca khác đang chờ duyệt không
+                var hasPendingSwap = await _context.ShiftSwapRequest.AnyAsync(x =>
+                    x.Status == RegistrationStatus.Pending &&
+                    (x.SourceRegistrationId == sourceReg.ShiftRegistrationId ||
+                     x.TargetRegistrationId == sourceReg.ShiftRegistrationId ||
+                     x.SourceRegistrationId == targetReg.ShiftRegistrationId ||
+                     x.TargetRegistrationId == targetReg.ShiftRegistrationId));
+                if (hasPendingSwap)
+                {
+                    throw new InvalidOperationException("Một trong hai ca làm việc đang có yêu cầu đổi ca khác chờ duyệt.");
                 }
 
                 request.TargetEmployeeId = model.TargetEmployeeId.Value;
@@ -112,10 +171,36 @@ namespace RWPM.Services.Implementation
                     throw new InvalidOperationException("Vui lòng chọn ca mới và ngày làm việc mới muốn đổi sang.");
                 }
 
+                if (sourceReg.ShiftId == model.TargetShiftId.Value && sourceReg.WorkDate.Date == model.TargetWorkDate.Value.Date)
+                {
+                    throw new InvalidOperationException("Ca mới và ngày mới trùng với ca hiện tại.");
+                }
+
                 var shift = await _context.Shift.FirstOrDefaultAsync(x => x.ShiftId == model.TargetShiftId.Value && x.IsActive);
                 if (shift == null)
                 {
                     throw new InvalidOperationException("Ca làm việc mới không tồn tại hoặc đã ngừng hoạt động.");
+                }
+
+                var isDuplicate = await _context.ShiftRegistration.AnyAsync(x => 
+                    x.EmployeeId == sourceReg.EmployeeId &&
+                    x.ShiftId == model.TargetShiftId.Value &&
+                    x.WorkDate == model.TargetWorkDate.Value.Date &&
+                    x.ShiftRegistrationId != sourceReg.ShiftRegistrationId &&
+                    x.Status != RegistrationStatus.Rejected);
+
+                if (isDuplicate)
+                {
+                    throw new InvalidOperationException($"Bạn đã có lịch làm việc trong ca ngày {model.TargetWorkDate.Value:dd/MM/yyyy}.");
+                }
+
+                var hasPendingSwap = await _context.ShiftSwapRequest.AnyAsync(x =>
+                    x.Status == RegistrationStatus.Pending &&
+                    (x.SourceRegistrationId == sourceReg.ShiftRegistrationId ||
+                     x.TargetRegistrationId == sourceReg.ShiftRegistrationId));
+                if (hasPendingSwap)
+                {
+                    throw new InvalidOperationException("Ca làm việc này đang có yêu cầu đổi ca khác chờ duyệt.");
                 }
 
                 request.TargetShiftId = model.TargetShiftId.Value;
@@ -180,55 +265,109 @@ namespace RWPM.Services.Implementation
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                var sourceReg = await _context.ShiftRegistration.FindAsync(swapReq.SourceRegistrationId);
+                var sourceReg = await _context.ShiftRegistration
+                    .Include(x => x.Shift)
+                    .Include(x => x.Employee).ThenInclude(e => e.Account)
+                    .FirstOrDefaultAsync(x => x.ShiftRegistrationId == swapReq.SourceRegistrationId);
+
                 if (sourceReg == null)
                 {
                     throw new InvalidOperationException("Ca làm việc gốc không tồn tại.");
                 }
 
+                if (sourceReg.Status != RegistrationStatus.Approved)
+                {
+                    throw new InvalidOperationException("Ca làm việc gốc không còn ở trạng thái được phê duyệt.");
+                }
+
+                if (sourceReg.EmployeeId != swapReq.RequesterEmployeeId)
+                {
+                    throw new InvalidOperationException("Ca làm việc gốc không còn thuộc về nhân viên gửi yêu cầu đổi ca.");
+                }
+
                 if (swapReq.TargetRegistrationId.HasValue && swapReq.TargetEmployeeId.HasValue)
                 {
                     // Đổi ca với đồng nghiệp (Peer Swap)
-                    var targetReg = await _context.ShiftRegistration.FindAsync(swapReq.TargetRegistrationId.Value);
+                    var targetReg = await _context.ShiftRegistration
+                        .Include(x => x.Shift)
+                        .Include(x => x.Employee).ThenInclude(e => e.Account)
+                        .FirstOrDefaultAsync(x => x.ShiftRegistrationId == swapReq.TargetRegistrationId.Value);
+
                     if (targetReg == null)
                     {
                         throw new InvalidOperationException("Ca làm việc của đồng nghiệp không tồn tại.");
                     }
 
-                    // Hoán đổi nhân viên giữa 2 ca
+                    if (targetReg.Status != RegistrationStatus.Approved)
+                    {
+                        throw new InvalidOperationException("Ca làm việc của đồng nghiệp không còn ở trạng thái được phê duyệt.");
+                    }
+
+                    if (targetReg.EmployeeId != swapReq.TargetEmployeeId.Value)
+                    {
+                        throw new InvalidOperationException("Ca làm việc của đồng nghiệp không còn thuộc về đồng nghiệp này (có thể đã đổi trước đó).");
+                    }
+
                     var originalRequesterId = sourceReg.EmployeeId;
                     var originalTargetId = targetReg.EmployeeId;
 
+                    // Kiểm tra trùng lịch 2 chiều trước khi cập nhật
+                    var targetHasDuplicate = await _context.ShiftRegistration.AnyAsync(x =>
+                        x.EmployeeId == originalTargetId &&
+                        x.ShiftId == sourceReg.ShiftId &&
+                        x.WorkDate == sourceReg.WorkDate.Date &&
+                        x.ShiftRegistrationId != targetReg.ShiftRegistrationId &&
+                        x.Status != RegistrationStatus.Rejected);
+
+                    if (targetHasDuplicate)
+                    {
+                        var targetName = targetReg.Employee?.Account?.FullName ?? targetReg.Employee?.EmployeeCode ?? $"ID {originalTargetId}";
+                        throw new InvalidOperationException($"Nhân viên nhận đổi ({targetName}) đã có lịch làm việc trong ca ngày {sourceReg.WorkDate:dd/MM/yyyy}.");
+                    }
+
+                    var requesterHasDuplicate = await _context.ShiftRegistration.AnyAsync(x =>
+                        x.EmployeeId == originalRequesterId &&
+                        x.ShiftId == targetReg.ShiftId &&
+                        x.WorkDate == targetReg.WorkDate.Date &&
+                        x.ShiftRegistrationId != sourceReg.ShiftRegistrationId &&
+                        x.Status != RegistrationStatus.Rejected);
+
+                    if (requesterHasDuplicate)
+                    {
+                        var requesterName = sourceReg.Employee?.Account?.FullName ?? sourceReg.Employee?.EmployeeCode ?? $"ID {originalRequesterId}";
+                        throw new InvalidOperationException($"Nhân viên gửi yêu cầu ({requesterName}) đã có lịch làm việc trong ca ngày {targetReg.WorkDate:dd/MM/yyyy}.");
+                    }
+
+                    // Hoán đổi nhân viên giữa 2 ca
                     sourceReg.EmployeeId = originalTargetId;
                     sourceReg.Note = (string.IsNullOrEmpty(sourceReg.Note) ? "" : sourceReg.Note + " | ") 
-                                     + $"Nhận đổi ca từ NV {originalRequesterId}";
+                                     + $"Nhận đổi ca từ NV {originalRequesterId} (Đơn #{swapReq.ShiftSwapRequestId})";
                     sourceReg.UpdatedDate = DateTime.Now;
                     sourceReg.UpdatedBy = approverUsername;
 
                     targetReg.EmployeeId = originalRequesterId;
                     targetReg.Note = (string.IsNullOrEmpty(targetReg.Note) ? "" : targetReg.Note + " | ") 
-                                     + $"Nhận đổi ca từ NV {originalTargetId}";
+                                     + $"Nhận đổi ca từ NV {originalTargetId} (Đơn #{swapReq.ShiftSwapRequestId})";
                     targetReg.UpdatedDate = DateTime.Now;
                     targetReg.UpdatedBy = approverUsername;
                 }
                 else if (swapReq.TargetShiftId.HasValue && swapReq.TargetWorkDate.HasValue)
                 {
                     // Chuyển sang ca khác của chính mình (Direct Change)
-                    // Kiểm tra xem nhân viên đã có ca trùng vào ngày và ca mới chưa
                     var isDuplicate = await _context.ShiftRegistration.AnyAsync(x => 
                         x.EmployeeId == sourceReg.EmployeeId &&
                         x.ShiftId == swapReq.TargetShiftId.Value &&
-                        x.WorkDate == swapReq.TargetWorkDate.Value &&
+                        x.WorkDate == swapReq.TargetWorkDate.Value.Date &&
                         x.ShiftRegistrationId != sourceReg.ShiftRegistrationId &&
                         x.Status != RegistrationStatus.Rejected);
 
                     if (isDuplicate)
                     {
-                        throw new InvalidOperationException("Nhân viên đã có lịch làm việc trong ca và ngày mới này.");
+                        throw new InvalidOperationException($"Nhân viên đã có lịch làm việc trong ca và ngày mới này ({swapReq.TargetWorkDate.Value:dd/MM/yyyy}).");
                     }
 
                     sourceReg.ShiftId = swapReq.TargetShiftId.Value;
-                    sourceReg.WorkDate = swapReq.TargetWorkDate.Value;
+                    sourceReg.WorkDate = swapReq.TargetWorkDate.Value.Date;
                     sourceReg.Note = (string.IsNullOrEmpty(sourceReg.Note) ? "" : sourceReg.Note + " | ") 
                                      + $"Chuyển ca theo yêu cầu #{swapReq.ShiftSwapRequestId}";
                     sourceReg.UpdatedDate = DateTime.Now;
@@ -243,6 +382,16 @@ namespace RWPM.Services.Implementation
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                await transaction.RollbackAsync();
+                var innerMsg = ex.InnerException?.Message ?? ex.Message;
+                if (innerMsg.Contains("IX_ShiftRegistration_Employee_Shift_Date") || innerMsg.Contains("UNIQUE KEY"))
+                {
+                    throw new InvalidOperationException("Không thể duyệt đổi ca do vi phạm trùng lặp lịch làm việc (nhân viên đã có ca trùng trong ngày).");
+                }
+                throw new InvalidOperationException($"Lỗi cơ sở dữ liệu khi cập nhật đổi ca: {innerMsg}");
             }
             catch
             {
