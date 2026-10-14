@@ -815,4 +815,6 @@ Quick fix:
   <data name="Unit_Days" xml:space="preserve">
     <value>days</value>
   </data>
+  <data name="Pagination_Previous" xml:space="preserve"><value>Previous</value></data>
+  <data name="Pagination_Next" xml:space="preserve"><value>Next</value></data>
 </root>

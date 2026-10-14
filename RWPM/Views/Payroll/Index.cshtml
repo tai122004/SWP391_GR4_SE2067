@@ -5,6 +5,7 @@
     ViewData["Title"] = "Quản lý Bảng lương";
     bool isAdminOrHR = ViewBag.IsAdminOrHR ?? false;
     bool isStoreManager = ViewBag.IsStoreManager ?? false;
+    var defaultPayrollStart = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 }
 
 <div class="container-fluid py-4">
@@ -258,32 +259,15 @@
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <p class="text-muted small mb-3">Hệ thống sẽ tổng hợp giờ làm việc thực tế từ các bản ghi chấm công và tính lương theo đơn giá theo giờ (HourlyRate) của toàn bộ nhân viên.</p>
+                        <p class="text-muted small mb-3">Hệ thống sẽ tổng hợp giờ làm việc thực tế trong khoảng ngày bạn chọn.</p>
                         <div class="row g-3">
                             <div class="col-6">
-                                <label class="form-label fw-semibold">Tháng <span class="text-danger">*</span></label>
-                                <select name="month" class="form-select" required>
-                                    @for (int m = 1; m <= 12; m++)
-                                    {
-                                        if (m == DateTime.Now.Month)
-                                        {
-                                            <option value="@m" selected>Tháng @m</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@m">Tháng @m</option>
-                                        }
-                                    }
-                                </select>
+                                <label class="form-label fw-semibold">Từ ngày <span class="text-danger">*</span></label>
+                                <input type="date" name="startDate" class="form-control" value="@defaultPayrollStart.ToString("yyyy-MM-dd")" required />
                             </div>
                             <div class="col-6">
-                                <label class="form-label fw-semibold">Năm <span class="text-danger">*</span></label>
-                                <select name="year" class="form-select" required>
-                                    @for (int y = DateTime.Now.Year; y >= DateTime.Now.Year - 2; y--)
-                                    {
-                                        <option value="@y">@y</option>
-                                    }
-                                </select>
+                                <label class="form-label fw-semibold">Đến ngày <span class="text-danger">*</span></label>
+                                <input type="date" name="endDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
                             </div>
                         </div>
                     </div>

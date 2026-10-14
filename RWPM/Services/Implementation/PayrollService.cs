@@ -30,8 +30,7 @@ namespace RWPM.Services.Implementation
             {
                 var payrolls = await query
                     .Include(p => p.Details)
-                    .OrderByDescending(p => p.PeriodYear)
-                    .ThenByDescending(p => p.PeriodMonth)
+                    .OrderByDescending(p => p.StartDate)
                     .ToListAsync();
 
                 foreach (var p in payrolls)
@@ -45,8 +44,7 @@ namespace RWPM.Services.Implementation
                 return payrolls;
             }
 
-            return await query.OrderByDescending(p => p.PeriodYear)
-                              .ThenByDescending(p => p.PeriodMonth)
+            return await query.OrderByDescending(p => p.StartDate)
                               .ToListAsync();
         }
 
@@ -105,25 +103,37 @@ namespace RWPM.Services.Implementation
             };
         }
 
-        public async Task<Payroll> CalculatePayrollAsync(int month, int year, string operatorUsername)
+        public async Task<Payroll> CalculatePayrollAsync(DateTime startDate, DateTime endDate, string operatorUsername)
         {
-            if (month < 1 || month > 12)
-                throw new ArgumentOutOfRangeException(nameof(month), "Tháng không hợp lệ (1-12)");
-            if (year < 2000 || year > 2100)
-                throw new ArgumentOutOfRangeException(nameof(year), "Năm không hợp lệ");
+            startDate = startDate.Date;
+            endDate = endDate.Date;
+            if (startDate > endDate)
+                throw new ArgumentException("Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc.");
 
             var existing = await _context.Payroll
                 .Include(p => p.Details)
                     .ThenInclude(d => d.ItemSnapshots)
-                .FirstOrDefaultAsync(p => p.PeriodMonth == month && p.PeriodYear == year);
+                .FirstOrDefaultAsync(p => p.StartDate == startDate && p.EndDate == endDate);
+
+            var overlapping = await _context.Payroll
+                .Where(p => p.StartDate <= endDate && p.EndDate >= startDate)
+                .Where(p => existing == null || p.PayrollId != existing.PayrollId)
+                .Select(p => new { p.StartDate, p.EndDate })
+                .FirstOrDefaultAsync();
+
+            if (overlapping != null)
+            {
+                throw new InvalidOperationException(
+                    $"Kỳ lương bị trùng với kỳ hiện có {overlapping.StartDate:dd/MM/yyyy} - {overlapping.EndDate:dd/MM/yyyy}.");
+            }
 
             if (existing != null && existing.Status == PayrollStatus.Locked)
             {
-                throw new InvalidOperationException($"Kỳ lương tháng {month}/{year} đã được chốt (Locked), không thể tính lại!");
+                throw new InvalidOperationException($"Kỳ lương {startDate:dd/MM/yyyy} - {endDate:dd/MM/yyyy} đã được chốt, không thể tính lại!");
             }
 
-            var startDate = new DateTime(year, month, 1);
-            var endDate = new DateTime(year, month, DateTime.DaysInMonth(year, month));
+            var periodMonth = startDate.Month;
+            var periodYear = startDate.Year;
 
             // Load dữ liệu hoạt động trong kỳ
             var attendanceRecords = await _context.AttendanceRecord
@@ -170,9 +180,9 @@ namespace RWPM.Services.Implementation
             {
                 payroll = new Payroll
                 {
-                    PeriodMonth = month,
-                    PeriodYear = year,
-                    Title = $"Bảng lương Tháng {month:D2}/{year}",
+                    PeriodMonth = periodMonth,
+                    PeriodYear = periodYear,
+                    Title = $"Bảng lương {startDate:dd/MM/yyyy} - {endDate:dd/MM/yyyy}",
                     StartDate = startDate,
                     EndDate = endDate,
                     Status = PayrollStatus.Draft,
@@ -708,7 +718,7 @@ namespace RWPM.Services.Implementation
             var details = await query.OrderBy(d => d.StoreId).ThenBy(d => d.EmployeeCode).ToListAsync();
 
             using var workbook = new XLWorkbook();
-            var sheetName = $"BangLuong_{payroll.PeriodMonth:D2}_{payroll.PeriodYear}";
+            var sheetName = $"BangLuong_{payroll.StartDate:ddMMyy}_{payroll.EndDate:ddMMyy}";
             var ws = workbook.Worksheets.Add(sheetName);
 
             // Company Title
@@ -718,7 +728,7 @@ namespace RWPM.Services.Implementation
             ws.Range(1, 1, 1, 12).Merge();
 
             // Report Title
-            ws.Cell(2, 1).Value = $"BẢNG LƯƠNG NHÂN VIÊN THÁNG {payroll.PeriodMonth:D2}/{payroll.PeriodYear}";
+            ws.Cell(2, 1).Value = $"BẢNG LƯƠNG NHÂN VIÊN {payroll.StartDate:dd/MM/yyyy} - {payroll.EndDate:dd/MM/yyyy}";
             ws.Cell(2, 1).Style.Font.Bold = true;
             ws.Cell(2, 1).Style.Font.FontSize = 16;
             ws.Cell(2, 1).Style.Font.FontColor = XLColor.FromHtml("#0d6efd");
