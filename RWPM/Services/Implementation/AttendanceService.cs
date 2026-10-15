@@ -140,19 +140,24 @@ namespace RWPM.Services.Implementation
                     userLatitude.Value, userLongitude.Value, 
                     targetStore.Latitude.Value, targetStore.Longitude.Value);
 
-                // Anti-Fake GPS check (distance too close or exact coordinate match = likely spoofed)
-                if (distance < 1.0 || (Math.Abs(userLatitude.Value - targetStore.Latitude.Value) < 1e-5 && Math.Abs(userLongitude.Value - targetStore.Longitude.Value) < 1e-5))
+                // Step 1: Anti-Fake GPS — tọa độ trùng khớp chính xác với store thì chắc chắn là giả mạo
+                // GPS thật luôn có sai số tự nhiên (3-20m), không bao giờ cho tọa độ trùng khít
+                bool isExactMatch = Math.Abs(userLatitude.Value - targetStore.Latitude.Value) < 0.00001 
+                                 && Math.Abs(userLongitude.Value - targetStore.Longitude.Value) < 0.00001;
+                if (isExactMatch)
                 {
                     throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_FakeGPS"));
                 }
 
+                // Step 2: Kiểm tra khoảng cách tối thiểu (nếu admin cấu hình > 0)
                 int minDistance = targetStore.MinAllowedDistanceMeters;
                 if (minDistance > 0 && distance < minDistance)
                 {
                     throw new Exception(string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_MinDistance"), targetStore.StoreName, Math.Round(distance), minDistance));
                 }
 
-                int allowedRadius = targetStore.AllowedRadiusMeters > 0 ? targetStore.AllowedRadiusMeters : 200;
+                // Step 3: Kiểm tra bán kính tối đa — phải nằm trong phạm vi cho phép
+                int allowedRadius = targetStore.AllowedRadiusMeters > 0 ? targetStore.AllowedRadiusMeters : 500;
                 if (distance > allowedRadius)
                 {
                     throw new Exception(string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_MaxRadius"), targetStore.StoreName, Math.Round(distance), allowedRadius));
@@ -233,19 +238,23 @@ namespace RWPM.Services.Implementation
                     userLatitude.Value, userLongitude.Value, 
                     targetStore.Latitude.Value, targetStore.Longitude.Value);
 
-                // Anti-Fake GPS check
-                if (distance < 1.0 || (Math.Abs(userLatitude.Value - targetStore.Latitude.Value) < 1e-5 && Math.Abs(userLongitude.Value - targetStore.Longitude.Value) < 1e-5))
+                // Step 1: Anti-Fake GPS — tọa độ trùng khớp chính xác với store thì chắc chắn là giả mạo
+                bool isExactMatch = Math.Abs(userLatitude.Value - targetStore.Latitude.Value) < 0.00001 
+                                 && Math.Abs(userLongitude.Value - targetStore.Longitude.Value) < 0.00001;
+                if (isExactMatch)
                 {
                     throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_FakeGPS"));
                 }
 
+                // Step 2: Kiểm tra khoảng cách tối thiểu (nếu admin cấu hình > 0)
                 int minDistance = targetStore.MinAllowedDistanceMeters;
                 if (minDistance > 0 && distance < minDistance)
                 {
                     throw new Exception(string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_MinDistance"), targetStore.StoreName, Math.Round(distance), minDistance));
                 }
 
-                int allowedRadius = targetStore.AllowedRadiusMeters > 0 ? targetStore.AllowedRadiusMeters : 200;
+                // Step 3: Kiểm tra bán kính tối đa — phải nằm trong phạm vi cho phép
+                int allowedRadius = targetStore.AllowedRadiusMeters > 0 ? targetStore.AllowedRadiusMeters : 500;
                 if (distance > allowedRadius)
                 {
                     throw new Exception(string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_MaxRadius"), targetStore.StoreName, Math.Round(distance), allowedRadius));
