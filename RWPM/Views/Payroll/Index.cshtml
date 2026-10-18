@@ -5,7 +5,7 @@
     ViewData["Title"] = "Quản lý Bảng lương";
     bool isAdminOrHR = ViewBag.IsAdminOrHR ?? false;
     bool isStoreManager = ViewBag.IsStoreManager ?? false;
-    var defaultPayrollStart = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+    var nextPeriod = Model.NextPeriod;
 }
 
 <div class="container-fluid py-4">
@@ -43,7 +43,7 @@
 
             @if (isAdminOrHR)
             {
-                <button type="button" class="btn btn-primary btn-sm d-flex align-items-center gap-1 shadow-sm" data-bs-toggle="modal" data-bs-target="#calculateModal">
+                <button type="button" class="btn btn-primary btn-sm d-flex align-items-center gap-1 shadow-sm" onclick="openCalculateModal()">
                     <i class="bi bi-calculator"></i>
                     <span>Tính lương kỳ mới</span>
                 </button>
@@ -51,19 +51,30 @@
         </div>
     </div>
 
-    @if (TempData["SuccessMessage"] != null)
+    @if (isAdminOrHR && nextPeriod.Gaps.Count > 0)
     {
-        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["ErrorMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="alert alert-warning border-0 shadow-sm rounded-3 mb-4">
+            <div class="d-flex align-items-start">
+                <i class="bi bi-exclamation-triangle-fill fs-4 me-3 text-warning"></i>
+                <div class="flex-grow-1">
+                    <strong>Có @nextPeriod.Gaps.Count khoảng ngày chưa được tính lương!</strong>
+                    <div class="small text-dark mb-2">Các ngày dưới đây nằm giữa 2 kỳ lương nhưng không thuộc kỳ nào, nhân viên sẽ không được trả công cho những ngày này. Hãy tính bù để đảm bảo đủ ngày công.</div>
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var gap in nextPeriod.Gaps)
+                        {
+                            <li class="d-flex align-items-center gap-2 py-1">
+                                <i class="bi bi-calendar-x text-danger"></i>
+                                <span class="fw-semibold">@gap.StartDate.ToString("dd/MM/yyyy") - @gap.EndDate.ToString("dd/MM/yyyy")</span>
+                                <span class="badge bg-danger-subtle text-danger">@gap.Days ngày</span>
+                                <button type="button" class="btn btn-sm btn-outline-dark py-0 ms-2"
+                                        onclick="openCalculateModal('@gap.StartDate.ToString("yyyy-MM-dd")', '@gap.MaxEndDate.ToString("yyyy-MM-dd")', '@gap.MaxEndDate.ToString("yyyy-MM-dd")', true)">
+                                    <i class="bi bi-calculator me-1"></i>Tính bù
+                                </button>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
         </div>
     }
 
@@ -226,7 +237,7 @@
                                             {
                                                 <li><hr class="dropdown-divider"></li>
                                                 <li>
-                                                    <form asp-action="Delete" asp-route-id="@item.PayrollId" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa kỳ lương nháp này không?');">
+                                                    <form asp-action="Delete" asp-route-id="@item.PayrollId" method="post" data-confirm="Bạn có chắc chắn muốn xóa kỳ lương nháp @item.StartDate.ToString("dd/MM/yyyy") - @item.EndDate.ToString("dd/MM/yyyy") không? Sau khi xóa, khoảng ngày này sẽ trở thành khoảng trống cần tính bù." data-confirm-title="Xóa kỳ lương nháp" data-confirm-ok="Xóa kỳ lương" data-confirm-type="danger">
                                                         @Html.AntiForgeryToken()
                                                         <button type="submit" class="dropdown-item text-danger">
                                                             <i class="bi bi-trash me-2"></i>Xóa kỳ nháp
@@ -252,28 +263,55 @@
     <div class="modal fade" id="calculateModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content shadow">
-                <form asp-action="Calculate" method="post">
+                <form asp-action="Calculate" method="post" id="calculateForm">
                     @Html.AntiForgeryToken()
                     <div class="modal-header bg-primary text-white">
                         <h5 class="modal-title"><i class="bi bi-calculator me-2"></i>Tính lương kỳ mới</h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <p class="text-muted small mb-3">Hệ thống sẽ tổng hợp giờ làm việc thực tế trong khoảng ngày bạn chọn.</p>
+                        <p class="text-muted small mb-3">Hệ thống sẽ tổng hợp giờ làm việc thực tế trong khoảng ngày bạn chọn. Các kỳ lương phải <strong>nối tiếp liên tục</strong> để không bỏ sót ngày công.</p>
+
+                        <div id="calcPeriodInfo" class="alert alert-info py-2 px-3 small mb-3 d-flex align-items-start">
+                            <i class="bi bi-link-45deg fs-5 me-2"></i>
+                            <div id="calcPeriodInfoText">
+                                @if (nextPeriod.IsStartLocked)
+                                {
+                                    <span>Kỳ gần nhất kết thúc ngày <strong>@nextPeriod.LastEndDate?.ToString("dd/MM/yyyy")</strong> → kỳ mới bắt buộc bắt đầu từ <strong>@nextPeriod.SuggestedStartDate.ToString("dd/MM/yyyy")</strong>.</span>
+                                }
+                                else
+                                {
+                                    <span>Đây là kỳ lương đầu tiên, bạn có thể chọn ngày bắt đầu. Các kỳ sau sẽ tự động nối tiếp từ kỳ này.</span>
+                                }
+                            </div>
+                        </div>
+
                         <div class="row g-3">
                             <div class="col-6">
                                 <label class="form-label fw-semibold">Từ ngày <span class="text-danger">*</span></label>
-                                <input type="date" name="startDate" class="form-control" value="@defaultPayrollStart.ToString("yyyy-MM-dd")" required />
+                                <input type="date" id="calcStartDate" name="startDate" class="form-control @(nextPeriod.IsStartLocked ? "bg-light" : "")"
+                                       value="@nextPeriod.SuggestedStartDate.ToString("yyyy-MM-dd")"
+                                       @(nextPeriod.IsStartLocked ? "readonly" : "") required />
+                                @if (nextPeriod.IsStartLocked)
+                                {
+                                    <div class="form-text"><i class="bi bi-lock-fill me-1"></i>Tự động nối tiếp kỳ trước</div>
+                                }
                             </div>
                             <div class="col-6">
                                 <label class="form-label fw-semibold">Đến ngày <span class="text-danger">*</span></label>
-                                <input type="date" name="endDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                                <input type="date" id="calcEndDate" name="endDate" class="form-control"
+                                       value="@nextPeriod.SuggestedEndDate.ToString("yyyy-MM-dd")"
+                                       max="@nextPeriod.MaxEndDate.ToString("yyyy-MM-dd")" required />
+                                <div class="form-text" id="calcEndHint"></div>
                             </div>
                         </div>
+
+                        <div id="calcSummary" class="mt-3 small"></div>
+                        <div id="calcError" class="alert alert-danger py-2 px-3 small mt-3 mb-0 d-none"></div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" id="calcSubmitBtn" class="btn btn-primary">
                             <i class="bi bi-play-circle me-1"></i>Bắt đầu tính lương
                         </button>
                     </div>
@@ -281,4 +319,126 @@
             </div>
         </div>
     </div>
+}
+
+@section Scripts {
+    @if (isAdminOrHR)
+    {
+        <script>
+            (function () {
+                // Thông tin kỳ tiếp theo do server tính (kỳ lương phải nối tiếp liên tục)
+                var NEXT = {
+                    start: '@nextPeriod.SuggestedStartDate.ToString("yyyy-MM-dd")',
+                    end: '@nextPeriod.SuggestedEndDate.ToString("yyyy-MM-dd")',
+                    maxEnd: '@nextPeriod.MaxEndDate.ToString("yyyy-MM-dd")',
+                    startLocked: @(nextPeriod.IsStartLocked ? "true" : "false"),
+                    lastEnd: '@(nextPeriod.LastEndDate?.ToString("dd/MM/yyyy") ?? "")',
+                    today: '@DateTime.Today.ToString("yyyy-MM-dd")'
+                };
+                var infoHtml = document.getElementById('calcPeriodInfoText').innerHTML;
+                var isGapFill = false;
+
+                var startEl = document.getElementById('calcStartDate');
+                var endEl = document.getElementById('calcEndDate');
+                var hintEl = document.getElementById('calcEndHint');
+                var summaryEl = document.getElementById('calcSummary');
+                var errorEl = document.getElementById('calcError');
+                var submitBtn = document.getElementById('calcSubmitBtn');
+
+                function parse(v) { if (!v) return null; var p = v.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+                function iso(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+                function vn(d) { return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear(); }
+                function addMonthsMinusOneDay(d) {
+                    // Giống C#: start.AddMonths(1).AddDays(-1) (kẹp về cuối tháng nếu tháng sau ngắn hơn)
+                    var y = d.getFullYear(), m = d.getMonth() + 1, day = d.getDate();
+                    var lastDay = new Date(y, m + 1, 0).getDate();
+                    var r = new Date(y, m, Math.min(day, lastDay));
+                    r.setDate(r.getDate() - 1);
+                    return r;
+                }
+                function minDate(a, b) { return a < b ? a : b; }
+
+                var gapMaxEnd = null;
+
+                function validate() {
+                    var s = parse(startEl.value), e = parse(endEl.value), today = parse(NEXT.today);
+                    var errors = [];
+                    if (!s || !e) {
+                        errors.push('Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc.');
+                    } else {
+                        var maxEnd = minDate(addMonthsMinusOneDay(s), today);
+                        if (gapMaxEnd) maxEnd = minDate(maxEnd, gapMaxEnd);
+                        endEl.min = iso(s);
+                        endEl.max = iso(maxEnd);
+                        hintEl.textContent = 'Muộn nhất: ' + vn(maxEnd);
+
+                        if (s > today) errors.push('Đã tính lương đến hết ngày ' + NEXT.lastEnd + '. Kỳ tiếp theo chỉ có thể tạo từ ngày ' + vn(s) + ' trở đi.');
+                        else if (e < s) errors.push('Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu (' + vn(s) + ').');
+                        else if (e > today) errors.push('Ngày kết thúc không được vượt quá hôm nay (' + vn(today) + ').');
+                        else if (e > maxEnd) errors.push('Một kỳ lương tối đa 1 tháng. Ngày kết thúc muộn nhất là ' + vn(maxEnd) + '.');
+                    }
+
+                    if (errors.length) {
+                        errorEl.innerHTML = '<i class="bi bi-x-circle me-1"></i>' + errors[0];
+                        errorEl.classList.remove('d-none');
+                        endEl.classList.add('is-invalid');
+                        summaryEl.innerHTML = '';
+                        submitBtn.disabled = true;
+                        return false;
+                    }
+
+                    errorEl.classList.add('d-none');
+                    endEl.classList.remove('is-invalid');
+                    submitBtn.disabled = false;
+                    var days = Math.round((e - s) / 86400000) + 1;
+                    var next = new Date(e); next.setDate(next.getDate() + 1);
+                    summaryEl.innerHTML =
+                        '<div class="d-flex flex-wrap gap-3 text-secondary">' +
+                        '<span><i class="bi bi-calendar-range me-1"></i>Kỳ lương: <strong class="text-dark">' + days + ' ngày</strong></span>' +
+                        (isGapFill ? '' : '<span><i class="bi bi-arrow-right-circle me-1"></i>Kỳ sau sẽ bắt đầu từ <strong class="text-dark">' + vn(next) + '</strong></span>') +
+                        '</div>';
+                    return true;
+                }
+
+                // start/end/maxEnd: dùng khi "Tính bù" một khoảng ngày bị hổng
+                window.openCalculateModal = function (start, end, maxEnd, gapFill) {
+                    isGapFill = !!gapFill;
+                    gapMaxEnd = gapFill && maxEnd ? parse(maxEnd) : null;
+                    startEl.value = start || NEXT.start;
+                    endEl.value = end || NEXT.end;
+                    var lockStart = isGapFill || NEXT.startLocked;
+                    startEl.readOnly = lockStart;
+                    startEl.classList.toggle('bg-light', lockStart);
+
+                    var infoText = document.getElementById('calcPeriodInfoText');
+                    if (isGapFill) {
+                        infoText.innerHTML = 'Tính bù khoảng ngày bị hổng, bắt đầu từ <strong>' + vn(parse(start)) + '</strong>. ' +
+                            'Nếu khoảng trống dài hơn 1 tháng, hãy tính bù nhiều lần.';
+                    } else {
+                        infoText.innerHTML = infoHtml;
+                    }
+                    validate();
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById('calculateModal')).show();
+                };
+
+                startEl.addEventListener('change', function () {
+                    // Kỳ đầu tiên: tự gợi ý ngày kết thúc tròn 1 tháng khi đổi ngày bắt đầu
+                    var s = parse(startEl.value);
+                    if (s && !startEl.readOnly) endEl.value = iso(minDate(addMonthsMinusOneDay(s), parse(NEXT.today)));
+                    validate();
+                });
+                endEl.addEventListener('change', validate);
+                endEl.addEventListener('input', validate);
+
+                document.getElementById('calculateForm').addEventListener('submit', function (e) {
+                    if (!validate()) {
+                        e.preventDefault();
+                        return;
+                    }
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang tính lương...';
+                });
+            })();
+        </script>
+    }
 }

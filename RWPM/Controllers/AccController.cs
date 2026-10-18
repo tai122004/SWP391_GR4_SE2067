@@ -516,8 +516,12 @@ namespace RWPM.Controllers
             }
             catch(ModelValidationException ex)
             {
+                // Xóa được xác nhận bằng popup ngay tại trang danh sách -> lỗi cũng hiển thị bằng toast tại đó
                 AlertHelper.AddErrorMessage(TempData, ex.GetErrorString(_localizer));
-                return RedirectToAction(nameof(Delete), new { username });
+            }
+            catch (Exception ex)
+            {
+                AlertHelper.AddErrorMessage(TempData, ex.Message);
             }
             return RedirectToAction(nameof(Index));
         }

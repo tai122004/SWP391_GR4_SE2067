@@ -132,10 +132,19 @@
                                         <a asp-action="Edit" asp-route-id="@store.StoreId" class="btn btn-sm btn-outline-primary" title="@SharedResource.Button_Edit">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
-                                        <a asp-action="Delete" asp-route-id="@store.StoreId" class="btn btn-sm btn-outline-danger" title="@SharedResource.Button_Delete">
+                                        <button type="submit" form="deleteStoreForm_@store.StoreId" class="btn btn-sm btn-outline-danger" title="@SharedResource.Button_Delete">
                                             <i class="bi bi-trash"></i>
-                                        </a>
+                                        </button>
                                     </div>
+                                    <form id="deleteStoreForm_@store.StoreId" asp-action="DeleteConfirmed" method="post" class="d-none"
+                                          data-confirm="@SharedResource.ConfirmDelete&#10;@store.StoreCode - @store.StoreName"
+                                          data-confirm-title="@SharedResource.Button_Delete"
+                                          data-confirm-ok="@SharedResource.Button_Delete"
+                                          data-confirm-cancel="@SharedResource.Button_Cancel"
+                                          data-confirm-type="danger">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="storeId" value="@store.StoreId" />
+                                    </form>
                                 </td>
                             </tr>
                         }
@@ -184,11 +193,11 @@
                         var choice = checkbox.closest('.status-choice');
                         choice.find('.status-dot').toggleClass('is-active', isActive).toggleClass('is-inactive', !isActive);
                         choice.find('.status-choice-text').text(isActive ? '@Html.Raw(SharedResource.ObjectStatus_IsActive)' : '@Html.Raw(SharedResource.ObjectStatus_IsInactive)');
-                        toastr.success('@Html.Raw(StoreSharedResource.StatusUpdateSuccess)');
+                        AppToast.success('@Html.Raw(StoreSharedResource.StatusUpdateSuccess)');
                     },
                     error: function (xhr) {
                         checkbox.prop('checked', !isActive);
-                        toastr.error('@Html.Raw(StoreSharedResource.StatusUpdateFailed) ' + (xhr.responseText || ''));
+                        AppToast.error('@Html.Raw(StoreSharedResource.StatusUpdateFailed) ' + (xhr.responseText || ''));
                     }
                 });
             });

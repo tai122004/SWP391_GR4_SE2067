@@ -103,10 +103,122 @@ namespace RWPM.Services.Implementation
             };
         }
 
+        // =====================================================================
+        // KỲ LƯƠNG LIÊN TỤC
+        // Mỗi kỳ lương mới phải bắt đầu đúng ngày sau ngày kết thúc của kỳ trước
+        // -> không có ngày công nào bị bỏ sót giữa 2 kỳ (VD: kỳ 10/09 - 05/10 thì kỳ sau bắt buộc từ 06/10).
+        // =====================================================================
+
+        /// <summary>Một kỳ lương dài tối đa 1 tháng: [start, start + 1 tháng - 1 ngày].</summary>
+        private static DateTime GetMaxEndDate(DateTime startDate) => startDate.Date.AddMonths(1).AddDays(-1);
+
+        private static List<PayrollGapVM> FindGaps(List<(DateTime Start, DateTime End)> periods)
+        {
+            var gaps = new List<PayrollGapVM>();
+            var ordered = periods.OrderBy(p => p.Start).ToList();
+            for (int i = 1; i < ordered.Count; i++)
+            {
+                var expectedStart = ordered[i - 1].End.AddDays(1);
+                if (ordered[i].Start > expectedStart)
+                {
+                    var gapEnd = ordered[i].Start.AddDays(-1);
+                    var maxEnd = GetMaxEndDate(expectedStart);
+                    gaps.Add(new PayrollGapVM
+                    {
+                        StartDate = expectedStart,
+                        EndDate = gapEnd,
+                        MaxEndDate = maxEnd < gapEnd ? maxEnd : gapEnd
+                    });
+                }
+            }
+            return gaps;
+        }
+
+        public async Task<PayrollPeriodSuggestionVM> GetNextPeriodSuggestionAsync()
+        {
+            var today = DateTime.Today;
+            var periods = await _context.Payroll
+                .Select(p => new { p.StartDate, p.EndDate, p.Title })
+                .ToListAsync();
+
+            var last = periods.OrderByDescending(p => p.EndDate).FirstOrDefault();
+            var vm = new PayrollPeriodSuggestionVM
+            {
+                Gaps = FindGaps(periods.Select(p => (p.StartDate.Date, p.EndDate.Date)).ToList())
+            };
+
+            if (last != null)
+            {
+                vm.IsStartLocked = true;
+                vm.LastEndDate = last.EndDate.Date;
+                vm.LastTitle = last.Title;
+                vm.SuggestedStartDate = last.EndDate.Date.AddDays(1);
+            }
+            else
+            {
+                // Chưa có kỳ lương nào: gợi ý ngày 01 của tháng hiện tại, HR được phép chọn lại
+                vm.SuggestedStartDate = new DateTime(today.Year, today.Month, 1);
+            }
+
+            var maxEnd = GetMaxEndDate(vm.SuggestedStartDate);
+            vm.MaxEndDate = maxEnd < today ? maxEnd : today;
+            vm.SuggestedEndDate = vm.MaxEndDate;
+            return vm;
+        }
+
+        /// <summary>
+        /// Validate một kỳ lương MỚI (không áp dụng khi tính lại kỳ đã tồn tại).
+        /// </summary>
+        private async Task ValidateNewPeriodAsync(DateTime startDate, DateTime endDate)
+        {
+            var today = DateTime.Today;
+
+            if (endDate > today)
+                throw new InvalidOperationException(
+                    $"Ngày kết thúc ({endDate:dd/MM/yyyy}) không được vượt quá hôm nay ({today:dd/MM/yyyy}). Chỉ tính lương cho những ngày đã làm việc.");
+
+            var maxEnd = GetMaxEndDate(startDate);
+            if (endDate > maxEnd)
+                throw new InvalidOperationException(
+                    $"Một kỳ lương tối đa 1 tháng. Với ngày bắt đầu {startDate:dd/MM/yyyy}, ngày kết thúc muộn nhất là {maxEnd:dd/MM/yyyy}.");
+
+            var periods = await _context.Payroll
+                .Select(p => new { p.StartDate, p.EndDate, p.Title })
+                .ToListAsync();
+
+            // Kỳ liền trước (kết thúc trước ngày bắt đầu) phải nối tiếp đúng 1 ngày
+            var previous = periods.Where(p => p.EndDate < startDate).OrderByDescending(p => p.EndDate).FirstOrDefault();
+            if (previous != null)
+            {
+                var requiredStart = previous.EndDate.Date.AddDays(1);
+                if (startDate != requiredStart)
+                {
+                    throw new InvalidOperationException(
+                        $"Kỳ lương phải bắt đầu từ ngày {requiredStart:dd/MM/yyyy} (ngay sau kỳ \"{previous.Title}\"). " +
+                        $"Nếu bắt đầu từ {startDate:dd/MM/yyyy}, các ngày {requiredStart:dd/MM/yyyy} - {startDate.AddDays(-1):dd/MM/yyyy} sẽ không được tính lương.");
+                }
+                return;
+            }
+
+            // Chưa có kỳ trước nhưng có kỳ sau (tính bổ sung giai đoạn trước kỳ đầu tiên): phải kết thúc sát kỳ sau
+            var next = periods.Where(p => p.StartDate > endDate).OrderBy(p => p.StartDate).FirstOrDefault();
+            if (next != null)
+            {
+                var requiredEnd = next.StartDate.Date.AddDays(-1);
+                if (endDate != requiredEnd)
+                {
+                    throw new InvalidOperationException(
+                        $"Kỳ lương này nằm trước kỳ \"{next.Title}\" nên phải kết thúc đúng ngày {requiredEnd:dd/MM/yyyy} để không bị hổng ngày công.");
+                }
+            }
+        }
+
         public async Task<Payroll> CalculatePayrollAsync(DateTime startDate, DateTime endDate, string operatorUsername)
         {
             startDate = startDate.Date;
             endDate = endDate.Date;
+            if (startDate == DateTime.MinValue || endDate == DateTime.MinValue)
+                throw new ArgumentException("Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc.");
             if (startDate > endDate)
                 throw new ArgumentException("Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc.");
 
@@ -130,6 +242,12 @@ namespace RWPM.Services.Implementation
             if (existing != null && existing.Status == PayrollStatus.Locked)
             {
                 throw new InvalidOperationException($"Kỳ lương {startDate:dd/MM/yyyy} - {endDate:dd/MM/yyyy} đã được chốt, không thể tính lại!");
+            }
+
+            // Kỳ mới -> bắt buộc nối tiếp kỳ trước, không vượt quá hôm nay, tối đa 1 tháng
+            if (existing == null)
+            {
+                await ValidateNewPeriodAsync(startDate, endDate);
             }
 
             var periodMonth = startDate.Month;

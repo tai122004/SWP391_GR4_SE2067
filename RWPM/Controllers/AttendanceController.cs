@@ -181,7 +181,7 @@ namespace RWPM.Controllers
                 var result = await _attendanceService.CheckInAsync(username, parsedLat, parsedLng, photo);
                 if (!string.IsNullOrEmpty(result.WarningMessage))
                 {
-                    TempData["ErrorMessage"] = result.WarningMessage; // Hiển thị màu đỏ để chú ý
+                    TempData["WarningMessage"] = result.WarningMessage; // Chấm công thành công nhưng có cảnh báo -> toast vàng
                 }
                 else
                 {
@@ -212,7 +212,7 @@ namespace RWPM.Controllers
                 var result = await _attendanceService.CheckOutAsync(username, parsedLat, parsedLng, photo);
                 if (!string.IsNullOrEmpty(result.WarningMessage))
                 {
-                    TempData["ErrorMessage"] = result.WarningMessage;
+                    TempData["WarningMessage"] = result.WarningMessage;
                 }
                 else
                 {

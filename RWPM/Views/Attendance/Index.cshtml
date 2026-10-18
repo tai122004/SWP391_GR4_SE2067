@@ -91,15 +91,6 @@
             <div class="modern-card p-4 text-center">
                 <h3 class="mb-4 text-primary fw-bold">@DateTime.Now.ToString("dd/MM/yyyy")</h3>
                 
-                @if (TempData["SuccessMessage"] != null)
-                {
-                    <div class="alert alert-success small py-2">@TempData["SuccessMessage"]</div>
-                }
-                @if (TempData["ErrorMessage"] != null)
-                {
-                    <div class="alert alert-danger small py-2">@TempData["ErrorMessage"]</div>
-                }
-
                 @if (!isAdmin)
                 {
                     <div id="personalClockInArea" class="@(canManage && isEmpTabActive ? "d-none" : "")">
@@ -924,7 +915,7 @@
             if (!form) return;
 
             if (!photoInput.files || photoInput.files.length === 0) {
-                alert(`@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_PhotoCheckInRequired"))`);
+                AppToast.warning(`@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_PhotoCheckInRequired"))`);
                 return;
             }
 
@@ -974,13 +965,34 @@
                         form.submit();
                         return;
                     }
+<<<<<<< HEAD
+                    var errorMsg = "";
+                    if (error.code === 1) { // PERMISSION_DENIED
+                        errorMsg = `@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSPermissionDenied"))`;
+                    } else {
+                        var template = `@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSUnknownError"))`;
+                        errorMsg = template.replace("{0}", error.message);
+                    }
+                    // Chỉ hiện alert khi thực sự có lỗi từ browser
+                    AppToast.error(errorMsg);
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                });
+            } else {
+=======
                 }
 
+>>>>>>> 3310e07fd9ea9088e590631c8924434d7d757f85
                 if (gpsStatus) gpsStatus.classList.add("d-none");
                 if (btnElement) {
                     btnElement.disabled = false;
                     btnElement.innerHTML = originalText;
                 }
+<<<<<<< HEAD
+                AppToast.error(`@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSNotSupported"))`);
+=======
 
                 var errorMsg = "";
                 if (error && error.code === 1) { // PERMISSION_DENIED
@@ -1008,6 +1020,7 @@
                 );
             } else {
                 handleGpsFailure(null);
+>>>>>>> 3310e07fd9ea9088e590631c8924434d7d757f85
             }
         }
 

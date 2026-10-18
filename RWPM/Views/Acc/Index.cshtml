@@ -50,7 +50,7 @@
     <!-- Thông báo khi vừa tạo tài khoản/nhân viên mới -->
     @if (TempData["CreatedAccountNotice"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center justify-content-between p-3 mb-3 shadow-sm" role="alert">
+        <div class="alert alert-success fade show d-flex align-items-center justify-content-between gap-3 p-3 mb-3 shadow-sm" role="alert">
             <div class="d-flex align-items-center">
                 <i class="bi bi-check-circle-fill fs-4 text-success me-3"></i>
                 <div>
@@ -58,11 +58,11 @@
                     <div class="small mt-1 text-secondary font-monospace">@TempData["CreatedAccountNotice"]</div>
                 </div>
             </div>
-            <div>
-                <button type="button" class="btn btn-sm btn-outline-success me-2" onclick="copyToClipboard('@TempData["CreatedAccountNotice"]', '@Html.Raw(AccountSharedResource.Toast_CopiedAccountPassword)')">
+            <div class="d-flex align-items-center flex-shrink-0">
+                <button type="button" class="btn btn-sm btn-outline-success me-3" onclick="copyToClipboard('@TempData["CreatedAccountNotice"]', '@Html.Raw(AccountSharedResource.Toast_CopiedAccountPassword)')">
                     <i class="bi bi-copy me-1"></i> @AccountSharedResource.Button_Copy
                 </button>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close position-static p-2" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         </div>
     }
@@ -191,13 +191,22 @@
                                             <i class="bi bi-key"></i>
                                         </button>
 
-                                        <a asp-action="Delete"
-                                           asp-route-id="@category.Username"
-                                           class="btn btn-sm btn-outline-danger"
-                                           title="@SharedResource.Button_Delete">
+                                        <button type="submit"
+                                                form="deleteAccForm_@category.Username"
+                                                class="btn btn-sm btn-outline-danger"
+                                                title="@SharedResource.Button_Delete">
                                             <i class="bi bi-trash"></i>
-                                        </a>
+                                        </button>
                                     </div>
+                                    <form id="deleteAccForm_@category.Username" asp-action="DeleteConfirmed" method="post" class="d-none"
+                                          data-confirm="@SharedResource.ConfirmDelete&#10;@category.FullName (@category.Username)"
+                                          data-confirm-title="@SharedResource.Button_Delete"
+                                          data-confirm-ok="@SharedResource.Button_Delete"
+                                          data-confirm-cancel="@SharedResource.Button_Cancel"
+                                          data-confirm-type="danger">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="username" value="@category.Username" />
+                                    </form>
                                 </td>
                             </tr>
                         }
@@ -540,8 +549,8 @@
             .then(r => r.json())
             .then(res => {
                 if (res.success) {
-                    if (typeof toastr !== 'undefined') {
-                        toastr.success(res.message);
+                    if (typeof AppToast !== 'undefined') {
+                        AppToast.success(res.message);
                     }
                     const modalEl = document.getElementById('importExcelModal');
                     if (modalEl) {
@@ -551,19 +560,19 @@
                         window.location.reload();
                     }, 800);
                 } else {
-                    if (typeof toastr !== 'undefined') {
-                        toastr.error(res.message || '@Html.Raw(SharedResource.OperationFailed)');
+                    if (typeof AppToast !== 'undefined') {
+                        AppToast.error(res.message || '@Html.Raw(SharedResource.OperationFailed)');
                     } else {
-                        alert(res.message || '@Html.Raw(SharedResource.OperationFailed)');
+                        AppToast.error(res.message || '@Html.Raw(SharedResource.OperationFailed)');
                     }
                     btn.prop('disabled', false).html('<i class="bi bi-check2-circle me-1"></i> @Html.Raw(AccountSharedResource.Excel_Btn_Confirm)');
                 }
             })
             .catch(err => {
-                if (typeof toastr !== 'undefined') {
-                    toastr.error('@Html.Raw(SharedResource.OperationFailed): ' + err.message);
+                if (typeof AppToast !== 'undefined') {
+                    AppToast.error('@Html.Raw(SharedResource.OperationFailed): ' + err.message);
                 } else {
-                    alert('@Html.Raw(SharedResource.OperationFailed): ' + err.message);
+                    AppToast.error('@Html.Raw(SharedResource.OperationFailed): ' + err.message);
                 }
                 btn.prop('disabled', false).html('<i class="bi bi-check2-circle me-1"></i> @Html.Raw(AccountSharedResource.Excel_Btn_Confirm)');
             });
@@ -594,8 +603,8 @@
                 if (!response.ok) {
                     return response.text().then(text => { throw new Error(text); });
                 }
-                if (typeof toastr !== 'undefined') {
-                    toastr.success(isActive ? `@Html.Raw(SharedResource.ObjectStatus_IsActive): ${username}` : `@Html.Raw(SharedResource.ObjectStatus_IsInactive): ${username}`);
+                if (typeof AppToast !== 'undefined') {
+                    AppToast.success(isActive ? `@Html.Raw(SharedResource.ObjectStatus_IsActive): ${username}` : `@Html.Raw(SharedResource.ObjectStatus_IsInactive): ${username}`);
                 }
                 if (checkbox) {
                     const choice = checkbox.closest('.status-choice');
@@ -606,10 +615,10 @@
                 }
             })
             .catch(error => {
-                if (typeof toastr !== 'undefined') {
-                    toastr.error(error.message || '@Html.Raw(SharedResource.OperationFailed)');
+                if (typeof AppToast !== 'undefined') {
+                    AppToast.error(error.message || '@Html.Raw(SharedResource.OperationFailed)');
                 } else {
-                    alert(error.message || '@Html.Raw(SharedResource.OperationFailed)');
+                    AppToast.error(error.message || '@Html.Raw(SharedResource.OperationFailed)');
                 }
                 if (checkbox) checkbox.checked = !isActive;
             });

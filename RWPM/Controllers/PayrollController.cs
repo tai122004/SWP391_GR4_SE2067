@@ -69,7 +69,8 @@ namespace RWPM.Controllers
             {
                 Payrolls = payrolls,
                 SelectedYear = currentYear,
-                AvailableYears = availableYears
+                AvailableYears = availableYears,
+                NextPeriod = await _payrollService.GetNextPeriodSuggestionAsync()
             };
 
             ViewBag.IsAdminOrHR = IsAdminOrHR;
