@@ -1281,12 +1281,12 @@
                     success: function(res) {
                         if (res.success) {
                             $('#createShiftRequestModal').modal('hide');
-                            toastr.success('@Html.Raw(SharedResource.Req_CreateSuccess)');
+                            AppToast.success('@Html.Raw(SharedResource.Req_CreateSuccess)');
                             setTimeout(() => window.location.reload(), 1000);
                         }
                     },
                     error: function(err) {
-                        toastr.error(err.responseJSON?.message || '@Html.Raw(SharedResource.OperationFailed)');
+                        AppToast.error(err.responseJSON?.message || '@Html.Raw(SharedResource.OperationFailed)');
                     }
                 });
             });
@@ -1297,7 +1297,7 @@
                 var swapType = $('input[name="swapType"]:checked').val();
                 var sourceId = $('#swapSourceRegistrationId').val();
                 if (!sourceId) {
-                    toastr.warning('@Html.Raw(RequestResource.Swap_SelectSourcePrompt)');
+                    AppToast.warning('@Html.Raw(RequestResource.Swap_SelectSourcePrompt)');
                     return;
                 }
 
@@ -1311,7 +1311,7 @@
                     var targetEmp = $('#swapTargetEmployeeId').val();
                     var targetReg = $('#swapTargetRegistrationId').val();
                     if (!targetEmp || !targetReg) {
-                        toastr.warning('@Html.Raw(RequestResource.Swap_SelectCoworkerShiftPrompt)');
+                        AppToast.warning('@Html.Raw(RequestResource.Swap_SelectCoworkerShiftPrompt)');
                         return;
                     }
                     data.TargetEmployeeId = parseInt(targetEmp);
@@ -1320,7 +1320,7 @@
                     var targetDate = $('#swapTargetWorkDate').val();
                     var targetShift = $('#swapTargetShiftId').val();
                     if (!targetDate || !targetShift) {
-                        toastr.warning('@Html.Raw(SharedResource.Req_SelectShift)');
+                        AppToast.warning('@Html.Raw(SharedResource.Req_SelectShift)');
                         return;
                     }
                     data.TargetWorkDate = targetDate;
@@ -1340,15 +1340,15 @@
                     success: function(res) {
                         if (res.success) {
                             $('#createSwapShiftModal').modal('hide');
-                            toastr.success(res.message || '@Html.Raw(RequestResource.Swap_SubmitSuccess)');
+                            AppToast.success(res.message || '@Html.Raw(RequestResource.Swap_SubmitSuccess)');
                             setTimeout(() => window.location.reload(), 1000);
                         } else {
-                            toastr.error(res.message || '@Html.Raw(SharedResource.OperationFailed)');
+                            AppToast.error(res.message || '@Html.Raw(SharedResource.OperationFailed)');
                             $('#btnSubmitSwap').prop('disabled', false);
                         }
                     },
                     error: function(err) {
-                        toastr.error(err.responseJSON?.message || '@Html.Raw(SharedResource.OperationFailed)');
+                        AppToast.error(err.responseJSON?.message || '@Html.Raw(SharedResource.OperationFailed)');
                         $('#btnSubmitSwap').prop('disabled', false);
                     }
                 });
@@ -1411,15 +1411,15 @@
                     success: function(res) {
                         if (res.success) {
                             $('#createLeaveRequestModal').modal('hide');
-                            toastr.success(res.message || '@Html.Raw(RequestResource.Leave_SubmitSuccess)');
+                            AppToast.success(res.message || '@Html.Raw(RequestResource.Leave_SubmitSuccess)');
                             setTimeout(() => window.location.reload(), 1000);
                         } else {
-                            toastr.error(res.message || '@Html.Raw(SharedResource.OperationFailed)');
+                            AppToast.error(res.message || '@Html.Raw(SharedResource.OperationFailed)');
                             $('#btnSubmitLeave').prop('disabled', false);
                         }
                     },
                     error: function(err) {
-                        toastr.error(err.responseJSON?.message || '@Html.Raw(SharedResource.OperationFailed)');
+                        AppToast.error(err.responseJSON?.message || '@Html.Raw(SharedResource.OperationFailed)');
                         $('#btnSubmitLeave').prop('disabled', false);
                     }
                 });
@@ -1630,7 +1630,7 @@
 
         let pendingRejectType = ''; // 'single' or 'bulk'
 
-        function updateSelectedStatus(status) {
+        async function updateSelectedStatus(status) {
             if (currentSelectedId === 0) return;
 
             if (status === 2) {
@@ -1646,7 +1646,7 @@
                 return;
             }
 
-            if (!confirm('@Html.Raw(RequestResource.ConfirmApproveMsg)')) return;
+            if (!(await AppConfirm({ message: '@Html.Raw(RequestResource.ConfirmApproveMsg)', type: 'success', icon: 'bi-check2-circle' }))) return;
 
             $.ajax({
                 url: '/Request/UpdateStatus',
@@ -1661,14 +1661,14 @@
                 },
                 success: function(res) {
                     if (res.success) {
-                        toastr.success(res.message || '@Html.Raw(SharedResource.Req_UpdateStatusSuccess)');
+                        AppToast.success(res.message || '@Html.Raw(SharedResource.Req_UpdateStatusSuccess)');
                         setTimeout(() => window.location.reload(), 800);
                     } else {
-                        toastr.error('@Html.Raw(SharedResource.Req_ErrorPrefix)' + res.message);
+                        AppToast.error('@Html.Raw(SharedResource.Req_ErrorPrefix)' + res.message);
                     }
                 },
                 error: function() {
-                    toastr.error('@Html.Raw(SharedResource.Req_SysError)');
+                    AppToast.error('@Html.Raw(SharedResource.Req_SysError)');
                 }
             });
         }
@@ -1676,7 +1676,7 @@
         function submitRejection() {
             var reason = $('#modalRejectionReason').val().trim();
             if (!reason) {
-                toastr.warning('@Html.Raw(RequestResource.RejectReasonRequired)');
+                AppToast.warning('@Html.Raw(RequestResource.RejectReasonRequired)');
                 return;
             }
 
@@ -1698,14 +1698,14 @@
                     },
                     success: function(res) {
                         if (res.success) {
-                            toastr.success(res.message || '@Html.Raw(RequestResource.RejectSuccess)');
+                            AppToast.success(res.message || '@Html.Raw(RequestResource.RejectSuccess)');
                             setTimeout(() => window.location.reload(), 800);
                         } else {
-                            toastr.error('@Html.Raw(SharedResource.Req_ErrorPrefix)' + res.message);
+                            AppToast.error('@Html.Raw(SharedResource.Req_ErrorPrefix)' + res.message);
                         }
                     },
                     error: function() {
-                        toastr.error('@Html.Raw(SharedResource.Req_SysError)');
+                        AppToast.error('@Html.Raw(SharedResource.Req_SysError)');
                     }
                 });
             } else if (pendingRejectType === 'bulk') {
@@ -1734,22 +1734,22 @@
                     },
                     success: function(res) {
                         if (res.success) {
-                            toastr.success('@Html.Raw(RequestResource.BulkRejectSuccess)');
+                            AppToast.success('@Html.Raw(RequestResource.BulkRejectSuccess)');
                             setTimeout(() => window.location.reload(), 800);
                         } else {
-                            toastr.error('@Html.Raw(SharedResource.Req_ErrorPrefix)' + res.message);
+                            AppToast.error('@Html.Raw(SharedResource.Req_ErrorPrefix)' + res.message);
                         }
                     },
                     error: function() {
-                        toastr.error('@Html.Raw(SharedResource.Req_SysError)');
+                        AppToast.error('@Html.Raw(SharedResource.Req_SysError)');
                     }
                 });
             }
         }
 
-        function deleteSelectedRequest() {
+        async function deleteSelectedRequest() {
             if (currentSelectedId === 0) return;
-            if (!confirm('@Html.Raw(RequestResource.ConfirmDeleteMsg)')) return;
+            if (!(await AppConfirm({ message: '@Html.Raw(RequestResource.ConfirmDeleteMsg)', type: 'danger' }))) return;
 
             $.ajax({
                 url: '/Request/DeleteRequest',
@@ -1763,14 +1763,14 @@
                 },
                 success: function(res) {
                     if (res.success) {
-                        toastr.success(res.message || '@Html.Raw(SharedResource.Req_DeleteSuccess)');
+                        AppToast.success(res.message || '@Html.Raw(SharedResource.Req_DeleteSuccess)');
                         setTimeout(() => window.location.reload(), 800);
                     } else {
-                        toastr.error('@Html.Raw(SharedResource.Req_ErrorPrefix)' + res.message);
+                        AppToast.error('@Html.Raw(SharedResource.Req_ErrorPrefix)' + res.message);
                     }
                 },
                 error: function() {
-                    toastr.error('@Html.Raw(SharedResource.Req_SysError)');
+                    AppToast.error('@Html.Raw(SharedResource.Req_SysError)');
                 }
             });
         }
@@ -1792,7 +1792,7 @@
             }
         }
 
-        function updateBulkStatus(status) {
+        async function updateBulkStatus(status) {
             var selectedIds = [];
             $('.request-checkbox:checked').each(function() {
                 selectedIds.push(parseInt($(this).val()));
@@ -1809,7 +1809,7 @@
             }
 
             var confirmBulkMsg = '@Html.Raw(RequestResource.ConfirmBulkApproveMsg)'.replace('{0}', selectedIds.length);
-            if (!confirm(confirmBulkMsg)) return;
+            if (!(await AppConfirm({ message: confirmBulkMsg, type: 'success', icon: 'bi-check2-all' }))) return;
 
             var firstChecked = $('.request-checkbox:checked').first();
             var reqType = firstChecked.data('type') || 'ShiftReg';
@@ -1830,14 +1830,14 @@
                 },
                 success: function(res) {
                     if (res.success) {
-                        toastr.success('@Html.Raw(SharedResource.Req_BulkActionSuccess)');
+                        AppToast.success('@Html.Raw(SharedResource.Req_BulkActionSuccess)');
                         setTimeout(() => window.location.reload(), 800);
                     } else {
-                        toastr.error('@Html.Raw(SharedResource.Req_ErrorPrefix)' + res.message);
+                        AppToast.error('@Html.Raw(SharedResource.Req_ErrorPrefix)' + res.message);
                     }
                 },
                 error: function() {
-                    toastr.error('@Html.Raw(SharedResource.Req_SysError)');
+                    AppToast.error('@Html.Raw(SharedResource.Req_SysError)');
                 }
             });
         }
@@ -1893,10 +1893,10 @@
                     var modal = new bootstrap.Modal(document.getElementById('createSwapShiftModal'));
                     modal.show();
                 } else {
-                    toastr.error(res.message || '@Html.Raw(SharedResource.OperationFailed)');
+                    AppToast.error(res.message || '@Html.Raw(SharedResource.OperationFailed)');
                 }
             }).fail(function() {
-                toastr.error('@Html.Raw(SharedResource.OperationFailed)');
+                AppToast.error('@Html.Raw(SharedResource.OperationFailed)');
             });
         }
 
@@ -2012,7 +2012,7 @@
             var shiftId = parseInt(selected.data('shift')) || null;
 
             if (!attId && !workDate) {
-                toastr.error('Vui lòng chọn ca làm việc cần sửa.');
+                AppToast.error('Vui lòng chọn ca làm việc cần sửa.');
                 return;
             }
 
@@ -2021,12 +2021,12 @@
             var reasonVal = $('#adjReason').val().trim();
 
             if (!reasonVal) {
-                toastr.error('Vui lòng nhập lý do giải trình.');
+                AppToast.error('Vui lòng nhập lý do giải trình.');
                 return;
             }
 
             if (!inVal && !outVal) {
-                toastr.error('Vui lòng nhập ít nhất giờ vào hoặc giờ ra mong muốn.');
+                AppToast.error('Vui lòng nhập ít nhất giờ vào hoặc giờ ra mong muốn.');
                 return;
             }
 
@@ -2055,15 +2055,15 @@
                 success: function(res) {
                     if (res.success) {
                         $('#createAttendanceModal').modal('hide');
-                        toastr.success(res.message);
+                        AppToast.success(res.message);
                         setTimeout(() => window.location.reload(), 1000);
                     } else {
-                        toastr.error(res.message || 'Thao tác không thành công.');
+                        AppToast.error(res.message || 'Thao tác không thành công.');
                         $('#btnSubmitAdj').prop('disabled', false);
                     }
                 },
                 error: function(err) {
-                    toastr.error(err.responseJSON?.message || 'Lỗi hệ thống.');
+                    AppToast.error(err.responseJSON?.message || 'Lỗi hệ thống.');
                     $('#btnSubmitAdj').prop('disabled', false);
                 }
             });
@@ -2097,7 +2097,7 @@
             var note = $('#apprModal_ApproverNote').val().trim();
 
             if (!inTime && !outTime) {
-                toastr.error('Vui lòng nhập ít nhất giờ vào hoặc giờ ra được phê duyệt.');
+                AppToast.error('Vui lòng nhập ít nhất giờ vào hoặc giờ ra được phê duyệt.');
                 return;
             }
 
@@ -2123,23 +2123,23 @@
                 success: function(res) {
                     if (res.success) {
                         $('#approveAttendanceModal').modal('hide');
-                        toastr.success(res.message || 'Phê duyệt và cập nhật giờ chấm công thành công!');
+                        AppToast.success(res.message || 'Phê duyệt và cập nhật giờ chấm công thành công!');
                         setTimeout(() => window.location.reload(), 800);
                     } else {
                         $('#btnConfirmApproveAttendance').prop('disabled', false).html('<i class="bi bi-check-circle me-1"></i>Xác nhận duyệt');
-                        toastr.error('@Html.Raw(SharedResource.Req_ErrorPrefix)' + res.message);
+                        AppToast.error('@Html.Raw(SharedResource.Req_ErrorPrefix)' + res.message);
                     }
                 },
                 error: function(err) {
                     $('#btnConfirmApproveAttendance').prop('disabled', false).html('<i class="bi bi-check-circle me-1"></i>Xác nhận duyệt');
-                    toastr.error(err.responseJSON?.message || '@Html.Raw(SharedResource.Req_SysError)');
+                    AppToast.error(err.responseJSON?.message || '@Html.Raw(SharedResource.Req_SysError)');
                 }
             });
         }
 
         function exportRequestsToCSV() {
             if (!requestsData || requestsData.length === 0) {
-                toastr.warning('Không có dữ liệu yêu cầu để xuất file.');
+                AppToast.warning('Không có dữ liệu yêu cầu để xuất file.');
                 return;
             }
 
@@ -2177,7 +2177,7 @@
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            toastr.success('Xuất file thành công!');
+            AppToast.success('Xuất file thành công!');
         }
 
         function escapeHtml(str) {

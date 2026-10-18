@@ -54,7 +54,7 @@
             {
                 if (!isLocked)
                 {
-                    <form asp-action="Recalculate" asp-route-id="@Model.Payroll.PayrollId" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn tính toán lại toàn bộ bảng lương này?');">
+                    <form asp-action="Recalculate" asp-route-id="@Model.Payroll.PayrollId" method="post" class="d-inline" data-confirm="Bạn có chắc chắn muốn tính toán lại toàn bộ bảng lương này? Dữ liệu nháp hiện tại sẽ được ghi đè." data-confirm-title="Tính lại bảng lương" data-confirm-ok="Tính lại" data-confirm-type="warning">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1">
                             <i class="bi bi-arrow-repeat"></i>
@@ -62,7 +62,7 @@
                         </button>
                     </form>
 
-                    <form asp-action="Lock" asp-route-id="@Model.Payroll.PayrollId" method="post" class="d-inline" onsubmit="return confirm('Sau khi chốt, bảng lương sẽ được bảo vệ bất biến. Bạn có chắc chắn muốn chốt?');">
+                    <form asp-action="Lock" asp-route-id="@Model.Payroll.PayrollId" method="post" class="d-inline" data-confirm="Sau khi chốt, bảng lương sẽ được bảo vệ bất biến. Bạn có chắc chắn muốn chốt?" data-confirm-title="Chốt bảng lương" data-confirm-ok="Chốt bảng lương" data-confirm-type="warning" data-confirm-icon="bi-lock">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-success btn-sm d-flex align-items-center gap-1 shadow-sm">
                             <i class="bi bi-lock-fill"></i>
@@ -80,22 +80,6 @@
             }
         </div>
     </div>
-
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["ErrorMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
 
     @if (Model.MissingRateCount > 0 || Model.WarningCount > 0)
     {

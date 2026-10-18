@@ -9,6 +9,9 @@ namespace RWPM.Models.ViewModels.Payroll
         public int SelectedYear { get; set; }
         public List<int> AvailableYears { get; set; } = new();
 
+        /// <summary>Gợi ý kỳ lương tiếp theo & các khoảng ngày chưa được tính lương.</summary>
+        public PayrollPeriodSuggestionVM NextPeriod { get; set; } = new();
+
         // Metrics
         public int TotalPayrolls => Payrolls.Count;
         public decimal TotalAnnualGrossSalary => Payrolls.Sum(p => p.TotalGrossSalary);

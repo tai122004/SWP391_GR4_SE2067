@@ -90,15 +90,6 @@
             <div class="modern-card p-4 text-center">
                 <h3 class="mb-4 text-primary fw-bold">@DateTime.Now.ToString("dd/MM/yyyy")</h3>
                 
-                @if (TempData["SuccessMessage"] != null)
-                {
-                    <div class="alert alert-success small py-2">@TempData["SuccessMessage"]</div>
-                }
-                @if (TempData["ErrorMessage"] != null)
-                {
-                    <div class="alert alert-danger small py-2">@TempData["ErrorMessage"]</div>
-                }
-
                 @if (!isAdmin)
                 {
                     <div id="personalClockInArea" class="@(canManage && isEmpTabActive ? "d-none" : "")">
@@ -869,7 +860,7 @@
             if (!form) return;
 
             if (!photoInput.files || photoInput.files.length === 0) {
-                alert(`@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_PhotoCheckInRequired"))`);
+                AppToast.warning(`@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_PhotoCheckInRequired"))`);
                 return;
             }
 
@@ -903,7 +894,7 @@
                         errorMsg = template.replace("{0}", error.message);
                     }
                     // Chỉ hiện alert khi thực sự có lỗi từ browser
-                    alert(errorMsg);
+                    AppToast.error(errorMsg);
                 }, {
                     enableHighAccuracy: true,
                     timeout: 10000,
@@ -915,7 +906,7 @@
                     btnElement.disabled = false;
                     btnElement.innerHTML = originalText;
                 }
-                alert(`@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSNotSupported"))`);
+                AppToast.error(`@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSNotSupported"))`);
             }
         }
 

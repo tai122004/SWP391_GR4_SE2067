@@ -384,7 +384,7 @@
             function executeAddressSearch(queryText) {
                 var query = queryText || (searchInput ? searchInput.value.trim() : '');
                 if (!query) {
-                    alert("@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Search_EmptyAlert))");
+                    AppToast.warning("@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Search_EmptyAlert))");
                     return;
                 }
 
@@ -414,7 +414,7 @@
                             syncAddressText(firstResult.display_name || query);
                         } else {
                             if (suggestionsList) suggestionsList.classList.add("d-none");
-                            alert("@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Search_NotFoundAlert))".replace('{0}', query));
+                            AppToast.warning("@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Search_NotFoundAlert))".replace('{0}', query));
                         }
                     })
                     .catch(function (err) {
@@ -423,7 +423,7 @@
                             btnSearch.innerHTML = '<i class="bi bi-geo-alt-fill me-1"></i> @Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Btn_SearchAddress))';
                         }
                         if (suggestionsList) suggestionsList.classList.add("d-none");
-                        alert("@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Search_ErrorAlert))".replace('{0}', err.message));
+                        AppToast.error("@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Search_ErrorAlert))".replace('{0}', err.message));
                     });
             }
 

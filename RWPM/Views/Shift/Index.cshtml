@@ -95,7 +95,7 @@ document.querySelectorAll('.status-toggle').forEach(function (button) {
             button.querySelector('.status-dot').classList.toggle('is-inactive', !newValue);
             button.querySelector('span:nth-child(2)').textContent = newValue ? activeLabel : inactiveLabel;
         } catch (error) {
-            if (typeof toastr !== 'undefined') toastr.error(error.message || 'Không thể cập nhật trạng thái ca.');
+            if (typeof AppToast !== 'undefined') AppToast.error(error.message || 'Không thể cập nhật trạng thái ca.');
         } finally {
             button.disabled = false;
         }

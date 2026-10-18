@@ -535,11 +535,11 @@
                         var choice = checkbox.closest('.status-choice');
                         choice.find('.status-dot').toggleClass('is-active', isActive).toggleClass('is-inactive', !isActive);
                         choice.find('.status-choice-text').text(isActive ? '@Html.Raw(SharedResource.ObjectStatus_IsActive)' : '@Html.Raw(SharedResource.ObjectStatus_IsInactive)');
-                        toastr.success(isActive ? `@Html.Raw(EmployeeSharedResource.Status_Active): ${employeeName}` : `@Html.Raw(EmployeeSharedResource.Status_Inactive): ${employeeName}`);
+                        AppToast.success(isActive ? `@Html.Raw(EmployeeSharedResource.Status_Active): ${employeeName}` : `@Html.Raw(EmployeeSharedResource.Status_Inactive): ${employeeName}`);
                     },
                     error: function (xhr) {
                         checkbox.prop('checked', !isActive);
-                        toastr.error((xhr.responseText || '@Html.Raw(SharedResource.OperationFailed)'));
+                        AppToast.error((xhr.responseText || '@Html.Raw(SharedResource.OperationFailed)'));
                     }
                 });
             });
@@ -582,10 +582,10 @@
                     $('#row-emp-' + employeeId).fadeOut(300, function () { $(this).remove(); });
                     const modalEl = document.getElementById('modalDeleteEmployee');
                     if (modalEl) { bootstrap.Modal.getInstance(modalEl)?.hide(); }
-                    toastr.success('@Html.Raw(SharedResource.Notification_DeletedSuccessfully)');
+                    AppToast.success('@Html.Raw(SharedResource.Notification_DeletedSuccessfully)');
                 },
                 error: function (xhr) {
-                    toastr.error((xhr.responseText || '@Html.Raw(SharedResource.OperationFailed)'));
+                    AppToast.error((xhr.responseText || '@Html.Raw(SharedResource.OperationFailed)'));
                 },
                 complete: function () {
                     btn.prop('disabled', false).html('<i class="bi bi-trash me-1"></i> @Html.Raw(EmployeeSharedResource.Confirm_Delete)');
@@ -739,8 +739,8 @@
             .then(r => r.json())
             .then(res => {
                 if (res.success) {
-                    if (typeof toastr !== 'undefined') {
-                        toastr.success(res.message);
+                    if (typeof AppToast !== 'undefined') {
+                        AppToast.success(res.message);
                     }
                     const modalEl = document.getElementById('importExcelModal');
                     if (modalEl) {
@@ -750,19 +750,19 @@
                         window.location.reload();
                     }, 800);
                 } else {
-                    if (typeof toastr !== 'undefined') {
-                        toastr.error(res.message || 'Lưu dữ liệu thất bại.');
+                    if (typeof AppToast !== 'undefined') {
+                        AppToast.error(res.message || 'Lưu dữ liệu thất bại.');
                     } else {
-                        alert(res.message || 'Lưu dữ liệu thất bại.');
+                        AppToast.error(res.message || 'Lưu dữ liệu thất bại.');
                     }
                     btn.prop('disabled', false).html('<i class="bi bi-check2-circle me-1"></i> @Html.Raw(EmployeeSharedResource.Excel_Btn_Confirm)');
                 }
             })
             .catch(err => {
-                if (typeof toastr !== 'undefined') {
-                    toastr.error('Lỗi khi lưu: ' + err.message);
+                if (typeof AppToast !== 'undefined') {
+                    AppToast.error('Lỗi khi lưu: ' + err.message);
                 } else {
-                    alert('Lỗi khi lưu: ' + err.message);
+                    AppToast.error('Lỗi khi lưu: ' + err.message);
                 }
                 btn.prop('disabled', false).html('<i class="bi bi-check2-circle me-1"></i> @Html.Raw(EmployeeSharedResource.Excel_Btn_Confirm)');
             });

@@ -1583,8 +1583,8 @@
             modal.show();
         }
 
-        function deleteRegistration() {
-            if(!confirm('@Html.Raw(ShiftRegistrationResource.ConfirmCancel)')) return;
+        async function deleteRegistration() {
+            if (!(await AppConfirm({ message: '@Html.Raw(ShiftRegistrationResource.ConfirmCancel)', type: 'danger', icon: 'bi-calendar-x' }))) return;
             var id = $('#vRegistrationId').val();
             $.ajax({
                 url: '/ShiftRegistration/Delete',
@@ -1608,12 +1608,12 @@
         }
 
         function showAppToast(type, message) {
-            if (typeof toastr !== 'undefined') {
-                if (type === 'success') toastr.success(message);
-                else if (type === 'warning') toastr.warning(message);
-                else toastr.error(message);
+            if (typeof AppToast !== 'undefined') {
+                if (type === 'success') AppToast.success(message);
+                else if (type === 'warning') AppToast.warning(message);
+                else AppToast.error(message);
             } else {
-                alert(message);
+                AppToast.error(message);
             }
         }
     </script>

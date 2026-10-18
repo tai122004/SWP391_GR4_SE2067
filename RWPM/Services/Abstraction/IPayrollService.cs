@@ -10,6 +10,7 @@ namespace RWPM.Services.Abstraction
         Task<Payroll?> GetPayrollByIdAsync(int id);
         Task<PayrollDetailVM> GetPayrollDetailAsync(int payrollId, int? storeId = null, string? search = null, PayrollDetailStatus? status = null);
         Task<Payroll> CalculatePayrollAsync(DateTime startDate, DateTime endDate, string operatorUsername);
+        Task<PayrollPeriodSuggestionVM> GetNextPeriodSuggestionAsync();
         Task LockPayrollAsync(int payrollId, string operatorUsername);
         Task UnlockPayrollAsync(int payrollId, string reason, string operatorUsername);
         Task DeletePayrollAsync(int payrollId, string operatorUsername);
