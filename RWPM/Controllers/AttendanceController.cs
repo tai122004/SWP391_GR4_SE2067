@@ -52,12 +52,15 @@ namespace RWPM.Controllers
             ViewBag.CanManage = canManage;
 
             var today = DateTime.Today;
-            var currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
+            var currentEmployee = await _context.Employee
+                .Include(e => e.Store)
+                .FirstOrDefaultAsync(e => e.Username == username);
             if (currentEmployee != null)
             {
-                var registeredShiftIds = await _context.Set<ShiftRegistration>()
+                var todayRegistrations = await _context.Set<ShiftRegistration>()
+                    .Include(sr => sr.Shift)
+                    .Include(sr => sr.Store)
                     .Where(sr => sr.EmployeeId == currentEmployee.EmployeeId && sr.WorkDate == today && sr.Status == RWPM.Common.Enums.RegistrationStatus.Approved)
-                    .Select(sr => sr.ShiftId)
                     .ToListAsync();
 
                 var completedShiftIds = await _context.AttendanceRecord
@@ -65,15 +68,21 @@ namespace RWPM.Controllers
                     .Select(r => r.ShiftId)
                     .ToListAsync();
 
-                var allTodayShifts = await _context.Set<RWPM.Models.Entities.Shift>()
-                    .Where(s => s.IsActive && registeredShiftIds.Contains(s.ShiftId) && !completedShiftIds.Contains(s.ShiftId))
-                    .ToListAsync();
+                var allTodayShifts = todayRegistrations
+                    .Where(sr => sr.Shift != null && sr.Shift.IsActive && !completedShiftIds.Contains(sr.ShiftId))
+                    .Select(sr => sr.Shift!)
+                    .DistinctBy(s => s.ShiftId)
+                    .ToList();
                     
                 ViewBag.ActiveShifts = allTodayShifts;
+
+                var activeReg = todayRegistrations.FirstOrDefault(sr => !completedShiftIds.Contains(sr.ShiftId)) ?? todayRegistrations.FirstOrDefault();
+                ViewBag.TargetStore = activeReg?.Store ?? currentEmployee.Store;
             }
             else
             {
                 ViewBag.ActiveShifts = new List<RWPM.Models.Entities.Shift>();
+                ViewBag.TargetStore = null;
             }
             
             ViewBag.SearchQuery = searchQuery;

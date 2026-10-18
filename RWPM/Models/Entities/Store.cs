@@ -29,7 +29,7 @@ public class Store : AuditableEntity, IActivatable
 
     public int MinAllowedDistanceMeters { get; set; } = 0;
 
-    public int AllowedRadiusMeters { get; set; } = 100;
+    public int AllowedRadiusMeters { get; set; } = 500;
 
     // === Extended Fields ===
     public int? ManagerId { get; set; }

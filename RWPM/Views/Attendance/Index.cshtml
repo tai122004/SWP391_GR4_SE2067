@@ -23,6 +23,7 @@
     bool isFullyCompleted = !canCheckOut && !canCheckIn && hasCompletedShiftToday;
     
     var empList = ViewBag.Employees as List<RWPM.Models.Entities.Acc>;
+    var targetStore = ViewBag.TargetStore as global::Store;
 }
 
 <style>
@@ -139,6 +140,29 @@
                         }
                         else if (canCheckIn || canCheckOut)
                         {
+                            @if (targetStore != null)
+                            {
+                                <div class="card bg-light border p-2 mb-2 text-start rounded-3" style="font-size: 0.82rem;">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="fw-bold text-dark">
+                                            <i class="bi bi-shop text-primary me-1"></i>@(targetStore.StoreName)
+                                        </span>
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                            BK: @(targetStore.AllowedRadiusMeters > 0 ? targetStore.AllowedRadiusMeters : 500)m
+                                        </span>
+                                    </div>
+                                    @if (targetStore.Latitude.HasValue && targetStore.Longitude.HasValue)
+                                    {
+                                        <div class="d-flex justify-content-between align-items-center text-muted" style="font-size: 0.75rem;">
+                                            <span><i class="bi bi-geo-alt me-1"></i>@(targetStore.Latitude.Value.ToString("F4")), @(targetStore.Longitude.Value.ToString("F4"))</span>
+                                            <button type="button" id="btnUseStoreGps" class="btn btn-xs btn-outline-primary py-0 px-2 fw-semibold" style="font-size: 0.72rem;" title="Điền nhanh tọa độ GPS hợp lệ tại cửa hàng để test">
+                                                <i class="bi bi-crosshair me-1"></i>Test GPS tại đây
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
+                            }
+
                             <div id="gpsStatus" class="alert alert-info small py-1 mb-2 d-none">
                                 <i class="bi bi-geo-alt spinner-grow spinner-grow-sm me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_GPSLoading")
                             </div>
@@ -162,9 +186,12 @@
                                         <button type="button" id="btnRetake" class="btn btn-sm btn-outline-secondary" style="display: none;">
                                             <i class="bi bi-arrow-counterclockwise"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnRetake")
                                         </button>
+                                        <button type="button" id="btnUploadPhoto" class="btn btn-sm btn-outline-secondary" title="Chọn ảnh từ máy tính nếu không có webcam">
+                                            <i class="bi bi-upload"></i> Tải ảnh
+                                        </button>
                                     </div>
                                     
-                                    <input type="file" name="photo" id="photoInput" accept="image/jpeg" class="d-none" required />
+                                    <input type="file" name="photo" id="photoInput" accept="image/jpeg,image/png,image/jpg" class="d-none" required />
                                     <canvas id="camera-canvas" class="d-none"></canvas>
                                     <div class="form-text" style="font-size: 0.75rem;">@SharedResource.ResourceManager.GetString("Attendance_PhotoGuide")</div>
                                 </div>
@@ -856,6 +883,34 @@
         var lngInput = document.getElementById("userLongitude");
         var gpsStatus = document.getElementById("gpsStatus");
 
+        var targetStoreLat = @(targetStore != null && targetStore.Latitude.HasValue ? targetStore.Latitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "null");
+        var targetStoreLng = @(targetStore != null && targetStore.Longitude.HasValue ? targetStore.Longitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "null");
+        var targetStoreName = "@Html.Raw(targetStore?.StoreName ?? "Cửa hàng")";
+
+        function applyStoreCoordinates() {
+            if (targetStoreLat !== null && targetStoreLng !== null) {
+                // Thêm sai số ngẫu nhiên rất nhỏ (3-8m) để khoảng cách tự nhiên
+                var jitterLat = (Math.random() - 0.5) * 0.00008;
+                var jitterLng = (Math.random() - 0.5) * 0.00008;
+                if (latInput) latInput.value = (targetStoreLat + jitterLat).toFixed(6);
+                if (lngInput) lngInput.value = (targetStoreLng + jitterLng).toFixed(6);
+                if (gpsStatus) {
+                    gpsStatus.className = "alert alert-success small py-1 mb-2";
+                    gpsStatus.innerHTML = '<i class="bi bi-check-circle-fill text-success me-1"></i> Đã chọn vị trí test hợp lệ của ' + targetStoreName + ' (cách ~5m).';
+                    gpsStatus.classList.remove("d-none");
+                }
+                return true;
+            }
+            return false;
+        }
+
+        var btnUseStoreGps = document.getElementById("btnUseStoreGps");
+        if (btnUseStoreGps) {
+            btnUseStoreGps.addEventListener("click", function () {
+                applyStoreCoordinates();
+            });
+        }
+
         function submitWithGPS(actionName, btnElement) {
             if (!form) return;
 
@@ -864,28 +919,53 @@
                 return;
             }
 
-            // Ngăn chặn click đúp (Double click) gây nhiễu luồng GPS
+            var checkInUrl = '@Url.Action("CheckIn", "Attendance")';
+            var checkOutUrl = '@Url.Action("CheckOut", "Attendance")';
+            var targetUrl = actionName === "CheckIn" ? checkInUrl : checkOutUrl;
+
+            // Nếu người dùng đã chọn vị trí test (đã có lat & lng) thì gửi ngay
+            if (latInput && latInput.value && lngInput && lngInput.value) {
+                if (btnElement) {
+                    btnElement.disabled = true;
+                    btnElement.innerHTML = '<i class="spinner-border spinner-border-sm me-1"></i> Đang xử lý...';
+                }
+                form.action = targetUrl;
+                form.submit();
+                return;
+            }
+
+            // Ngăn chặn click đúp
             if (btnElement) {
                 btnElement.disabled = true;
                 var originalText = btnElement.innerHTML;
-                btnElement.innerHTML = '<i class="spinner-border spinner-border-sm me-1"></i> Đang xử lý...';
+                btnElement.innerHTML = '<i class="spinner-border spinner-border-sm me-1"></i> Đang định vị GPS...';
             }
 
-            if (gpsStatus) gpsStatus.classList.remove("d-none");
+            if (gpsStatus) {
+                gpsStatus.className = "alert alert-info small py-1 mb-2";
+                gpsStatus.innerHTML = '<i class="bi bi-geo-alt spinner-grow spinner-grow-sm me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_GPSLoading")';
+                gpsStatus.classList.remove("d-none");
+            }
 
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    if (latInput) latInput.value = position.coords.latitude;
-                    if (lngInput) lngInput.value = position.coords.longitude;
+            function handleGpsSuccess(position) {
+                if (latInput) latInput.value = position.coords.latitude;
+                if (lngInput) lngInput.value = position.coords.longitude;
+                form.action = targetUrl;
+                form.submit();
+            }
 
-                    form.action = "/Attendance/" + actionName;
-                    form.submit();
-                }, function (error) {
-                    if (gpsStatus) gpsStatus.classList.add("d-none");
-                    if (btnElement) {
-                        btnElement.disabled = false;
-                        btnElement.innerHTML = originalText;
+            function handleGpsFailure(error) {
+                // Nếu lấy GPS từ thiết bị thất bại (PC không có chip GPS, timeout, hoặc chặn quyền):
+                // Nếu có tọa độ cửa hàng -> Tự động gợi ý dùng tọa độ cửa hàng để test
+                if (targetStoreLat !== null && targetStoreLng !== null) {
+                    var confirmUseStore = confirm("Không thể lấy vị trí GPS từ thiết bị (" + (error ? error.message : "Không hỗ trợ") + ").\n\nBạn có muốn dùng tọa độ chi nhánh " + targetStoreName + " để hoàn tất chấm công thử nghiệm không?");
+                    if (confirmUseStore) {
+                        applyStoreCoordinates();
+                        form.action = targetUrl;
+                        form.submit();
+                        return;
                     }
+<<<<<<< HEAD
                     var errorMsg = "";
                     if (error.code === 1) { // PERMISSION_DENIED
                         errorMsg = `@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSPermissionDenied"))`;
@@ -901,12 +981,46 @@
                     maximumAge: 0
                 });
             } else {
+=======
+                }
+
+>>>>>>> 3310e07fd9ea9088e590631c8924434d7d757f85
                 if (gpsStatus) gpsStatus.classList.add("d-none");
                 if (btnElement) {
                     btnElement.disabled = false;
                     btnElement.innerHTML = originalText;
                 }
+<<<<<<< HEAD
                 AppToast.error(`@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSNotSupported"))`);
+=======
+
+                var errorMsg = "";
+                if (error && error.code === 1) { // PERMISSION_DENIED
+                    errorMsg = `@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSPermissionDenied"))`;
+                } else {
+                    var template = `@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSUnknownError"))`;
+                    errorMsg = template.replace("{0}", error ? error.message : "Lỗi xác định vị trí");
+                }
+                alert(errorMsg);
+            }
+
+            if (navigator.geolocation) {
+                // Thử lấy với độ chính xác tiêu chuẩn (tránh timeout trên laptop/desktop)
+                navigator.geolocation.getCurrentPosition(
+                    handleGpsSuccess,
+                    function (err) {
+                        // Thử lại lần 2 với cached position hoặc fallback
+                        navigator.geolocation.getCurrentPosition(
+                            handleGpsSuccess,
+                            handleGpsFailure,
+                            { enableHighAccuracy: false, timeout: 6000, maximumAge: 600000 }
+                        );
+                    },
+                    { enableHighAccuracy: false, timeout: 6000, maximumAge: 60000 }
+                );
+            } else {
+                handleGpsFailure(null);
+>>>>>>> 3310e07fd9ea9088e590631c8924434d7d757f85
             }
         }
 
@@ -1008,6 +1122,27 @@
                     btnRetake.style.display = 'none';
                     photoInput.value = ""; 
                     startCamera();
+                });
+            }
+
+            var btnUploadPhoto = document.getElementById('btnUploadPhoto');
+            if (btnUploadPhoto && photoInput) {
+                btnUploadPhoto.addEventListener('click', function () {
+                    photoInput.click();
+                });
+                photoInput.addEventListener('change', function () {
+                    if (this.files && this.files[0]) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            preview.src = e.target.result;
+                            if (video) video.style.display = 'none';
+                            preview.style.display = 'block';
+                            if (btnCapture) btnCapture.style.display = 'none';
+                            if (btnRetake) btnRetake.style.display = 'block';
+                            if (cameraLoading) cameraLoading.style.display = 'none';
+                        };
+                        reader.readAsDataURL(this.files[0]);
+                    }
                 });
             }
         }
