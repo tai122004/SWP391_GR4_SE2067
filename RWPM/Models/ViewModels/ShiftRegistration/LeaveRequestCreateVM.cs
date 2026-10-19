@@ -1,3 +1,4 @@
+using RWPM.Common.Attributes;
 using RWPM.Common.Enums;
 using System.ComponentModel.DataAnnotations;
 
@@ -7,17 +8,21 @@ namespace RWPM.Models.ViewModels.ShiftRegistration
     {
         public int EmployeeId { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng chọn ngày bắt đầu.")]
+        [RequiredLocalization]
+        [Display(Name = "Leave_StartDate", ResourceType = typeof(RWPM.Resources.Shared.RequestResource))]
         public DateTime StartDate { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng chọn ngày kết thúc.")]
+        [RequiredLocalization]
+        [Display(Name = "Leave_EndDate", ResourceType = typeof(RWPM.Resources.Shared.RequestResource))]
         public DateTime EndDate { get; set; }
 
-        [Required]
+        [RequiredLocalization]
+        [Display(Name = "Leave_Type", ResourceType = typeof(RWPM.Resources.Shared.RequestResource))]
         public LeaveType LeaveType { get; set; } = LeaveType.Paid;
 
-        [Required(ErrorMessage = "Vui lòng nhập lý do xin nghỉ.")]
-        [MaxLength(500, ErrorMessage = "Lý do không được vượt quá 500 ký tự.")]
+        [RequiredLocalization]
+        [MaxLengthLocalized(500)]
+        [Display(Name = "Leave_Reason", ResourceType = typeof(RWPM.Resources.Shared.RequestResource))]
         public string Reason { get; set; } = string.Empty;
     }
 }

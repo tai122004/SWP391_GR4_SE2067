@@ -140,5 +140,12 @@ namespace RWPM.Resources.Shared {
                 return ResourceManager.GetString("WelcomeDescription", resourceCulture);
             }
         }
+    
+
+        public static string Err_AccessDenied {
+            get {
+                return ResourceManager.GetString("Err_AccessDenied", resourceCulture);
+            }
+        }
     }
 }

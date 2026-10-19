@@ -487,5 +487,120 @@ namespace RWPM.Resources.Shared {
         public static string Dropdown_SelectGender => ResourceManager.GetString("Dropdown_SelectGender", resourceCulture);
         public static string Update_SubTitle => ResourceManager.GetString("Update_SubTitle", resourceCulture);
         public static string Update_Section_Role => ResourceManager.GetString("Update_Section_Role", resourceCulture);
+    
+
+        public static string Err_SelectStoreForEmployee {
+            get {
+                return ResourceManager.GetString("Err_SelectStoreForEmployee", resourceCulture);
+            }
+        }
+
+        public static string Err_EmployeeCodeRequired {
+            get {
+                return ResourceManager.GetString("Err_EmployeeCodeRequired", resourceCulture);
+            }
+        }
+
+        public static string Err_EmployeeCodeRequiredHr {
+            get {
+                return ResourceManager.GetString("Err_EmployeeCodeRequiredHr", resourceCulture);
+            }
+        }
+
+        public static string Err_EmployeeCodeExists {
+            get {
+                return ResourceManager.GetString("Err_EmployeeCodeExists", resourceCulture);
+            }
+        }
+
+        public static string Err_EmployeeCodeUsedByOther {
+            get {
+                return ResourceManager.GetString("Err_EmployeeCodeUsedByOther", resourceCulture);
+            }
+        }
+
+        public static string Err_HourlyRateRequiredHrCreate {
+            get {
+                return ResourceManager.GetString("Err_HourlyRateRequiredHrCreate", resourceCulture);
+            }
+        }
+
+        public static string Err_HourlyRateRequiredHrEdit {
+            get {
+                return ResourceManager.GetString("Err_HourlyRateRequiredHrEdit", resourceCulture);
+            }
+        }
+
+        public static string Err_EmailInUse {
+            get {
+                return ResourceManager.GetString("Err_EmailInUse", resourceCulture);
+            }
+        }
+
+        public static string Err_PhoneInUse {
+            get {
+                return ResourceManager.GetString("Err_PhoneInUse", resourceCulture);
+            }
+        }
+
+        public static string Err_CannotCreateAdmin {
+            get {
+                return ResourceManager.GetString("Err_CannotCreateAdmin", resourceCulture);
+            }
+        }
+
+        public static string Err_CannotChangeRoleToAdmin {
+            get {
+                return ResourceManager.GetString("Err_CannotChangeRoleToAdmin", resourceCulture);
+            }
+        }
+
+        public static string Notice_CreatedAccount {
+            get {
+                return ResourceManager.GetString("Notice_CreatedAccount", resourceCulture);
+            }
+        }
+
+        public static string Toast_ChangePasswordSuccess {
+            get {
+                return ResourceManager.GetString("Toast_ChangePasswordSuccess", resourceCulture);
+            }
+        }
+
+        public static string Create_Section_HrInfo {
+            get {
+                return ResourceManager.GetString("Create_Section_HrInfo", resourceCulture);
+            }
+        }
+
+        public static string Create_HrInfoHint {
+            get {
+                return ResourceManager.GetString("Create_HrInfoHint", resourceCulture);
+            }
+        }
+
+        public static string Unit_Vnd {
+            get {
+                return ResourceManager.GetString("Unit_Vnd", resourceCulture);
+            }
+        }
+
+        public static string Excel_Col_Email {
+            get {
+                return ResourceManager.GetString("Excel_Col_Email", resourceCulture);
+            }
+        }
+
+        public static string Excel_SupportedFormat {
+            get {
+                return ResourceManager.GetString("Excel_SupportedFormat", resourceCulture);
+            }
+        }
+
+        public static string Excel_AutoValidated {
+            get {
+                return ResourceManager.GetString("Excel_AutoValidated", resourceCulture);
+            }
+        }
     }
 }

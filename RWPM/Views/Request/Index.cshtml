@@ -11,6 +11,9 @@
     int approvedCount = ViewBag.ApprovedCount ?? 0;
     int rejectedCount = ViewBag.RejectedCount ?? 0;
     int totalCount = pendingCount + approvedCount + rejectedCount;
+    var searchQuery = ViewBag.SearchQuery as string;
+    var searchSuffix = string.IsNullOrEmpty(searchQuery) ? "" : "&q=" + Uri.EscapeDataString(searchQuery);
+    int totalFiltered = ViewBag.TotalFiltered ?? (Model?.Count ?? 0);
 }
 
 <form id="antiForgeryForm" style="display:none;">
@@ -27,7 +30,7 @@
                 </div>
                 <h1 class="h3 fw-bold text-dark mb-0">@RequestResource.RequestsAndApprovals</h1>
             </div>
-            <p class="text-muted small mb-0">Theo dõi, xét duyệt các yêu cầu đăng ký ca, đổi ca, xin nghỉ phép và điều chỉnh giờ chấm công.</p>
+            <p class="text-muted small mb-0">@RequestResource.Page_Subtitle</p>
         </div>
         <div class="d-flex align-items-center gap-2">
             <button type="button" class="btn btn-outline-success btn-sm shadow-xs d-flex align-items-center gap-2 bg-white" onclick="exportRequestsToCSV()">
@@ -45,22 +48,22 @@
     <div class="row g-3 mb-4">
         <!-- Chờ duyệt (Pending) -->
         <div class="col-md-4 col-sm-6">
-            <a href="?status=0&type=@currentType&start=@ViewBag.StartDate&end=@ViewBag.EndDate" 
+            <a href="?status=0&type=@currentType&start=@ViewBag.StartDate&end=@ViewBag.EndDate@(searchSuffix)" 
                class="text-decoration-none text-dark stats-card stats-pending @(currentStatus == 0 ? "active-filter" : "")">
                 <div class="card border-0 shadow-sm rounded-4 h-100 p-3 position-relative overflow-hidden">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-uppercase small fw-bold text-warning-emphasis">Chờ duyệt</span>
+                        <span class="text-uppercase small fw-bold text-warning-emphasis">@SharedResource.Req_Pending</span>
                         <div class="stats-icon-badge bg-warning-subtle text-warning rounded-3 p-2">
                             <i class="bi bi-hourglass-split fs-5"></i>
                         </div>
                     </div>
                     <div class="d-flex align-items-baseline gap-2">
                         <h2 class="fw-bold mb-0 text-dark">@pendingCount</h2>
-                        <span class="text-muted small">yêu cầu</span>
+                        <span class="text-muted small">@RequestResource.Requests</span>
                     </div>
                     @if (currentStatus == 0)
                     {
-                        <div class="active-badge badge bg-warning text-dark position-absolute bottom-0 end-0 m-2">Đang lọc</div>
+                        <div class="active-badge badge bg-warning text-dark position-absolute bottom-0 end-0 m-2">@RequestResource.Stats_Filtering</div>
                     }
                 </div>
             </a>
@@ -68,22 +71,22 @@
 
         <!-- Đã chấp thuận (Approved) -->
         <div class="col-md-4 col-sm-6">
-            <a href="?status=1&type=@currentType&start=@ViewBag.StartDate&end=@ViewBag.EndDate" 
+            <a href="?status=1&type=@currentType&start=@ViewBag.StartDate&end=@ViewBag.EndDate@(searchSuffix)" 
                class="text-decoration-none text-dark stats-card stats-approved @(currentStatus == 1 ? "active-filter" : "")">
                 <div class="card border-0 shadow-sm rounded-4 h-100 p-3 position-relative overflow-hidden">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-uppercase small fw-bold text-success">Đã chấp thuận</span>
+                        <span class="text-uppercase small fw-bold text-success">@RequestResource.Status_Approved</span>
                         <div class="stats-icon-badge bg-success-subtle text-success rounded-3 p-2">
                             <i class="bi bi-check-circle-fill fs-5"></i>
                         </div>
                     </div>
                     <div class="d-flex align-items-baseline gap-2">
                         <h2 class="fw-bold mb-0 text-dark">@approvedCount</h2>
-                        <span class="text-muted small">yêu cầu</span>
+                        <span class="text-muted small">@RequestResource.Requests</span>
                     </div>
                     @if (currentStatus == 1)
                     {
-                        <div class="active-badge badge bg-success text-white position-absolute bottom-0 end-0 m-2">Đang lọc</div>
+                        <div class="active-badge badge bg-success text-white position-absolute bottom-0 end-0 m-2">@RequestResource.Stats_Filtering</div>
                     }
                 </div>
             </a>
@@ -91,22 +94,22 @@
 
         <!-- Đã từ chối (Rejected) -->
         <div class="col-md-4 col-sm-6">
-            <a href="?status=2&type=@currentType&start=@ViewBag.StartDate&end=@ViewBag.EndDate" 
+            <a href="?status=2&type=@currentType&start=@ViewBag.StartDate&end=@ViewBag.EndDate@(searchSuffix)" 
                class="text-decoration-none text-dark stats-card stats-rejected @(currentStatus == 2 ? "active-filter" : "")">
                 <div class="card border-0 shadow-sm rounded-4 h-100 p-3 position-relative overflow-hidden">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-uppercase small fw-bold text-danger">Đã từ chối</span>
+                        <span class="text-uppercase small fw-bold text-danger">@RequestResource.Status_Rejected</span>
                         <div class="stats-icon-badge bg-danger-subtle text-danger rounded-3 p-2">
                             <i class="bi bi-x-circle-fill fs-5"></i>
                         </div>
                     </div>
                     <div class="d-flex align-items-baseline gap-2">
                         <h2 class="fw-bold mb-0 text-dark">@rejectedCount</h2>
-                        <span class="text-muted small">yêu cầu</span>
+                        <span class="text-muted small">@RequestResource.Requests</span>
                     </div>
                     @if (currentStatus == 2)
                     {
-                        <div class="active-badge badge bg-danger text-white position-absolute bottom-0 end-0 m-2">Đang lọc</div>
+                        <div class="active-badge badge bg-danger text-white position-absolute bottom-0 end-0 m-2">@RequestResource.Stats_Filtering</div>
                     }
                 </div>
             </a>
@@ -120,7 +123,7 @@
             <div class="col-lg-4 col-md-6">
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
-                    <input type="text" id="requestSearchInput" class="form-control bg-light border-start-0 ps-0" placeholder="Tìm theo tên, mã đơn, ca làm...">
+                    <input type="text" id="requestSearchInput" class="form-control bg-light border-start-0 ps-0" placeholder="@RequestResource.Filter_SearchPlaceholder" value="@searchQuery" title="@RequestResource.Filter_SearchEnterHint">
                 </div>
             </div>
 
@@ -129,11 +132,11 @@
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-light border-end-0"><i class="bi bi-funnel text-muted"></i></span>
                     <select id="filterTypeSelect" class="form-select bg-light border-start-0 ps-0" onchange="onTypeFilterChange(this.value)">
-                        <option value="" selected="@(string.IsNullOrEmpty(currentType) ? "selected" : null)">Tất cả loại yêu cầu</option>
-                        <option value="ShiftReg" selected="@(currentType == "ShiftReg" ? "selected" : null)">Đăng ký ca làm</option>
-                        <option value="ShiftSwap" selected="@(currentType == "ShiftSwap" ? "selected" : null)">Đổi ca làm việc</option>
-                        <option value="Leave" selected="@(currentType == "Leave" ? "selected" : null)">Đơn xin nghỉ phép</option>
-                        <option value="Attendance" selected="@(currentType == "Attendance" ? "selected" : null)">Sửa chấm công</option>
+                        <option value="" selected="@(string.IsNullOrEmpty(currentType) ? "selected" : null)">@RequestResource.Filter_AllTypes</option>
+                        <option value="ShiftReg" selected="@(currentType == "ShiftReg" ? "selected" : null)">@RequestResource.ShiftRegistration</option>
+                        <option value="ShiftSwap" selected="@(currentType == "ShiftSwap" ? "selected" : null)">@RequestResource.Filter_ShiftSwapOnly</option>
+                        <option value="Leave" selected="@(currentType == "Leave" ? "selected" : null)">@RequestResource.Filter_LeaveOnly</option>
+                        <option value="Attendance" selected="@(currentType == "Attendance" ? "selected" : null)">@RequestResource.AttendanceAdjustment</option>
                     </select>
                 </div>
             </div>
@@ -150,14 +153,14 @@
             <div class="col-lg-2 col-md-6 d-flex align-items-center justify-content-lg-end">
                 @if (currentStatus.HasValue || !string.IsNullOrEmpty(currentType))
                 {
-                    <a href="?start=@ViewBag.StartDate&end=@ViewBag.EndDate" class="btn btn-outline-secondary btn-sm w-100 d-flex align-items-center justify-content-center gap-1 shadow-xs" title="Xóa tất cả bộ lọc">
-                        <i class="bi bi-arrow-counterclockwise"></i> Đặt lại bộ lọc
+                    <a href="?start=@ViewBag.StartDate&end=@ViewBag.EndDate" class="btn btn-outline-secondary btn-sm w-100 d-flex align-items-center justify-content-center gap-1 shadow-xs" title="@RequestResource.Filter_ResetTitle">
+                        <i class="bi bi-arrow-counterclockwise"></i> @RequestResource.Filter_Reset
                     </a>
                 }
                 else
                 {
                     <div class="text-muted small py-1 px-2 text-center w-100">
-                        <i class="bi bi-check2-all text-primary me-1"></i> Tất cả trạng thái
+                        <i class="bi bi-check2-all text-primary me-1"></i> @RequestResource.Filter_AllStatuses
                     </div>
                 }
             </div>
@@ -171,8 +174,8 @@
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
                 <div class="card-header bg-white border-bottom py-3 px-3 d-flex justify-content-between align-items-center">
                     <div>
-                        <span class="fw-bold text-dark fs-6">Danh sách yêu cầu</span>
-                        <span class="badge bg-light text-muted border ms-2" id="filteredCountBadge">@(Model?.Count ?? 0)</span>
+                        <span class="fw-bold text-dark fs-6">@RequestResource.List_Title</span>
+                        <span class="badge bg-light text-muted border ms-2" id="filteredCountBadge">@totalFiltered</span>
                     </div>
                     <div class="form-check text-muted small mb-0">
                         <input class="form-check-input" type="checkbox" id="selectAll">
@@ -186,7 +189,7 @@
                         <div class="text-center text-muted py-5">
                             <div class="mb-3 text-secondary opacity-50"><i class="bi bi-inbox fs-1"></i></div>
                             <h6 class="text-dark">@RequestResource.NoData</h6>
-                            <p class="small text-muted mb-0">Không có yêu cầu nào phù hợp với bộ lọc hiện tại.</p>
+                            <p class="small text-muted mb-0">@RequestResource.List_EmptyDesc</p>
                         </div>
                     }
                     else
@@ -246,7 +249,7 @@
                                     else if (item.RequestType == "Attendance")
                                     {
                                         <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 small">
-                                            <i class="bi bi-clock-history me-1"></i>Sửa chấm công
+                                            <i class="bi bi-clock-history me-1"></i>@RequestResource.AttendanceAdjustment
                                         </span>
                                     }
                                     else
@@ -260,19 +263,19 @@
                                     @if (item.Status == RegistrationStatus.Pending)
                                     {
                                         <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 small">
-                                            <i class="bi bi-hourglass-split me-1"></i>Chờ duyệt
+                                            <i class="bi bi-hourglass-split me-1"></i>@SharedResource.Req_Pending
                                         </span>
                                     }
                                     else if (item.Status == RegistrationStatus.Approved)
                                     {
                                         <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2 py-1 small">
-                                            <i class="bi bi-check-circle-fill me-1"></i>Đã chấp thuận
+                                            <i class="bi bi-check-circle-fill me-1"></i>@RequestResource.Status_Approved
                                         </span>
                                     }
                                     else
                                     {
                                         <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 small">
-                                            <i class="bi bi-x-circle-fill me-1"></i>Đã từ chối
+                                            <i class="bi bi-x-circle-fill me-1"></i>@RequestResource.Status_Rejected
                                         </span>
                                     }
                                 </div>
@@ -290,7 +293,7 @@
                                         }
                                     </div>
                                     <div class="small text-muted mt-1">
-                                        <i class="bi bi-calendar-event me-1"></i>Ngày: <strong class="text-dark">@item.WorkDateStr</strong>
+                                        <i class="bi bi-calendar-event me-1"></i>@RequestResource.Date: <strong class="text-dark">@item.WorkDateStr</strong>
                                     </div>
                                 </div>
 
@@ -323,6 +326,12 @@
                         }
                     }
                 </div>
+                @if (ViewBag.Pagination is RWPM.Common.Models.PaginationRes pagination)
+                {
+                    <div class="card-footer bg-white border-top px-3 pt-0 request-pagination">
+                        @await Html.PartialAsync("_PaginationPartial", pagination)
+                    </div>
+                }
             </div>
         </div>
 
@@ -333,7 +342,7 @@
                 <!-- Action Header -->
                 <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <div class="d-flex align-items-center gap-2">
-                        <span class="text-muted small">Mã yêu cầu:</span>
+                        <span class="text-muted small">@RequestResource.Detail_RequestCode:</span>
                         <strong class="text-dark fs-6" id="detailCode"></strong>
                     </div>
 
@@ -364,7 +373,7 @@
                     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
                         <div>
                             <h4 class="fw-bold text-dark mb-1" id="detailTypeName">@RequestResource.ShiftRegistration</h4>
-                            <div class="text-muted small">Thời gian gửi: <span id="detailCreatedDate" class="text-dark fw-medium"></span></div>
+                            <div class="text-muted small">@RequestResource.Detail_SentAt: <span id="detailCreatedDate" class="text-dark fw-medium"></span></div>
                         </div>
                         <div id="detailStatusBadgeContainer">
                             <div id="detailStatus"></div>
@@ -379,7 +388,7 @@
                                 <strong class="text-dark fs-6" id="detailEmployeeName"></strong>
                             </div>
                             <div class="col-sm-6">
-                                <span class="text-muted small d-block mb-1"><i class="bi bi-building me-1"></i>Phòng ban:</span>
+                                <span class="text-muted small d-block mb-1"><i class="bi bi-building me-1"></i>@RequestResource.Department:</span>
                                 <strong class="text-dark fs-6">@SharedResource.Req_HR</strong>
                             </div>
                         </div>
@@ -387,7 +396,7 @@
 
                     <!-- Work / Shift Details Section -->
                     <div class="mb-4">
-                        <h6 class="text-uppercase small fw-bold text-muted mb-3">Nội dung chi tiết yêu cầu</h6>
+                        <h6 class="text-uppercase small fw-bold text-muted mb-3">@RequestResource.Detail_ContentTitle</h6>
                         <div class="row g-3 p-3 bg-white border rounded-3 mb-3">
                             <div class="col-sm-6">
                                 <span class="text-muted small d-block mb-1" id="detailShiftLabel">@RequestResource.Shift:</span>
@@ -431,7 +440,7 @@
                             <div class="col-12">
                                 <div class="p-3 bg-warning-subtle rounded-3 border border-warning-subtle">
                                     <div class="text-warning-emphasis small fw-bold mb-2">
-                                        <i class="bi bi-clock-history me-1"></i> Chi tiết điều chỉnh giờ vào / ra
+                                        <i class="bi bi-clock-history me-1"></i> @RequestResource.Detail_AttendanceTitle
                                     </div>
                                     <div id="detailAttendanceSummary"></div>
                                 </div>
@@ -440,7 +449,7 @@
 
                         <!-- Employee Reason / Note -->
                         <div class="p-3 bg-light rounded-3 border mb-3">
-                            <span class="text-muted small d-block mb-1"><i class="bi bi-chat-left-text me-1"></i>Lý do / Ghi chú của nhân viên:</span>
+                            <span class="text-muted small d-block mb-1"><i class="bi bi-chat-left-text me-1"></i>@RequestResource.Detail_EmployeeNote:</span>
                             <div class="text-dark" id="detailNote">-</div>
                         </div>
                     </div>
@@ -459,7 +468,7 @@
                     <!-- Approver Audit Trail -->
                     <div id="detailApproverRow" class="p-3 bg-light rounded-3 text-muted small d-flex align-items-center gap-2" style="display: none;">
                         <i class="bi bi-person-check fs-5 text-success"></i>
-                        <span>Người xét duyệt: <strong id="detailApprover" class="text-dark"></strong></span>
+                        <span>@RequestResource.Detail_Reviewer: <strong id="detailApprover" class="text-dark"></strong></span>
                         <span id="detailApprovedAt" class="ms-1"></span>
                     </div>
                 </div>
@@ -495,8 +504,8 @@
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden" id="emptyDetailPane">
                 <div class="d-flex flex-column justify-content-center align-items-center h-100 bg-white p-5 text-center" style="min-height: 480px;">
                     <div class="text-muted mb-3 opacity-40"><i class="bi bi-card-text fs-1"></i></div>
-                    <h6 class="text-dark">Chưa chọn yêu cầu nào</h6>
-                    <p class="text-muted small mb-0">Vui lòng chọn một yêu cầu trong danh sách bên trái để xem chi tiết và phê duyệt.</p>
+                    <h6 class="text-dark">@RequestResource.Empty_Title</h6>
+                    <p class="text-muted small mb-0">@RequestResource.Empty_Desc</p>
                 </div>
             </div>
         </div>
@@ -516,7 +525,7 @@
                     </div>
                     <h5 class="modal-title fw-bold text-dark fs-5 mb-0">@SharedResource.Req_CreateReq</h5>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@SharedResource.Button_Close"></button>
             </div>
             <div class="modal-body p-4">
                 <div class="mb-4">
@@ -603,7 +612,7 @@
                     </div>
                     <h5 class="modal-title fw-bold text-dark fs-5 mb-0">@SharedResource.Req_ShiftReg</h5>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@SharedResource.Button_Close"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="shiftRequestForm">
@@ -681,7 +690,7 @@
                     </div>
                     <h5 class="modal-title fw-bold text-dark fs-5 mb-0">@RequestResource.ShiftSwap</h5>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@SharedResource.Button_Close"></button>
             </div>
             <div class="modal-body p-4">
                 <div class="alert alert-warning py-2 small mb-3 d-none" id="swapNoShiftsAlert">
@@ -775,7 +784,7 @@
                     </div>
                     <h5 class="modal-title fw-bold text-dark fs-5 mb-0">@RequestResource.LeaveRequest</h5>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@SharedResource.Button_Close"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="leaveRequestForm">
@@ -874,7 +883,7 @@
                     </div>
                     <h5 class="modal-title fw-bold text-danger fs-5 mb-0">@RequestResource.RejectReasonTitle</h5>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@SharedResource.Button_Close"></button>
             </div>
             <div class="modal-body p-4">
                 <div class="mb-3">
@@ -903,35 +912,35 @@
                     </div>
                     <h5 class="modal-title fw-bold text-dark fs-5 mb-0">@SharedResource.Req_ChangeInOut</h5>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@SharedResource.Button_Close"></button>
             </div>
             <form id="attendanceAdjustmentForm">
                 <div class="modal-body p-4">
                     <div class="alert alert-info py-2 small mb-3 rounded-3 border-info-subtle">
-                        <i class="bi bi-info-circle me-1"></i> Chọn bản ghi ca làm gần đây cần sửa chấm công và nhập lý do giải trình.
+                        <i class="bi bi-info-circle me-1"></i> @RequestResource.Adj_Info
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-dark fw-bold small">Chọn ca làm việc cần sửa <span class="text-danger">*</span></label>
+                        <label class="form-label text-dark fw-bold small">@RequestResource.Adj_SelectRecord <span class="text-danger">*</span></label>
                         <select class="form-select form-select-sm" id="adjRecordSelect" required>
-                            <option value="">-- Đang tải danh sách ca gần đây... --</option>
+                            <option value="">@RequestResource.Adj_LoadingRecords</option>
                         </select>
                     </div>
 
                     <div class="row g-2 mb-3">
                         <div class="col-6">
-                            <label class="form-label text-dark fw-bold small">Giờ vào mong muốn</label>
+                            <label class="form-label text-dark fw-bold small">@RequestResource.Adj_RequestedCheckIn</label>
                             <input type="time" class="form-control form-control-sm" id="adjRequestedCheckIn" />
                         </div>
                         <div class="col-6">
-                            <label class="form-label text-dark fw-bold small">Giờ ra mong muốn</label>
+                            <label class="form-label text-dark fw-bold small">@RequestResource.Adj_RequestedCheckOut</label>
                             <input type="time" class="form-control form-control-sm" id="adjRequestedCheckOut" />
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-dark fw-bold small">Lý do điều chỉnh / giải trình <span class="text-danger">*</span></label>
-                        <textarea class="form-control form-control-sm" id="adjReason" rows="2" required placeholder="Ví dụ: Quên check-out khi tan ca, sự cố mạng/GPS..."></textarea>
+                        <label class="form-label text-dark fw-bold small">@RequestResource.Adj_Reason <span class="text-danger">*</span></label>
+                        <textarea class="form-control form-control-sm" id="adjReason" rows="2" required placeholder="@RequestResource.Adj_ReasonPlaceholder"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-top py-2 px-4 d-flex justify-content-end gap-2 bg-light">
@@ -952,60 +961,60 @@
                     <div class="modal-icon-badge bg-success text-white rounded-3 p-2 d-flex align-items-center justify-content-center">
                         <i class="bi bi-clock-history fs-5"></i>
                     </div>
-                    <h5 class="modal-title fw-bold text-success fs-5 mb-0">Phê duyệt điều chỉnh chấm công</h5>
+                    <h5 class="modal-title fw-bold text-success fs-5 mb-0">@RequestResource.Appr_Title</h5>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@SharedResource.Button_Close"></button>
             </div>
             <form id="approveAttendanceForm" onsubmit="event.preventDefault(); submitApproveAttendance();">
                 <div class="modal-body p-4">
                     <div class="p-3 bg-light rounded-3 mb-3 border">
                         <div class="d-flex justify-content-between mb-1 small">
-                            <span class="text-muted">Nhân viên:</span>
+                            <span class="text-muted">@SharedResource.Req_Employee:</span>
                             <strong class="text-dark" id="apprModal_EmpName">-</strong>
                         </div>
                         <div class="d-flex justify-content-between mb-1 small">
-                            <span class="text-muted">Ngày làm việc:</span>
+                            <span class="text-muted">@RequestResource.Appr_WorkDate:</span>
                             <strong class="text-dark" id="apprModal_WorkDate">-</strong>
                         </div>
                         <div class="d-flex justify-content-between mb-1 small">
-                            <span class="text-muted">Ca làm:</span>
+                            <span class="text-muted">@RequestResource.Shift:</span>
                             <strong class="text-dark" id="apprModal_ShiftName">-</strong>
                         </div>
                         <div class="d-flex justify-content-between mb-1 small">
-                            <span class="text-muted">Giờ chấm công gốc:</span>
+                            <span class="text-muted">@RequestResource.Appr_OriginalTime:</span>
                             <span class="text-danger fw-bold" id="apprModal_OldInOut">--:-- ~ --:--</span>
                         </div>
                         <div class="d-flex justify-content-between small">
-                            <span class="text-muted">Giờ nhân viên xin sửa:</span>
+                            <span class="text-muted">@RequestResource.Appr_RequestedTime:</span>
                             <span class="text-success fw-bold" id="apprModal_ReqInOut">--:-- ~ --:--</span>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-dark fw-bold small">Lý do giải trình của nhân viên:</label>
+                        <label class="form-label text-dark fw-bold small">@RequestResource.Appr_EmployeeReason:</label>
                         <div class="p-2 bg-light rounded small text-dark" id="apprModal_Reason">-</div>
                     </div>
 
                     <div class="row g-2 mb-3">
                         <div class="col-6">
-                            <label class="form-label text-dark fw-bold small">Giờ vào duyệt</label>
+                            <label class="form-label text-dark fw-bold small">@RequestResource.Appr_ApprovedCheckIn</label>
                             <input type="time" class="form-control form-control-sm" id="apprModal_ApprovedCheckIn" />
                         </div>
                         <div class="col-6">
-                            <label class="form-label text-dark fw-bold small">Giờ ra duyệt</label>
+                            <label class="form-label text-dark fw-bold small">@RequestResource.Appr_ApprovedCheckOut</label>
                             <input type="time" class="form-control form-control-sm" id="apprModal_ApprovedCheckOut" />
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-dark fw-bold small">Ghi chú của người duyệt</label>
-                        <textarea class="form-control form-control-sm" id="apprModal_ApproverNote" rows="2" placeholder="Ghi chú phản hồi (không bắt buộc)"></textarea>
+                        <label class="form-label text-dark fw-bold small">@RequestResource.Appr_ApproverNote</label>
+                        <textarea class="form-control form-control-sm" id="apprModal_ApproverNote" rows="2" placeholder="@RequestResource.Appr_ApproverNotePlaceholder"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-top py-2 px-4 d-flex justify-content-end gap-2 bg-light">
-                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">@SharedResource.Button_Cancel</button>
                     <button type="submit" class="btn btn-sm btn-success px-4 fw-semibold" id="btnConfirmApproveAttendance">
-                        <i class="bi bi-check-circle me-1"></i> Xác nhận duyệt
+                        <i class="bi bi-check-circle me-1"></i> @RequestResource.Appr_ConfirmButton
                     </button>
                 </div>
             </form>
@@ -1150,6 +1159,21 @@
 
 @section Scripts {
     <script>
+        // Dữ liệu xuất file: toàn bộ danh sách đã lọc (không chỉ trang hiện tại)
+        var requestsExportData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(((ViewBag.ExportItems as List<RequestItemVM>) ?? Model ?? new List<RequestItemVM>()).Select(x => new {
+            code = x.Code,
+            requestTypeName = x.RequestTypeName,
+            employeeName = x.EmployeeName,
+            storeName = x.StoreName,
+            shiftName = x.ShiftName,
+            workDateStr = x.WorkDateStr,
+            createdDateStr = x.CreatedDateStr,
+            status = (int)x.Status,
+            approvedBy = x.ApprovedBy,
+            rejectionReason = x.RejectionReason,
+            note = x.Note
+        })));
+
         // Data populated from model
         var requestsData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize((Model ?? new List<RequestItemVM>()).Select(x => new {
             id = x.Id,
@@ -1189,6 +1213,17 @@
         var isCurrentUserStoreManager = @(User.IsInRole("StoreManager") ? "true" : "false");
         var currentUserStoreId = @(ViewBag.CurrentUserStoreId ?? 0);
 
+        // Localized UI texts used by the scripts below
+        var reqI18n = {
+            pending: @Json.Serialize(SharedResource.Req_Pending),
+            approved: @Json.Serialize(RequestResource.Status_Approved),
+            rejected: @Json.Serialize(RequestResource.Status_Rejected),
+            atTime: @Json.Serialize(RequestResource.Detail_AtTime),
+            processedBy: @Json.Serialize(RequestResource.Banner_ProcessedBy),
+            defaultManager: @Json.Serialize(RequestResource.Banner_DefaultManager),
+            confirmApproveBtn: @Json.Serialize(RequestResource.Appr_ConfirmButton)
+        };
+
         let currentSelectedId = 0;
         let currentSelectedType = 'ShiftReg';
 
@@ -1204,9 +1239,20 @@
                     var statusQuery = statusParam ? `&status=${statusParam}` : '';
                     var typeParam = '@ViewBag.CurrentType';
                     var typeQuery = typeParam ? `&type=${typeParam}` : '';
-                    window.location.href = `?start=${start.format('YYYY-MM-DD')}&end=${end.format('YYYY-MM-DD')}${statusQuery}${typeQuery}`;
+                    window.location.href = `?start=${start.format('YYYY-MM-DD')}&end=${end.format('YYYY-MM-DD')}${statusQuery}${typeQuery}@Html.Raw(searchSuffix)`;
                 });
             }
+
+            // Enter: tìm kiếm phía server trên toàn bộ danh sách (mọi trang); gõ phím: lọc nhanh trên trang hiện tại
+            $('#requestSearchInput').on('keydown', function (e) {
+                if (e.key !== 'Enter') return;
+                e.preventDefault();
+                var params = new URLSearchParams(window.location.search);
+                var q = $(this).val().trim();
+                if (q) params.set('q', q); else params.delete('q');
+                params.delete('pageNumber');
+                window.location.search = params.toString();
+            });
 
             // Client-side quick filter
             $('#requestSearchInput').on('input', function() {
@@ -1379,7 +1425,7 @@
                             shiftSelect.append(`<option value="${s.shiftRegistrationId}">${s.dateStr} - ${s.shiftName} (${s.time})</option>`);
                         });
                     } else {
-                        shiftSelect.append('<option value="" disabled>-- Không có ca nào khả dụng --</option>');
+                        shiftSelect.append($('<option value="" disabled></option>').text(@Json.Serialize(RequestResource.Swap_NoAvailableShifts)));
                     }
                 });
             });
@@ -1451,7 +1497,7 @@
             var statusParam = '@ViewBag.CurrentStatus';
             var statusQuery = statusParam ? `&status=${statusParam}` : '';
             var typeQuery = typeVal ? `&type=${typeVal}` : '';
-            window.location.href = `?start=@ViewBag.StartDate&end=@ViewBag.EndDate${statusQuery}${typeQuery}`;
+            window.location.href = `?start=@ViewBag.StartDate&end=@ViewBag.EndDate${statusQuery}${typeQuery}@Html.Raw(searchSuffix)`;
         }
 
         function showDetail(id, type) {
@@ -1482,11 +1528,11 @@
                 $('#detailAttendanceSummary').html(`
                     <div class="row g-2">
                         <div class="col-6">
-                            <div class="text-muted small">Giờ chấm công gốc:</div>
+                            <div class="text-muted small">${escapeHtml(@Json.Serialize(RequestResource.Appr_OriginalTime))}:</div>
                             <div class="fw-bold text-danger">${req.actualCheckInTimeStr || '--:--'} ~ ${req.actualCheckOutTimeStr || '--:--'}</div>
                         </div>
                         <div class="col-6">
-                            <div class="text-muted small">Giờ đề xuất sửa:</div>
+                            <div class="text-muted small">${escapeHtml(@Json.Serialize(RequestResource.Detail_ProposedTime))}:</div>
                             <div class="fw-bold text-success">${req.requestedCheckInTimeStr || '--:--'} ~ ${req.requestedCheckOutTimeStr || '--:--'}</div>
                         </div>
                     </div>
@@ -1502,11 +1548,11 @@
             // Set Status Badge in metadata
             var statusHtml = '';
             if (req.status === 0) {
-                statusHtml = '<span class="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-1 fw-semibold"><i class="bi bi-hourglass-split me-1"></i>Chờ duyệt</span>';
+                statusHtml = '<span class="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-1 fw-semibold"><i class="bi bi-hourglass-split me-1"></i>' + escapeHtml(reqI18n.pending) + '</span>';
             } else if (req.status === 1) {
-                statusHtml = '<span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-1 fw-semibold"><i class="bi bi-check-circle-fill me-1"></i>Đã chấp thuận</span>';
+                statusHtml = '<span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-1 fw-semibold"><i class="bi bi-check-circle-fill me-1"></i>' + escapeHtml(reqI18n.approved) + '</span>';
             } else {
-                statusHtml = '<span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3 py-1 fw-semibold"><i class="bi bi-x-circle-fill me-1"></i>Đã từ chối</span>';
+                statusHtml = '<span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3 py-1 fw-semibold"><i class="bi bi-x-circle-fill me-1"></i>' + escapeHtml(reqI18n.rejected) + '</span>';
             }
             $('#detailStatus').html(statusHtml);
 
@@ -1529,7 +1575,7 @@
             // Approver trail
             if (req.approvedBy) {
                 $('#detailApprover').text(req.approvedBy);
-                $('#detailApprovedAt').text(req.approvedAt ? `(lúc ${req.approvedAt})` : '');
+                $('#detailApprovedAt').text(req.approvedAt ? '(' + reqI18n.atTime.replace('{0}', req.approvedAt) + ')' : '');
                 $('#detailApproverRow').show();
             } else {
                 $('#detailApproverRow').hide();
@@ -1594,9 +1640,9 @@
                     if (isSelf || !isManager) {
                         $('#btnDeleteDetail').css('display', 'inline-flex');
                     } else if (cannotApproveReason === 'admin_only') {
-                        $('#requestApprovalNotice').html('<i class="bi bi-shield-lock-fill me-2 fs-6"></i>Đơn của Quản lý / HR — Chờ Admin phê duyệt').show();
+                        $('#requestApprovalNotice').html('<i class="bi bi-shield-lock-fill me-2 fs-6"></i>' + escapeHtml(@Json.Serialize(RequestResource.Notice_AdminOnly))).show();
                     } else if (cannotApproveReason === 'store_mismatch') {
-                        $('#requestApprovalNotice').html('<i class="bi bi-info-circle me-2 fs-6"></i>Đơn thuộc nhân viên chi nhánh khác').show();
+                        $('#requestApprovalNotice').html('<i class="bi bi-info-circle me-2 fs-6"></i>' + escapeHtml(@Json.Serialize(RequestResource.Notice_StoreMismatch))).show();
                     }
                 }
             } else if (req.status === 1) { // Approved Banner
@@ -1604,19 +1650,19 @@
                     <div class="alert alert-success d-flex align-items-center gap-3 p-3 rounded-3 border-success-subtle mb-0">
                         <i class="bi bi-check-circle-fill fs-3 text-success"></i>
                         <div>
-                            <div class="fw-bold">Yêu cầu đã được chấp thuận</div>
-                            <div class="small text-success-emphasis">Xử lý bởi: <strong>${escapeHtml(req.approvedBy || 'Quản lý')}</strong> ${req.approvedAt ? 'lúc ' + req.approvedAt : ''}</div>
+                            <div class="fw-bold">${escapeHtml(@Json.Serialize(RequestResource.Banner_Approved))}</div>
+                            <div class="small text-success-emphasis">${escapeHtml(reqI18n.processedBy)}: <strong>${escapeHtml(req.approvedBy || reqI18n.defaultManager)}</strong> ${req.approvedAt ? escapeHtml(reqI18n.atTime.replace('{0}', req.approvedAt)) : ''}</div>
                         </div>
                     </div>
                 `).show();
             } else if (req.status === 2) { // Rejected Banner
-                var reasonHtml = req.rejectionReason ? `<div class="small mt-2 p-2 bg-white rounded border border-danger-subtle text-dark"><strong>Lý do từ chối:</strong> ${escapeHtml(req.rejectionReason)}</div>` : '';
+                var reasonHtml = req.rejectionReason ? `<div class="small mt-2 p-2 bg-white rounded border border-danger-subtle text-dark"><strong>${escapeHtml(@Json.Serialize(RequestResource.RejectReasonTitle))}:</strong> ${escapeHtml(req.rejectionReason)}</div>` : '';
                 $('#detailResultBanner').html(`
                     <div class="alert alert-danger d-flex align-items-start gap-3 p-3 rounded-3 border-danger-subtle mb-0">
                         <i class="bi bi-x-circle-fill fs-3 text-danger mt-1"></i>
                         <div class="w-100">
-                            <div class="fw-bold">Yêu cầu đã bị từ chối</div>
-                            <div class="small text-danger-emphasis">Xử lý bởi: <strong>${escapeHtml(req.approvedBy || 'Quản lý')}</strong> ${req.approvedAt ? 'lúc ' + req.approvedAt : ''}</div>
+                            <div class="fw-bold">${escapeHtml(@Json.Serialize(RequestResource.Banner_Rejected))}</div>
+                            <div class="small text-danger-emphasis">${escapeHtml(reqI18n.processedBy)}: <strong>${escapeHtml(req.approvedBy || reqI18n.defaultManager)}</strong> ${req.approvedAt ? escapeHtml(reqI18n.atTime.replace('{0}', req.approvedAt)) : ''}</div>
                             ${reasonHtml}
                         </div>
                     </div>
@@ -1950,7 +1996,7 @@
 
             const leaveType = $('input[name="leaveType"]:checked').val();
             if (days <= 0) {
-                $('#leaveBalanceAlertText').text('Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu.');
+                $('#leaveBalanceAlertText').text(@Json.Serialize(RequestResource.Leave_EndBeforeStart));
                 $('#leaveBalanceAlert').removeClass('d-none');
                 $('#btnSubmitLeave').prop('disabled', true);
                 return;
@@ -1958,7 +2004,7 @@
 
             if (leaveType === '0') { // Paid
                 if (days > currentAnnualBalance) {
-                    $('#leaveBalanceAlertText').text(`Số ngày nghỉ (${days} ngày) vượt quá số ngày phép năm còn lại (${currentAnnualBalance} ngày)!`);
+                    $('#leaveBalanceAlertText').text(@(Json.Serialize(RequestResource.Leave_ExceedsBalance)).replace('{0}', days).replace('{1}', currentAnnualBalance));
                     $('#leaveBalanceAlert').removeClass('d-none');
                     $('#btnSubmitLeave').prop('disabled', true);
                     return;
@@ -1975,18 +2021,18 @@
             $('#btnSubmitAdj').prop('disabled', false);
 
             var select = $('#adjRecordSelect');
-            select.empty().append('<option value="">-- Đang tải danh sách ca gần đây... --</option>');
+            select.empty().append($('<option value=""></option>').text(@Json.Serialize(RequestResource.Adj_LoadingRecords)));
 
             $.get('/Request/GetAttendanceAdjustmentFormData', function(res) {
                 select.empty();
                 if (res.success && res.records && res.records.length > 0) {
-                    select.append('<option value="">-- Chọn ca làm việc --</option>');
+                    select.append($('<option value=""></option>').text(@Json.Serialize(RequestResource.Adj_SelectShiftPrompt)));
                     res.records.forEach(r => {
                         var inOut = (r.checkIn ? r.checkIn : '--:--') + ' ~ ' + (r.checkOut ? r.checkOut : '--:--');
                         select.append(`<option value="${r.attendanceId}" data-date="${r.workDate}" data-shift="${r.shiftId || ''}" data-in="${r.checkIn}" data-out="${r.checkOut}">${r.dateStr} - ${r.shiftName} (${inOut})</option>`);
                     });
                 } else {
-                    select.append('<option value="" disabled>-- Chưa có bản ghi chấm công nào trong 30 ngày qua --</option>');
+                    select.append($('<option value="" disabled></option>').text(@Json.Serialize(RequestResource.Adj_NoRecords)));
                 }
             });
 
@@ -2012,7 +2058,7 @@
             var shiftId = parseInt(selected.data('shift')) || null;
 
             if (!attId && !workDate) {
-                AppToast.error('Vui lòng chọn ca làm việc cần sửa.');
+                AppToast.error(@Json.Serialize(RequestResource.Adj_ErrSelectShift));
                 return;
             }
 
@@ -2021,12 +2067,12 @@
             var reasonVal = $('#adjReason').val().trim();
 
             if (!reasonVal) {
-                AppToast.error('Vui lòng nhập lý do giải trình.');
+                AppToast.error(@Json.Serialize(RequestResource.Adj_ErrReasonRequired));
                 return;
             }
 
             if (!inVal && !outVal) {
-                AppToast.error('Vui lòng nhập ít nhất giờ vào hoặc giờ ra mong muốn.');
+                AppToast.error(@Json.Serialize(RequestResource.Adj_ErrTimeRequired));
                 return;
             }
 
@@ -2058,12 +2104,12 @@
                         AppToast.success(res.message);
                         setTimeout(() => window.location.reload(), 1000);
                     } else {
-                        AppToast.error(res.message || 'Thao tác không thành công.');
+                        AppToast.error(res.message || @Json.Serialize(RequestResource.Toast_OperationUnsuccessful));
                         $('#btnSubmitAdj').prop('disabled', false);
                     }
                 },
                 error: function(err) {
-                    AppToast.error(err.responseJSON?.message || 'Lỗi hệ thống.');
+                    AppToast.error(err.responseJSON?.message || @Json.Serialize(SharedResource.Req_SysError));
                     $('#btnSubmitAdj').prop('disabled', false);
                 }
             });
@@ -2078,14 +2124,14 @@
             $('#apprModal_ShiftName').text(req.shiftName || '-');
             $('#apprModal_OldInOut').text((req.actualCheckInTimeStr || '--:--') + ' ~ ' + (req.actualCheckOutTimeStr || '--:--'));
             $('#apprModal_ReqInOut').text((req.requestedCheckInTimeStr || '--:--') + ' ~ ' + (req.requestedCheckOutTimeStr || '--:--'));
-            $('#apprModal_Reason').text(req.note || 'Không có');
+            $('#apprModal_Reason').text(req.note || @Json.Serialize(RequestResource.Appr_NoReason));
 
             var inVal = (req.requestedCheckInTimeStr && req.requestedCheckInTimeStr !== '-') ? req.requestedCheckInTimeStr : '';
             var outVal = (req.requestedCheckOutTimeStr && req.requestedCheckOutTimeStr !== '-') ? req.requestedCheckOutTimeStr : '';
             $('#apprModal_ApprovedCheckIn').val(inVal);
             $('#apprModal_ApprovedCheckOut').val(outVal);
             $('#apprModal_ApproverNote').val('');
-            $('#btnConfirmApproveAttendance').prop('disabled', false).html('<i class="bi bi-check-circle me-1"></i>Xác nhận duyệt');
+            $('#btnConfirmApproveAttendance').prop('disabled', false).html('<i class="bi bi-check-circle me-1"></i>' + escapeHtml(reqI18n.confirmApproveBtn));
 
             var modal = new bootstrap.Modal(document.getElementById('approveAttendanceModal'));
             modal.show();
@@ -2097,14 +2143,14 @@
             var note = $('#apprModal_ApproverNote').val().trim();
 
             if (!inTime && !outTime) {
-                AppToast.error('Vui lòng nhập ít nhất giờ vào hoặc giờ ra được phê duyệt.');
+                AppToast.error(@Json.Serialize(RequestResource.Appr_ErrTimeRequired));
                 return;
             }
 
             if (inTime && inTime.length === 5) inTime += ':00';
             if (outTime && outTime.length === 5) outTime += ':00';
 
-            $('#btnConfirmApproveAttendance').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Đang xử lý...');
+            $('#btnConfirmApproveAttendance').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> ' + escapeHtml(@Json.Serialize(RequestResource.Processing)));
 
             $.ajax({
                 url: '/Request/UpdateStatus',
@@ -2123,31 +2169,32 @@
                 success: function(res) {
                     if (res.success) {
                         $('#approveAttendanceModal').modal('hide');
-                        AppToast.success(res.message || 'Phê duyệt và cập nhật giờ chấm công thành công!');
+                        AppToast.success(res.message || @Json.Serialize(RequestResource.Adj_ApproveSuccess));
                         setTimeout(() => window.location.reload(), 800);
                     } else {
-                        $('#btnConfirmApproveAttendance').prop('disabled', false).html('<i class="bi bi-check-circle me-1"></i>Xác nhận duyệt');
+                        $('#btnConfirmApproveAttendance').prop('disabled', false).html('<i class="bi bi-check-circle me-1"></i>' + escapeHtml(reqI18n.confirmApproveBtn));
                         AppToast.error('@Html.Raw(SharedResource.Req_ErrorPrefix)' + res.message);
                     }
                 },
                 error: function(err) {
-                    $('#btnConfirmApproveAttendance').prop('disabled', false).html('<i class="bi bi-check-circle me-1"></i>Xác nhận duyệt');
+                    $('#btnConfirmApproveAttendance').prop('disabled', false).html('<i class="bi bi-check-circle me-1"></i>' + escapeHtml(reqI18n.confirmApproveBtn));
                     AppToast.error(err.responseJSON?.message || '@Html.Raw(SharedResource.Req_SysError)');
                 }
             });
         }
 
         function exportRequestsToCSV() {
-            if (!requestsData || requestsData.length === 0) {
-                AppToast.warning('Không có dữ liệu yêu cầu để xuất file.');
+            if (!requestsExportData || requestsExportData.length === 0) {
+                AppToast.warning(@Json.Serialize(RequestResource.Export_NoData));
                 return;
             }
 
             var csvRows = [];
-            csvRows.push(['"Mã đơn"', '"Loại yêu cầu"', '"Người gửi"', '"Chi nhánh"', '"Ca làm / Nội dung"', '"Ngày làm việc"', '"Ngày tạo"', '"Trạng thái"', '"Người duyệt"', '"Lý do từ chối"', '"Ghi chú"'].join(','));
+            var csvHeaders = [@Json.Serialize(RequestResource.Code), @Json.Serialize(RequestResource.Export_ColType), @Json.Serialize(RequestResource.Export_ColSender), @Json.Serialize(RequestResource.Export_ColBranch), @Json.Serialize(RequestResource.Export_ColShiftContent), @Json.Serialize(RequestResource.Appr_WorkDate), @Json.Serialize(RequestResource.Export_ColCreatedDate), @Json.Serialize(RequestResource.Status), @Json.Serialize(RequestResource.Export_ColApprover), @Json.Serialize(RequestResource.RejectReasonTitle), @Json.Serialize(SharedResource.Req_Note)];
+            csvRows.push(csvHeaders.map(function(h) { return '"' + String(h).replace(/"/g, '""') + '"'; }).join(','));
 
-            requestsData.forEach(function(r) {
-                var statusStr = r.status === 1 ? 'Đã chấp thuận' : (r.status === 2 ? 'Đã từ chối' : 'Chờ duyệt');
+            requestsExportData.forEach(function(r) {
+                var statusStr = r.status === 1 ? reqI18n.approved : (r.status === 2 ? reqI18n.rejected : reqI18n.pending);
                 var row = [
                     `"${(r.code || '').replace(/"/g, '""')}"`,
                     `"${(r.requestTypeName || '').replace(/"/g, '""')}"`,
@@ -2156,7 +2203,7 @@
                     `"${(r.shiftName || '').replace(/"/g, '""')}"`,
                     `"${(r.workDateStr || '').replace(/"/g, '""')}"`,
                     `"${(r.createdDateStr || '').replace(/"/g, '""')}"`,
-                    `"${statusStr}"`,
+                    `"${statusStr.replace(/"/g, '""')}"`,
                     `"${(r.approvedBy || '').replace(/"/g, '""')}"`,
                     `"${(r.rejectionReason || '').replace(/"/g, '""')}"`,
                     `"${(r.note || '').replace(/"/g, '""')}"`
@@ -2171,13 +2218,13 @@
             var now = new Date();
             var dateStr = now.getFullYear() + (now.getMonth() + 1).toString().padStart(2, '0') + now.getDate().toString().padStart(2, '0');
             a.href = url;
-            a.download = `Yeu_Cau_Va_Phe_Duyet_${dateStr}.csv`;
+            a.download = @Json.Serialize(RequestResource.Export_FileName) + '_' + dateStr + '.csv';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            AppToast.success('Xuất file thành công!');
+            AppToast.success(@Json.Serialize(RequestResource.Export_Success));
         }
 
         function escapeHtml(str) {

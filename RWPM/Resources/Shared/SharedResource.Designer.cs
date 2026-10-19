@@ -1763,5 +1763,532 @@ namespace RWPM.Resources.Shared {
         public static string Unit_VndPerHour => ResourceManager.GetString("Unit_VndPerHour", resourceCulture);
         public static string Unit_VndPerMonth => ResourceManager.GetString("Unit_VndPerMonth", resourceCulture);
         public static string Unit_Days => ResourceManager.GetString("Unit_Days", resourceCulture);
+    
+
+        public static string Range {
+            get {
+                return ResourceManager.GetString("Range", resourceCulture);
+            }
+        }
+
+        public static string Js_Required {
+            get {
+                return ResourceManager.GetString("Js_Required", resourceCulture);
+            }
+        }
+
+        public static string Js_Number {
+            get {
+                return ResourceManager.GetString("Js_Number", resourceCulture);
+            }
+        }
+
+        public static string Js_Digits {
+            get {
+                return ResourceManager.GetString("Js_Digits", resourceCulture);
+            }
+        }
+
+        public static string Js_Step {
+            get {
+                return ResourceManager.GetString("Js_Step", resourceCulture);
+            }
+        }
+
+        public static string Js_Min {
+            get {
+                return ResourceManager.GetString("Js_Min", resourceCulture);
+            }
+        }
+
+        public static string Js_Max {
+            get {
+                return ResourceManager.GetString("Js_Max", resourceCulture);
+            }
+        }
+
+        public static string Js_Email {
+            get {
+                return ResourceManager.GetString("Js_Email", resourceCulture);
+            }
+        }
+
+        public static string Js_Url {
+            get {
+                return ResourceManager.GetString("Js_Url", resourceCulture);
+            }
+        }
+
+        public static string Js_Date {
+            get {
+                return ResourceManager.GetString("Js_Date", resourceCulture);
+            }
+        }
+
+        public static string Js_MaxLength {
+            get {
+                return ResourceManager.GetString("Js_MaxLength", resourceCulture);
+            }
+        }
+
+        public static string Js_MinLength {
+            get {
+                return ResourceManager.GetString("Js_MinLength", resourceCulture);
+            }
+        }
+
+        public static string Js_Pattern {
+            get {
+                return ResourceManager.GetString("Js_Pattern", resourceCulture);
+            }
+        }
+
+        public static string Js_EqualTo {
+            get {
+                return ResourceManager.GetString("Js_EqualTo", resourceCulture);
+            }
+        }
+
+        public static string Js_Remote {
+            get {
+                return ResourceManager.GetString("Js_Remote", resourceCulture);
+            }
+        }
+
+        public static string Js_ConfirmTitle {
+            get {
+                return ResourceManager.GetString("Js_ConfirmTitle", resourceCulture);
+            }
+        }
+
+        public static string Js_ConfirmOk {
+            get {
+                return ResourceManager.GetString("Js_ConfirmOk", resourceCulture);
+            }
+        }
+
+        public static string Js_Copied {
+            get {
+                return ResourceManager.GetString("Js_Copied", resourceCulture);
+            }
+        }
+    
+
+        public static string Button_Close {
+            get {
+                return ResourceManager.GetString("Button_Close", resourceCulture);
+            }
+        }
+
+        public static string Processing {
+            get {
+                return ResourceManager.GetString("Processing", resourceCulture);
+            }
+        }
+
+        public static string Login {
+            get {
+                return ResourceManager.GetString("Login", resourceCulture);
+            }
+        }
+
+        public static string Language_Vietnamese {
+            get {
+                return ResourceManager.GetString("Language_Vietnamese", resourceCulture);
+            }
+        }
+
+        public static string Language_English {
+            get {
+                return ResourceManager.GetString("Language_English", resourceCulture);
+            }
+        }
+
+        public static string Layout_ToggleNavigation {
+            get {
+                return ResourceManager.GetString("Layout_ToggleNavigation", resourceCulture);
+            }
+        }
+
+        public static string Loading_ProcessingRequest {
+            get {
+                return ResourceManager.GetString("Loading_ProcessingRequest", resourceCulture);
+            }
+        }
+
+        public static string Loading_CancelProgress {
+            get {
+                return ResourceManager.GetString("Loading_CancelProgress", resourceCulture);
+            }
+        }
+
+        public static string Privacy_Title {
+            get {
+                return ResourceManager.GetString("Privacy_Title", resourceCulture);
+            }
+        }
+
+        public static string Privacy_Body {
+            get {
+                return ResourceManager.GetString("Privacy_Body", resourceCulture);
+            }
+        }
+
+        public static string Js_Close {
+            get {
+                return ResourceManager.GetString("Js_Close", resourceCulture);
+            }
+        }
+
+        public static string Js_Account {
+            get {
+                return ResourceManager.GetString("Js_Account", resourceCulture);
+            }
+        }
+
+        public static string Js_Password {
+            get {
+                return ResourceManager.GetString("Js_Password", resourceCulture);
+            }
+        }
+
+        public static string Js_PasswordMinLength {
+            get {
+                return ResourceManager.GetString("Js_PasswordMinLength", resourceCulture);
+            }
+        }
+
+        public static string Js_PasswordMismatch {
+            get {
+                return ResourceManager.GetString("Js_PasswordMismatch", resourceCulture);
+            }
+        }
+
+        public static string Js_Saving {
+            get {
+                return ResourceManager.GetString("Js_Saving", resourceCulture);
+            }
+        }
+
+        public static string Js_ResetPasswordSuccess {
+            get {
+                return ResourceManager.GetString("Js_ResetPasswordSuccess", resourceCulture);
+            }
+        }
+
+        public static string Js_ResetPasswordError {
+            get {
+                return ResourceManager.GetString("Js_ResetPasswordError", resourceCulture);
+            }
+        }
+
+        public static string Attendance_Err_NotInAllowedTime {
+            get {
+                return ResourceManager.GetString("Attendance_Err_NotInAllowedTime", resourceCulture);
+            }
+        }
+
+        public static string Attendance_Warn_LateCheckIn {
+            get {
+                return ResourceManager.GetString("Attendance_Warn_LateCheckIn", resourceCulture);
+            }
+        }
+
+        public static string Attendance_Warn_EarlyCheckOut {
+            get {
+                return ResourceManager.GetString("Attendance_Warn_EarlyCheckOut", resourceCulture);
+            }
+        }
+
+        public static string Attendance_Err_RecordNotFound {
+            get {
+                return ResourceManager.GetString("Attendance_Err_RecordNotFound", resourceCulture);
+            }
+        }
+
+        public static string Attendance_Err_AdjustReasonRequired {
+            get {
+                return ResourceManager.GetString("Attendance_Err_AdjustReasonRequired", resourceCulture);
+            }
+        }
+
+        public static string Attendance_AdjustSuccess {
+            get {
+                return ResourceManager.GetString("Attendance_AdjustSuccess", resourceCulture);
+            }
+        }
+
+        public static string Attendance_Scope_Branch {
+            get {
+                return ResourceManager.GetString("Attendance_Scope_Branch", resourceCulture);
+            }
+        }
+
+        public static string Attendance_Scope_YourStore {
+            get {
+                return ResourceManager.GetString("Attendance_Scope_YourStore", resourceCulture);
+            }
+        }
+
+        public static string Attendance_Scope_Company {
+            get {
+                return ResourceManager.GetString("Attendance_Scope_Company", resourceCulture);
+            }
+        }
+
+        public static string Attendance_EmployeeHistory {
+            get {
+                return ResourceManager.GetString("Attendance_EmployeeHistory", resourceCulture);
+            }
+        }
+
+        public static string Attendance_DefaultShiftName {
+            get {
+                return ResourceManager.GetString("Attendance_DefaultShiftName", resourceCulture);
+            }
+        }
+
+        public static string Attendance_AdjDetail_Title {
+            get {
+                return ResourceManager.GetString("Attendance_AdjDetail_Title", resourceCulture);
+            }
+        }
+
+        public static string Attendance_AdjDetail_Employee {
+            get {
+                return ResourceManager.GetString("Attendance_AdjDetail_Employee", resourceCulture);
+            }
+        }
+
+        public static string Attendance_AdjDetail_WorkDate {
+            get {
+                return ResourceManager.GetString("Attendance_AdjDetail_WorkDate", resourceCulture);
+            }
+        }
+
+        public static string Attendance_AdjDetail_Shift {
+            get {
+                return ResourceManager.GetString("Attendance_AdjDetail_Shift", resourceCulture);
+            }
+        }
+
+        public static string Attendance_AdjDetail_CurrentIn {
+            get {
+                return ResourceManager.GetString("Attendance_AdjDetail_CurrentIn", resourceCulture);
+            }
+        }
+
+        public static string Attendance_AdjDetail_CurrentOut {
+            get {
+                return ResourceManager.GetString("Attendance_AdjDetail_CurrentOut", resourceCulture);
+            }
+        }
+
+        public static string Attendance_AdjDetail_History {
+            get {
+                return ResourceManager.GetString("Attendance_AdjDetail_History", resourceCulture);
+            }
+        }
+
+        public static string Attendance_AdjDetail_ModifiedBy {
+            get {
+                return ResourceManager.GetString("Attendance_AdjDetail_ModifiedBy", resourceCulture);
+            }
+        }
+
+        public static string Attendance_AdjDetail_Before {
+            get {
+                return ResourceManager.GetString("Attendance_AdjDetail_Before", resourceCulture);
+            }
+        }
+
+        public static string Attendance_AdjDetail_After {
+            get {
+                return ResourceManager.GetString("Attendance_AdjDetail_After", resourceCulture);
+            }
+        }
+
+        public static string Attendance_AdjDetail_Reason {
+            get {
+                return ResourceManager.GetString("Attendance_AdjDetail_Reason", resourceCulture);
+            }
+        }
+
+        public static string Attendance_AdjDetail_ApprovedNote {
+            get {
+                return ResourceManager.GetString("Attendance_AdjDetail_ApprovedNote", resourceCulture);
+            }
+        }
+    
+
+        public static string Pagination_Next {
+            get {
+                return ResourceManager.GetString("Pagination_Next", resourceCulture);
+            }
+        }
+
+        public static string Pagination_Previous {
+            get {
+                return ResourceManager.GetString("Pagination_Previous", resourceCulture);
+            }
+        }
+    
+
+        public static string StringLength {
+            get {
+                return ResourceManager.GetString("StringLength", resourceCulture);
+            }
+        }
+
+        public static string StringLengthMax {
+            get {
+                return ResourceManager.GetString("StringLengthMax", resourceCulture);
+            }
+        }
+
+        public static string EmailAddress {
+            get {
+                return ResourceManager.GetString("EmailAddress", resourceCulture);
+            }
+        }
+
+        public static string PhoneInvalid {
+            get {
+                return ResourceManager.GetString("PhoneInvalid", resourceCulture);
+            }
+        }
+
+        public static string Compare {
+            get {
+                return ResourceManager.GetString("Compare", resourceCulture);
+            }
+        }
+
+        public static string RegularExpression {
+            get {
+                return ResourceManager.GetString("RegularExpression", resourceCulture);
+            }
+        }
+
+        public static string RegularExpression_VnPhone {
+            get {
+                return ResourceManager.GetString("RegularExpression_VnPhone", resourceCulture);
+            }
+        }
+
+        public static string Binding_ValueMustBeANumber {
+            get {
+                return ResourceManager.GetString("Binding_ValueMustBeANumber", resourceCulture);
+            }
+        }
+
+        public static string Binding_NonPropertyValueMustBeANumber {
+            get {
+                return ResourceManager.GetString("Binding_NonPropertyValueMustBeANumber", resourceCulture);
+            }
+        }
+
+        public static string Binding_AttemptedValueIsInvalid {
+            get {
+                return ResourceManager.GetString("Binding_AttemptedValueIsInvalid", resourceCulture);
+            }
+        }
+
+        public static string Binding_NonPropertyAttemptedValueIsInvalid {
+            get {
+                return ResourceManager.GetString("Binding_NonPropertyAttemptedValueIsInvalid", resourceCulture);
+            }
+        }
+
+        public static string Binding_UnknownValueIsInvalid {
+            get {
+                return ResourceManager.GetString("Binding_UnknownValueIsInvalid", resourceCulture);
+            }
+        }
+
+        public static string Binding_NonPropertyUnknownValueIsInvalid {
+            get {
+                return ResourceManager.GetString("Binding_NonPropertyUnknownValueIsInvalid", resourceCulture);
+            }
+        }
+
+        public static string Binding_ValueIsInvalid {
+            get {
+                return ResourceManager.GetString("Binding_ValueIsInvalid", resourceCulture);
+            }
+        }
+
+        public static string Binding_ValueMustNotBeNull {
+            get {
+                return ResourceManager.GetString("Binding_ValueMustNotBeNull", resourceCulture);
+            }
+        }
+
+        public static string Binding_MissingBindRequiredValue {
+            get {
+                return ResourceManager.GetString("Binding_MissingBindRequiredValue", resourceCulture);
+            }
+        }
+
+        public static string Binding_MissingKeyOrValue {
+            get {
+                return ResourceManager.GetString("Binding_MissingKeyOrValue", resourceCulture);
+            }
+        }
+
+        public static string Binding_MissingRequestBodyRequiredValue {
+            get {
+                return ResourceManager.GetString("Binding_MissingRequestBodyRequiredValue", resourceCulture);
+            }
+        }
+    
+
+        public static string Js_TimeAm {
+            get {
+                return ResourceManager.GetString("Js_TimeAm", resourceCulture);
+            }
+        }
+
+        public static string Js_TimePm {
+            get {
+                return ResourceManager.GetString("Js_TimePm", resourceCulture);
+            }
+        }
+
+        public static string Js_TimePlaceholder {
+            get {
+                return ResourceManager.GetString("Js_TimePlaceholder", resourceCulture);
+            }
+        }
+
+        public static string Js_TimeSuggestions {
+            get {
+                return ResourceManager.GetString("Js_TimeSuggestions", resourceCulture);
+            }
+        }
+
+        public static string Js_TimeCommon {
+            get {
+                return ResourceManager.GetString("Js_TimeCommon", resourceCulture);
+            }
+        }
+
+        public static string Js_TimeAll {
+            get {
+                return ResourceManager.GetString("Js_TimeAll", resourceCulture);
+            }
+        }
+
+        public static string Js_TimeInvalid {
+            get {
+                return ResourceManager.GetString("Js_TimeInvalid", resourceCulture);
+            }
+        }
+
+        public static string Js_TimeClear {
+            get {
+                return ResourceManager.GetString("Js_TimeClear", resourceCulture);
+            }
+        }
     }
 }

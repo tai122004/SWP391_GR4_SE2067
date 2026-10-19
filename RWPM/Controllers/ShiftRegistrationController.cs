@@ -9,6 +9,7 @@ using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using RWPM.Infrastructure.Data;
 using RWPM.Models.Entities;
+using SR = RWPM.Resources.Shared.ShiftRegistrationResource;
 
 namespace RWPM.Controllers
 {
@@ -184,7 +185,7 @@ namespace RWPM.Controllers
                 else
                 {
                     employee = await _context.Employee.FirstOrDefaultAsync(e => e.EmployeeId == viewModel.EmployeeId);
-                    if (employee == null) return BadRequest(new { success = false, message = "Employee not found." });
+                    if (employee == null) return BadRequest(new { success = false, message = SR.Err_EmployeeNotFound });
                     
                     // If StoreManager, check if they are trying to assign someone outside their store
                     if (isStoreManager)
@@ -219,11 +220,11 @@ namespace RWPM.Controllers
                     var shift = await _context.Shift.FirstOrDefaultAsync(s => s.ShiftId == sId);
                     if (shift == null || !shift.IsActive)
                     {
-                        return BadRequest(new { success = false, message = $"Ca làm việc có ID {sId} không tồn tại hoặc đã ngừng hoạt động." });
+                        return BadRequest(new { success = false, message = string.Format(SR.Err_ShiftNotFoundOrInactive, sId) });
                     }
                     if (employee.StoreId.HasValue && !await _context.StoreShift.AnyAsync(link => link.ShiftId == sId && link.StoreId == employee.StoreId.Value && link.IsActive && link.Store.IsActive))
                     {
-                        return BadRequest(new { success = false, message = $"Ca làm việc {shift.ShiftName} không áp dụng cho chi nhánh của nhân viên." });
+                        return BadRequest(new { success = false, message = string.Format(SR.Err_ShiftNotAppliedToStore, shift.ShiftName) });
                     }
 
                     var entity = viewModel.ToEntity();
@@ -302,12 +303,12 @@ namespace RWPM.Controllers
 
                     if (entity.Status == RegistrationStatus.Approved)
                     {
-                        return BadRequest(new { success = false, message = "Ca làm việc đã được duyệt. Bạn không thể tự ý hủy ca, vui lòng liên hệ Quản lý!" });
+                        return BadRequest(new { success = false, message = SR.Err_ApprovedCannotCancel });
                     }
 
                     if (entity.WorkDate.Date < DateTime.Today)
                     {
-                        return BadRequest(new { success = false, message = "Không thể hủy ca làm việc trong quá khứ." });
+                        return BadRequest(new { success = false, message = SR.Err_CannotCancelPast });
                     }
                 }
                 else if (isStoreManager)
@@ -342,7 +343,7 @@ namespace RWPM.Controllers
             {
                 var username = User.Identity?.Name;
                 var employee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
-                if (employee == null) return Unauthorized(new { success = false, message = "Không tìm thấy hồ sơ nhân viên của bạn để đăng ký ca." });
+                if (employee == null) return Unauthorized(new { success = false, message = SR.Err_EmployeeProfileNotFound });
 
                 if (!employee.StoreId.HasValue)
                 {

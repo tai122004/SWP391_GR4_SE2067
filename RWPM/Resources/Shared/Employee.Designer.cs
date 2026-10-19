@@ -507,5 +507,463 @@ namespace RWPM.Resources.Shared {
         public static string Excel_Btn_Verifying => ResourceManager.GetString("Excel_Btn_Verifying", resourceCulture);
         public static string Excel_Btn_Saving => ResourceManager.GetString("Excel_Btn_Saving", resourceCulture);
         public static string Excel_Step1_Note => ResourceManager.GetString("Excel_Step1_Note", resourceCulture);
+    
+
+        public static string Import_InvalidFile {
+            get {
+                return ResourceManager.GetString("Import_InvalidFile", resourceCulture);
+            }
+        }
+
+        public static string Import_OnlyXlsx {
+            get {
+                return ResourceManager.GetString("Import_OnlyXlsx", resourceCulture);
+            }
+        }
+
+        public static string Import_SuccessAll {
+            get {
+                return ResourceManager.GetString("Import_SuccessAll", resourceCulture);
+            }
+        }
+
+        public static string Import_SuccessPartial {
+            get {
+                return ResourceManager.GetString("Import_SuccessPartial", resourceCulture);
+            }
+        }
+
+        public static string Import_Failed {
+            get {
+                return ResourceManager.GetString("Import_Failed", resourceCulture);
+            }
+        }
+
+        public static string Import_ProcessError {
+            get {
+                return ResourceManager.GetString("Import_ProcessError", resourceCulture);
+            }
+        }
+
+        public static string Import_InvalidSession {
+            get {
+                return ResourceManager.GetString("Import_InvalidSession", resourceCulture);
+            }
+        }
+
+        public static string Import_ConfirmSuccess {
+            get {
+                return ResourceManager.GetString("Import_ConfirmSuccess", resourceCulture);
+            }
+        }
+
+        public static string Import_SessionExpired {
+            get {
+                return ResourceManager.GetString("Import_SessionExpired", resourceCulture);
+            }
+        }
+
+        public static string Import_NoSheet {
+            get {
+                return ResourceManager.GetString("Import_NoSheet", resourceCulture);
+            }
+        }
+
+        public static string Import_NoWorksheet {
+            get {
+                return ResourceManager.GetString("Import_NoWorksheet", resourceCulture);
+            }
+        }
+
+        public static string Import_NoRows {
+            get {
+                return ResourceManager.GetString("Import_NoRows", resourceCulture);
+            }
+        }
+
+        public static string Import_NoRowsPreview {
+            get {
+                return ResourceManager.GetString("Import_NoRowsPreview", resourceCulture);
+            }
+        }
+
+        public static string Import_RowError {
+            get {
+                return ResourceManager.GetString("Import_RowError", resourceCulture);
+            }
+        }
+
+        public static string Import_FullNameRequired {
+            get {
+                return ResourceManager.GetString("Import_FullNameRequired", resourceCulture);
+            }
+        }
+
+        public static string Import_UsernameRequired {
+            get {
+                return ResourceManager.GetString("Import_UsernameRequired", resourceCulture);
+            }
+        }
+
+        public static string Import_EmailRequired {
+            get {
+                return ResourceManager.GetString("Import_EmailRequired", resourceCulture);
+            }
+        }
+
+        public static string Import_UsernameExistsInSystem {
+            get {
+                return ResourceManager.GetString("Import_UsernameExistsInSystem", resourceCulture);
+            }
+        }
+
+        public static string Import_UsernameExists {
+            get {
+                return ResourceManager.GetString("Import_UsernameExists", resourceCulture);
+            }
+        }
+
+        public static string Import_StoreInvalid {
+            get {
+                return ResourceManager.GetString("Import_StoreInvalid", resourceCulture);
+            }
+        }
+
+        public static string Import_StoreNotFound {
+            get {
+                return ResourceManager.GetString("Import_StoreNotFound", resourceCulture);
+            }
+        }
+
+        public static string Import_EmpCodeExistsInSystem {
+            get {
+                return ResourceManager.GetString("Import_EmpCodeExistsInSystem", resourceCulture);
+            }
+        }
+
+        public static string Import_EmpCodeExists {
+            get {
+                return ResourceManager.GetString("Import_EmpCodeExists", resourceCulture);
+            }
+        }
+
+        public static string Import_StoreNotRequired {
+            get {
+                return ResourceManager.GetString("Import_StoreNotRequired", resourceCulture);
+            }
+        }
+
+        public static string Err_EmployeeNotFound {
+            get {
+                return ResourceManager.GetString("Err_EmployeeNotFound", resourceCulture);
+            }
+        }
+
+        public static string Template_SheetEmployees {
+            get {
+                return ResourceManager.GetString("Template_SheetEmployees", resourceCulture);
+            }
+        }
+
+        public static string Template_SheetStores {
+            get {
+                return ResourceManager.GetString("Template_SheetStores", resourceCulture);
+            }
+        }
+
+        public static string Template_Col_FullName {
+            get {
+                return ResourceManager.GetString("Template_Col_FullName", resourceCulture);
+            }
+        }
+
+        public static string Template_Col_Username {
+            get {
+                return ResourceManager.GetString("Template_Col_Username", resourceCulture);
+            }
+        }
+
+        public static string Template_Col_Email {
+            get {
+                return ResourceManager.GetString("Template_Col_Email", resourceCulture);
+            }
+        }
+
+        public static string Template_Col_Phone {
+            get {
+                return ResourceManager.GetString("Template_Col_Phone", resourceCulture);
+            }
+        }
+
+        public static string Template_Col_Gender {
+            get {
+                return ResourceManager.GetString("Template_Col_Gender", resourceCulture);
+            }
+        }
+
+        public static string Template_Col_DateOfBirth {
+            get {
+                return ResourceManager.GetString("Template_Col_DateOfBirth", resourceCulture);
+            }
+        }
+
+        public static string Template_Col_Role {
+            get {
+                return ResourceManager.GetString("Template_Col_Role", resourceCulture);
+            }
+        }
+
+        public static string Template_Col_StoreId {
+            get {
+                return ResourceManager.GetString("Template_Col_StoreId", resourceCulture);
+            }
+        }
+
+        public static string Template_Col_EmpCode {
+            get {
+                return ResourceManager.GetString("Template_Col_EmpCode", resourceCulture);
+            }
+        }
+
+        public static string Template_Col_EmploymentType {
+            get {
+                return ResourceManager.GetString("Template_Col_EmploymentType", resourceCulture);
+            }
+        }
+
+        public static string Template_Col_JoinDate {
+            get {
+                return ResourceManager.GetString("Template_Col_JoinDate", resourceCulture);
+            }
+        }
+
+        public static string Template_Col_HourlyRate {
+            get {
+                return ResourceManager.GetString("Template_Col_HourlyRate", resourceCulture);
+            }
+        }
+
+        public static string Template_Col_BaseSalary {
+            get {
+                return ResourceManager.GetString("Template_Col_BaseSalary", resourceCulture);
+            }
+        }
+
+        public static string Template_Store_Col_Id {
+            get {
+                return ResourceManager.GetString("Template_Store_Col_Id", resourceCulture);
+            }
+        }
+
+        public static string Template_Store_Col_Name {
+            get {
+                return ResourceManager.GetString("Template_Store_Col_Name", resourceCulture);
+            }
+        }
+
+        public static string Template_Store_Col_Address {
+            get {
+                return ResourceManager.GetString("Template_Store_Col_Address", resourceCulture);
+            }
+        }
+
+        public static string Template_Sample_Male {
+            get {
+                return ResourceManager.GetString("Template_Sample_Male", resourceCulture);
+            }
+        }
+
+        public static string Template_Sample_Female {
+            get {
+                return ResourceManager.GetString("Template_Sample_Female", resourceCulture);
+            }
+        }
+
+        public static string Template_Sample_PartTime {
+            get {
+                return ResourceManager.GetString("Template_Sample_PartTime", resourceCulture);
+            }
+        }
+
+        public static string Template_Sample_FullTime {
+            get {
+                return ResourceManager.GetString("Template_Sample_FullTime", resourceCulture);
+            }
+        }
+
+        public static string Export_SheetName {
+            get {
+                return ResourceManager.GetString("Export_SheetName", resourceCulture);
+            }
+        }
+
+        public static string Export_Col_No {
+            get {
+                return ResourceManager.GetString("Export_Col_No", resourceCulture);
+            }
+        }
+
+        public static string Export_Col_EmpCode {
+            get {
+                return ResourceManager.GetString("Export_Col_EmpCode", resourceCulture);
+            }
+        }
+
+        public static string Export_Col_FullName {
+            get {
+                return ResourceManager.GetString("Export_Col_FullName", resourceCulture);
+            }
+        }
+
+        public static string Export_Col_Account {
+            get {
+                return ResourceManager.GetString("Export_Col_Account", resourceCulture);
+            }
+        }
+
+        public static string Export_Col_Role {
+            get {
+                return ResourceManager.GetString("Export_Col_Role", resourceCulture);
+            }
+        }
+
+        public static string Export_Col_Store {
+            get {
+                return ResourceManager.GetString("Export_Col_Store", resourceCulture);
+            }
+        }
+
+        public static string Export_Col_EmploymentType {
+            get {
+                return ResourceManager.GetString("Export_Col_EmploymentType", resourceCulture);
+            }
+        }
+
+        public static string Export_Col_Status {
+            get {
+                return ResourceManager.GetString("Export_Col_Status", resourceCulture);
+            }
+        }
+
+        public static string Export_Col_JoinDate {
+            get {
+                return ResourceManager.GetString("Export_Col_JoinDate", resourceCulture);
+            }
+        }
+
+        public static string Export_Col_HourlyRate {
+            get {
+                return ResourceManager.GetString("Export_Col_HourlyRate", resourceCulture);
+            }
+        }
+
+        public static string Export_Col_BaseSalary {
+            get {
+                return ResourceManager.GetString("Export_Col_BaseSalary", resourceCulture);
+            }
+        }
+
+        public static string Export_Col_LeaveBalance {
+            get {
+                return ResourceManager.GetString("Export_Col_LeaveBalance", resourceCulture);
+            }
+        }
+
+        public static string Excel_Col_Email {
+            get {
+                return ResourceManager.GetString("Excel_Col_Email", resourceCulture);
+            }
+        }
+
+        public static string Excel_Col_Phone {
+            get {
+                return ResourceManager.GetString("Excel_Col_Phone", resourceCulture);
+            }
+        }
+
+        public static string Excel_SupportedFormat {
+            get {
+                return ResourceManager.GetString("Excel_SupportedFormat", resourceCulture);
+            }
+        }
+
+        public static string Excel_AutoValidated {
+            get {
+                return ResourceManager.GetString("Excel_AutoValidated", resourceCulture);
+            }
+        }
+
+        public static string Excel_ServerConnectionError {
+            get {
+                return ResourceManager.GetString("Excel_ServerConnectionError", resourceCulture);
+            }
+        }
+
+        public static string Toast_SaveFailed {
+            get {
+                return ResourceManager.GetString("Toast_SaveFailed", resourceCulture);
+            }
+        }
+
+        public static string Toast_SaveError {
+            get {
+                return ResourceManager.GetString("Toast_SaveError", resourceCulture);
+            }
+        }
+
+        public static string Placeholder_ResignReason {
+            get {
+                return ResourceManager.GetString("Placeholder_ResignReason", resourceCulture);
+            }
+        }
+
+        public static string Label_EmployeeNumber {
+            get {
+                return ResourceManager.GetString("Label_EmployeeNumber", resourceCulture);
+            }
+        }
+
+        public static string ImportModal_ProcessedRows {
+            get {
+                return ResourceManager.GetString("ImportModal_ProcessedRows", resourceCulture);
+            }
+        }
+
+        public static string ImportModal_FailedRows {
+            get {
+                return ResourceManager.GetString("ImportModal_FailedRows", resourceCulture);
+            }
+        }
+
+        public static string ImportModal_RowNumber {
+            get {
+                return ResourceManager.GetString("ImportModal_RowNumber", resourceCulture);
+            }
+        }
+
+        public static string ImportModal_Reason {
+            get {
+                return ResourceManager.GetString("ImportModal_Reason", resourceCulture);
+            }
+        }
+
+        public static string ImportModal_Value {
+            get {
+                return ResourceManager.GetString("ImportModal_Value", resourceCulture);
+            }
+        }
+
+        public static string ImportModal_ApplyData {
+            get {
+                return ResourceManager.GetString("ImportModal_ApplyData", resourceCulture);
+            }
+        }
+    
+
+        public static string Import_PhoneInvalid {
+            get {
+                return ResourceManager.GetString("Import_PhoneInvalid", resourceCulture);
+            }
+        }
     }
 }

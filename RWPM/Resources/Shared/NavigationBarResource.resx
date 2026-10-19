@@ -165,4 +165,19 @@
   <data name="Attendance" xml:space="preserve">
     <value>Attendance</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Payroll" xml:space="preserve">
+    <value>Payroll</value>
+  </data>
+  <data name="MyPayslips" xml:space="preserve">
+    <value>My Payslips</value>
+  </data>
+  <data name="BrandCaption" xml:space="preserve">
+    <value>WORKFORCE MANAGEMENT</value>
+  </data>
+  <data name="MainNavigation" xml:space="preserve">
+    <value>Main navigation</value>
+  </data>
 </root>

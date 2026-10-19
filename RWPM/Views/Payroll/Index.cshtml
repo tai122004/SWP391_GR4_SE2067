@@ -1,8 +1,10 @@
 @using RWPM.Common.Enums
+@using RWPM.Models.ViewModels.Payroll
+@using PayrollResource = RWPM.Resources.Shared.PayrollResource
 @model RWPM.Models.ViewModels.Payroll.PayrollListVM
 
 @{
-    ViewData["Title"] = "Quản lý Bảng lương";
+    ViewData["Title"] = PayrollResource.Payroll_Title;
     bool isAdminOrHR = ViewBag.IsAdminOrHR ?? false;
     bool isStoreManager = ViewBag.IsStoreManager ?? false;
     var nextPeriod = Model.NextPeriod;
@@ -12,20 +14,20 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="h3 font-weight-bold mb-1 text-primary">
-                <i class="bi bi-cash-stack me-2"></i>Quản lý Bảng lương
+                <i class="bi bi-cash-stack me-2"></i>@PayrollResource.Payroll_Title
             </h2>
             @if (isStoreManager)
             {
-                <p class="text-muted mb-0"><i class="bi bi-geo-alt me-1 text-primary"></i>Phạm vi: <strong>Chi nhánh được phân công quản lý</strong></p>
+                <p class="text-muted mb-0"><i class="bi bi-geo-alt me-1 text-primary"></i>@PayrollResource.Index_ScopeLabel <strong>@PayrollResource.Index_ScopeAssignedStore</strong></p>
             }
             else
             {
-                <p class="text-muted mb-0">Tính lương và theo dõi quỹ lương định kỳ cho nhân viên toàn hệ thống</p>
+                <p class="text-muted mb-0">@PayrollResource.Index_Subtitle</p>
             }
         </div>
         <div class="d-flex gap-2 align-items-center">
             <form method="get" asp-action="Index" class="d-flex align-items-center">
-                <label class="me-2 text-nowrap fw-semibold text-secondary">Năm:</label>
+                <label class="me-2 text-nowrap fw-semibold text-secondary">@PayrollResource.Index_YearLabel</label>
                 <select name="year" class="form-select form-select-sm" onchange="this.form.submit()">
                     @foreach (var y in Model.AvailableYears)
                     {
@@ -45,7 +47,7 @@
             {
                 <button type="button" class="btn btn-primary btn-sm d-flex align-items-center gap-1 shadow-sm" onclick="openCalculateModal()">
                     <i class="bi bi-calculator"></i>
-                    <span>Tính lương kỳ mới</span>
+                    <span>@PayrollResource.Index_CalculateNewButton</span>
                 </button>
             }
         </div>
@@ -57,18 +59,18 @@
             <div class="d-flex align-items-start">
                 <i class="bi bi-exclamation-triangle-fill fs-4 me-3 text-warning"></i>
                 <div class="flex-grow-1">
-                    <strong>Có @nextPeriod.Gaps.Count khoảng ngày chưa được tính lương!</strong>
-                    <div class="small text-dark mb-2">Các ngày dưới đây nằm giữa 2 kỳ lương nhưng không thuộc kỳ nào, nhân viên sẽ không được trả công cho những ngày này. Hãy tính bù để đảm bảo đủ ngày công.</div>
+                    <strong>@string.Format(PayrollResource.Index_GapsTitle, nextPeriod.Gaps.Count)</strong>
+                    <div class="small text-dark mb-2">@PayrollResource.Index_GapsDescription</div>
                     <ul class="list-unstyled mb-0">
                         @foreach (var gap in nextPeriod.Gaps)
                         {
                             <li class="d-flex align-items-center gap-2 py-1">
                                 <i class="bi bi-calendar-x text-danger"></i>
                                 <span class="fw-semibold">@gap.StartDate.ToString("dd/MM/yyyy") - @gap.EndDate.ToString("dd/MM/yyyy")</span>
-                                <span class="badge bg-danger-subtle text-danger">@gap.Days ngày</span>
+                                <span class="badge bg-danger-subtle text-danger">@string.Format(PayrollResource.Common_Days, gap.Days)</span>
                                 <button type="button" class="btn btn-sm btn-outline-dark py-0 ms-2"
                                         onclick="openCalculateModal('@gap.StartDate.ToString("yyyy-MM-dd")', '@gap.MaxEndDate.ToString("yyyy-MM-dd")', '@gap.MaxEndDate.ToString("yyyy-MM-dd")', true)">
-                                    <i class="bi bi-calculator me-1"></i>Tính bù
+                                    <i class="bi bi-calculator me-1"></i>@PayrollResource.Index_GapFillButton
                                 </button>
                             </li>
                         }
@@ -85,7 +87,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <span class="text-muted text-uppercase fw-semibold small">Tổng kỳ lương</span>
+                            <span class="text-muted text-uppercase fw-semibold small">@PayrollResource.Index_CardTotalPayrolls</span>
                             <h3 class="fw-bold mb-0 mt-1 text-primary">@Model.TotalPayrolls</h3>
                         </div>
                         <div class="bg-primary bg-opacity-10 rounded-circle p-3 text-primary">
@@ -100,8 +102,8 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <span class="text-muted text-uppercase fw-semibold small">Tổng quỹ lương năm</span>
-                            <h3 class="fw-bold mb-0 mt-1 text-success">@Model.TotalAnnualGrossSalary.ToString("#,##0") <small class="fs-6">VNĐ</small></h3>
+                            <span class="text-muted text-uppercase fw-semibold small">@PayrollResource.Index_CardAnnualGross</span>
+                            <h3 class="fw-bold mb-0 mt-1 text-success">@Model.TotalAnnualGrossSalary.ToString("#,##0") <small class="fs-6">@PayrollResource.Unit_Vnd</small></h3>
                         </div>
                         <div class="bg-success bg-opacity-10 rounded-circle p-3 text-success">
                             <i class="bi bi-currency-dollar fs-4"></i>
@@ -115,7 +117,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <span class="text-muted text-uppercase fw-semibold small">Kỳ đã chốt</span>
+                            <span class="text-muted text-uppercase fw-semibold small">@PayrollResource.Index_CardLocked</span>
                             <h3 class="fw-bold mb-0 mt-1 text-info">@Model.TotalLockedPayrolls</h3>
                         </div>
                         <div class="bg-info bg-opacity-10 rounded-circle p-3 text-info">
@@ -130,7 +132,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <span class="text-muted text-uppercase fw-semibold small">Bản nháp</span>
+                            <span class="text-muted text-uppercase fw-semibold small">@PayrollResource.Status_Draft</span>
                             <h3 class="fw-bold mb-0 mt-1 text-warning">@Model.TotalDraftPayrolls</h3>
                         </div>
                         <div class="bg-warning bg-opacity-10 rounded-circle p-3 text-warning">
@@ -146,22 +148,22 @@
     <div class="card border-0 shadow-sm rounded-3">
         <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0 fw-bold text-dark">
-                Danh sách Bảng lương Năm @Model.SelectedYear
+                @string.Format(PayrollResource.Index_ListTitle, Model.SelectedYear)
             </h5>
-            <span class="badge bg-secondary-subtle text-secondary">@Model.Payrolls.Count kỳ lương</span>
+            <span class="badge bg-secondary-subtle text-secondary">@string.Format(PayrollResource.Index_PeriodCount, Model.Payrolls.Count)</span>
         </div>
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th class="ps-4">Kỳ lương</th>
-                        <th>Chu kỳ ngày</th>
-                        <th class="text-center">Trạng thái</th>
-                        <th class="text-center">Số nhân viên</th>
-                        <th class="text-end">Tổng giờ làm</th>
-                        <th class="text-end">Tổng lương (VNĐ)</th>
-                        <th>Người tạo / Chốt</th>
-                        <th class="text-end pe-4">Thao tác</th>
+                        <th class="ps-4">@PayrollResource.Col_Period</th>
+                        <th>@PayrollResource.Col_DateRange</th>
+                        <th class="text-center">@PayrollResource.Col_Status</th>
+                        <th class="text-center">@PayrollResource.Col_EmployeeCount</th>
+                        <th class="text-end">@PayrollResource.Col_TotalHours</th>
+                        <th class="text-end">@PayrollResource.Col_TotalSalaryVnd</th>
+                        <th>@PayrollResource.Col_CreatedLocked</th>
+                        <th class="text-end pe-4">@PayrollResource.Col_Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -170,7 +172,7 @@
                         <tr>
                             <td colspan="8" class="text-center py-5 text-muted">
                                 <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary"></i>
-                                Chưa có kỳ lương nào trong năm @Model.SelectedYear. Hãy bấm "Tính lương kỳ mới" để bắt đầu!
+                                @string.Format(PayrollResource.Index_Empty, Model.SelectedYear)
                             </td>
                         </tr>
                     }
@@ -181,7 +183,7 @@
                             <tr>
                                 <td class="ps-4">
                                     <a asp-action="Detail" asp-route-id="@item.PayrollId" class="fw-bold text-primary text-decoration-none">
-                                        @item.Title
+                                        @PayrollDisplayText.Title(item.Title)
                                     </a>
                                 </td>
                                 <td>
@@ -191,13 +193,13 @@
                                     @if (item.Status == PayrollStatus.Locked)
                                     {
                                         <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
-                                            <i class="bi bi-lock-fill me-1"></i>Đã chốt
+                                            <i class="bi bi-lock-fill me-1"></i>@PayrollResource.Status_Locked
                                         </span>
                                     }
                                     else
                                     {
                                         <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1">
-                                            <i class="bi bi-pencil me-1"></i>Bản nháp
+                                            <i class="bi bi-pencil me-1"></i>@PayrollResource.Status_Draft
                                         </span>
                                     }
                                 </td>
@@ -211,36 +213,36 @@
                                     @item.TotalGrossSalary.ToString("#,##0")
                                 </td>
                                 <td>
-                                    <small class="d-block text-muted">Tạo: @item.CreatedBy (@item.CreatedDate.ToString("dd/MM"))</small>
+                                    <small class="d-block text-muted">@PayrollResource.Index_CreatedLabel @item.CreatedBy (@item.CreatedDate.ToString("dd/MM"))</small>
                                     @if (item.Status == PayrollStatus.Locked && !string.IsNullOrEmpty(item.LockedBy))
                                     {
-                                        <small class="d-block text-success">Chốt: @item.LockedBy (@item.LockedDate?.ToString("dd/MM"))</small>
+                                        <small class="d-block text-success">@PayrollResource.Index_LockedLabel @item.LockedBy (@item.LockedDate?.ToString("dd/MM"))</small>
                                     }
                                 </td>
                                 <td class="text-end pe-4">
                                     <div class="dropdown">
                                         <button class="btn btn-sm btn-light border dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                            Thao tác
+                                            @PayrollResource.Col_Actions
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                                             <li>
                                                 <a class="dropdown-item" asp-action="Detail" asp-route-id="@item.PayrollId">
-                                                    <i class="bi bi-eye text-primary me-2"></i>Xem chi tiết
+                                                    <i class="bi bi-eye text-primary me-2"></i>@PayrollResource.Action_ViewDetail
                                                 </a>
                                             </li>
                                             <li>
                                                 <a class="dropdown-item" asp-action="ExportExcel" asp-route-id="@item.PayrollId">
-                                                    <i class="bi bi-file-earmark-excel text-success me-2"></i>Xuất Excel
+                                                    <i class="bi bi-file-earmark-excel text-success me-2"></i>@PayrollResource.Action_ExportExcel
                                                 </a>
                                             </li>
                                             @if (isAdminOrHR && item.Status == PayrollStatus.Draft)
                                             {
                                                 <li><hr class="dropdown-divider"></li>
                                                 <li>
-                                                    <form asp-action="Delete" asp-route-id="@item.PayrollId" method="post" data-confirm="Bạn có chắc chắn muốn xóa kỳ lương nháp @item.StartDate.ToString("dd/MM/yyyy") - @item.EndDate.ToString("dd/MM/yyyy") không? Sau khi xóa, khoảng ngày này sẽ trở thành khoảng trống cần tính bù." data-confirm-title="Xóa kỳ lương nháp" data-confirm-ok="Xóa kỳ lương" data-confirm-type="danger">
+                                                    <form asp-action="Delete" asp-route-id="@item.PayrollId" method="post" data-confirm="@string.Format(PayrollResource.Confirm_DeleteDraft, item.StartDate.ToString("dd/MM/yyyy"), item.EndDate.ToString("dd/MM/yyyy"))" data-confirm-title="@PayrollResource.Confirm_DeleteDraftTitle" data-confirm-ok="@PayrollResource.Confirm_DeleteDraftOk" data-confirm-type="danger">
                                                         @Html.AntiForgeryToken()
                                                         <button type="submit" class="dropdown-item text-danger">
-                                                            <i class="bi bi-trash me-2"></i>Xóa kỳ nháp
+                                                            <i class="bi bi-trash me-2"></i>@PayrollResource.Action_DeleteDraft
                                                         </button>
                                                     </form>
                                                 </li>
@@ -266,39 +268,39 @@
                 <form asp-action="Calculate" method="post" id="calculateForm">
                     @Html.AntiForgeryToken()
                     <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title"><i class="bi bi-calculator me-2"></i>Tính lương kỳ mới</h5>
+                        <h5 class="modal-title"><i class="bi bi-calculator me-2"></i>@PayrollResource.Index_CalculateNewButton</h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <p class="text-muted small mb-3">Hệ thống sẽ tổng hợp giờ làm việc thực tế trong khoảng ngày bạn chọn. Các kỳ lương phải <strong>nối tiếp liên tục</strong> để không bỏ sót ngày công.</p>
+                        <p class="text-muted small mb-3">@Html.Raw(PayrollResource.Calc_Intro)</p>
 
                         <div id="calcPeriodInfo" class="alert alert-info py-2 px-3 small mb-3 d-flex align-items-start">
                             <i class="bi bi-link-45deg fs-5 me-2"></i>
                             <div id="calcPeriodInfoText">
                                 @if (nextPeriod.IsStartLocked)
                                 {
-                                    <span>Kỳ gần nhất kết thúc ngày <strong>@nextPeriod.LastEndDate?.ToString("dd/MM/yyyy")</strong> → kỳ mới bắt buộc bắt đầu từ <strong>@nextPeriod.SuggestedStartDate.ToString("dd/MM/yyyy")</strong>.</span>
+                                    <span>@Html.Raw(string.Format(PayrollResource.Calc_LastPeriodInfo, nextPeriod.LastEndDate?.ToString("dd/MM/yyyy"), nextPeriod.SuggestedStartDate.ToString("dd/MM/yyyy")))</span>
                                 }
                                 else
                                 {
-                                    <span>Đây là kỳ lương đầu tiên, bạn có thể chọn ngày bắt đầu. Các kỳ sau sẽ tự động nối tiếp từ kỳ này.</span>
+                                    <span>@PayrollResource.Calc_FirstPeriodInfo</span>
                                 }
                             </div>
                         </div>
 
                         <div class="row g-3">
                             <div class="col-6">
-                                <label class="form-label fw-semibold">Từ ngày <span class="text-danger">*</span></label>
+                                <label class="form-label fw-semibold">@PayrollResource.Calc_FromDate <span class="text-danger">*</span></label>
                                 <input type="date" id="calcStartDate" name="startDate" class="form-control @(nextPeriod.IsStartLocked ? "bg-light" : "")"
                                        value="@nextPeriod.SuggestedStartDate.ToString("yyyy-MM-dd")"
                                        @(nextPeriod.IsStartLocked ? "readonly" : "") required />
                                 @if (nextPeriod.IsStartLocked)
                                 {
-                                    <div class="form-text"><i class="bi bi-lock-fill me-1"></i>Tự động nối tiếp kỳ trước</div>
+                                    <div class="form-text"><i class="bi bi-lock-fill me-1"></i>@PayrollResource.Calc_StartLockedHint</div>
                                 }
                             </div>
                             <div class="col-6">
-                                <label class="form-label fw-semibold">Đến ngày <span class="text-danger">*</span></label>
+                                <label class="form-label fw-semibold">@PayrollResource.Calc_ToDate <span class="text-danger">*</span></label>
                                 <input type="date" id="calcEndDate" name="endDate" class="form-control"
                                        value="@nextPeriod.SuggestedEndDate.ToString("yyyy-MM-dd")"
                                        max="@nextPeriod.MaxEndDate.ToString("yyyy-MM-dd")" required />
@@ -310,9 +312,9 @@
                         <div id="calcError" class="alert alert-danger py-2 px-3 small mt-3 mb-0 d-none"></div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@SharedResource.Button_Cancel</button>
                         <button type="submit" id="calcSubmitBtn" class="btn btn-primary">
-                            <i class="bi bi-play-circle me-1"></i>Bắt đầu tính lương
+                            <i class="bi bi-play-circle me-1"></i>@PayrollResource.Calc_SubmitButton
                         </button>
                     </div>
                 </form>
@@ -334,6 +336,19 @@
                     startLocked: @(nextPeriod.IsStartLocked ? "true" : "false"),
                     lastEnd: '@(nextPeriod.LastEndDate?.ToString("dd/MM/yyyy") ?? "")',
                     today: '@DateTime.Today.ToString("yyyy-MM-dd")'
+                };
+                var T = {
+                    selectBothDates: @Json.Serialize(PayrollResource.Err_SelectBothDates),
+                    latestEnd: @Json.Serialize(PayrollResource.Js_LatestEnd),
+                    alreadyCalculatedUntil: @Json.Serialize(PayrollResource.Js_AlreadyCalculatedUntil),
+                    endBeforeStart: @Json.Serialize(PayrollResource.Js_EndBeforeStart),
+                    endAfterToday: @Json.Serialize(PayrollResource.Js_EndAfterToday),
+                    maxOneMonth: @Json.Serialize(PayrollResource.Js_MaxOneMonth),
+                    summaryPeriodLabel: @Json.Serialize(PayrollResource.Js_SummaryPeriodLabel),
+                    days: @Json.Serialize(PayrollResource.Common_Days),
+                    nextPeriodStartsFrom: @Json.Serialize(PayrollResource.Js_NextPeriodStartsFrom),
+                    gapFillInfo: @Json.Serialize(PayrollResource.Js_GapFillInfo),
+                    calculating: @Json.Serialize(PayrollResource.Js_Calculating)
                 };
                 var infoHtml = document.getElementById('calcPeriodInfoText').innerHTML;
                 var isGapFill = false;
@@ -364,18 +379,18 @@
                     var s = parse(startEl.value), e = parse(endEl.value), today = parse(NEXT.today);
                     var errors = [];
                     if (!s || !e) {
-                        errors.push('Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc.');
+                        errors.push(T.selectBothDates);
                     } else {
                         var maxEnd = minDate(addMonthsMinusOneDay(s), today);
                         if (gapMaxEnd) maxEnd = minDate(maxEnd, gapMaxEnd);
                         endEl.min = iso(s);
                         endEl.max = iso(maxEnd);
-                        hintEl.textContent = 'Muộn nhất: ' + vn(maxEnd);
+                        hintEl.textContent = T.latestEnd.replace('{0}', vn(maxEnd));
 
-                        if (s > today) errors.push('Đã tính lương đến hết ngày ' + NEXT.lastEnd + '. Kỳ tiếp theo chỉ có thể tạo từ ngày ' + vn(s) + ' trở đi.');
-                        else if (e < s) errors.push('Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu (' + vn(s) + ').');
-                        else if (e > today) errors.push('Ngày kết thúc không được vượt quá hôm nay (' + vn(today) + ').');
-                        else if (e > maxEnd) errors.push('Một kỳ lương tối đa 1 tháng. Ngày kết thúc muộn nhất là ' + vn(maxEnd) + '.');
+                        if (s > today) errors.push(T.alreadyCalculatedUntil.replace('{0}', NEXT.lastEnd).replace('{1}', vn(s)));
+                        else if (e < s) errors.push(T.endBeforeStart.replace('{0}', vn(s)));
+                        else if (e > today) errors.push(T.endAfterToday.replace('{0}', vn(today)));
+                        else if (e > maxEnd) errors.push(T.maxOneMonth.replace('{0}', vn(maxEnd)));
                     }
 
                     if (errors.length) {
@@ -394,8 +409,8 @@
                     var next = new Date(e); next.setDate(next.getDate() + 1);
                     summaryEl.innerHTML =
                         '<div class="d-flex flex-wrap gap-3 text-secondary">' +
-                        '<span><i class="bi bi-calendar-range me-1"></i>Kỳ lương: <strong class="text-dark">' + days + ' ngày</strong></span>' +
-                        (isGapFill ? '' : '<span><i class="bi bi-arrow-right-circle me-1"></i>Kỳ sau sẽ bắt đầu từ <strong class="text-dark">' + vn(next) + '</strong></span>') +
+                        '<span><i class="bi bi-calendar-range me-1"></i>' + T.summaryPeriodLabel + ' <strong class="text-dark">' + T.days.replace('{0}', days) + '</strong></span>' +
+                        (isGapFill ? '' : '<span><i class="bi bi-arrow-right-circle me-1"></i>' + T.nextPeriodStartsFrom + ' <strong class="text-dark">' + vn(next) + '</strong></span>') +
                         '</div>';
                     return true;
                 }
@@ -412,8 +427,7 @@
 
                     var infoText = document.getElementById('calcPeriodInfoText');
                     if (isGapFill) {
-                        infoText.innerHTML = 'Tính bù khoảng ngày bị hổng, bắt đầu từ <strong>' + vn(parse(start)) + '</strong>. ' +
-                            'Nếu khoảng trống dài hơn 1 tháng, hãy tính bù nhiều lần.';
+                        infoText.innerHTML = T.gapFillInfo.replace('{0}', vn(parse(start)));
                     } else {
                         infoText.innerHTML = infoHtml;
                     }
@@ -436,7 +450,7 @@
                         return;
                     }
                     submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang tính lương...';
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>' + T.calculating;
                 });
             })();
         </script>

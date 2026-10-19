@@ -1,8 +1,11 @@
 @using RWPM.Common.Enums
+@using RWPM.Models.ViewModels.Payroll
+@using PayrollResource = RWPM.Resources.Shared.PayrollResource
 @model RWPM.Models.ViewModels.Payroll.EmployeePayslipVM
 
 @{
-    ViewData["Title"] = $"Chi tiết chấm công & lương: {Model.Detail.EmployeeName}";
+    ViewData["Title"] = string.Format(PayrollResource.Emp_PageTitle, Model.Detail.EmployeeName);
+    var payrollTitle = PayrollDisplayText.Title(Model.Payroll.Title);
     bool isAdminOrHR = ViewBag.IsAdminOrHR ?? false;
     bool hasSnapshots = Model.ItemSnapshots != null && Model.ItemSnapshots.Count > 0;
     double totalPayableHours = Model.Detail.TotalWorkHours + Model.Detail.PaidLeaveHours;
@@ -12,8 +15,8 @@
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-3">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none">Quản lý Bảng lương</a></li>
-            <li class="breadcrumb-item"><a asp-action="Detail" asp-route-id="@Model.Payroll.PayrollId" class="text-decoration-none">@Model.Payroll.Title</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none">@PayrollResource.Payroll_Title</a></li>
+            <li class="breadcrumb-item"><a asp-action="Detail" asp-route-id="@Model.Payroll.PayrollId" class="text-decoration-none">@payrollTitle</a></li>
             <li class="breadcrumb-item active" aria-current="page">@Model.Detail.EmployeeName</li>
         </ol>
     </nav>
@@ -22,24 +25,24 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="h3 font-weight-bold mb-1 text-dark">
-                Chi tiết Bảng lương: @Model.Detail.EmployeeName
+                @string.Format(PayrollResource.Emp_Heading, Model.Detail.EmployeeName)
             </h2>
             <p class="text-muted mb-0">
-                Mã NV: <strong>@Model.Detail.EmployeeCode</strong> | 
-                Chi nhánh: <strong>@Model.Detail.StoreName</strong> | 
-                Hình thức: <span class="badge bg-light text-secondary border">@Model.Detail.EmploymentType</span> | 
-                Kỳ: <strong>@Model.Payroll.Title</strong>
+                @PayrollResource.Label_EmployeeCode <strong>@Model.Detail.EmployeeCode</strong> | 
+                @PayrollResource.Label_Store <strong>@PayrollDisplayText.StoreName(Model.Detail.StoreName)</strong> | 
+                @PayrollResource.Label_EmploymentType <span class="badge bg-light text-secondary border">@UIHelper.GetDisplayName(Model.Detail.EmploymentType)</span> | 
+                @PayrollResource.Label_Period <strong>@payrollTitle</strong>
                 @if (Model.Payroll.Status == PayrollStatus.Locked)
                 {
                     <span class="badge bg-success-subtle text-success border border-success-subtle ms-2">
-                        <i class="bi bi-shield-check me-1"></i>Dữ liệu đã khóa (Bất biến)
+                        <i class="bi bi-shield-check me-1"></i>@PayrollResource.Emp_LockedBadge
                     </span>
                 }
             </p>
         </div>
         <div>
             <a asp-action="Detail" asp-route-id="@Model.Payroll.PayrollId" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-arrow-left me-1"></i>Quay lại bảng lương
+                <i class="bi bi-arrow-left me-1"></i>@PayrollResource.Emp_BackToPayroll
             </a>
         </div>
     </div>
@@ -49,74 +52,74 @@
         <div class="col-12 col-sm-6 col-xl">
             <div class="card border-0 shadow-sm rounded-3 h-100">
                 <div class="card-body">
-                    <span class="text-muted text-uppercase fw-semibold small">Mức lương / Giờ</span>
+                    <span class="text-muted text-uppercase fw-semibold small">@PayrollResource.Emp_CardRate</span>
                     <h4 class="fw-bold mb-0 mt-1 text-primary">
-                        @(Model.Detail.HourlyRate > 0 ? Model.Detail.HourlyRate.ToString("#,##0") + " đ" : "Chưa có đơn giá")
+                        @(Model.Detail.HourlyRate > 0 ? Model.Detail.HourlyRate.ToString("#,##0") + " " + PayrollResource.Unit_Dong : PayrollResource.Emp_NoRate)
                     </h4>
-                    <small class="text-muted">Đơn giá giờ làm cố định</small>
+                    <small class="text-muted">@PayrollResource.Emp_FixedRate</small>
                 </div>
             </div>
         </div>
         <div class="col-12 col-sm-6 col-xl">
             <div class="card border-0 shadow-sm rounded-3 h-100">
                 <div class="card-body">
-                    <span class="text-muted text-uppercase fw-semibold small">Giờ làm thực tế</span>
+                    <span class="text-muted text-uppercase fw-semibold small">@PayrollResource.Card_ActualHours</span>
                     <h4 class="fw-bold mb-0 mt-1 text-dark">
-                        @Model.Detail.TotalWorkHours.ToString("#,##0.00") <small class="fs-6">giờ</small>
+                        @Model.Detail.TotalWorkHours.ToString("#,##0.00") <small class="fs-6">@PayrollResource.Unit_Hours</small>
                     </h4>
-                    <small class="text-muted">Lịch phân ca: @Model.Detail.TotalStandardHours.ToString("#,##0.00") h</small>
+                    <small class="text-muted">@string.Format(PayrollResource.Card_ScheduledHours, Model.Detail.TotalStandardHours.ToString("#,##0.00"))</small>
                 </div>
             </div>
         </div>
         <div class="col-12 col-sm-6 col-xl">
             <div class="card border-0 shadow-sm rounded-3 h-100 border-start border-4 border-info">
                 <div class="card-body">
-                    <span class="text-muted text-uppercase fw-semibold small">Nghỉ phép hưởng lương</span>
+                    <span class="text-muted text-uppercase fw-semibold small">@PayrollResource.Card_PaidLeave</span>
                     <h4 class="fw-bold mb-0 mt-1 text-info">
-                        @Model.Detail.PaidLeaveHours.ToString("#,##0.00") <small class="fs-6">giờ</small>
+                        @Model.Detail.PaidLeaveHours.ToString("#,##0.00") <small class="fs-6">@PayrollResource.Unit_Hours</small>
                     </h4>
-                    <small class="text-muted">Đã duyệt: @Model.Detail.ApprovedLeaveDays ngày (@(Model.Detail.UnpaidLeaveDays > 0 ? $"{Model.Detail.UnpaidLeaveDays} ngày K.Lương" : "0 ngày K.Lương"))</small>
+                    <small class="text-muted">@string.Format(PayrollResource.Emp_ApprovedLeave, Model.Detail.ApprovedLeaveDays, Model.Detail.UnpaidLeaveDays)</small>
                 </div>
             </div>
         </div>
         <div class="col-12 col-sm-6 col-xl">
             <div class="card border-0 shadow-sm rounded-3 h-100 border-start border-4 border-success">
                 <div class="card-body">
-                    <span class="text-muted text-uppercase fw-semibold small">Tổng tiền lương kỳ</span>
+                    <span class="text-muted text-uppercase fw-semibold small">@PayrollResource.Emp_CardTotalSalaryPeriod</span>
                     <h4 class="fw-bold mb-0 mt-1 text-success">
-                        @Model.Detail.TotalSalary.ToString("#,##0") <small class="fs-6">VNĐ</small>
+                        @Model.Detail.TotalSalary.ToString("#,##0") <small class="fs-6">@PayrollResource.Unit_Vnd</small>
                     </h4>
-                    <small class="text-muted">@totalPayableHours.ToString("#,##0.00") h tính lương × @Model.Detail.HourlyRate.ToString("#,##0") đ</small>
+                    <small class="text-muted">@string.Format(PayrollResource.Emp_SalaryFormula, totalPayableHours.ToString("#,##0.00"), Model.Detail.HourlyRate.ToString("#,##0"))</small>
                 </div>
             </div>
         </div>
         <div class="col-12 col-sm-6 col-xl">
             <div class="card border-0 shadow-sm rounded-3 h-100">
                 <div class="card-body">
-                    <span class="text-muted text-uppercase fw-semibold small">Trạng thái dữ liệu</span>
+                    <span class="text-muted text-uppercase fw-semibold small">@PayrollResource.Emp_CardDataStatus</span>
                     <div class="mt-2">
                         @switch (Model.Detail.Status)
                         {
                             case PayrollDetailStatus.Valid:
                                 <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
-                                    <i class="bi bi-check-circle me-1"></i>Hợp lệ
+                                    <i class="bi bi-check-circle me-1"></i>@PayrollResource.DetailStatus_Valid
                                 </span>
                                 break;
                             case PayrollDetailStatus.MissingRate:
                                 <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
-                                    <i class="bi bi-exclamation-circle me-1"></i>Chưa có HourlyRate
+                                    <i class="bi bi-exclamation-circle me-1"></i>@PayrollResource.DetailStatus_NoHourlyRate
                                 </span>
                                 break;
                             case PayrollDetailStatus.HasWarnings:
                                 <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1">
-                                    <i class="bi bi-exclamation-triangle me-1"></i>Có ca thiếu dữ liệu
+                                    <i class="bi bi-exclamation-triangle me-1"></i>@PayrollResource.DetailStatus_HasMissingData
                                 </span>
                                 break;
                         }
                     </div>
                     @if (!string.IsNullOrEmpty(Model.Detail.WarningNotes))
                     {
-                        <small class="text-danger d-block mt-1">@Model.Detail.WarningNotes</small>
+                        <small class="text-danger d-block mt-1">@PayrollDisplayText.WarningNotes(Model.Detail.WarningNotes)</small>
                     }
                 </div>
             </div>
@@ -127,12 +130,12 @@
     <div class="card border-0 shadow-sm rounded-3 mb-4">
         <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0 fw-bold text-dark">
-                <i class="bi bi-clock-history me-2 text-primary"></i>Chi tiết ca & ngày công trong kỳ (@(hasSnapshots ? Model.ItemSnapshots.Count : Model.AttendanceRecords.Count) mục)
+                <i class="bi bi-clock-history me-2 text-primary"></i>@string.Format(PayrollResource.Emp_DailyTitle, hasSnapshots ? Model.ItemSnapshots.Count : Model.AttendanceRecords.Count)
             </h5>
             @if (hasSnapshots)
             {
                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
-                    <i class="bi bi-camera me-1"></i>Dữ liệu Snapshot lưu vết
+                    <i class="bi bi-camera me-1"></i>@PayrollResource.Emp_SnapshotBadge
                 </span>
             }
         </div>
@@ -140,16 +143,16 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th class="ps-4">Ngày làm</th>
-                        <th>Ca làm việc</th>
-                        <th>Khung giờ ca</th>
-                        <th>Giờ vào</th>
-                        <th>Giờ ra</th>
-                        <th class="text-end">Giờ làm thực tế</th>
-                        <th class="text-end">Giờ nghỉ phép</th>
-                        <th class="text-end">Giờ tính lương</th>
-                        <th class="text-center">Loại nguồn</th>
-                        <th class="text-center pe-4">Trạng thái</th>
+                        <th class="ps-4">@PayrollResource.Col_WorkDate</th>
+                        <th>@PayrollResource.Col_Shift</th>
+                        <th>@PayrollResource.Col_ShiftTime</th>
+                        <th>@PayrollResource.Col_CheckIn</th>
+                        <th>@PayrollResource.Col_CheckOut</th>
+                        <th class="text-end">@PayrollResource.Card_ActualHours</th>
+                        <th class="text-end">@PayrollResource.Col_PaidLeaveHours</th>
+                        <th class="text-end">@PayrollResource.Col_PayableHoursShort</th>
+                        <th class="text-center">@PayrollResource.Col_SourceType</th>
+                        <th class="text-center pe-4">@PayrollResource.Col_Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -159,7 +162,7 @@
                         {
                             <tr>
                                 <td class="ps-4 fw-semibold">@item.Date.ToString("dd/MM/yyyy") (@item.Date.ToString("ddd"))</td>
-                                <td>@(item.ShiftName ?? "Không xác định")</td>
+                                <td>@(item.ShiftName != null ? PayrollDisplayText.ShiftName(item.ShiftName) : PayrollResource.Shift_Unknown)</td>
                                 <td class="text-muted small">
                                     @if (item.StartTime.HasValue && item.EndTime.HasValue)
                                     {
@@ -177,15 +180,15 @@
                                     }
                                     else if (item.SourceType == "PaidLeave")
                                     {
-                                        <span class="text-info small">Nghỉ phép</span>
+                                        <span class="text-info small">@PayrollResource.Cell_PaidLeave</span>
                                     }
                                     else if (item.SourceType == "UnpaidLeave")
                                     {
-                                        <span class="text-muted small">Nghỉ K.Lương</span>
+                                        <span class="text-muted small">@PayrollResource.Col_UnpaidLeave</span>
                                     }
                                     else
                                     {
-                                        <span class="text-danger fw-bold">Thiếu</span>
+                                        <span class="text-danger fw-bold">@PayrollResource.Cell_Missing</span>
                                     }
                                 </td>
                                 <td>
@@ -195,15 +198,15 @@
                                     }
                                     else if (item.SourceType == "PaidLeave")
                                     {
-                                        <span class="text-info small">Nghỉ phép</span>
+                                        <span class="text-info small">@PayrollResource.Cell_PaidLeave</span>
                                     }
                                     else if (item.SourceType == "UnpaidLeave")
                                     {
-                                        <span class="text-muted small">Nghỉ K.Lương</span>
+                                        <span class="text-muted small">@PayrollResource.Col_UnpaidLeave</span>
                                     }
                                     else
                                     {
-                                        <span class="text-danger fw-bold">Thiếu</span>
+                                        <span class="text-danger fw-bold">@PayrollResource.Cell_Missing</span>
                                     }
                                 </td>
                                 <td class="text-end">
@@ -240,16 +243,16 @@
                                     @switch (item.SourceType)
                                     {
                                         case "Attendance":
-                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Chấm công</span>
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">@PayrollResource.Source_Attendance</span>
                                             break;
                                         case "PaidLeave":
-                                            <span class="badge bg-info-subtle text-info border border-info-subtle">Phép có lương</span>
+                                            <span class="badge bg-info-subtle text-info border border-info-subtle">@PayrollResource.Source_PaidLeave</span>
                                             break;
                                         case "UnpaidLeave":
-                                            <span class="badge bg-secondary-subtle text-secondary border">Phép không lương</span>
+                                            <span class="badge bg-secondary-subtle text-secondary border">@PayrollResource.Source_UnpaidLeave</span>
                                             break;
                                         case "MissingAttendance":
-                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Thiếu chấm công</span>
+                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">@PayrollResource.Source_MissingAttendance</span>
                                             break;
                                         default:
                                             <span class="badge bg-light text-dark">@item.SourceType</span>
@@ -257,17 +260,17 @@
                                     }
                                 </td>
                                 <td class="text-center pe-4">
-                                    @if (item.Status == "Hợp lệ" || item.Status == "Nghỉ phép hưởng lương")
+                                    @if (item.Status == PayrollDisplayText.SnapValid || item.Status == PayrollDisplayText.SnapPaidLeave)
                                     {
-                                        <span class="badge bg-success-subtle text-success">@item.Status</span>
+                                        <span class="badge bg-success-subtle text-success">@PayrollDisplayText.SnapshotStatus(item.Status)</span>
                                     }
-                                    else if (item.Status == "Nghỉ không lương")
+                                    else if (item.Status == PayrollDisplayText.SnapUnpaidLeave)
                                     {
-                                        <span class="badge bg-secondary-subtle text-secondary">@item.Status</span>
+                                        <span class="badge bg-secondary-subtle text-secondary">@PayrollDisplayText.SnapshotStatus(item.Status)</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-danger-subtle text-danger" title="@item.Note">@item.Status</span>
+                                        <span class="badge bg-danger-subtle text-danger" title="@PayrollDisplayText.SnapshotNote(item.Note)">@PayrollDisplayText.SnapshotStatus(item.Status)</span>
                                     }
                                 </td>
                             </tr>
@@ -279,7 +282,7 @@
                         {
                             <tr>
                                 <td class="ps-4 fw-semibold">@ar.Date.ToString("dd/MM/yyyy") (@ar.Date.ToString("ddd"))</td>
-                                <td>@(ar.Shift?.ShiftName ?? "Không xác định")</td>
+                                <td>@(ar.Shift?.ShiftName ?? PayrollResource.Shift_Unknown)</td>
                                 <td class="text-muted small">
                                     @if (ar.Shift != null)
                                     {
@@ -297,7 +300,7 @@
                                     }
                                     else
                                     {
-                                        <span class="text-danger fw-bold">Thiếu</span>
+                                        <span class="text-danger fw-bold">@PayrollResource.Cell_Missing</span>
                                     }
                                 </td>
                                 <td>
@@ -307,7 +310,7 @@
                                     }
                                     else
                                     {
-                                        <span class="text-danger fw-bold">Thiếu</span>
+                                        <span class="text-danger fw-bold">@PayrollResource.Cell_Missing</span>
                                     }
                                 </td>
                                 <td class="text-end fw-bold text-dark">
@@ -325,16 +328,16 @@
                                     }
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge bg-primary-subtle text-primary">Chấm công</span>
+                                    <span class="badge bg-primary-subtle text-primary">@PayrollResource.Source_Attendance</span>
                                 </td>
                                 <td class="text-center pe-4">
                                     @if (ar.WorkHours.HasValue)
                                     {
-                                        <span class="badge bg-success-subtle text-success">Hợp lệ</span>
+                                        <span class="badge bg-success-subtle text-success">@PayrollResource.DetailStatus_Valid</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-danger-subtle text-danger">Bất thường</span>
+                                        <span class="badge bg-danger-subtle text-danger">@PayrollResource.Status_Abnormal</span>
                                     }
                                 </td>
                             </tr>
@@ -344,7 +347,7 @@
                     {
                         <tr>
                             <td colspan="10" class="text-center py-4 text-muted">
-                                Không có bản ghi chấm công nào trong kỳ này.
+                                @PayrollResource.Emp_NoAttendanceInPeriod
                             </td>
                         </tr>
                     }
@@ -359,18 +362,18 @@
         <div class="card border-0 shadow-sm rounded-3">
             <div class="card-header bg-white py-3 border-bottom">
                 <h5 class="card-title mb-0 fw-bold text-dark">
-                    <i class="bi bi-calendar-check me-2 text-info"></i>Đơn nghỉ phép đã duyệt trong kỳ (@Model.LeaveRequests.Count đơn)
+                    <i class="bi bi-calendar-check me-2 text-info"></i>@string.Format(PayrollResource.Emp_LeaveTitle, Model.LeaveRequests.Count)
                 </h5>
             </div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-4">Từ ngày</th>
-                            <th>Đến ngày</th>
-                            <th>Loại nghỉ</th>
-                            <th>Lý do</th>
-                            <th class="text-center">Trạng thái</th>
+                            <th class="ps-4">@PayrollResource.Calc_FromDate</th>
+                            <th>@PayrollResource.Calc_ToDate</th>
+                            <th>@PayrollResource.Col_LeaveType</th>
+                            <th>@PayrollResource.Col_Reason</th>
+                            <th class="text-center">@PayrollResource.Col_Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -382,16 +385,16 @@
                                 <td>
                                     @if (l.LeaveType == LeaveType.Paid)
                                     {
-                                        <span class="badge bg-info-subtle text-info border border-info-subtle">Nghỉ phép hưởng lương</span>
+                                        <span class="badge bg-info-subtle text-info border border-info-subtle">@PayrollResource.Card_PaidLeave</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-secondary-subtle text-secondary border">Nghỉ không lương</span>
+                                        <span class="badge bg-secondary-subtle text-secondary border">@PayrollResource.Snap_UnpaidLeave</span>
                                     }
                                 </td>
                                 <td>@l.Reason</td>
                                 <td class="text-center">
-                                    <span class="badge bg-success-subtle text-success">Đã phê duyệt</span>
+                                    <span class="badge bg-success-subtle text-success">@PayrollResource.Leave_Approved</span>
                                 </td>
                             </tr>
                         }

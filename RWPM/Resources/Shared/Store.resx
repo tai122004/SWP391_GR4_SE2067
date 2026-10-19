@@ -288,4 +288,16 @@
   <data name="AttTable_Empty" xml:space="preserve">
     <value>No attendance records at this branch today.</value>
   </data>
+  <data name="Err_CheckInput" xml:space="preserve">
+    <value>Please check the entered information: {0}</value>
+  </data>
+  <data name="Search_DefaultLocationSuffix" xml:space="preserve">
+    <value>{0} (Default location)</value>
+  </data>
+  <data name="Search_DefaultFallbackName" xml:space="preserve">
+    <value>Hanoi, Vietnam</value>
+  </data>
+  <data name="Delete_WarningLabel" xml:space="preserve">
+    <value>Warning:</value>
+  </data>
 </root>

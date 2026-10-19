@@ -3,6 +3,7 @@ using RWPM.Common.Enums;
 using RWPM.Infrastructure.Data;
 using RWPM.Models.Entities;
 using RWPM.Services.Abstraction;
+using SR = RWPM.Resources.Shared.ShiftRegistrationResource;
 
 namespace RWPM.Services
 {
@@ -66,7 +67,7 @@ namespace RWPM.Services
         {
             if (entity.WorkDate.Date < DateTime.Today)
             {
-                throw new Exception("Không thể đăng ký ca cho những ngày trong quá khứ.");
+                throw new Exception(SR.Err_PastDateRegistration);
             }
 
             await ValidateScheduleConstraintsAsync(entity.EmployeeId, new List<ShiftRegistration> { entity });
@@ -78,7 +79,7 @@ namespace RWPM.Services
 
             if (exists)
             {
-                throw new Exception("This shift is already registered for this employee on the selected date.");
+                throw new Exception(SR.Err_AlreadyRegistered);
             }
 
             _context.ShiftRegistration.Add(entity);
@@ -92,7 +93,7 @@ namespace RWPM.Services
 
             if (entities.Any(e => e.WorkDate.Date < DateTime.Today))
             {
-                throw new Exception("Không thể đăng ký ca cho những ngày trong quá khứ.");
+                throw new Exception(SR.Err_PastDateRegistration);
             }
 
             var employeeId = entities.First().EmployeeId;
@@ -108,7 +109,7 @@ namespace RWPM.Services
                 if (exists)
                 {
                     var shift = await _context.Shift.FindAsync(entity.ShiftId);
-                    throw new Exception($"Ca làm việc {shift?.ShiftName} đã được đăng ký cho ngày {entity.WorkDate:dd/MM/yyyy}.");
+                    throw new Exception(string.Format(SR.Err_ShiftAlreadyRegisteredOnDate, shift?.ShiftName, entity.WorkDate.ToString("dd/MM/yyyy")));
                 }
 
                 _context.ShiftRegistration.Add(entity);
@@ -130,7 +131,7 @@ namespace RWPM.Services
 
             if (exists)
             {
-                throw new Exception("This shift is already registered for this employee on the selected date.");
+                throw new Exception(SR.Err_AlreadyRegistered);
             }
 
             _context.ShiftRegistration.Update(entity);
@@ -350,14 +351,14 @@ namespace RWPM.Services
                 var leave = approvedLeaves.FirstOrDefault(l => p.WorkDate.Date >= l.StartDate.Date && p.WorkDate.Date <= l.EndDate.Date);
                 if (leave != null)
                 {
-                    string leaveTypeStr = leave.LeaveType == LeaveType.Paid ? "nghỉ có phép" : "nghỉ không phép";
-                    throw new Exception($"Nhân viên đã được phê duyệt {leaveTypeStr} vào ngày {p.WorkDate:dd/MM/yyyy} (Đơn nghỉ #{leave.LeaveRequestId}). Không thể xếp ca vào ngày này.");
+                    string leaveTypeStr = leave.LeaveType == LeaveType.Paid ? SR.Leave_Paid : SR.Leave_Unpaid;
+                    throw new Exception(string.Format(SR.Err_OnApprovedLeave, leaveTypeStr, p.WorkDate.ToString("dd/MM/yyyy"), leave.LeaveRequestId));
                 }
 
                 var shift = shifts.FirstOrDefault(s => s.ShiftId == p.ShiftId);
                 if (shift == null || !shift.IsAvailableOn(p.WorkDate)
                     || !await _context.StoreShift.AnyAsync(x => x.ShiftId == p.ShiftId && x.StoreId == p.StoreId && x.IsActive && x.Store.IsActive))
-                    throw new Exception("Ca không hoạt động, hết hiệu lực hoặc chưa được áp dụng tại chi nhánh.");
+                    throw new Exception(SR.Err_ShiftNotAvailable);
                 p.Shift = shift;
                 combinedSchedule.Add(p);
             }
@@ -385,7 +386,7 @@ namespace RWPM.Services
                     // 1. Chống trùng ca
                     if (currentStart < nextEnd && nextStart < currentEnd)
                     {
-                        throw new Exception($"Trùng ca làm việc: {current.Shift.ShiftName} ({current.WorkDate:dd/MM/yyyy}) và {next.Shift.ShiftName} ({next.WorkDate:dd/MM/yyyy}).");
+                        throw new Exception(string.Format(SR.Err_ShiftOverlap, current.Shift.ShiftName, current.WorkDate.ToString("dd/MM/yyyy"), next.Shift.ShiftName, next.WorkDate.ToString("dd/MM/yyyy")));
                     }
                 }
             }

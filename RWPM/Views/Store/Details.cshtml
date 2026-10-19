@@ -285,7 +285,7 @@
                                         <td>@(emp.Account?.Email ?? "-")</td>
                                         <td>@(emp.Account?.PhoneNumber ?? "-")</td>
                                         <td>
-                                            <span class="badge bg-light text-dark border">@emp.EmploymentType</span>
+                                            <span class="badge bg-light text-dark border">@RWPM.Common.UIHelper.GetDisplayName(emp.EmploymentType)</span>
                                         </td>
                                         <td>
                                             @if (emp.IsActive)

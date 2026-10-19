@@ -165,4 +165,19 @@
   <data name="Attendance" xml:space="preserve">
     <value>Chấm công</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Tổng quan</value>
+  </data>
+  <data name="Payroll" xml:space="preserve">
+    <value>Bảng lương</value>
+  </data>
+  <data name="MyPayslips" xml:space="preserve">
+    <value>Phiếu lương</value>
+  </data>
+  <data name="BrandCaption" xml:space="preserve">
+    <value>QUẢN LÝ NHÂN LỰC</value>
+  </data>
+  <data name="MainNavigation" xml:space="preserve">
+    <value>Điều hướng chính</value>
+  </data>
 </root>

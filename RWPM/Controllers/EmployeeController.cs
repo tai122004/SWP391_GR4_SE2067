@@ -9,6 +9,8 @@ using RWPM.Common.Helper;
 using RWPM.Infrastructure.Data;
 using RWPM.Models.ViewModels.Employee;
 using RWPM.Services.Abstraction;
+using AccRes = RWPM.Resources.Shared.Acc;
+using EmpRes = RWPM.Resources.Shared.Employee;
 
 namespace RWPM.Controllers
 {
@@ -93,13 +95,13 @@ namespace RWPM.Controllers
         {
             if (file == null || file.Length == 0)
             {
-                AlertHelper.AddErrorMessage(TempData, "Vui lòng chọn một file Excel (.xlsx) hợp lệ.");
+                AlertHelper.AddErrorMessage(TempData, EmpRes.Import_InvalidFile);
                 return RedirectToAction(nameof(Index));
             }
 
             if (!Path.GetExtension(file.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
             {
-                AlertHelper.AddErrorMessage(TempData, "Hệ thống chỉ hỗ trợ file định dạng Excel (.xlsx).");
+                AlertHelper.AddErrorMessage(TempData, EmpRes.Import_OnlyXlsx);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -110,20 +112,20 @@ namespace RWPM.Controllers
 
                 if (result.SuccessCount > 0 && result.FailureCount == 0)
                 {
-                    AlertHelper.AddSuccessMessage(TempData, $"Nhập thành công {result.SuccessCount}/{result.TotalRows} nhân viên từ file Excel!");
+                    AlertHelper.AddSuccessMessage(TempData, string.Format(EmpRes.Import_SuccessAll, result.SuccessCount, result.TotalRows));
                 }
                 else if (result.SuccessCount > 0 && result.FailureCount > 0)
                 {
-                    AlertHelper.AddWarningMessage(TempData, $"Nhập thành công {result.SuccessCount} nhân viên. Bỏ qua {result.FailureCount} dòng lỗi. Chi tiết: {string.Join(" | ", result.ErrorMessages.Take(3))}");
+                    AlertHelper.AddWarningMessage(TempData, string.Format(EmpRes.Import_SuccessPartial, result.SuccessCount, result.FailureCount, string.Join(" | ", result.ErrorMessages.Take(3))));
                 }
                 else
                 {
-                    AlertHelper.AddErrorMessage(TempData, $"Nhập thất bại. {string.Join(" | ", result.ErrorMessages.Take(5))}");
+                    AlertHelper.AddErrorMessage(TempData, string.Format(EmpRes.Import_Failed, string.Join(" | ", result.ErrorMessages.Take(5))));
                 }
             }
             catch (Exception ex)
             {
-                AlertHelper.AddErrorMessage(TempData, $"Lỗi khi xử lý file Excel: {ex.Message}");
+                AlertHelper.AddErrorMessage(TempData, string.Format(EmpRes.Import_ProcessError, ex.Message));
             }
 
             return RedirectToAction(nameof(Index));
@@ -137,12 +139,12 @@ namespace RWPM.Controllers
         {
             if (file == null || file.Length == 0)
             {
-                return Json(new { success = false, message = "Vui lòng chọn một file Excel (.xlsx) hợp lệ." });
+                return Json(new { success = false, message = EmpRes.Import_InvalidFile });
             }
 
             if (!Path.GetExtension(file.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
             {
-                return Json(new { success = false, message = "Hệ thống chỉ hỗ trợ file định dạng Excel (.xlsx)." });
+                return Json(new { success = false, message = EmpRes.Import_OnlyXlsx });
             }
 
             try
@@ -165,13 +167,13 @@ namespace RWPM.Controllers
         {
             if (string.IsNullOrWhiteSpace(request?.ImportToken))
             {
-                return Json(new { success = false, message = "Mã phiên nhập không hợp lệ hoặc đã hết hạn." });
+                return Json(new { success = false, message = EmpRes.Import_InvalidSession });
             }
 
             try
             {
                 var count = await _employeeService.ConfirmImportAsync(request.ImportToken, User.Identity?.Name ?? "system");
-                return Json(new { success = true, count = count, message = $"Nhập thành công {count} nhân viên vào hệ thống!" });
+                return Json(new { success = true, count = count, message = string.Format(EmpRes.Import_ConfirmSuccess, count) });
             }
             catch (Exception ex)
             {
@@ -266,7 +268,7 @@ namespace RWPM.Controllers
                 var phoneExists = await _context.Acc.AnyAsync(a => a.Username != viewModel.Username && a.PhoneNumber == trimmedPhone);
                 if (phoneExists)
                 {
-                    ModelState.AddModelError(nameof(viewModel.PhoneNumber), $"Số điện thoại '{viewModel.PhoneNumber}' đã được sử dụng bởi một tài khoản khác.");
+                    ModelState.AddModelError(nameof(viewModel.PhoneNumber), string.Format(AccRes.Err_PhoneInUse, viewModel.PhoneNumber));
                 }
             }
 
@@ -322,7 +324,7 @@ namespace RWPM.Controllers
             {
                 var targetDate = resignDate ?? DateTime.Today;
                 await _employeeService.ResignAsync(employeeId, targetDate, resignReason);
-                AlertHelper.AddSuccessMessage(TempData, "Đã ghi nhận thôi việc cho nhân viên thành công.");
+                AlertHelper.AddSuccessMessage(TempData, EmpRes.Resign_Success);
             }
             catch (Exception ex)
             {

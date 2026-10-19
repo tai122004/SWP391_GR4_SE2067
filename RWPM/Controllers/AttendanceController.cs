@@ -123,18 +123,18 @@ namespace RWPM.Controllers
                         empListQuery = empListQuery.Where(e => e.StoreId == currentEmployee.StoreId);
 
                         var store = await _context.Store.FirstOrDefaultAsync(s => s.StoreId == currentEmployee.StoreId);
-                        ViewBag.ScopeTitle = store != null ? $"Chi nhánh {store.StoreName}" : "Cửa hàng của bạn";
+                        ViewBag.ScopeTitle = store != null ? string.Format(SharedResource.Attendance_Scope_Branch, store.StoreName) : SharedResource.Attendance_Scope_YourStore;
                     }
                     else
                     {
                         empQuery = empQuery.Where(x => false);
                         empListQuery = empListQuery.Where(e => false);
-                        ViewBag.ScopeTitle = "Cửa hàng của bạn";
+                        ViewBag.ScopeTitle = SharedResource.Attendance_Scope_YourStore;
                     }
                 }
                 else
                 {
-                    ViewBag.ScopeTitle = "Toàn công ty";
+                    ViewBag.ScopeTitle = SharedResource.Attendance_Scope_Company;
                 }
 
                 if (!string.IsNullOrWhiteSpace(searchQuery))
@@ -253,11 +253,11 @@ namespace RWPM.Controllers
                 var username = User.Identity?.Name ?? "System";
                 if (string.IsNullOrWhiteSpace(reason))
                 {
-                    throw new Exception("Lý do điều chỉnh không được để trống!");
+                    throw new Exception(SharedResource.Attendance_Err_AdjustReasonRequired);
                 }
 
                 await _attendanceService.AdjustAttendanceAsync(recordId, newCheckInTime, newCheckOutTime, reason, username);
-                TempData["SuccessMessage"] = "Điều chỉnh chấm công thành công!";
+                TempData["SuccessMessage"] = SharedResource.Attendance_AdjustSuccess;
             }
             catch (Exception ex)
             {

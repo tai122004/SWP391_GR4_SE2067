@@ -85,13 +85,13 @@
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label" asp-for="OpeningTime">@StoreModelResource.OpeningTime @StoreSharedResource.Label_OpeningTimeExample</label>
-                    <input class="form-control" asp-for="OpeningTime" type="time" />
+                    <input class="form-control" asp-for="OpeningTime" type="time" data-time-suggestions="06:00,06:30,07:00,07:30,08:00,08:30,09:00" />
                     <small class="text-muted">@StoreSharedResource.Help_OpeningTime</small>
                     <span asp-validation-for="OpeningTime" class="text-danger"></span>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label" asp-for="ClosingTime">@StoreModelResource.ClosingTime @StoreSharedResource.Label_ClosingTimeExample</label>
-                    <input class="form-control" asp-for="ClosingTime" type="time" />
+                    <input class="form-control" asp-for="ClosingTime" type="time" data-time-suggestions="20:00,21:00,21:30,22:00,22:30,23:00" />
                     <small class="text-muted">@StoreSharedResource.Help_ClosingTime</small>
                     <span asp-validation-for="ClosingTime" class="text-danger"></span>
                 </div>

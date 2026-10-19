@@ -592,5 +592,30 @@ namespace RWPM.Resources.Shared {
                 return ResourceManager.GetString("AttTable_Empty", resourceCulture);
             }
         }
+    
+
+        public static string Err_CheckInput {
+            get {
+                return ResourceManager.GetString("Err_CheckInput", resourceCulture);
+            }
+        }
+
+        public static string Search_DefaultLocationSuffix {
+            get {
+                return ResourceManager.GetString("Search_DefaultLocationSuffix", resourceCulture);
+            }
+        }
+
+        public static string Search_DefaultFallbackName {
+            get {
+                return ResourceManager.GetString("Search_DefaultFallbackName", resourceCulture);
+            }
+        }
+
+        public static string Delete_WarningLabel {
+            get {
+                return ResourceManager.GetString("Delete_WarningLabel", resourceCulture);
+            }
+        }
     }
 }

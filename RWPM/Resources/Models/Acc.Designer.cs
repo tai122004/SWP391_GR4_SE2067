@@ -224,5 +224,12 @@ namespace RWPM.Resources.Models {
         public static string Avatar {
             get { return ResourceManager.GetString("Avatar", resourceCulture); }
         }
+    
+
+        public static string Email {
+            get {
+                return ResourceManager.GetString("Email", resourceCulture);
+            }
+        }
     }
 }

@@ -1,0 +1,50 @@
+@using System.Text.Json
+@{
+    // Chuỗi dùng trong JavaScript (site.js) lấy từ SharedResource -> đổi ngôn ngữ là JS đổi theo
+    var i18n = new Dictionary<string, string?>
+    {
+        ["required"] = SharedResource.Js_Required,
+        ["number"] = SharedResource.Js_Number,
+        ["digits"] = SharedResource.Js_Digits,
+        ["step"] = SharedResource.Js_Step,
+        ["min"] = SharedResource.Js_Min,
+        ["max"] = SharedResource.Js_Max,
+        ["email"] = SharedResource.Js_Email,
+        ["url"] = SharedResource.Js_Url,
+        ["date"] = SharedResource.Js_Date,
+        ["maxlength"] = SharedResource.Js_MaxLength,
+        ["minlength"] = SharedResource.Js_MinLength,
+        ["pattern"] = SharedResource.Js_Pattern,
+        ["equalTo"] = SharedResource.Js_EqualTo,
+        ["remote"] = SharedResource.Js_Remote,
+        ["confirmTitle"] = SharedResource.Js_ConfirmTitle,
+        ["confirmOk"] = SharedResource.Js_ConfirmOk,
+        ["cancel"] = SharedResource.Button_Cancel,
+        ["copied"] = SharedResource.Js_Copied,
+        ["timeAm"] = SharedResource.Js_TimeAm,
+        ["timePm"] = SharedResource.Js_TimePm,
+        ["timePlaceholder"] = SharedResource.Js_TimePlaceholder,
+        ["timeSuggestions"] = SharedResource.Js_TimeSuggestions,
+        ["timeCommon"] = SharedResource.Js_TimeCommon,
+        ["timeAll"] = SharedResource.Js_TimeAll,
+        ["timeInvalid"] = SharedResource.Js_TimeInvalid,
+        ["timeClear"] = SharedResource.Js_TimeClear,
+        ["close"] = SharedResource.Js_Close,
+        ["account"] = SharedResource.Js_Account,
+        ["password"] = SharedResource.Js_Password,
+        ["passwordMinLength"] = SharedResource.Js_PasswordMinLength,
+        ["passwordMismatch"] = SharedResource.Js_PasswordMismatch,
+        ["saving"] = SharedResource.Js_Saving,
+        ["resetPasswordSuccess"] = SharedResource.Js_ResetPasswordSuccess,
+        ["resetPasswordError"] = SharedResource.Js_ResetPasswordError,
+    };
+
+    // Lỗi validate phía server theo từng trường -> site.js hiển thị ngay dưới ô nhập tương ứng
+    var serverErrors = ViewData.ModelState
+        .Where(kv => !string.IsNullOrEmpty(kv.Key) && kv.Value != null && kv.Value.Errors.Count > 0)
+        .ToDictionary(kv => kv.Key, kv => kv.Value!.Errors[0].ErrorMessage);
+}
+<script>
+    window.AppI18n = @Html.Raw(JsonSerializer.Serialize(i18n));
+    window.AppServerErrors = @Html.Raw(JsonSerializer.Serialize(serverErrors));
+</script>

@@ -295,4 +295,322 @@
   <data name="Leave_InsufficientBalance" xml:space="preserve">
     <value>Number of requested days exceeds remaining annual leave balance ({0} days left)!</value>
   </data>
+  <data name="Page_Subtitle" xml:space="preserve">
+    <value>Track and review shift registration, shift swap, leave and attendance adjustment requests.</value>
+  </data>
+  <data name="Status_Approved" xml:space="preserve">
+    <value>Approved</value>
+  </data>
+  <data name="Status_Rejected" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+  <data name="Stats_Filtering" xml:space="preserve">
+    <value>Filtering</value>
+  </data>
+  <data name="Filter_SearchPlaceholder" xml:space="preserve">
+    <value>Search by name, request code, shift...</value>
+  </data>
+  <data name="Filter_ResetTitle" xml:space="preserve">
+    <value>Clear all filters</value>
+  </data>
+  <data name="Filter_Reset" xml:space="preserve">
+    <value>Reset filters</value>
+  </data>
+  <data name="Filter_AllStatuses" xml:space="preserve">
+    <value>All statuses</value>
+  </data>
+  <data name="AttendanceAdjustment" xml:space="preserve">
+    <value>Attendance adjustment</value>
+  </data>
+  <data name="List_Title" xml:space="preserve">
+    <value>Request list</value>
+  </data>
+  <data name="List_EmptyDesc" xml:space="preserve">
+    <value>No requests match the current filters.</value>
+  </data>
+  <data name="Detail_RequestCode" xml:space="preserve">
+    <value>Request code</value>
+  </data>
+  <data name="Detail_SentAt" xml:space="preserve">
+    <value>Sent at</value>
+  </data>
+  <data name="Detail_ContentTitle" xml:space="preserve">
+    <value>Request details</value>
+  </data>
+  <data name="Detail_AttendanceTitle" xml:space="preserve">
+    <value>Check-in / check-out adjustment details</value>
+  </data>
+  <data name="Detail_EmployeeNote" xml:space="preserve">
+    <value>Employee's reason / note</value>
+  </data>
+  <data name="Detail_Reviewer" xml:space="preserve">
+    <value>Reviewed by</value>
+  </data>
+  <data name="Detail_ProposedTime" xml:space="preserve">
+    <value>Proposed time</value>
+  </data>
+  <data name="Detail_AtTime" xml:space="preserve">
+    <value>at {0}</value>
+  </data>
+  <data name="Empty_Title" xml:space="preserve">
+    <value>No request selected</value>
+  </data>
+  <data name="Empty_Desc" xml:space="preserve">
+    <value>Please select a request from the list on the left to view its details and approve it.</value>
+  </data>
+  <data name="Notice_AdminOnly" xml:space="preserve">
+    <value>Manager / HR request — awaiting Admin approval</value>
+  </data>
+  <data name="Notice_StoreMismatch" xml:space="preserve">
+    <value>This request belongs to an employee of another branch</value>
+  </data>
+  <data name="Banner_Approved" xml:space="preserve">
+    <value>The request has been approved</value>
+  </data>
+  <data name="Banner_Rejected" xml:space="preserve">
+    <value>The request has been rejected</value>
+  </data>
+  <data name="Banner_ProcessedBy" xml:space="preserve">
+    <value>Processed by</value>
+  </data>
+  <data name="Banner_DefaultManager" xml:space="preserve">
+    <value>Manager</value>
+  </data>
+  <data name="Swap_NoAvailableShifts" xml:space="preserve">
+    <value>-- No shifts available --</value>
+  </data>
+  <data name="Leave_EndBeforeStart" xml:space="preserve">
+    <value>The end date must be on or after the start date.</value>
+  </data>
+  <data name="Leave_ExceedsBalance" xml:space="preserve">
+    <value>The requested leave ({0} days) exceeds the remaining annual leave ({1} days)!</value>
+  </data>
+  <data name="Leave_ErrEmployeeNotFound" xml:space="preserve">
+    <value>The employee profile does not exist.</value>
+  </data>
+  <data name="Leave_ErrPastDates" xml:space="preserve">
+    <value>Leave requests cannot be created for past dates.</value>
+  </data>
+  <data name="Leave_ErrOverlap" xml:space="preserve">
+    <value>You already have a pending or approved leave request in this period.</value>
+  </data>
+  <data name="Leave_ErrInsufficientCreate" xml:space="preserve">
+    <value>The remaining annual leave ({0} days) is not enough for {1} days of paid leave. Please choose 'Unpaid leave' or adjust the dates.</value>
+  </data>
+  <data name="Leave_ErrNotFound" xml:space="preserve">
+    <value>The leave request does not exist.</value>
+  </data>
+  <data name="Leave_ErrAlreadyProcessed" xml:space="preserve">
+    <value>This leave request has already been processed.</value>
+  </data>
+  <data name="Leave_ErrInsufficientApprove" xml:space="preserve">
+    <value>The employee only has {0} days of annual leave left, which is not enough to approve {1} days of paid leave.</value>
+  </data>
+  <data name="Leave_ErrDeleteOnlyPending" xml:space="preserve">
+    <value>Only leave requests that are pending approval can be deleted or cancelled.</value>
+  </data>
+  <data name="Leave_ErrNoPermissionDelete" xml:space="preserve">
+    <value>You do not have permission to delete this leave request.</value>
+  </data>
+  <data name="LeaveType_Paid" xml:space="preserve">
+    <value>Paid (salaried - deducted from annual leave)</value>
+  </data>
+  <data name="LeaveType_Unpaid" xml:space="preserve">
+    <value>Unpaid (no salary)</value>
+  </data>
+  <data name="Adj_Info" xml:space="preserve">
+    <value>Select a recent shift record whose attendance needs correcting and enter an explanation.</value>
+  </data>
+  <data name="Adj_SelectRecord" xml:space="preserve">
+    <value>Shift to correct</value>
+  </data>
+  <data name="Adj_LoadingRecords" xml:space="preserve">
+    <value>-- Loading recent shifts... --</value>
+  </data>
+  <data name="Adj_SelectShiftPrompt" xml:space="preserve">
+    <value>-- Select a shift --</value>
+  </data>
+  <data name="Adj_NoRecords" xml:space="preserve">
+    <value>-- No attendance records in the last 30 days --</value>
+  </data>
+  <data name="Adj_RequestedCheckIn" xml:space="preserve">
+    <value>Requested check-in time</value>
+  </data>
+  <data name="Adj_RequestedCheckOut" xml:space="preserve">
+    <value>Requested check-out time</value>
+  </data>
+  <data name="Adj_Reason" xml:space="preserve">
+    <value>Adjustment reason / explanation</value>
+  </data>
+  <data name="Adj_ReasonField" xml:space="preserve">
+    <value>Adjustment reason</value>
+  </data>
+  <data name="Adj_ReasonPlaceholder" xml:space="preserve">
+    <value>E.g. forgot to check out after the shift, network/GPS issue...</value>
+  </data>
+  <data name="Adj_ErrSelectShift" xml:space="preserve">
+    <value>Please select the shift to correct.</value>
+  </data>
+  <data name="Adj_ErrReasonRequired" xml:space="preserve">
+    <value>Please enter an explanation.</value>
+  </data>
+  <data name="Adj_ErrTimeRequired" xml:space="preserve">
+    <value>Please enter at least the requested check-in or check-out time.</value>
+  </data>
+  <data name="Adj_InOutSummary" xml:space="preserve">
+    <value>In: {0} | Out: {1}</value>
+  </data>
+  <data name="Adj_DefaultShiftName" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="Adj_SubmitSuccess" xml:space="preserve">
+    <value>Attendance adjustment request submitted successfully! Please wait for manager approval.</value>
+  </data>
+  <data name="Adj_ApproveSuccess" xml:space="preserve">
+    <value>Approved and attendance time updated successfully!</value>
+  </data>
+  <data name="Adj_RejectSuccess" xml:space="preserve">
+    <value>The attendance adjustment request has been rejected.</value>
+  </data>
+  <data name="Adj_DeleteSuccess" xml:space="preserve">
+    <value>Attendance adjustment request deleted successfully.</value>
+  </data>
+  <data name="Adj_DefaultRejectReason" xml:space="preserve">
+    <value>The manager rejected the request.</value>
+  </data>
+  <data name="Adj_ErrNotFound" xml:space="preserve">
+    <value>Attendance adjustment request not found.</value>
+  </data>
+  <data name="Adj_ErrSelfApprove" xml:space="preserve">
+    <value>You cannot approve your own attendance adjustment request!</value>
+  </data>
+  <data name="Adj_ErrAdminOnly" xml:space="preserve">
+    <value>Attendance adjustment requests from Store Managers and HR can only be approved by an Administrator (Admin)!</value>
+  </data>
+  <data name="Adj_ErrInvalidData" xml:space="preserve">
+    <value>Invalid adjustment request data.</value>
+  </data>
+  <data name="Adj_ErrEmployeeNotFound" xml:space="preserve">
+    <value>Employee profile information not found.</value>
+  </data>
+  <data name="Adj_ErrOtherEmployeeRecord" xml:space="preserve">
+    <value>You do not have permission to request an adjustment of another employee's attendance record.</value>
+  </data>
+  <data name="Adj_ErrPendingForShift" xml:space="preserve">
+    <value>You have already submitted an adjustment request for this shift and it is awaiting manager approval.</value>
+  </data>
+  <data name="Adj_ErrPendingForShiftDate" xml:space="preserve">
+    <value>You have already submitted an adjustment request for this shift on this date and it is awaiting manager approval.</value>
+  </data>
+  <data name="Adj_ErrAlreadyProcessed" xml:space="preserve">
+    <value>This request has already been processed.</value>
+  </data>
+  <data name="Adj_ErrDeleteOnlyPending" xml:space="preserve">
+    <value>A request can only be deleted while it is pending approval.</value>
+  </data>
+  <data name="Adj_ErrNoPermissionDelete" xml:space="preserve">
+    <value>You do not have permission to delete this request.</value>
+  </data>
+  <data name="Appr_Title" xml:space="preserve">
+    <value>Approve attendance adjustment</value>
+  </data>
+  <data name="Appr_WorkDate" xml:space="preserve">
+    <value>Work date</value>
+  </data>
+  <data name="Appr_OriginalTime" xml:space="preserve">
+    <value>Original attendance time</value>
+  </data>
+  <data name="Appr_RequestedTime" xml:space="preserve">
+    <value>Time requested by employee</value>
+  </data>
+  <data name="Appr_EmployeeReason" xml:space="preserve">
+    <value>Employee's explanation</value>
+  </data>
+  <data name="Appr_ApprovedCheckIn" xml:space="preserve">
+    <value>Approved check-in time</value>
+  </data>
+  <data name="Appr_ApprovedCheckOut" xml:space="preserve">
+    <value>Approved check-out time</value>
+  </data>
+  <data name="Appr_ApproverNote" xml:space="preserve">
+    <value>Approver's note</value>
+  </data>
+  <data name="Appr_ApproverNotePlaceholder" xml:space="preserve">
+    <value>Feedback note (optional)</value>
+  </data>
+  <data name="Appr_ConfirmButton" xml:space="preserve">
+    <value>Confirm approval</value>
+  </data>
+  <data name="Appr_NoReason" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="Appr_ErrTimeRequired" xml:space="preserve">
+    <value>Please enter at least the approved check-in or check-out time.</value>
+  </data>
+  <data name="Processing" xml:space="preserve">
+    <value>Processing...</value>
+  </data>
+  <data name="Toast_OperationUnsuccessful" xml:space="preserve">
+    <value>The operation was not successful.</value>
+  </data>
+  <data name="Err_EmployeeProfileNotFound" xml:space="preserve">
+    <value>Employee profile not found.</value>
+  </data>
+  <data name="Err_EmployeeNotFound" xml:space="preserve">
+    <value>Employee not found.</value>
+  </data>
+  <data name="Err_NoPermissionApproveSwapOtherStore" xml:space="preserve">
+    <value>You do not have permission to approve shift swap requests of another store.</value>
+  </data>
+  <data name="Err_NoPermissionApproveOtherStore" xml:space="preserve">
+    <value>You do not have permission to approve requests of another store.</value>
+  </data>
+  <data name="Err_NoPermissionApproveOtherStoreEmployee" xml:space="preserve">
+    <value>You do not have permission to approve requests of employees from another store.</value>
+  </data>
+  <data name="Err_NoPermissionDeleteSwapOtherStore" xml:space="preserve">
+    <value>You do not have permission to delete shift swap requests of another store.</value>
+  </data>
+  <data name="Err_NoRequestSelected" xml:space="preserve">
+    <value>No request has been selected.</value>
+  </data>
+  <data name="Err_SelfApprove" xml:space="preserve">
+    <value>You cannot approve your own request!</value>
+  </data>
+  <data name="Err_InvalidRequestData" xml:space="preserve">
+    <value>The request data is invalid or incomplete.</value>
+  </data>
+  <data name="Err_Database" xml:space="preserve">
+    <value>Database error: {0}</value>
+  </data>
+  <data name="Export_NoData" xml:space="preserve">
+    <value>There is no request data to export.</value>
+  </data>
+  <data name="Export_Success" xml:space="preserve">
+    <value>File exported successfully!</value>
+  </data>
+  <data name="Export_ColType" xml:space="preserve">
+    <value>Request type</value>
+  </data>
+  <data name="Export_ColSender" xml:space="preserve">
+    <value>Sender</value>
+  </data>
+  <data name="Export_ColBranch" xml:space="preserve">
+    <value>Branch</value>
+  </data>
+  <data name="Export_ColShiftContent" xml:space="preserve">
+    <value>Shift / Content</value>
+  </data>
+  <data name="Export_ColCreatedDate" xml:space="preserve">
+    <value>Created date</value>
+  </data>
+  <data name="Export_ColApprover" xml:space="preserve">
+    <value>Approver</value>
+  </data>
+  <data name="Export_FileName" xml:space="preserve">
+    <value>Requests_And_Approvals</value>
+  </data>
+  <data name="Filter_SearchEnterHint" xml:space="preserve">
+    <value>Press Enter to search all pages</value>
+  </data>
 </root>

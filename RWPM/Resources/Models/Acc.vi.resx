@@ -183,4 +183,7 @@
   <data name="Avatar" xml:space="preserve">
     <value>Ảnh đại diện</value>
   </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
 </root>

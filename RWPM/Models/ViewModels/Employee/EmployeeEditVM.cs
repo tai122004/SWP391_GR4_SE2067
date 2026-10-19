@@ -40,15 +40,15 @@ namespace RWPM.Models.ViewModels.Employee
         public EmploymentStatus Status { get; set; } = EmploymentStatus.Official;
 
         [Display(Name = "HourlyRate", ResourceType = typeof(Resources.Models.Employee))]
-        [Range(0, 100000000)]
+        [RangeLocalized(0, 100000000)]
         public decimal? HourlyRate { get; set; }
 
         [Display(Name = "BaseSalary", ResourceType = typeof(Resources.Models.Employee))]
-        [Range(0, 1000000000)]
+        [RangeLocalized(0, 1000000000)]
         public decimal? BaseSalary { get; set; }
 
         [Display(Name = "AnnualLeaveBalance", ResourceType = typeof(Resources.Models.Employee))]
-        [Range(0, 365)]
+        [RangeLocalized(0, 365)]
         public int AnnualLeaveBalance { get; set; } = 12;
 
         [Display(Name = "CitizenId", ResourceType = typeof(Resources.Models.Employee))]
@@ -57,7 +57,8 @@ namespace RWPM.Models.ViewModels.Employee
 
         // Thông tin cá nhân liên kết với Account
         [Display(Name = "PhoneNumber", ResourceType = typeof(Resources.Models.Acc))]
-        [MaxLengthLocalized(20)]
+        [MaxLengthLocalized(10)]
+        [RegexLocalized(RWPM.Common.Helper.PhoneHelper.VnPhonePattern, "RegularExpression_VnPhone")]
         public string? PhoneNumber { get; set; }
 
         [Display(Name = "DateOfBirth", ResourceType = typeof(Resources.Models.Acc))]

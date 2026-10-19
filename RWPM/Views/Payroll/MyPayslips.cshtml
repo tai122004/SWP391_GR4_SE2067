@@ -1,16 +1,18 @@
 @model List<RWPM.Models.ViewModels.Payroll.EmployeePayslipSummaryVM>
+@using RWPM.Models.ViewModels.Payroll
+@using PayrollResource = RWPM.Resources.Shared.PayrollResource
 
 @{
-    ViewData["Title"] = "Phiếu lương của tôi";
+    ViewData["Title"] = PayrollResource.My_Title;
 }
 
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="h3 font-weight-bold mb-1 text-primary">
-                <i class="bi bi-receipt me-2"></i>Phiếu lương của tôi
+                <i class="bi bi-receipt me-2"></i>@PayrollResource.My_Title
             </h2>
-            <p class="text-muted mb-0">Theo dõi thu nhập và chi tiết ngày công đã được chốt duyệt</p>
+            <p class="text-muted mb-0">@PayrollResource.My_Subtitle</p>
         </div>
     </div>
 
@@ -19,12 +21,12 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th class="ps-4">Kỳ lương</th>
-                        <th class="text-end">Tổng giờ làm</th>
-                        <th class="text-end">Mức lương / Giờ</th>
-                        <th class="text-end">Tổng tiền lương</th>
-                        <th class="text-center">Ngày chốt</th>
-                        <th class="text-end pe-4">Chi tiết</th>
+                        <th class="ps-4">@PayrollResource.Col_Period</th>
+                        <th class="text-end">@PayrollResource.Col_TotalHours</th>
+                        <th class="text-end">@PayrollResource.Emp_CardRate</th>
+                        <th class="text-end">@PayrollResource.Col_TotalSalary</th>
+                        <th class="text-center">@PayrollResource.Col_LockedDate</th>
+                        <th class="text-end pe-4">@PayrollResource.Col_Detail</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -33,7 +35,7 @@
                         <tr>
                             <td colspan="6" class="text-center py-5 text-muted">
                                 <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary"></i>
-                                Bạn chưa có phiếu lương nào đã được chốt.
+                                @PayrollResource.My_Empty
                             </td>
                         </tr>
                     }
@@ -44,16 +46,16 @@
                             <tr>
                                 <td class="ps-4 fw-bold text-primary">
                                     <a asp-action="MyPayslipDetail" asp-route-payrollId="@item.PayrollId" class="text-decoration-none">
-                                        @item.Title
+                                        @PayrollDisplayText.Title(item.Title)
                                     </a>
                                 </td>
                                 <td class="text-end fw-semibold">@item.TotalWorkHours.ToString("#,##0.00") h</td>
-                                <td class="text-end">@item.HourlyRate.ToString("#,##0") đ</td>
-                                <td class="text-end fw-bold text-success fs-6">@item.TotalSalary.ToString("#,##0") đ</td>
+                                <td class="text-end">@item.HourlyRate.ToString("#,##0") @PayrollResource.Unit_Dong</td>
+                                <td class="text-end fw-bold text-success fs-6">@item.TotalSalary.ToString("#,##0") @PayrollResource.Unit_Dong</td>
                                 <td class="text-center text-muted small">@item.LockedDate?.ToString("dd/MM/yyyy")</td>
                                 <td class="text-end pe-4">
                                     <a asp-action="MyPayslipDetail" asp-route-payrollId="@item.PayrollId" class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-eye me-1"></i>Xem phiếu lương
+                                        <i class="bi bi-eye me-1"></i>@PayrollResource.My_ViewPayslip
                                     </a>
                                 </td>
                             </tr>

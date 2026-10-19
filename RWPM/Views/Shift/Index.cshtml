@@ -5,9 +5,7 @@
 @using System.Globalization
 @functions {
     string T(string key) => R.ResourceManager.GetString(key) ?? key;
-    string StatusText(bool active) => CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "vi"
-        ? (active ? "Đang hoạt động" : "Ngừng hoạt động")
-        : (active ? "Active" : "Inactive");
+    string StatusText(bool active) => active ? R.Active : R.Inactive;
 }
 @{ ViewData["Title"] = R.Index_PageTitle; }
 @Html.AntiForgeryToken()
@@ -95,7 +93,7 @@ document.querySelectorAll('.status-toggle').forEach(function (button) {
             button.querySelector('.status-dot').classList.toggle('is-inactive', !newValue);
             button.querySelector('span:nth-child(2)').textContent = newValue ? activeLabel : inactiveLabel;
         } catch (error) {
-            if (typeof AppToast !== 'undefined') AppToast.error(error.message || 'Không thể cập nhật trạng thái ca.');
+            if (typeof AppToast !== 'undefined') AppToast.error(error.message || @Json.Serialize(R.Toast_StatusUpdateFailed));
         } finally {
             button.disabled = false;
         }

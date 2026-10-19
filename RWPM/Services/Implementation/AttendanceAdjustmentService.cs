@@ -3,6 +3,7 @@ using RWPM.Common.Enums;
 using RWPM.Infrastructure.Data;
 using RWPM.Models.Entities;
 using RWPM.Models.ViewModels.ShiftRegistration;
+using RWPM.Resources.Shared;
 using RWPM.Services.Abstraction;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,9 @@ namespace RWPM.Services.Implementation
 {
     public class AttendanceAdjustmentService : IAttendanceAdjustmentService
     {
+        // Persisted to the DB as-is (Vietnamese); translated at display time in RequestController.
+        public const string DefaultRejectionReason = "Quản lý từ chối yêu cầu.";
+
         private readonly DefaultDatabaseContext _context;
 
         public AttendanceAdjustmentService(DefaultDatabaseContext context)
@@ -24,7 +28,7 @@ namespace RWPM.Services.Implementation
         {
             if (model == null)
             {
-                throw new ArgumentNullException(nameof(model), "Dữ liệu yêu cầu điều chỉnh không hợp lệ.");
+                throw new ArgumentNullException(nameof(model), RequestResource.Adj_ErrInvalidData);
             }
 
             var employee = await _context.Employee
@@ -43,7 +47,7 @@ namespace RWPM.Services.Implementation
 
             if (employee == null)
             {
-                throw new Exception("Không tìm thấy thông tin hồ sơ nhân viên.");
+                throw new Exception(RequestResource.Adj_ErrEmployeeNotFound);
             }
 
             var targetWorkDate = model.WorkDate ?? DateTime.Today;
@@ -57,7 +61,7 @@ namespace RWPM.Services.Implementation
 
                 if (record != null && record.Username != employee.Username)
                 {
-                    throw new Exception("Bạn không có quyền yêu cầu điều chỉnh bản ghi chấm công của nhân viên khác.");
+                    throw new Exception(RequestResource.Adj_ErrOtherEmployeeRecord);
                 }
             }
             else
@@ -83,7 +87,7 @@ namespace RWPM.Services.Implementation
 
                 if (hasPending)
                 {
-                    throw new Exception("Bạn đã gửi yêu cầu điều chỉnh cho ca làm này và đang chờ quản lý phê duyệt.");
+                    throw new Exception(RequestResource.Adj_ErrPendingForShift);
                 }
             }
             else
@@ -93,7 +97,7 @@ namespace RWPM.Services.Implementation
 
                 if (hasPending)
                 {
-                    throw new Exception("Bạn đã gửi yêu cầu điều chỉnh cho ca làm ngày này và đang chờ quản lý phê duyệt.");
+                    throw new Exception(RequestResource.Adj_ErrPendingForShiftDate);
                 }
             }
 
@@ -173,12 +177,12 @@ namespace RWPM.Services.Implementation
 
             if (request == null)
             {
-                throw new Exception("Không tìm thấy yêu cầu điều chỉnh chấm công.");
+                throw new Exception(RequestResource.Adj_ErrNotFound);
             }
 
             if (request.Status != RegistrationStatus.Pending)
             {
-                throw new Exception("Yêu cầu này đã được xử lý trước đó.");
+                throw new Exception(RequestResource.Adj_ErrAlreadyProcessed);
             }
 
             // Lấy giờ thực tế do người phê duyệt quyết định (nếu không truyền thì mặc định lấy giờ nhân viên yêu cầu)
@@ -266,16 +270,16 @@ namespace RWPM.Services.Implementation
 
             if (request == null)
             {
-                throw new Exception("Không tìm thấy yêu cầu điều chỉnh chấm công.");
+                throw new Exception(RequestResource.Adj_ErrNotFound);
             }
 
             if (request.Status != RegistrationStatus.Pending)
             {
-                throw new Exception("Yêu cầu này đã được xử lý trước đó.");
+                throw new Exception(RequestResource.Adj_ErrAlreadyProcessed);
             }
 
             request.Status = RegistrationStatus.Rejected;
-            request.RejectionReason = string.IsNullOrWhiteSpace(reason) ? "Quản lý từ chối yêu cầu." : reason.Trim();
+            request.RejectionReason = string.IsNullOrWhiteSpace(reason) ? DefaultRejectionReason : reason.Trim();
             request.ApprovedBy = rejectorUsername;
             request.ApprovedAt = DateTime.UtcNow;
             request.UpdatedBy = rejectorUsername;
@@ -292,17 +296,17 @@ namespace RWPM.Services.Implementation
 
             if (request == null)
             {
-                throw new Exception("Không tìm thấy yêu cầu điều chỉnh chấm công.");
+                throw new Exception(RequestResource.Adj_ErrNotFound);
             }
 
             if (request.Status != RegistrationStatus.Pending)
             {
-                throw new Exception("Chỉ có thể xóa yêu cầu khi đang ở trạng thái chờ duyệt.");
+                throw new Exception(RequestResource.Adj_ErrDeleteOnlyPending);
             }
 
             if (request.Employee.Username != username && request.CreatedBy != username)
             {
-                throw new Exception("Bạn không có quyền xóa yêu cầu này.");
+                throw new Exception(RequestResource.Adj_ErrNoPermissionDelete);
             }
 
             _context.AttendanceAdjustmentRequest.Remove(request);

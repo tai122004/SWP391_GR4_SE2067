@@ -1,13 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using RWPM.Common.Attributes;
+using System.ComponentModel.DataAnnotations;
 
 namespace RWPM.Models.ViewModels.Employee
 {
     public class EmployeeUpdateActiveStatusVM
     {
-        [Required]
+        [RequiredLocalization]
         public int? EmployeeId { get; set; }
 
-        [Required]
+        [Display(Name = "Active", ResourceType = typeof(Resources.Models.Employee))]
+        [RequiredLocalization]
         public bool? IsActive { get; set; }
     }
 }

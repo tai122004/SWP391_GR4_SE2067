@@ -75,7 +75,7 @@
             <div class="row g-3 mb-3">
                 <div class="col-md-4">
                     <label class="form-label fw-semibold small" asp-for="PhoneNumber">@AccountModelResource.PhoneNumber</label>
-                    <input class="form-control" asp-for="PhoneNumber" placeholder="0901234567" />
+                    <input class="form-control" asp-for="PhoneNumber" type="tel" inputmode="numeric" maxlength="10" data-phone-input autocomplete="off" placeholder="0901234567" />
                     <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
                 </div>
                 <div class="col-md-4">
@@ -155,7 +155,7 @@
                     <div class="col-md-6" id="hourlyRateCol">
                         <label class="form-label fw-semibold small required" asp-for="HourlyRate">@EmployeeModelResource.HourlyRate</label>
                         <div class="input-group">
-                            <input class="form-control" asp-for="HourlyRate" type="number" step="1000" placeholder="25000" />
+                            <input class="form-control" asp-for="HourlyRate" asp-format="{0:0}" type="number" min="0" step="1000" placeholder="25000" />
                             <span class="input-group-text small">@SharedResource.Unit_VndPerHour</span>
                         </div>
                         <span asp-validation-for="HourlyRate" class="text-danger small"></span>
@@ -191,7 +191,7 @@
                 <h5 class="modal-title fs-6 d-flex align-items-center" id="modalQuickResetPasswordLabel">
                     <i class="bi bi-key-fill me-2 fs-5"></i> @AccountSharedResource.Modal_QuickResetTitle
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="@AccountSharedResource.Excel_Close"></button>
             </div>
             <div class="modal-body p-4">
                 <input type="hidden" id="quickResetModal_Username" />
@@ -268,7 +268,7 @@
                 $('#hourlyRateCol').removeClass('col-md-12').addClass('col-md-6');
 
                 $('#storeSelectInput').prop('disabled', false);
-                $('#employeeSectionTitleText').text('2. Hồ sơ nhân viên & Lương (Nhân sự - HR)');
+                $('#employeeSectionTitleText').text(@Json.Serialize(AccountSharedResource.Create_Section_HrInfo));
             } else {
                 $('#storeAssignmentSection').slideUp(200);
                 $('#storeSelectInput').prop('disabled', true);

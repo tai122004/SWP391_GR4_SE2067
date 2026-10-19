@@ -1,3 +1,4 @@
+using RWPM.Common.Attributes;
 using System.ComponentModel.DataAnnotations;
 
 namespace RWPM.Models.ViewModels.ShiftRegistration
@@ -6,7 +7,8 @@ namespace RWPM.Models.ViewModels.ShiftRegistration
     {
         public int RequesterEmployeeId { get; set; }
 
-        [Required]
+        [RequiredLocalization]
+        [Display(Name = "Swap_SourceShift", ResourceType = typeof(RWPM.Resources.Shared.RequestResource))]
         public int SourceRegistrationId { get; set; }
 
         // "peer" = đổi với đồng nghiệp, "direct" = chuyển sang ca khác
@@ -20,8 +22,9 @@ namespace RWPM.Models.ViewModels.ShiftRegistration
         public int? TargetShiftId { get; set; }
         public DateTime? TargetWorkDate { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng nhập lý do đổi ca.")]
-        [MaxLength(255)]
+        [RequiredLocalization]
+        [MaxLengthLocalized(255)]
+        [Display(Name = "Swap_Reason", ResourceType = typeof(RWPM.Resources.Shared.RequestResource))]
         public string Reason { get; set; } = string.Empty;
     }
 }

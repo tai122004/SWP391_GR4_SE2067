@@ -432,4 +432,61 @@
   <data name="Update_Section_Role" xml:space="preserve">
     <value>System Permissions &amp; Role</value>
   </data>
+  <data name="Err_SelectStoreForEmployee" xml:space="preserve">
+    <value>Please select the working store for this employee.</value>
+  </data>
+  <data name="Err_EmployeeCodeRequired" xml:space="preserve">
+    <value>Please enter the employee code.</value>
+  </data>
+  <data name="Err_EmployeeCodeRequiredHr" xml:space="preserve">
+    <value>Please enter the employee code for the HR staff member.</value>
+  </data>
+  <data name="Err_EmployeeCodeExists" xml:space="preserve">
+    <value>Employee code '{0}' already exists in the system.</value>
+  </data>
+  <data name="Err_EmployeeCodeUsedByOther" xml:space="preserve">
+    <value>Employee code '{0}' is already used by another employee.</value>
+  </data>
+  <data name="Err_HourlyRateRequiredHrCreate" xml:space="preserve">
+    <value>Please enter the hourly rate so that payroll can be calculated for HR.</value>
+  </data>
+  <data name="Err_HourlyRateRequiredHrEdit" xml:space="preserve">
+    <value>Please enter the hourly rate to calculate payroll for HR.</value>
+  </data>
+  <data name="Err_EmailInUse" xml:space="preserve">
+    <value>Email '{0}' is already used by another account.</value>
+  </data>
+  <data name="Err_PhoneInUse" xml:space="preserve">
+    <value>Phone number '{0}' is already used by another account.</value>
+  </data>
+  <data name="Err_CannotCreateAdmin" xml:space="preserve">
+    <value>Can't create an admin account!</value>
+  </data>
+  <data name="Err_CannotChangeRoleToAdmin" xml:space="preserve">
+    <value>Can't change the role to admin!</value>
+  </data>
+  <data name="Notice_CreatedAccount" xml:space="preserve">
+    <value>Account created: {0} | Password: {1}</value>
+  </data>
+  <data name="Toast_ChangePasswordSuccess" xml:space="preserve">
+    <value>Password changed successfully!</value>
+  </data>
+  <data name="Create_Section_HrInfo" xml:space="preserve">
+    <value>2. Employee profile &amp; Salary (HR)</value>
+  </data>
+  <data name="Create_HrInfoHint" xml:space="preserve">
+    <value>Accounts with the HR role can choose a working branch (or the head office) and automatically get an employee profile for attendance, shift registration and payroll.</value>
+  </data>
+  <data name="Unit_Vnd" xml:space="preserve">
+    <value>VND</value>
+  </data>
+  <data name="Excel_Col_Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Excel_SupportedFormat" xml:space="preserve">
+    <value>Supported format: .xlsx (Microsoft Excel)</value>
+  </data>
+  <data name="Excel_AutoValidated" xml:space="preserve">
+    <value>Data is validated automatically before saving</value>
+  </data>
 </root>

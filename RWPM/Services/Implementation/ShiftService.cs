@@ -31,12 +31,12 @@ public class ShiftService : IShiftService
             .Select(x => (int?)x.StoreId).FirstOrDefaultAsync();
     }
     private async Task<int> RequireManagerStoreAsync() => await GetManagedStoreIdAsync()
-        ?? throw new UnauthorizedAccessException("Tài khoản quản lý chưa được gán chi nhánh hoạt động.");
+        ?? throw new UnauthorizedAccessException(RWPM.Resources.Shared.Shift.Err_ManagerNoStore);
     private IQueryable<Shift> Query() => _ctx.Shift.Include(x => x.StoreShifts).ThenInclude(x => x.Store);
     public async Task<Shift?> GetByIdAsync(int id, QueryOptions<Shift>? options = null) =>
         await QueryHelper.ApplyQueryOptions(Query().Where(x => x.ShiftId == id), options).FirstOrDefaultAsync();
     public async Task<Shift> GetRequiredByIdAsync(int id, QueryOptions<Shift>? options = null) =>
-        await GetByIdAsync(id, options) ?? throw new KeyNotFoundException($"Không tìm thấy ca {id}.");
+        await GetByIdAsync(id, options) ?? throw new KeyNotFoundException(string.Format(RWPM.Resources.Shared.Shift.Err_ShiftNotFound, id));
     public async Task<List<Shift>> GetAllAsync(QueryOptions<Shift>? options = null) =>
         await QueryHelper.ApplyQueryOptions(Query(), options).ToListAsync();
     public Task<List<Shift>> GetAvailableForDateAsync(DateTime date, int storeId)
@@ -78,18 +78,18 @@ public class ShiftService : IShiftService
         var error = ShiftRules.Validate(shift).FirstOrDefault();
         if (error != null) throw new ModelValidationException("Shift_Invalid", error);
         var ids = shift.StoreShifts.Where(x => x.IsActive).Select(x => x.StoreId).Distinct().ToList();
-        if (ids.Count == 0) throw new ModelValidationException("StoreId_Required", "Vui lòng chọn ít nhất một chi nhánh.");
+        if (ids.Count == 0) throw new ModelValidationException("StoreId_Required", RWPM.Resources.Shared.Shift.ValidationStores);
         if (await _ctx.Store.CountAsync(x => ids.Contains(x.StoreId) && x.IsActive) != ids.Count)
-            throw new ModelValidationException("Shift_StoreInactive", "Chi nhánh không tồn tại hoặc đã ngừng hoạt động.");
+            throw new ModelValidationException("Shift_StoreInactive", RWPM.Resources.Shared.Shift.Err_StoreInactive);
     }
     public async Task<Shift> CreateAsync(Shift shift)
     {
         if (!IsAdmin)
         {
-            if (!IsStoreManager) throw new UnauthorizedAccessException("Không có quyền tạo ca.");
+            if (!IsStoreManager) throw new UnauthorizedAccessException(RWPM.Resources.Shared.Shift.Err_NoCreatePermission);
             var managedStoreId = await RequireManagerStoreAsync();
             if (shift.StoreShifts.Count != 1 || shift.StoreShifts.Single().StoreId != managedStoreId)
-                throw new UnauthorizedAccessException("Chỉ được tạo ca cho chi nhánh đang quản lý.");
+                throw new UnauthorizedAccessException(RWPM.Resources.Shared.Shift.Err_CreateOnlyManagedStore);
         }
         await ValidateAsync(shift);
         shift.ShiftName = shift.ShiftName.Trim();
@@ -104,11 +104,11 @@ public class ShiftService : IShiftService
         var existing = await GetRequiredByIdAsync(candidate.ShiftId, new QueryOptions<Shift> { NoTracking = false });
         if (!IsAdmin)
         {
-            if (!IsStoreManager) throw new UnauthorizedAccessException("Không có quyền sửa ca.");
+            if (!IsStoreManager) throw new UnauthorizedAccessException(RWPM.Resources.Shared.Shift.Err_NoEditPermission);
             var managedStoreId = await RequireManagerStoreAsync();
             if (existing.StoreShifts.Count != 1 || existing.StoreShifts.Single().StoreId != managedStoreId
                 || candidate.StoreShifts.Count != 1 || candidate.StoreShifts.Single().StoreId != managedStoreId)
-                throw new UnauthorizedAccessException("Ca dùng chung hoặc ca thuộc chi nhánh khác không thể sửa tại cửa hàng này.");
+                throw new UnauthorizedAccessException(RWPM.Resources.Shared.Shift.Err_EditSharedOrOtherStore);
         }
         await ValidateAsync(candidate);
         var used = await _ctx.ShiftRegistration.AnyAsync(x => x.ShiftId == existing.ShiftId)
@@ -119,7 +119,7 @@ public class ShiftService : IShiftService
             || existing.BreakEndDayOffset != candidate.BreakEndDayOffset || existing.GracePeriodMinutes != candidate.GracePeriodMinutes
             || existing.EarlyCheckOutMinutes != candidate.EarlyCheckOutMinutes
             || existing.EffectiveFrom.Date != candidate.EffectiveFrom.Date || existing.EffectiveTo?.Date != candidate.EffectiveTo?.Date))
-            throw new ModelValidationException("Shift_Used", "Ca đã được sử dụng. Vui lòng tạo ca mới để thay đổi giờ làm, hiệu lực hoặc chính sách chấm công.");
+            throw new ModelValidationException("Shift_Used", RWPM.Resources.Shared.Shift.Err_ShiftUsed);
         if (existing.IsActive && !candidate.IsActive) await EnsureNoFutureAsync(existing.ShiftId);
         var selected = candidate.StoreShifts.Where(x => x.IsActive).Select(x => x.StoreId).ToHashSet();
         foreach (var link in existing.StoreShifts.Where(x => x.IsActive && !selected.Contains(x.StoreId)))
@@ -146,12 +146,12 @@ public class ShiftService : IShiftService
         var shift = await GetRequiredByIdAsync(id, new QueryOptions<Shift> { NoTracking = false });
         if (!IsAdmin)
         {
-            if (!IsStoreManager) throw new UnauthorizedAccessException("Không có quyền thay đổi ca.");
+            if (!IsStoreManager) throw new UnauthorizedAccessException(RWPM.Resources.Shared.Shift.Err_NoChangePermission);
             var managedStoreId = await RequireManagerStoreAsync();
             var link = shift.StoreShifts.SingleOrDefault(x => x.StoreId == managedStoreId)
-                ?? throw new UnauthorizedAccessException("Ca không thuộc chi nhánh đang quản lý.");
+                ?? throw new UnauthorizedAccessException(RWPM.Resources.Shared.Shift.Err_NotManagedStore);
             if (active && !shift.IsActive)
-                throw new ModelValidationException("Shift_Inactive", "Ca đã bị ngừng hoạt động toàn hệ thống; vui lòng liên hệ Admin.");
+                throw new ModelValidationException("Shift_Inactive", RWPM.Resources.Shared.Shift.Err_InactiveSystemWide);
             if (link.IsActive && !active) await EnsureNoFutureAsync(id, managedStoreId);
             link.IsActive = active;
             link.UpdatedDate = DateTime.Now;
@@ -167,6 +167,6 @@ public class ShiftService : IShiftService
     {
         if (await _ctx.ShiftRegistration.AnyAsync(x => x.ShiftId == id && (!storeId.HasValue || x.StoreId == storeId)
             && x.WorkDate >= DateTime.Today && (x.Status == RegistrationStatus.Pending || x.Status == RegistrationStatus.Approved)))
-            throw new ModelValidationException("Shift_FutureRegistrations", "Còn đăng ký từ hôm nay trở đi. Hãy xử lý trước khi ngừng ca hoặc bỏ chi nhánh áp dụng.");
+            throw new ModelValidationException("Shift_FutureRegistrations", RWPM.Resources.Shared.Shift.Err_FutureRegistrations);
     }
 }

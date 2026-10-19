@@ -355,3 +355,13 @@ body {
   border-bottom: 1px solid #f1f5f9;
   padding-bottom: 0.5rem;
 }
+/* Lỗi validate: viền đỏ cho ô nhập lỗi (jQuery Validation dùng class input-validation-error) */
+.input-validation-error, .input-validation-error + .select2 .select2-selection { border-color: var(--bs-danger, #dc3545) !important; }
+.field-validation-error, .app-field-error { display: block; margin-top: .25rem; }
+
+/* Bộ chọn giờ dùng chung (12h + gợi ý khung giờ) */
+.app-time-menu { width: 300px; max-width: 92vw; }
+.app-time-menu .app-time-all { grid-template-columns: repeat(3, 1fr); max-height: 210px; overflow-y: auto; }
+.app-time-menu .app-time-chip { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.app-time-picker .app-time-display { font-variant-numeric: tabular-nums; }
+.shift-presets .shift-preset { font-variant-numeric: tabular-nums; }

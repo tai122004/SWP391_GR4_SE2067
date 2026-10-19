@@ -77,5 +77,18 @@ namespace RWPM.Resources.Shared {
                 return ResourceManager.GetString("Header2", resourceCulture);
             }
         }
+    
+
+        public static string Title {
+            get {
+                return ResourceManager.GetString("Title", resourceCulture);
+            }
+        }
+
+        public static string RequestId {
+            get {
+                return ResourceManager.GetString("RequestId", resourceCulture);
+            }
+        }
     }
 }

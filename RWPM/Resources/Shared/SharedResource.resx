@@ -817,4 +817,259 @@ Quick fix:
   </data>
   <data name="Pagination_Previous" xml:space="preserve"><value>Previous</value></data>
   <data name="Pagination_Next" xml:space="preserve"><value>Next</value></data>
+  <data name="Range" xml:space="preserve">
+    <value>{0} must be between {1} and {2}.</value>
+  </data>
+  <data name="Js_Required" xml:space="preserve">
+    <value>This field is required.</value>
+  </data>
+  <data name="Js_Number" xml:space="preserve">
+    <value>Please enter a valid number.</value>
+  </data>
+  <data name="Js_Digits" xml:space="preserve">
+    <value>Please enter digits only.</value>
+  </data>
+  <data name="Js_Step" xml:space="preserve">
+    <value>Please enter a multiple of {0}.</value>
+  </data>
+  <data name="Js_Min" xml:space="preserve">
+    <value>Please enter a value greater than or equal to {0}.</value>
+  </data>
+  <data name="Js_Max" xml:space="preserve">
+    <value>Please enter a value less than or equal to {0}.</value>
+  </data>
+  <data name="Js_Email" xml:space="preserve">
+    <value>Please enter a valid email address.</value>
+  </data>
+  <data name="Js_Url" xml:space="preserve">
+    <value>Please enter a valid URL.</value>
+  </data>
+  <data name="Js_Date" xml:space="preserve">
+    <value>Please enter a valid date.</value>
+  </data>
+  <data name="Js_MaxLength" xml:space="preserve">
+    <value>Please enter no more than {0} characters.</value>
+  </data>
+  <data name="Js_MinLength" xml:space="preserve">
+    <value>Please enter at least {0} characters.</value>
+  </data>
+  <data name="Js_Pattern" xml:space="preserve">
+    <value>Invalid format.</value>
+  </data>
+  <data name="Js_EqualTo" xml:space="preserve">
+    <value>Please enter the same value again.</value>
+  </data>
+  <data name="Js_Remote" xml:space="preserve">
+    <value>Please fix this field.</value>
+  </data>
+  <data name="Js_ConfirmTitle" xml:space="preserve">
+    <value>Please confirm</value>
+  </data>
+  <data name="Js_ConfirmOk" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="Js_Copied" xml:space="preserve">
+    <value>Copied to clipboard!</value>
+  </data>
+  <data name="Button_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Processing" xml:space="preserve">
+    <value>Processing...</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Language_Vietnamese" xml:space="preserve">
+    <value>Vietnamese</value>
+  </data>
+  <data name="Language_English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Layout_ToggleNavigation" xml:space="preserve">
+    <value>Toggle navigation</value>
+  </data>
+  <data name="Loading_ProcessingRequest" xml:space="preserve">
+    <value>Please wait while we process your request...</value>
+  </data>
+  <data name="Loading_CancelProgress" xml:space="preserve">
+    <value>Cancel Progress</value>
+  </data>
+  <data name="Privacy_Title" xml:space="preserve">
+    <value>Privacy Policy</value>
+  </data>
+  <data name="Privacy_Body" xml:space="preserve">
+    <value>Use this page to detail your site's privacy policy.</value>
+  </data>
+  <data name="Js_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Js_Account" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="Js_Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Js_PasswordMinLength" xml:space="preserve">
+    <value>New password must be at least 6 characters!</value>
+  </data>
+  <data name="Js_PasswordMismatch" xml:space="preserve">
+    <value>Password confirmation does not match!</value>
+  </data>
+  <data name="Js_Saving" xml:space="preserve">
+    <value>Saving...</value>
+  </data>
+  <data name="Js_ResetPasswordSuccess" xml:space="preserve">
+    <value>Reset password for account {0} successfully!</value>
+  </data>
+  <data name="Js_ResetPasswordError" xml:space="preserve">
+    <value>Error resetting password!</value>
+  </data>
+  <data name="Attendance_Err_NotInAllowedTime" xml:space="preserve">
+    <value>Not within the allowed attendance time.</value>
+  </data>
+  <data name="Attendance_Warn_LateCheckIn" xml:space="preserve">
+    <value>You have checked in successfully! (Late by {0} minutes, exceeding the shift's allowance of {1} minutes). Working time will be counted from the moment you checked in.</value>
+  </data>
+  <data name="Attendance_Warn_EarlyCheckOut" xml:space="preserve">
+    <value>You have checked out successfully! (Left {0} minutes early, exceeding the shift's allowance of {1} minutes). Working time will end at the moment you checked out.</value>
+  </data>
+  <data name="Attendance_Err_RecordNotFound" xml:space="preserve">
+    <value>Attendance record does not exist!</value>
+  </data>
+  <data name="Attendance_Err_AdjustReasonRequired" xml:space="preserve">
+    <value>The adjustment reason must not be empty!</value>
+  </data>
+  <data name="Attendance_AdjustSuccess" xml:space="preserve">
+    <value>Attendance adjusted successfully!</value>
+  </data>
+  <data name="Attendance_Scope_Branch" xml:space="preserve">
+    <value>Branch {0}</value>
+  </data>
+  <data name="Attendance_Scope_YourStore" xml:space="preserve">
+    <value>Your store</value>
+  </data>
+  <data name="Attendance_Scope_Company" xml:space="preserve">
+    <value>Whole company</value>
+  </data>
+  <data name="Attendance_EmployeeHistory" xml:space="preserve">
+    <value>Employee history</value>
+  </data>
+  <data name="Attendance_DefaultShiftName" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="Attendance_AdjDetail_Title" xml:space="preserve">
+    <value>Attendance adjustment details</value>
+  </data>
+  <data name="Attendance_AdjDetail_Employee" xml:space="preserve">
+    <value>Employee:</value>
+  </data>
+  <data name="Attendance_AdjDetail_WorkDate" xml:space="preserve">
+    <value>Work date:</value>
+  </data>
+  <data name="Attendance_AdjDetail_Shift" xml:space="preserve">
+    <value>Shift:</value>
+  </data>
+  <data name="Attendance_AdjDetail_CurrentIn" xml:space="preserve">
+    <value>Current check-in:</value>
+  </data>
+  <data name="Attendance_AdjDetail_CurrentOut" xml:space="preserve">
+    <value>Current check-out:</value>
+  </data>
+  <data name="Attendance_AdjDetail_History" xml:space="preserve">
+    <value>Adjustment history:</value>
+  </data>
+  <data name="Attendance_AdjDetail_ModifiedBy" xml:space="preserve">
+    <value>Adjusted by:</value>
+  </data>
+  <data name="Attendance_AdjDetail_Before" xml:space="preserve">
+    <value>Before change:</value>
+  </data>
+  <data name="Attendance_AdjDetail_After" xml:space="preserve">
+    <value>After adjustment:</value>
+  </data>
+  <data name="Attendance_AdjDetail_Reason" xml:space="preserve">
+    <value>Adjustment reason / Note:</value>
+  </data>
+  <data name="Attendance_AdjDetail_ApprovedNote" xml:space="preserve">
+    <value>This attendance record has been approved by a manager and its working hours have been updated.</value>
+  </data>
+  <data name="StringLength" xml:space="preserve">
+    <value>{0} must be between {2} and {1} characters long.</value>
+  </data>
+  <data name="StringLengthMax" xml:space="preserve">
+    <value>{0} cannot be more than {1} characters.</value>
+  </data>
+  <data name="EmailAddress" xml:space="preserve">
+    <value>{0} is not a valid email address.</value>
+  </data>
+  <data name="PhoneInvalid" xml:space="preserve">
+    <value>{0} is not a valid phone number.</value>
+  </data>
+  <data name="Compare" xml:space="preserve">
+    <value>{0} and {1} do not match.</value>
+  </data>
+  <data name="RegularExpression" xml:space="preserve">
+    <value>{0} is not in a valid format.</value>
+  </data>
+  <data name="RegularExpression_VnPhone" xml:space="preserve">
+    <value>{0} must have exactly 10 digits and start with 0 (e.g. 0912345678).</value>
+  </data>
+  <data name="Binding_ValueMustBeANumber" xml:space="preserve">
+    <value>{0} must be a number.</value>
+  </data>
+  <data name="Binding_NonPropertyValueMustBeANumber" xml:space="preserve">
+    <value>The field must be a number.</value>
+  </data>
+  <data name="Binding_AttemptedValueIsInvalid" xml:space="preserve">
+    <value>The value '{0}' is not valid for {1}.</value>
+  </data>
+  <data name="Binding_NonPropertyAttemptedValueIsInvalid" xml:space="preserve">
+    <value>The value '{0}' is not valid.</value>
+  </data>
+  <data name="Binding_UnknownValueIsInvalid" xml:space="preserve">
+    <value>The supplied value is invalid for {0}.</value>
+  </data>
+  <data name="Binding_NonPropertyUnknownValueIsInvalid" xml:space="preserve">
+    <value>The supplied value is invalid.</value>
+  </data>
+  <data name="Binding_ValueIsInvalid" xml:space="preserve">
+    <value>The value '{0}' is invalid.</value>
+  </data>
+  <data name="Binding_ValueMustNotBeNull" xml:space="preserve">
+    <value>This field is required.</value>
+  </data>
+  <data name="Binding_MissingBindRequiredValue" xml:space="preserve">
+    <value>A value for {0} was not provided.</value>
+  </data>
+  <data name="Binding_MissingKeyOrValue" xml:space="preserve">
+    <value>A value is required.</value>
+  </data>
+  <data name="Binding_MissingRequestBodyRequiredValue" xml:space="preserve">
+    <value>A non-empty request body is required.</value>
+  </data>
+  <data name="Js_TimeAm" xml:space="preserve">
+    <value>AM</value>
+  </data>
+  <data name="Js_TimePm" xml:space="preserve">
+    <value>PM</value>
+  </data>
+  <data name="Js_TimePlaceholder" xml:space="preserve">
+    <value>hh:mm AM</value>
+  </data>
+  <data name="Js_TimeSuggestions" xml:space="preserve">
+    <value>Suggested times</value>
+  </data>
+  <data name="Js_TimeCommon" xml:space="preserve">
+    <value>Common times</value>
+  </data>
+  <data name="Js_TimeAll" xml:space="preserve">
+    <value>All times (every 30 minutes)</value>
+  </data>
+  <data name="Js_TimeInvalid" xml:space="preserve">
+    <value>Invalid time (e.g. 07:30 AM).</value>
+  </data>
+  <data name="Js_TimeClear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
 </root>

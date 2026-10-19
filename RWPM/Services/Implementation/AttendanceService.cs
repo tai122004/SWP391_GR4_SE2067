@@ -75,7 +75,7 @@ namespace RWPM.Services.Implementation
             var now = nowAt.TimeOfDay;
             ShiftRegistration? matchedRegistration = null;
             bool isValid = false;
-            string errorMessage = "Không nằm trong thời gian cho phép chấm công.";
+            string errorMessage = SharedResource.Attendance_Err_NotInAllowedTime;
 
             // Tìm ca phù hợp nhất với giờ hiện tại
             foreach (var reg in registrations)
@@ -197,7 +197,7 @@ namespace RWPM.Services.Implementation
             int gracePeriod = matchedShift.GracePeriodMinutes ?? RWPM.Common.Constants.ShiftDefaults.GracePeriodMinutes;
             if (lateMins > gracePeriod)
             {
-                warningMsg = $"Bạn đã chấm công vào làm thành công! (Đi muộn {lateMins} phút, vượt quá {gracePeriod} phút cho phép của ca). Thời gian tính giờ làm việc sẽ được bắt đầu từ thời điểm bạn vào làm.";
+                warningMsg = string.Format(SharedResource.Attendance_Warn_LateCheckIn, lateMins, gracePeriod);
             }
 
             return (record, warningMsg);
@@ -286,7 +286,7 @@ namespace RWPM.Services.Implementation
                 int earlyOutLimit = shift.EarlyCheckOutMinutes ?? RWPM.Common.Constants.ShiftDefaults.EarlyCheckOutMinutes;
                 if (earlyMins > earlyOutLimit)
                 {
-                    warningMsg = $"Bạn đã chấm công tan làm thành công! (Về sớm {earlyMins} phút, vượt quá thời gian cho phép {earlyOutLimit} phút của ca). Thời gian tính giờ làm việc sẽ kết thúc tại thời điểm bạn tan làm.";
+                    warningMsg = string.Format(SharedResource.Attendance_Warn_EarlyCheckOut, earlyMins, earlyOutLimit);
                 }
             }
 
@@ -330,7 +330,7 @@ namespace RWPM.Services.Implementation
 
             if (record == null)
             {
-                throw new Exception("Bản ghi chấm công không tồn tại!");
+                throw new Exception(SharedResource.Attendance_Err_RecordNotFound);
             }
 
             // Ghi lại lịch sử

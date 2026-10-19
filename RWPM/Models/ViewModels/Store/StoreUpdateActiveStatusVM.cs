@@ -1,13 +1,14 @@
+using RWPM.Common.Attributes;
 using System.ComponentModel.DataAnnotations;
 
 namespace RWPM.Models.ViewModels.Store
 {
     public class StoreUpdateActiveStatusVM
     {
-        [Required]
+        [RequiredLocalization]
         public int? StoreId { get; set; }
 
-        [Required]
+        [RequiredLocalization]
         public bool? IsActive { get; set; }
     }
 }

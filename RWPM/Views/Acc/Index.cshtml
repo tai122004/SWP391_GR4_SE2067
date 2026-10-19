@@ -62,7 +62,7 @@
                 <button type="button" class="btn btn-sm btn-outline-success me-3" onclick="copyToClipboard('@TempData["CreatedAccountNotice"]', '@Html.Raw(AccountSharedResource.Toast_CopiedAccountPassword)')">
                     <i class="bi bi-copy me-1"></i> @AccountSharedResource.Button_Copy
                 </button>
-                <button type="button" class="btn-close position-static p-2" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close position-static p-2" data-bs-dismiss="alert" aria-label="@AccountSharedResource.Excel_Close"></button>
             </div>
         </div>
     }
@@ -106,7 +106,7 @@
             <table class="table modern-table align-middle mb-0">
                 <thead>
                     <tr>
-                        <th>@AccountModelResource.Fullname / Email</th>
+                        <th>@AccountModelResource.Fullname / @AccountModelResource.Email</th>
                         <th>@AccountModelResource.Username</th>
                         <th class="text-center">@AccountModelResource.Role</th>
                         <th class="text-end">@SharedResource.CreatedDate</th>
@@ -248,7 +248,7 @@
                 <h5 class="modal-title fs-6 d-flex align-items-center" id="modalQuickResetPasswordLabel">
                     <i class="bi bi-key-fill me-2 fs-5"></i> @AccountSharedResource.Modal_QuickResetTitle
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="@AccountSharedResource.Excel_Close"></button>
             </div>
             <div class="modal-body p-4">
                 <input type="hidden" id="quickResetModal_Username" />
@@ -302,7 +302,7 @@
                 <h5 class="modal-title fw-bold text-dark d-flex align-items-center" id="importExcelModalLabel">
                     <i class="bi bi-file-earmark-excel-fill text-success me-2 fs-5"></i> @AccountSharedResource.Excel_ImportTitle
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@AccountSharedResource.Excel_Close"></button>
             </div>
             
             <div class="modal-body p-4">
@@ -316,7 +316,7 @@
                     <div class="mb-3">
                         <label class="form-label fw-semibold small required">@AccountSharedResource.Excel_SelectFile</label>
                         <input type="file" id="accImportFileInput" class="form-control form-control-lg" accept=".xlsx" />
-                        <div class="form-text small mt-1">.xlsx (Microsoft Excel)</div>
+                        <div class="form-text small mt-1">@AccountSharedResource.Excel_SupportedFormat</div>
                     </div>
 
                     <div id="accImportStep1Error" class="alert alert-danger py-2 px-3 small d-none"></div>
@@ -338,7 +338,7 @@
                             </span>
                         </div>
                         <div class="small text-muted">
-                            <i class="bi bi-shield-check text-primary me-1"></i> @AccountSharedResource.Excel_Step1_Note
+                            <i class="bi bi-shield-check text-primary me-1"></i> @AccountSharedResource.Excel_AutoValidated
                         </div>
                     </div>
 
@@ -362,7 +362,7 @@
                                     <th class="text-center" style="width: 120px;">@AccountSharedResource.Excel_Col_Status</th>
                                     <th>@AccountSharedResource.Excel_Col_Username</th>
                                     <th>@AccountSharedResource.Excel_Col_FullName</th>
-                                    <th>Email</th>
+                                    <th>@AccountSharedResource.Excel_Col_Email</th>
                                     <th>@AccountModelResource.PhoneNumber</th>
                                     <th>@AccountSharedResource.Excel_Col_Role</th>
                                     <th>@AccountSharedResource.Excel_Col_Store</th>

@@ -6,21 +6,27 @@ namespace RWPM.Models.ViewModels.Shift;
 
 public class ShiftCreateVM : IValidatableObject
 {
+    [Display(Name = "ShiftName", ResourceType = typeof(Resources.Models.Shift))]
     [RequiredLocalization, MaxLengthLocalized(100)]
     public string ShiftName { get; set; } = string.Empty;
-    [Required(ErrorMessage = "Vui lòng nhập giờ bắt đầu.")]
+    [Display(Name = "StartTime", ResourceType = typeof(Resources.Models.Shift))]
+    [RequiredLocalization]
     public TimeSpan? StartTime { get; set; }
-    [Required(ErrorMessage = "Vui lòng nhập giờ kết thúc.")]
+    [Display(Name = "EndTime", ResourceType = typeof(Resources.Models.Shift))]
+    [RequiredLocalization]
     public TimeSpan? EndTime { get; set; }
     public bool EndsNextDay { get; set; }
     public TimeSpan? BreakStartTime { get; set; }
     public TimeSpan? BreakEndTime { get; set; }
     public bool BreakStartsNextDay { get; set; }
     public bool BreakEndsNextDay { get; set; }
-    [RequiredLocalization, Range(0,60)] public int? GracePeriodMinutes { get; set; } = RWPM.Common.Constants.ShiftDefaults.GracePeriodMinutes;
-    [RequiredLocalization, Range(0,60)] public int? EarlyCheckOutMinutes { get; set; } = RWPM.Common.Constants.ShiftDefaults.EarlyCheckOutMinutes;
+    [Display(Name = "GracePeriodMinutes", ResourceType = typeof(Resources.Models.Shift))]
+    [RequiredLocalization, RangeLocalized(0,60)] public int? GracePeriodMinutes { get; set; } = RWPM.Common.Constants.ShiftDefaults.GracePeriodMinutes;
+    [Display(Name = "EarlyCheckOutMinutes", ResourceType = typeof(Resources.Models.Shift))]
+    [RequiredLocalization, RangeLocalized(0,60)] public int? EarlyCheckOutMinutes { get; set; } = RWPM.Common.Constants.ShiftDefaults.EarlyCheckOutMinutes;
     [DataType(DataType.Date)] public DateTime EffectiveFrom { get; set; } = DateTime.Today;
     [DataType(DataType.Date)] public DateTime? EffectiveTo { get; set; }
+    [Display(Name = "Description", ResourceType = typeof(Resources.Models.Shift))]
     [MaxLengthLocalized(255)] public string? Description { get; set; }
     public List<int> StoreIds { get; set; } = new();
     public bool IsActive { get; set; } = true;

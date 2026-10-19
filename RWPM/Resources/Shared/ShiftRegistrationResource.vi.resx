@@ -163,4 +163,382 @@
   <data name="Subtitle" xml:space="preserve">
     <value>Theo dõi, đăng ký và quản lý lịch làm việc theo tuần.</value>
   </data>
+  <data name="Header_Branch" xml:space="preserve">
+    <value>Chi nhánh:</value>
+  </data>
+  <data name="Header_Description" xml:space="preserve">
+    <value>Lựa chọn các ca làm việc phù hợp trong tuần và gửi yêu cầu đăng ký tới Quản lý để được phê duyệt.</value>
+  </data>
+  <data name="Status_NotRegistered" xml:space="preserve">
+    <value>Chưa đăng ký</value>
+  </data>
+  <data name="Status_NewlySelected" xml:space="preserve">
+    <value>Mới chọn</value>
+  </data>
+  <data name="Status_Pending" xml:space="preserve">
+    <value>Chờ duyệt</value>
+  </data>
+  <data name="Status_Approved" xml:space="preserve">
+    <value>Đã duyệt</value>
+  </data>
+  <data name="Status_Overdue" xml:space="preserve">
+    <value>Quá hạn</value>
+  </data>
+  <data name="Status_Rejected" xml:space="preserve">
+    <value>Từ chối</value>
+  </data>
+  <data name="Status_RejectedLong" xml:space="preserve">
+    <value>Bị từ chối</value>
+  </data>
+  <data name="Status_Unregister" xml:space="preserve">
+    <value>Bỏ đăng ký</value>
+  </data>
+  <data name="Status_NotApplicable" xml:space="preserve">
+    <value>Không áp dụng</value>
+  </data>
+  <data name="Tab_MyRegistration" xml:space="preserve">
+    <value>Đăng ký ca của tôi</value>
+  </data>
+  <data name="Tab_ManagerSchedule" xml:space="preserve">
+    <value>Quản lý lịch ca</value>
+  </data>
+  <data name="Label_Store" xml:space="preserve">
+    <value>Cửa hàng:</value>
+  </data>
+  <data name="Nav_PrevWeek" xml:space="preserve">
+    <value>Tuần trước</value>
+  </data>
+  <data name="Nav_GoToCurrentWeek" xml:space="preserve">
+    <value>Chuyển đến tuần hiện tại</value>
+  </data>
+  <data name="Nav_ThisWeek" xml:space="preserve">
+    <value>Tuần này</value>
+  </data>
+  <data name="Nav_NextWeek" xml:space="preserve">
+    <value>Tuần sau</value>
+  </data>
+  <data name="Picker_PrevYear" xml:space="preserve">
+    <value>Năm trước</value>
+  </data>
+  <data name="Picker_PrevMonth" xml:space="preserve">
+    <value>Tháng trước</value>
+  </data>
+  <data name="Picker_NextMonth" xml:space="preserve">
+    <value>Tháng sau</value>
+  </data>
+  <data name="Picker_NextYear" xml:space="preserve">
+    <value>Năm sau</value>
+  </data>
+  <data name="Picker_Mon" xml:space="preserve">
+    <value>T2</value>
+  </data>
+  <data name="Picker_Tue" xml:space="preserve">
+    <value>T3</value>
+  </data>
+  <data name="Picker_Wed" xml:space="preserve">
+    <value>T4</value>
+  </data>
+  <data name="Picker_Thu" xml:space="preserve">
+    <value>T5</value>
+  </data>
+  <data name="Picker_Fri" xml:space="preserve">
+    <value>T6</value>
+  </data>
+  <data name="Picker_Sat" xml:space="preserve">
+    <value>T7</value>
+  </data>
+  <data name="Picker_Sun" xml:space="preserve">
+    <value>CN</value>
+  </data>
+  <data name="Picker_Hint" xml:space="preserve">
+    <value>Nhấp vào một dòng tuần bất kỳ để chọn</value>
+  </data>
+  <data name="Picker_MonthYearFormat" xml:space="preserve">
+    <value>Tháng {0} / {1}</value>
+  </data>
+  <data name="Week_Format" xml:space="preserve">
+    <value>Tuần {0}</value>
+  </data>
+  <data name="Day_Mon" xml:space="preserve">
+    <value>Thứ 2</value>
+  </data>
+  <data name="Day_Tue" xml:space="preserve">
+    <value>Thứ 3</value>
+  </data>
+  <data name="Day_Wed" xml:space="preserve">
+    <value>Thứ 4</value>
+  </data>
+  <data name="Day_Thu" xml:space="preserve">
+    <value>Thứ 5</value>
+  </data>
+  <data name="Day_Fri" xml:space="preserve">
+    <value>Thứ 6</value>
+  </data>
+  <data name="Day_Sat" xml:space="preserve">
+    <value>Thứ 7</value>
+  </data>
+  <data name="Day_Sun" xml:space="preserve">
+    <value>Chủ nhật</value>
+  </data>
+  <data name="Toolbar_ReloadTitle" xml:space="preserve">
+    <value>Tải lại dữ liệu</value>
+  </data>
+  <data name="Toolbar_Refresh" xml:space="preserve">
+    <value>Làm mới</value>
+  </data>
+  <data name="Toolbar_CopyWeek" xml:space="preserve">
+    <value>Sao chép tuần</value>
+  </data>
+  <data name="Summary_Title" xml:space="preserve">
+    <value>Tóm tắt ca tuần:</value>
+  </data>
+  <data name="Summary_NewSelected" xml:space="preserve">
+    <value>mới chọn</value>
+  </data>
+  <data name="Summary_Pending" xml:space="preserve">
+    <value>chờ duyệt</value>
+  </data>
+  <data name="Summary_Approved" xml:space="preserve">
+    <value>đã duyệt</value>
+  </data>
+  <data name="Summary_TotalHours" xml:space="preserve">
+    <value>Tổng giờ dự kiến:</value>
+  </data>
+  <data name="Summary_HoursFormat" xml:space="preserve">
+    <value>{0} giờ</value>
+  </data>
+  <data name="Summary_ResetTitle" xml:space="preserve">
+    <value>Đặt lại các thay đổi chưa lưu</value>
+  </data>
+  <data name="Summary_Reset" xml:space="preserve">
+    <value>Đặt lại</value>
+  </data>
+  <data name="Modal_RegisterTitle" xml:space="preserve">
+    <value>Đăng ký ca làm việc</value>
+  </data>
+  <data name="Modal_EmployeeLabel" xml:space="preserve">
+    <value>Nhân viên:</value>
+  </data>
+  <data name="Modal_SelectAvailableShift" xml:space="preserve">
+    <value>Chọn ca làm việc khả dụng:</value>
+  </data>
+  <data name="Modal_DateFormat" xml:space="preserve">
+    <value>Ngày: {0}</value>
+  </data>
+  <data name="Modal_LoadingShifts" xml:space="preserve">
+    <value>Đang tải danh sách ca...</value>
+  </data>
+  <data name="Modal_NoShiftsForDay" xml:space="preserve">
+    <value>Không có ca làm việc khả dụng cho ngày này.</value>
+  </data>
+  <data name="Modal_LoadShiftsError" xml:space="preserve">
+    <value>Lỗi tải danh sách ca làm việc.</value>
+  </data>
+  <data name="View_Subtitle" xml:space="preserve">
+    <value>Thông tin chi tiết ca làm việc đã đăng ký</value>
+  </data>
+  <data name="View_RejectionReason" xml:space="preserve">
+    <value>Lý do từ chối:</value>
+  </data>
+  <data name="View_Approver" xml:space="preserve">
+    <value>Người duyệt:</value>
+  </data>
+  <data name="View_CancelShift" xml:space="preserve">
+    <value>Hủy ca</value>
+  </data>
+  <data name="View_ApprovedNotice" xml:space="preserve">
+    <value>Ca đã duyệt, không thể tự hủy.</value>
+  </data>
+  <data name="Grid_ShiftColumn" xml:space="preserve">
+    <value>Ca làm việc</value>
+  </data>
+  <data name="Grid_Today" xml:space="preserve">
+    <value>Hôm nay</value>
+  </data>
+  <data name="Grid_NoShiftsTitle" xml:space="preserve">
+    <value>Không có ca làm việc nào khả dụng</value>
+  </data>
+  <data name="Grid_NoShiftsDesc" xml:space="preserve">
+    <value>Chi nhánh hiện tại chưa được cấu hình ca làm việc hoạt động.</value>
+  </data>
+  <data name="Grid_WorkHoursFormat" xml:space="preserve">
+    <value>{0}h làm việc</value>
+  </data>
+  <data name="Slot_ApprovedTitle" xml:space="preserve">
+    <value>Ca đã được duyệt · Nhấp để xem chi tiết</value>
+  </data>
+  <data name="Slot_RejectedTitle" xml:space="preserve">
+    <value>Ca bị từ chối · Nhấp để xem lý do</value>
+  </data>
+  <data name="Slot_PendingTitle" xml:space="preserve">
+    <value>Ca chờ phê duyệt · Bỏ chọn nếu muốn hủy yêu cầu</value>
+  </data>
+  <data name="Slot_PastTitle" xml:space="preserve">
+    <value>Không thể đăng ký ca cho những ngày trong quá khứ</value>
+  </data>
+  <data name="Slot_UnavailableTitle" xml:space="preserve">
+    <value>Ca làm việc chưa hoặc không còn hiệu lực</value>
+  </data>
+  <data name="Slot_AvailableTitle" xml:space="preserve">
+    <value>Nhấp để chọn đăng ký ca làm việc này</value>
+  </data>
+  <data name="Slot_ViewDetails" xml:space="preserve">
+    <value>Xem chi tiết</value>
+  </data>
+  <data name="Slot_Details" xml:space="preserve">
+    <value>Chi tiết</value>
+  </data>
+  <data name="Btn_Sending" xml:space="preserve">
+    <value>Đang gửi...</value>
+  </data>
+  <data name="Toast_RegisterSuccess" xml:space="preserve">
+    <value>Đăng ký ca làm việc thành công!</value>
+  </data>
+  <data name="Toast_CopiedFormat" xml:space="preserve">
+    <value>Đã sao chép {0} ca hợp lệ. Vui lòng bấm 'Lưu đăng ký ca tuần' để gửi.</value>
+  </data>
+  <data name="Toast_CancelSuccess" xml:space="preserve">
+    <value>Hủy đăng ký ca thành công!</value>
+  </data>
+  <data name="Toast_CancelFailed" xml:space="preserve">
+    <value>Không thể hủy ca.</value>
+  </data>
+  <data name="Toast_SystemError" xml:space="preserve">
+    <value>Lỗi hệ thống</value>
+  </data>
+  <data name="Err_EmployeeNotFound" xml:space="preserve">
+    <value>Không tìm thấy nhân viên.</value>
+  </data>
+  <data name="Err_ShiftNotFoundOrInactive" xml:space="preserve">
+    <value>Ca làm việc có ID {0} không tồn tại hoặc đã ngừng hoạt động.</value>
+  </data>
+  <data name="Err_ShiftNotAppliedToStore" xml:space="preserve">
+    <value>Ca làm việc {0} không áp dụng cho chi nhánh của nhân viên.</value>
+  </data>
+  <data name="Err_ApprovedCannotCancel" xml:space="preserve">
+    <value>Ca làm việc đã được duyệt. Bạn không thể tự ý hủy ca, vui lòng liên hệ Quản lý!</value>
+  </data>
+  <data name="Err_CannotCancelPast" xml:space="preserve">
+    <value>Không thể hủy ca làm việc trong quá khứ.</value>
+  </data>
+  <data name="Err_EmployeeProfileNotFound" xml:space="preserve">
+    <value>Không tìm thấy hồ sơ nhân viên của bạn để đăng ký ca.</value>
+  </data>
+  <data name="Err_PastDateRegistration" xml:space="preserve">
+    <value>Không thể đăng ký ca cho những ngày trong quá khứ.</value>
+  </data>
+  <data name="Err_AlreadyRegistered" xml:space="preserve">
+    <value>Ca làm việc này đã được đăng ký cho nhân viên vào ngày đã chọn.</value>
+  </data>
+  <data name="Err_ShiftAlreadyRegisteredOnDate" xml:space="preserve">
+    <value>Ca làm việc {0} đã được đăng ký cho ngày {1}.</value>
+  </data>
+  <data name="Leave_Paid" xml:space="preserve">
+    <value>nghỉ có phép</value>
+  </data>
+  <data name="Leave_Unpaid" xml:space="preserve">
+    <value>nghỉ không phép</value>
+  </data>
+  <data name="Err_OnApprovedLeave" xml:space="preserve">
+    <value>Nhân viên đã được phê duyệt {0} vào ngày {1} (Đơn nghỉ #{2}). Không thể xếp ca vào ngày này.</value>
+  </data>
+  <data name="Err_ShiftNotAvailable" xml:space="preserve">
+    <value>Ca không hoạt động, hết hiệu lực hoặc chưa được áp dụng tại chi nhánh.</value>
+  </data>
+  <data name="Err_ShiftOverlap" xml:space="preserve">
+    <value>Trùng ca làm việc: {0} ({1}) và {2} ({3}).</value>
+  </data>
+  <data name="Swap_SourceNotFound" xml:space="preserve">
+    <value>Ca làm việc cần đổi không tồn tại.</value>
+  </data>
+  <data name="Swap_OnlyApproved" xml:space="preserve">
+    <value>Chỉ có thể đổi những ca làm việc đã được phê duyệt.</value>
+  </data>
+  <data name="Swap_SelectPeerAndShift" xml:space="preserve">
+    <value>Vui lòng chọn đồng nghiệp và ca làm việc muốn đổi cùng.</value>
+  </data>
+  <data name="Swap_SameShift" xml:space="preserve">
+    <value>Không thể chọn cùng một ca làm việc để đổi.</value>
+  </data>
+  <data name="Swap_WithSelf" xml:space="preserve">
+    <value>Không thể đổi ca với chính mình theo hình thức đổi ca với đồng nghiệp.</value>
+  </data>
+  <data name="Swap_PeerShiftNotFound" xml:space="preserve">
+    <value>Ca làm việc của đồng nghiệp không tồn tại.</value>
+  </data>
+  <data name="Swap_PeerShiftNotApproved" xml:space="preserve">
+    <value>Ca làm việc của đồng nghiệp không ở trạng thái đã được phê duyệt.</value>
+  </data>
+  <data name="Swap_SameBranchOnly" xml:space="preserve">
+    <value>Chỉ có thể đổi ca với đồng nghiệp trong cùng một chi nhánh.</value>
+  </data>
+  <data name="Swap_SameShiftAndDay" xml:space="preserve">
+    <value>Hai ca làm việc này cùng ca và cùng ngày, không cần đổi.</value>
+  </data>
+  <data name="Swap_PeerAlreadyScheduled" xml:space="preserve">
+    <value>Đồng nghiệp đã có lịch làm việc trong ca ngày {0}, không thể nhận đổi ca này.</value>
+  </data>
+  <data name="Swap_RequesterAlreadyScheduled" xml:space="preserve">
+    <value>Bạn đã có lịch làm việc trong ca ngày {0}, không thể nhận ca này.</value>
+  </data>
+  <data name="Swap_EitherHasPending" xml:space="preserve">
+    <value>Một trong hai ca làm việc đang có yêu cầu đổi ca khác chờ duyệt.</value>
+  </data>
+  <data name="Swap_SelectNewShiftAndDate" xml:space="preserve">
+    <value>Vui lòng chọn ca mới và ngày làm việc mới muốn đổi sang.</value>
+  </data>
+  <data name="Swap_SameAsCurrent" xml:space="preserve">
+    <value>Ca mới và ngày mới trùng với ca hiện tại.</value>
+  </data>
+  <data name="Swap_NewShiftNotFound" xml:space="preserve">
+    <value>Ca làm việc mới không tồn tại hoặc đã ngừng hoạt động.</value>
+  </data>
+  <data name="Swap_YouAlreadyScheduled" xml:space="preserve">
+    <value>Bạn đã có lịch làm việc trong ca ngày {0}.</value>
+  </data>
+  <data name="Swap_ThisHasPending" xml:space="preserve">
+    <value>Ca làm việc này đang có yêu cầu đổi ca khác chờ duyệt.</value>
+  </data>
+  <data name="Swap_RequestNotFound" xml:space="preserve">
+    <value>Yêu cầu đổi ca không tồn tại.</value>
+  </data>
+  <data name="Swap_AlreadyProcessed" xml:space="preserve">
+    <value>Yêu cầu đổi ca này đã được xử lý trước đó.</value>
+  </data>
+  <data name="Swap_OriginalNotFound" xml:space="preserve">
+    <value>Ca làm việc gốc không tồn tại.</value>
+  </data>
+  <data name="Swap_OriginalNoLongerApproved" xml:space="preserve">
+    <value>Ca làm việc gốc không còn ở trạng thái được phê duyệt.</value>
+  </data>
+  <data name="Swap_OriginalNotOwned" xml:space="preserve">
+    <value>Ca làm việc gốc không còn thuộc về nhân viên gửi yêu cầu đổi ca.</value>
+  </data>
+  <data name="Swap_PeerShiftNoLongerApproved" xml:space="preserve">
+    <value>Ca làm việc của đồng nghiệp không còn ở trạng thái được phê duyệt.</value>
+  </data>
+  <data name="Swap_PeerShiftNotOwned" xml:space="preserve">
+    <value>Ca làm việc của đồng nghiệp không còn thuộc về đồng nghiệp này (có thể đã đổi trước đó).</value>
+  </data>
+  <data name="Swap_TargetEmployeeAlreadyScheduled" xml:space="preserve">
+    <value>Nhân viên nhận đổi ({0}) đã có lịch làm việc trong ca ngày {1}.</value>
+  </data>
+  <data name="Swap_RequesterEmployeeAlreadyScheduled" xml:space="preserve">
+    <value>Nhân viên gửi yêu cầu ({0}) đã có lịch làm việc trong ca ngày {1}.</value>
+  </data>
+  <data name="Swap_EmployeeAlreadyScheduledNewDate" xml:space="preserve">
+    <value>Nhân viên đã có lịch làm việc trong ca và ngày mới này ({0}).</value>
+  </data>
+  <data name="Swap_DuplicateViolation" xml:space="preserve">
+    <value>Không thể duyệt đổi ca do vi phạm trùng lặp lịch làm việc (nhân viên đã có ca trùng trong ngày).</value>
+  </data>
+  <data name="Swap_DatabaseError" xml:space="preserve">
+    <value>Lỗi cơ sở dữ liệu khi cập nhật đổi ca: {0}</value>
+  </data>
+  <data name="Swap_DeleteOnlyPending" xml:space="preserve">
+    <value>Chỉ có thể xóa yêu cầu đổi ca đang chờ phê duyệt.</value>
+  </data>
+  <data name="Swap_DeleteNoPermission" xml:space="preserve">
+    <value>Bạn không có quyền xóa yêu cầu đổi ca này.</value>
+  </data>
 </root>

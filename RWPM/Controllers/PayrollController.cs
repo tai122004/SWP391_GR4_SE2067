@@ -6,6 +6,7 @@ using RWPM.Infrastructure.Data;
 using RWPM.Models.ViewModels.Payroll;
 using RWPM.Services.Abstraction;
 using System.Security.Claims;
+using PayrollResource = RWPM.Resources.Shared.PayrollResource;
 
 namespace RWPM.Controllers
 {
@@ -109,7 +110,7 @@ namespace RWPM.Controllers
             }
             catch (KeyNotFoundException)
             {
-                TempData["ErrorMessage"] = "Không tìm thấy kỳ lương!";
+                TempData["ErrorMessage"] = PayrollResource.Err_PayrollNotFound;
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -127,12 +128,12 @@ namespace RWPM.Controllers
             try
             {
                 var payroll = await _payrollService.CalculatePayrollAsync(startDate, endDate, CurrentUsername);
-                TempData["SuccessMessage"] = $"Tính lương kỳ {payroll.StartDate:dd/MM/yyyy} - {payroll.EndDate:dd/MM/yyyy} thành công với {payroll.TotalEmployees} nhân viên!";
+                TempData["SuccessMessage"] = string.Format(PayrollResource.Toast_CalculateSuccess, payroll.StartDate.ToString("dd/MM/yyyy"), payroll.EndDate.ToString("dd/MM/yyyy"), payroll.TotalEmployees);
                 return RedirectToAction(nameof(Detail), new { id = payroll.PayrollId });
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Lỗi tính lương: {ex.Message}";
+                TempData["ErrorMessage"] = string.Format(PayrollResource.Err_CalculateFailed, ex.Message);
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -150,18 +151,18 @@ namespace RWPM.Controllers
             var payroll = await _payrollService.GetPayrollByIdAsync(id);
             if (payroll == null)
             {
-                TempData["ErrorMessage"] = "Không tìm thấy kỳ lương!";
+                TempData["ErrorMessage"] = PayrollResource.Err_PayrollNotFound;
                 return RedirectToAction(nameof(Index));
             }
 
             try
             {
                 await _payrollService.CalculatePayrollAsync(payroll.StartDate, payroll.EndDate, CurrentUsername);
-                TempData["SuccessMessage"] = $"Tính lại bảng lương {payroll.StartDate:dd/MM/yyyy} - {payroll.EndDate:dd/MM/yyyy} thành công!";
+                TempData["SuccessMessage"] = string.Format(PayrollResource.Toast_RecalculateSuccess, payroll.StartDate.ToString("dd/MM/yyyy"), payroll.EndDate.ToString("dd/MM/yyyy"));
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Lỗi tính lại bảng lương: {ex.Message}";
+                TempData["ErrorMessage"] = string.Format(PayrollResource.Err_RecalculateFailed, ex.Message);
             }
 
             return RedirectToAction(nameof(Detail), new { id });
@@ -180,11 +181,11 @@ namespace RWPM.Controllers
             try
             {
                 await _payrollService.LockPayrollAsync(id, CurrentUsername);
-                TempData["SuccessMessage"] = "Đã chốt bảng lương thành công! Dữ liệu bảng lương hiện đã được bảo vệ bất biến.";
+                TempData["SuccessMessage"] = PayrollResource.Toast_LockSuccess;
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Lỗi chốt bảng lương: {ex.Message}";
+                TempData["ErrorMessage"] = string.Format(PayrollResource.Err_LockFailed, ex.Message);
             }
 
             return RedirectToAction(nameof(Detail), new { id });
@@ -202,12 +203,12 @@ namespace RWPM.Controllers
 
             try
             {
-                await _payrollService.UnlockPayrollAsync(id, reason ?? "HR mở khóa bảng lương", CurrentUsername);
-                TempData["SuccessMessage"] = "Đã mở khóa bảng lương để điều chỉnh.";
+                await _payrollService.UnlockPayrollAsync(id, reason ?? PayrollDisplayText.DefaultUnlockReason, CurrentUsername);
+                TempData["SuccessMessage"] = PayrollResource.Toast_UnlockSuccess;
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Lỗi mở khóa bảng lương: {ex.Message}";
+                TempData["ErrorMessage"] = string.Format(PayrollResource.Err_UnlockFailed, ex.Message);
             }
 
             return RedirectToAction(nameof(Detail), new { id });
@@ -226,11 +227,11 @@ namespace RWPM.Controllers
             try
             {
                 await _payrollService.DeletePayrollAsync(id, CurrentUsername);
-                TempData["SuccessMessage"] = "Đã xóa kỳ lương nháp thành công.";
+                TempData["SuccessMessage"] = PayrollResource.Toast_DeleteSuccess;
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Lỗi xóa kỳ lương: {ex.Message}";
+                TempData["ErrorMessage"] = string.Format(PayrollResource.Err_DeleteFailed, ex.Message);
             }
 
             return RedirectToAction(nameof(Index));
@@ -257,7 +258,7 @@ namespace RWPM.Controllers
 
             if (vm == null)
             {
-                TempData["ErrorMessage"] = "Không tìm thấy dữ liệu chi tiết của nhân viên trong kỳ lương!";
+                TempData["ErrorMessage"] = PayrollResource.Err_EmployeeDetailNotFound;
                 return RedirectToAction(nameof(Detail), new { id = payrollId });
             }
 
@@ -298,17 +299,17 @@ namespace RWPM.Controllers
                 var payroll = await _payrollService.GetPayrollByIdAsync(id);
                 if (payroll == null)
                 {
-                    TempData["ErrorMessage"] = "Không tìm thấy kỳ lương!";
+                    TempData["ErrorMessage"] = PayrollResource.Err_PayrollNotFound;
                     return RedirectToAction(nameof(Index));
                 }
 
                 var excelBytes = await _payrollService.ExportPayrollToExcelAsync(id, effectiveStoreId);
-                var fileName = $"BangLuong_{payroll.StartDate:ddMMyy}_{payroll.EndDate:ddMMyy}.xlsx";
+                var fileName = string.Format(PayrollResource.Excel_FileName, payroll.StartDate.ToString("ddMMyy"), payroll.EndDate.ToString("ddMMyy")) + ".xlsx";
                 return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Lỗi xuất Excel: {ex.Message}";
+                TempData["ErrorMessage"] = string.Format(PayrollResource.Err_ExportFailed, ex.Message);
                 return RedirectToAction(nameof(Detail), new { id });
             }
         }
@@ -326,13 +327,13 @@ namespace RWPM.Controllers
             var vm = await _payrollService.GetEmployeePayslipAsync(CurrentUsername, payrollId: payrollId);
             if (vm == null)
             {
-                TempData["ErrorMessage"] = "Không tìm thấy phiếu lương này!";
+                TempData["ErrorMessage"] = PayrollResource.Err_PayslipNotFound;
                 return RedirectToAction(nameof(MyPayslips));
             }
 
             if (vm.Payroll.Status != PayrollStatus.Locked && !IsAdminOrHR)
             {
-                TempData["ErrorMessage"] = "Bảng lương này chưa được chốt duyệt!";
+                TempData["ErrorMessage"] = PayrollResource.Err_PayslipNotLocked;
                 return RedirectToAction(nameof(MyPayslips));
             }
 

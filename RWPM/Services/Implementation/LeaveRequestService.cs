@@ -3,6 +3,7 @@ using RWPM.Common.Enums;
 using RWPM.Infrastructure.Data;
 using RWPM.Models.Entities;
 using RWPM.Models.ViewModels.ShiftRegistration;
+using RWPM.Resources.Shared;
 using RWPM.Services.Abstraction;
 
 namespace RWPM.Services.Implementation
@@ -49,17 +50,17 @@ namespace RWPM.Services.Implementation
             var emp = await _context.Employee.Include(e => e.Account).FirstOrDefaultAsync(e => e.EmployeeId == model.EmployeeId);
             if (emp == null)
             {
-                throw new InvalidOperationException("Hồ sơ nhân viên không tồn tại.");
+                throw new InvalidOperationException(RequestResource.Leave_ErrEmployeeNotFound);
             }
 
             if (model.EndDate.Date < model.StartDate.Date)
             {
-                throw new InvalidOperationException("Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu.");
+                throw new InvalidOperationException(RequestResource.Leave_EndBeforeStart);
             }
 
             if (model.StartDate.Date < DateTime.Today)
             {
-                throw new InvalidOperationException("Không thể tạo đơn xin nghỉ phép cho các ngày trong quá khứ.");
+                throw new InvalidOperationException(RequestResource.Leave_ErrPastDates);
             }
 
             // Kiểm tra trùng lặp với đơn nghỉ phép đã có (đang chờ duyệt hoặc đã duyệt)
@@ -71,7 +72,7 @@ namespace RWPM.Services.Implementation
 
             if (hasOverlap)
             {
-                throw new InvalidOperationException("Bạn đã có đơn xin nghỉ phép đang chờ duyệt hoặc đã duyệt trong khoảng thời gian này.");
+                throw new InvalidOperationException(RequestResource.Leave_ErrOverlap);
             }
 
             int leaveDays = (model.EndDate.Date - model.StartDate.Date).Days + 1;
@@ -81,7 +82,7 @@ namespace RWPM.Services.Implementation
             {
                 if (emp.AnnualLeaveBalance < leaveDays)
                 {
-                    throw new InvalidOperationException($"Số ngày phép năm còn lại ({emp.AnnualLeaveBalance} ngày) không đủ để xin nghỉ {leaveDays} ngày có phép. Vui lòng chọn loại 'Nghỉ không phép' hoặc điều chỉnh thời gian.");
+                    throw new InvalidOperationException(string.Format(RequestResource.Leave_ErrInsufficientCreate, emp.AnnualLeaveBalance, leaveDays));
                 }
             }
 
@@ -112,12 +113,12 @@ namespace RWPM.Services.Implementation
 
             if (leaveReq == null)
             {
-                throw new InvalidOperationException("Đơn xin nghỉ phép không tồn tại.");
+                throw new InvalidOperationException(RequestResource.Leave_ErrNotFound);
             }
 
             if (leaveReq.Status != RegistrationStatus.Pending)
             {
-                throw new InvalidOperationException("Đơn xin nghỉ phép này đã được xử lý trước đó.");
+                throw new InvalidOperationException(RequestResource.Leave_ErrAlreadyProcessed);
             }
 
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -130,7 +131,7 @@ namespace RWPM.Services.Implementation
                 {
                     if (leaveReq.Employee.AnnualLeaveBalance < leaveDays)
                     {
-                        throw new InvalidOperationException($"Nhân viên chỉ còn {leaveReq.Employee.AnnualLeaveBalance} ngày phép năm, không đủ để duyệt đơn nghỉ {leaveDays} ngày có phép.");
+                        throw new InvalidOperationException(string.Format(RequestResource.Leave_ErrInsufficientApprove, leaveReq.Employee.AnnualLeaveBalance, leaveDays));
                     }
 
                     leaveReq.Employee.AnnualLeaveBalance -= leaveDays;
@@ -178,12 +179,12 @@ namespace RWPM.Services.Implementation
             var leaveReq = await _context.LeaveRequest.FindAsync(id);
             if (leaveReq == null)
             {
-                throw new InvalidOperationException("Đơn xin nghỉ phép không tồn tại.");
+                throw new InvalidOperationException(RequestResource.Leave_ErrNotFound);
             }
 
             if (leaveReq.Status != RegistrationStatus.Pending)
             {
-                throw new InvalidOperationException("Đơn xin nghỉ phép này đã được xử lý trước đó.");
+                throw new InvalidOperationException(RequestResource.Leave_ErrAlreadyProcessed);
             }
 
             leaveReq.Status = RegistrationStatus.Rejected;
@@ -204,17 +205,17 @@ namespace RWPM.Services.Implementation
 
             if (leaveReq == null)
             {
-                throw new InvalidOperationException("Đơn xin nghỉ phép không tồn tại.");
+                throw new InvalidOperationException(RequestResource.Leave_ErrNotFound);
             }
 
             if (leaveReq.Status != RegistrationStatus.Pending)
             {
-                throw new InvalidOperationException("Chỉ có thể xóa hoặc hủy đơn xin nghỉ phép đang chờ phê duyệt.");
+                throw new InvalidOperationException(RequestResource.Leave_ErrDeleteOnlyPending);
             }
 
             if (leaveReq.Employee?.Username != username && leaveReq.CreatedBy != username)
             {
-                throw new UnauthorizedAccessException("Bạn không có quyền xóa đơn xin nghỉ phép này.");
+                throw new UnauthorizedAccessException(RequestResource.Leave_ErrNoPermissionDelete);
             }
 
             _context.LeaveRequest.Remove(leaveReq);

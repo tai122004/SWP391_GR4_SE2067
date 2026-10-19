@@ -6,6 +6,7 @@ using RWPM.Infrastructure.Data;
 using RWPM.Models.Entities;
 using RWPM.Models.ViewModels.Payroll;
 using RWPM.Services.Abstraction;
+using PayrollResource = RWPM.Resources.Shared.PayrollResource;
 
 namespace RWPM.Services.Implementation
 {
@@ -63,7 +64,7 @@ namespace RWPM.Services.Implementation
             var payroll = await _context.Payroll.FirstOrDefaultAsync(p => p.PayrollId == payrollId);
             if (payroll == null)
             {
-                throw new KeyNotFoundException($"Không tìm thấy kỳ lương với ID {payrollId}");
+                throw new KeyNotFoundException(string.Format(PayrollResource.Err_PayrollNotFoundId, payrollId));
             }
 
             var query = _context.PayrollDetail
@@ -175,12 +176,12 @@ namespace RWPM.Services.Implementation
 
             if (endDate > today)
                 throw new InvalidOperationException(
-                    $"Ngày kết thúc ({endDate:dd/MM/yyyy}) không được vượt quá hôm nay ({today:dd/MM/yyyy}). Chỉ tính lương cho những ngày đã làm việc.");
+                    string.Format(PayrollResource.Err_EndAfterToday, endDate.ToString("dd/MM/yyyy"), today.ToString("dd/MM/yyyy")));
 
             var maxEnd = GetMaxEndDate(startDate);
             if (endDate > maxEnd)
                 throw new InvalidOperationException(
-                    $"Một kỳ lương tối đa 1 tháng. Với ngày bắt đầu {startDate:dd/MM/yyyy}, ngày kết thúc muộn nhất là {maxEnd:dd/MM/yyyy}.");
+                    string.Format(PayrollResource.Err_MaxOneMonth, startDate.ToString("dd/MM/yyyy"), maxEnd.ToString("dd/MM/yyyy")));
 
             var periods = await _context.Payroll
                 .Select(p => new { p.StartDate, p.EndDate, p.Title })
@@ -194,8 +195,11 @@ namespace RWPM.Services.Implementation
                 if (startDate != requiredStart)
                 {
                     throw new InvalidOperationException(
-                        $"Kỳ lương phải bắt đầu từ ngày {requiredStart:dd/MM/yyyy} (ngay sau kỳ \"{previous.Title}\"). " +
-                        $"Nếu bắt đầu từ {startDate:dd/MM/yyyy}, các ngày {requiredStart:dd/MM/yyyy} - {startDate.AddDays(-1):dd/MM/yyyy} sẽ không được tính lương.");
+                        string.Format(PayrollResource.Err_MustStartFrom,
+                            requiredStart.ToString("dd/MM/yyyy"),
+                            PayrollDisplayText.Title(previous.Title),
+                            startDate.ToString("dd/MM/yyyy"),
+                            startDate.AddDays(-1).ToString("dd/MM/yyyy")));
                 }
                 return;
             }
@@ -208,7 +212,7 @@ namespace RWPM.Services.Implementation
                 if (endDate != requiredEnd)
                 {
                     throw new InvalidOperationException(
-                        $"Kỳ lương này nằm trước kỳ \"{next.Title}\" nên phải kết thúc đúng ngày {requiredEnd:dd/MM/yyyy} để không bị hổng ngày công.");
+                        string.Format(PayrollResource.Err_MustEndBefore, PayrollDisplayText.Title(next.Title), requiredEnd.ToString("dd/MM/yyyy")));
                 }
             }
         }
@@ -218,9 +222,9 @@ namespace RWPM.Services.Implementation
             startDate = startDate.Date;
             endDate = endDate.Date;
             if (startDate == DateTime.MinValue || endDate == DateTime.MinValue)
-                throw new ArgumentException("Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc.");
+                throw new ArgumentException(PayrollResource.Err_SelectBothDates);
             if (startDate > endDate)
-                throw new ArgumentException("Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc.");
+                throw new ArgumentException(PayrollResource.Err_StartAfterEnd);
 
             var existing = await _context.Payroll
                 .Include(p => p.Details)
@@ -236,12 +240,12 @@ namespace RWPM.Services.Implementation
             if (overlapping != null)
             {
                 throw new InvalidOperationException(
-                    $"Kỳ lương bị trùng với kỳ hiện có {overlapping.StartDate:dd/MM/yyyy} - {overlapping.EndDate:dd/MM/yyyy}.");
+                    string.Format(PayrollResource.Err_Overlap, overlapping.StartDate.ToString("dd/MM/yyyy"), overlapping.EndDate.ToString("dd/MM/yyyy")));
             }
 
             if (existing != null && existing.Status == PayrollStatus.Locked)
             {
-                throw new InvalidOperationException($"Kỳ lương {startDate:dd/MM/yyyy} - {endDate:dd/MM/yyyy} đã được chốt, không thể tính lại!");
+                throw new InvalidOperationException(string.Format(PayrollResource.Err_AlreadyLocked, startDate.ToString("dd/MM/yyyy"), endDate.ToString("dd/MM/yyyy")));
             }
 
             // Kỳ mới -> bắt buộc nối tiếp kỳ trước, không vượt quá hôm nay, tối đa 1 tháng
@@ -300,7 +304,7 @@ namespace RWPM.Services.Implementation
                 {
                     PeriodMonth = periodMonth,
                     PeriodYear = periodYear,
-                    Title = $"Bảng lương {startDate:dd/MM/yyyy} - {endDate:dd/MM/yyyy}",
+                    Title = PayrollDisplayText.StoredTitle(startDate, endDate), // persisted; translated at display time
                     StartDate = startDate,
                     EndDate = endDate,
                     Status = PayrollStatus.Draft,
@@ -351,12 +355,12 @@ namespace RWPM.Services.Implementation
                     double hours = ar.WorkHours ?? 0;
                     actualWorkHours += hours;
 
-                    string statusStr = "Hợp lệ";
+                    string statusStr = PayrollDisplayText.SnapValid;
                     if (!ar.WorkHours.HasValue)
                     {
                         missingAttendanceCount++;
-                        missingDates.Add($"{ar.Date:dd/MM} (Thiếu vào/ra)");
-                        statusStr = "Thiếu giờ vào/ra";
+                        missingDates.Add($"{ar.Date:dd/MM} {PayrollDisplayText.MissingInOutTag}");
+                        statusStr = PayrollDisplayText.SnapMissingInOut;
                     }
                     else
                     {
@@ -365,15 +369,15 @@ namespace RWPM.Services.Implementation
 
                         if (isLate && isEarly)
                         {
-                            statusStr = "Đi muộn & Về sớm";
+                            statusStr = PayrollDisplayText.SnapLateAndEarly;
                         }
                         else if (isLate)
                         {
-                            statusStr = "Đi muộn";
+                            statusStr = PayrollDisplayText.SnapLate;
                         }
                         else if (isEarly)
                         {
-                            statusStr = "Về sớm";
+                            statusStr = PayrollDisplayText.SnapEarly;
                         }
                     }
 
@@ -381,7 +385,7 @@ namespace RWPM.Services.Implementation
                     {
                         Date = ar.Date,
                         ShiftId = ar.ShiftId,
-                        ShiftName = ar.Shift?.ShiftName ?? "Không xác định",
+                        ShiftName = ar.Shift?.ShiftName ?? PayrollDisplayText.ShiftUnknown,
                         StartTime = ar.Shift?.StartTime,
                         EndTime = ar.Shift?.EndTime,
                         CheckInTime = ar.CheckInTime,
@@ -393,7 +397,7 @@ namespace RWPM.Services.Implementation
                         TotalAmount = hourlyRate > 0 ? Math.Round((decimal)hours * hourlyRate, 0) : 0,
                         SourceType = "Attendance",
                         Status = statusStr,
-                        Note = ar.WorkHours.HasValue ? null : "Chưa hoàn tất chấm công"
+                        Note = ar.WorkHours.HasValue ? null : PayrollDisplayText.NoteAttendanceIncomplete
                     };
 
                     itemSnapshots.Add(snapshot);
@@ -442,8 +446,8 @@ namespace RWPM.Services.Implementation
                                 HourlyRate = hourlyRate,
                                 TotalAmount = hourlyRate > 0 ? Math.Round((decimal)shiftScheduledHours * hourlyRate, 0) : 0,
                                 SourceType = "PaidLeave",
-                                Status = "Nghỉ phép hưởng lương",
-                                Note = $"Đơn nghỉ phép #{matchedLeave.LeaveRequestId} đã duyệt"
+                                Status = PayrollDisplayText.SnapPaidLeave,
+                                Note = PayrollDisplayText.StoredLeaveApprovedNote(matchedLeave.LeaveRequestId)
                             });
                         }
                         else
@@ -466,8 +470,8 @@ namespace RWPM.Services.Implementation
                                 HourlyRate = hourlyRate,
                                 TotalAmount = 0,
                                 SourceType = "UnpaidLeave",
-                                Status = "Nghỉ không lương",
-                                Note = isEligibleForPaidLeave ? "Nghỉ không hưởng lương" : "Part-time/Thử việc nghỉ không hưởng lương"
+                                Status = PayrollDisplayText.SnapUnpaidLeave,
+                                Note = isEligibleForPaidLeave ? PayrollDisplayText.NoteUnpaidLeave : PayrollDisplayText.NoteUnpaidLeaveNonEligible
                             });
                         }
                     }
@@ -475,7 +479,7 @@ namespace RWPM.Services.Implementation
                     {
                         // Ca đã duyệt nhưng hoàn toàn KHÔNG CÓ chấm công và KHÔNG CÓ đơn nghỉ phép
                         missingAttendanceCount++;
-                        missingDates.Add($"{reg.WorkDate:dd/MM} ({reg.Shift?.ShiftName ?? "Ca"})");
+                        missingDates.Add($"{reg.WorkDate:dd/MM} ({reg.Shift?.ShiftName ?? PayrollDisplayText.ShiftFallback})");
 
                         itemSnapshots.Add(new PayrollItemSnapshot
                         {
@@ -492,8 +496,8 @@ namespace RWPM.Services.Implementation
                             HourlyRate = hourlyRate,
                             TotalAmount = 0,
                             SourceType = "MissingAttendance",
-                            Status = "Vắng / Thiếu chấm công",
-                            Note = $"Ca {reg.Shift?.ShiftName ?? ""} đã duyệt nhưng không có chấm công"
+                            Status = PayrollDisplayText.SnapAbsentMissing,
+                            Note = PayrollDisplayText.StoredShiftNoAttendanceNote(reg.Shift?.ShiftName)
                         });
                     }
                 }
@@ -512,7 +516,7 @@ namespace RWPM.Services.Implementation
                 {
                     totalSalary = 0;
                     status = PayrollDetailStatus.MissingRate;
-                    warningNotes = "Chưa thiết lập đơn giá theo giờ (HourlyRate).";
+                    warningNotes = PayrollDisplayText.WarnMissingRate;
                 }
                 else
                 {
@@ -523,7 +527,7 @@ namespace RWPM.Services.Implementation
                         status = PayrollDetailStatus.HasWarnings;
                         var dateStr = string.Join(", ", missingDates.Take(4));
                         if (missingDates.Count > 4) dateStr += "...";
-                        warningNotes = $"Có {missingAttendanceCount} ca bất thường/thiếu chấm công ({dateStr}).";
+                        warningNotes = PayrollDisplayText.StoredAbnormalWarning(missingAttendanceCount, dateStr);
                     }
                 }
 
@@ -534,7 +538,7 @@ namespace RWPM.Services.Implementation
                     EmployeeCode = emp.EmployeeCode,
                     EmployeeName = emp.Account?.FullName ?? emp.Username,
                     StoreId = emp.StoreId,
-                    StoreName = emp.Store?.StoreName ?? "Văn phòng / HR",
+                    StoreName = emp.Store?.StoreName ?? PayrollDisplayText.StoreOfficeHR,
                     EmploymentType = emp.EmploymentType,
                     HourlyRate = hourlyRate,
                     TotalStandardHours = Math.Round(totalStandardHours, 2),
@@ -566,7 +570,7 @@ namespace RWPM.Services.Implementation
                 ToStatus = PayrollStatus.Draft,
                 OperatorUsername = operatorUsername,
                 Timestamp = DateTime.UtcNow,
-                Details = $"{(isRecalculate ? "Tính lại" : "Khởi tạo")} bảng lương: {payroll.TotalEmployees} nhân viên, tổng giờ công: {payroll.TotalWorkHours:N2}h, tổng tiền: {payroll.TotalGrossSalary:N0} VNĐ"
+                Details = PayrollDisplayText.StoredAuditCalculate(isRecalculate, payroll.TotalEmployees, payroll.TotalWorkHours, payroll.TotalGrossSalary)
             });
 
             await _context.SaveChangesAsync();
@@ -587,7 +591,7 @@ namespace RWPM.Services.Implementation
                 .FirstOrDefaultAsync(p => p.PayrollId == payrollId);
 
             if (payroll == null)
-                throw new KeyNotFoundException($"Không tìm thấy kỳ lương ID {payrollId}");
+                throw new KeyNotFoundException(string.Format(PayrollResource.Err_PayrollNotFoundId, payrollId));
 
             if (payroll.Status == PayrollStatus.Locked)
                 return;
@@ -598,7 +602,7 @@ namespace RWPM.Services.Implementation
             if (missingRates.Any())
             {
                 var names = string.Join(", ", missingRates.Take(3).Select(d => d.EmployeeName));
-                throw new InvalidOperationException($"Không thể chốt bảng lương! Còn {missingRates.Count} nhân viên chưa có đơn giá lương ({names}). Vui lòng cập nhật đơn giá trước khi chốt.");
+                throw new InvalidOperationException(string.Format(PayrollResource.Err_LockMissingRate, missingRates.Count, names));
             }
 
             // 2. Chặn nếu có ca thiếu chấm công/chưa giải trình
@@ -606,7 +610,7 @@ namespace RWPM.Services.Implementation
             if (warningDetails.Any())
             {
                 var names = string.Join(", ", warningDetails.Take(3).Select(d => d.EmployeeName));
-                throw new InvalidOperationException($"Không thể chốt bảng lương! Còn {warningDetails.Count} nhân viên có ca bất thường hoặc thiếu chấm công ({names}). Vui lòng xử lý giải trình chấm công trước khi chốt.");
+                throw new InvalidOperationException(string.Format(PayrollResource.Err_LockWarnings, warningDetails.Count, names));
             }
 
             payroll.Status = PayrollStatus.Locked;
@@ -623,7 +627,7 @@ namespace RWPM.Services.Implementation
                 ToStatus = PayrollStatus.Locked,
                 OperatorUsername = operatorUsername,
                 Timestamp = DateTime.UtcNow,
-                Details = $"Chốt bảng lương thành công với {payroll.Details.Count} nhân viên, tổng quỹ lương: {payroll.TotalGrossSalary:N0} VNĐ"
+                Details = PayrollDisplayText.StoredAuditLock(payroll.Details.Count, payroll.TotalGrossSalary)
             });
 
             await _context.SaveChangesAsync();
@@ -633,10 +637,10 @@ namespace RWPM.Services.Implementation
         {
             var payroll = await _context.Payroll.FirstOrDefaultAsync(p => p.PayrollId == payrollId);
             if (payroll == null)
-                throw new KeyNotFoundException($"Không tìm thấy kỳ lương ID {payrollId}");
+                throw new KeyNotFoundException(string.Format(PayrollResource.Err_PayrollNotFoundId, payrollId));
 
             payroll.Status = PayrollStatus.Draft;
-            payroll.Note = $"[Mở khóa bởi {operatorUsername} lúc {DateTime.Now:dd/MM/yyyy HH:mm}]: {reason}";
+            payroll.Note = PayrollDisplayText.StoredUnlockNote(operatorUsername, DateTime.Now, reason);
             payroll.LockedBy = null;
             payroll.LockedDate = null;
             payroll.UpdatedBy = operatorUsername;
@@ -651,7 +655,7 @@ namespace RWPM.Services.Implementation
                 OperatorUsername = operatorUsername,
                 Timestamp = DateTime.UtcNow,
                 Reason = reason,
-                Details = $"Mở khóa bảng lương về trạng thái Nháp. Lý do: {reason}"
+                Details = PayrollDisplayText.StoredAuditUnlock(reason)
             });
 
             await _context.SaveChangesAsync();
@@ -666,10 +670,10 @@ namespace RWPM.Services.Implementation
                 .FirstOrDefaultAsync(p => p.PayrollId == payrollId);
 
             if (payroll == null)
-                throw new KeyNotFoundException($"Không tìm thấy kỳ lương ID {payrollId}");
+                throw new KeyNotFoundException(string.Format(PayrollResource.Err_PayrollNotFoundId, payrollId));
 
             if (payroll.Status == PayrollStatus.Locked)
-                throw new InvalidOperationException("Không thể xóa kỳ lương đã chốt (Locked)!");
+                throw new InvalidOperationException(PayrollResource.Err_DeleteLocked);
 
             foreach (var d in payroll.Details)
             {
@@ -822,7 +826,7 @@ namespace RWPM.Services.Implementation
         {
             var payroll = await _context.Payroll.FirstOrDefaultAsync(p => p.PayrollId == payrollId);
             if (payroll == null)
-                throw new KeyNotFoundException($"Không tìm thấy kỳ lương ID {payrollId}");
+                throw new KeyNotFoundException(string.Format(PayrollResource.Err_PayrollNotFoundId, payrollId));
 
             var query = _context.PayrollDetail
                 .Include(d => d.Store)
@@ -836,33 +840,38 @@ namespace RWPM.Services.Implementation
             var details = await query.OrderBy(d => d.StoreId).ThenBy(d => d.EmployeeCode).ToListAsync();
 
             using var workbook = new XLWorkbook();
-            var sheetName = $"BangLuong_{payroll.StartDate:ddMMyy}_{payroll.EndDate:ddMMyy}";
+            var sheetName = string.Format(PayrollResource.Excel_FileName, payroll.StartDate.ToString("ddMMyy"), payroll.EndDate.ToString("ddMMyy"));
             var ws = workbook.Worksheets.Add(sheetName);
 
             // Company Title
-            ws.Cell(1, 1).Value = "RWPM - HỆ THỐNG QUẢN LÝ NHÂN SỰ & CHẤM CÔNG CHUỖI CỬA HÀNG THỜI TRANG";
+            ws.Cell(1, 1).Value = PayrollResource.Excel_CompanyTitle;
             ws.Cell(1, 1).Style.Font.Bold = true;
             ws.Cell(1, 1).Style.Font.FontSize = 14;
             ws.Range(1, 1, 1, 12).Merge();
 
             // Report Title
-            ws.Cell(2, 1).Value = $"BẢNG LƯƠNG NHÂN VIÊN {payroll.StartDate:dd/MM/yyyy} - {payroll.EndDate:dd/MM/yyyy}";
+            ws.Cell(2, 1).Value = string.Format(PayrollResource.Excel_ReportTitle, payroll.StartDate.ToString("dd/MM/yyyy"), payroll.EndDate.ToString("dd/MM/yyyy"));
             ws.Cell(2, 1).Style.Font.Bold = true;
             ws.Cell(2, 1).Style.Font.FontSize = 16;
             ws.Cell(2, 1).Style.Font.FontColor = XLColor.FromHtml("#0d6efd");
             ws.Range(2, 1, 2, 12).Merge();
 
             // Export Info
-            ws.Cell(3, 1).Value = $"Ngày xuất: {DateTime.Now:dd/MM/yyyy HH:mm} | Trạng thái: {(payroll.Status == PayrollStatus.Locked ? "Đã chốt (Bất biến)" : "Bản nháp")} | Phạm vi: {(storeId.HasValue ? details.FirstOrDefault()?.StoreName ?? "Chi nhánh" : "Toàn hệ thống")}";
+            ws.Cell(3, 1).Value = string.Format(PayrollResource.Excel_ExportInfo,
+                DateTime.Now.ToString("dd/MM/yyyy HH:mm"),
+                payroll.Status == PayrollStatus.Locked ? PayrollResource.Excel_StatusLocked : PayrollResource.Status_Draft,
+                storeId.HasValue
+                    ? (details.FirstOrDefault()?.StoreName is string scopeStore ? PayrollDisplayText.StoreName(scopeStore) : PayrollResource.Col_Store)
+                    : PayrollResource.Excel_ScopeAll);
             ws.Cell(3, 1).Style.Font.Italic = true;
             ws.Range(3, 1, 3, 12).Merge();
 
             // Table Headers
             string[] headers =
             {
-                "STT", "Mã NV", "Họ và tên", "Chi nhánh", "Hình thức",
-                "Đơn giá/giờ (VNĐ)", "Giờ làm thực tế", "Giờ nghỉ hưởng lương", "Nghỉ không lương (ngày)",
-                "Tổng giờ tính lương", "Tổng tiền lương (VNĐ)", "Trạng thái / Ghi chú"
+                PayrollResource.Excel_ColNo, PayrollResource.Col_EmployeeCode, PayrollResource.Col_FullName, PayrollResource.Col_Store, PayrollResource.Col_EmploymentType,
+                PayrollResource.Excel_ColRate, PayrollResource.Card_ActualHours, PayrollResource.Excel_ColPaidLeaveHours, PayrollResource.Excel_ColUnpaidDays,
+                PayrollResource.Col_PayableHours, PayrollResource.Excel_ColSalary, PayrollResource.Excel_ColStatusNote
             };
 
             int startRow = 5;
@@ -888,8 +897,8 @@ namespace RWPM.Services.Implementation
                 ws.Cell(currentRow, 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
                 ws.Cell(currentRow, 3).Value = item.EmployeeName;
-                ws.Cell(currentRow, 4).Value = item.StoreName;
-                ws.Cell(currentRow, 5).Value = item.EmploymentType.ToString();
+                ws.Cell(currentRow, 4).Value = PayrollDisplayText.StoreName(item.StoreName);
+                ws.Cell(currentRow, 5).Value = UIHelper.GetDisplayName(item.EmploymentType);
 
                 var cellRate = ws.Cell(currentRow, 6);
                 cellRate.Value = item.HourlyRate;
@@ -922,16 +931,10 @@ namespace RWPM.Services.Implementation
                 cellSalary.Style.Font.Bold = true;
                 cellSalary.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
 
-                string statusText = item.Status switch
-                {
-                    PayrollDetailStatus.Valid => "Hợp lệ",
-                    PayrollDetailStatus.MissingRate => "Thiếu đơn giá",
-                    PayrollDetailStatus.HasWarnings => "Có cảnh báo",
-                    _ => ""
-                };
+                string statusText = PayrollDisplayText.DetailStatusText(item.Status);
                 if (!string.IsNullOrEmpty(item.WarningNotes))
                 {
-                    statusText += $" ({item.WarningNotes})";
+                    statusText += $" ({PayrollDisplayText.WarningNotes(item.WarningNotes)})";
                 }
                 var cellStatus = ws.Cell(currentRow, 12);
                 cellStatus.Value = statusText;
@@ -948,7 +951,7 @@ namespace RWPM.Services.Implementation
             }
 
             // Summary Row
-            ws.Cell(currentRow, 1).Value = "TỔNG CỘNG";
+            ws.Cell(currentRow, 1).Value = PayrollResource.Excel_Total;
             ws.Range(currentRow, 1, currentRow, 5).Merge();
             ws.Cell(currentRow, 1).Style.Font.Bold = true;
             ws.Cell(currentRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;

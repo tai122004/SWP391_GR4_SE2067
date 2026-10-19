@@ -196,5 +196,152 @@ namespace RWPM.Resources.Shared {
                 return ResourceManager.GetString("Filter_AllStores", resourceCulture);
             }
         }
+    
+
+        public static string Err_DeleteNotSupported {
+            get {
+                return ResourceManager.GetString("Err_DeleteNotSupported", resourceCulture);
+            }
+        }
+
+        public static string Err_StoreInactive {
+            get {
+                return ResourceManager.GetString("Err_StoreInactive", resourceCulture);
+            }
+        }
+
+        public static string Err_ManagerNoStore {
+            get {
+                return ResourceManager.GetString("Err_ManagerNoStore", resourceCulture);
+            }
+        }
+
+        public static string Err_ShiftNotFound {
+            get {
+                return ResourceManager.GetString("Err_ShiftNotFound", resourceCulture);
+            }
+        }
+
+        public static string Err_NoCreatePermission {
+            get {
+                return ResourceManager.GetString("Err_NoCreatePermission", resourceCulture);
+            }
+        }
+
+        public static string Err_CreateOnlyManagedStore {
+            get {
+                return ResourceManager.GetString("Err_CreateOnlyManagedStore", resourceCulture);
+            }
+        }
+
+        public static string Err_NoEditPermission {
+            get {
+                return ResourceManager.GetString("Err_NoEditPermission", resourceCulture);
+            }
+        }
+
+        public static string Err_EditSharedOrOtherStore {
+            get {
+                return ResourceManager.GetString("Err_EditSharedOrOtherStore", resourceCulture);
+            }
+        }
+
+        public static string Err_ShiftUsed {
+            get {
+                return ResourceManager.GetString("Err_ShiftUsed", resourceCulture);
+            }
+        }
+
+        public static string Err_NoChangePermission {
+            get {
+                return ResourceManager.GetString("Err_NoChangePermission", resourceCulture);
+            }
+        }
+
+        public static string Err_NotManagedStore {
+            get {
+                return ResourceManager.GetString("Err_NotManagedStore", resourceCulture);
+            }
+        }
+
+        public static string Err_InactiveSystemWide {
+            get {
+                return ResourceManager.GetString("Err_InactiveSystemWide", resourceCulture);
+            }
+        }
+
+        public static string Err_FutureRegistrations {
+            get {
+                return ResourceManager.GetString("Err_FutureRegistrations", resourceCulture);
+            }
+        }
+
+        public static string Toast_StatusUpdateFailed {
+            get {
+                return ResourceManager.GetString("Toast_StatusUpdateFailed", resourceCulture);
+            }
+        }
+    
+
+        public static string ValidationStores {
+            get {
+                return ResourceManager.GetString("ValidationStores", resourceCulture);
+            }
+        }
+
+        public static string Active {
+            get {
+                return ResourceManager.GetString("Active", resourceCulture);
+            }
+        }
+
+        public static string Inactive {
+            get {
+                return ResourceManager.GetString("Inactive", resourceCulture);
+            }
+        }
+    
+
+        public static string Preset_Title {
+            get {
+                return ResourceManager.GetString("Preset_Title", resourceCulture);
+            }
+        }
+
+        public static string Preset_Morning {
+            get {
+                return ResourceManager.GetString("Preset_Morning", resourceCulture);
+            }
+        }
+
+        public static string Preset_Afternoon {
+            get {
+                return ResourceManager.GetString("Preset_Afternoon", resourceCulture);
+            }
+        }
+
+        public static string Preset_Evening {
+            get {
+                return ResourceManager.GetString("Preset_Evening", resourceCulture);
+            }
+        }
+
+        public static string Preset_Night {
+            get {
+                return ResourceManager.GetString("Preset_Night", resourceCulture);
+            }
+        }
+
+        public static string Preset_Office {
+            get {
+                return ResourceManager.GetString("Preset_Office", resourceCulture);
+            }
+        }
+
+        public static string Preset_Hint {
+            get {
+                return ResourceManager.GetString("Preset_Hint", resourceCulture);
+            }
+        }
     }
 }

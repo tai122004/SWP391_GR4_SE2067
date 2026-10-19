@@ -23,12 +23,14 @@ namespace RWPM.Models.ViewModels.Acc
 
         public SelectList? AccountRoleSelectList { get; set; }
 
+        [Display(Name = "Email", ResourceType = typeof(Resources.Models.Acc))]
         [RequiredLocalization]
         [EmailAddress(ErrorMessageResourceName = "EmailInvalid", ErrorMessageResourceType = typeof(Resources.Shared.Acc))]
         public string Email { get; set; } = string.Empty;
 
         [Display(Name = "PhoneNumber", ResourceType = typeof(Resources.Models.Acc))]
-        [MaxLengthLocalized(20)]
+        [MaxLengthLocalized(10)]
+        [RegexLocalized(RWPM.Common.Helper.PhoneHelper.VnPhonePattern, "RegularExpression_VnPhone")]
         public string? PhoneNumber { get; set; }
 
         [Display(Name = "DateOfBirth", ResourceType = typeof(Resources.Models.Acc))]
@@ -40,7 +42,7 @@ namespace RWPM.Models.ViewModels.Acc
 
         // Thông tin hồ sơ nhân viên & Cửa hàng (tương tự màn hình Tạo mới)
         [Display(Name = "EmployeeID", ResourceType = typeof(Resources.Models.Employee))]
-        [MaxLength(20)]
+        [MaxLengthLocalized(20)]
         public string? EmployeeCode { get; set; }
 
         [Display(Name = "Store", ResourceType = typeof(Resources.Models.Employee))]

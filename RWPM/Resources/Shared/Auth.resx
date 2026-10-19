@@ -144,4 +144,7 @@
   <data name="WelcomeDescription" xml:space="preserve">
     <value>Sign in to continue</value>
   </data>
+  <data name="Err_AccessDenied" xml:space="preserve">
+    <value>You do not have permission to access this function!</value>
+  </data>
 </root>

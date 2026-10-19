@@ -277,10 +277,10 @@
     <value>Chế độ lương &amp; Ngày phép</value>
   </data>
   <data name="Badge_FullTime" xml:space="preserve">
-    <value>Full-time</value>
+    <value>Toàn thời gian</value>
   </data>
   <data name="Badge_PartTime" xml:space="preserve">
-    <value>Part-time</value>
+    <value>Bán thời gian</value>
   </data>
   <data name="Badge_Intern" xml:space="preserve">
     <value>Thực tập</value>
@@ -380,5 +380,236 @@
   </data>
   <data name="Excel_Step1_Note" xml:space="preserve">
     <value>Vui lòng đảm bảo file theo đúng cấu trúc cột. Mật khẩu mặc định sau khi nhập là: Aa@123456</value>
+  </data>
+  <data name="Import_InvalidFile" xml:space="preserve">
+    <value>Vui lòng chọn một file Excel (.xlsx) hợp lệ.</value>
+  </data>
+  <data name="Import_OnlyXlsx" xml:space="preserve">
+    <value>Hệ thống chỉ hỗ trợ file định dạng Excel (.xlsx).</value>
+  </data>
+  <data name="Import_SuccessAll" xml:space="preserve">
+    <value>Nhập thành công {0}/{1} nhân viên từ file Excel!</value>
+  </data>
+  <data name="Import_SuccessPartial" xml:space="preserve">
+    <value>Nhập thành công {0} nhân viên. Bỏ qua {1} dòng lỗi. Chi tiết: {2}</value>
+  </data>
+  <data name="Import_Failed" xml:space="preserve">
+    <value>Nhập thất bại. {0}</value>
+  </data>
+  <data name="Import_ProcessError" xml:space="preserve">
+    <value>Lỗi khi xử lý file Excel: {0}</value>
+  </data>
+  <data name="Import_InvalidSession" xml:space="preserve">
+    <value>Mã phiên nhập không hợp lệ hoặc đã hết hạn.</value>
+  </data>
+  <data name="Import_ConfirmSuccess" xml:space="preserve">
+    <value>Nhập thành công {0} nhân viên vào hệ thống!</value>
+  </data>
+  <data name="Import_SessionExpired" xml:space="preserve">
+    <value>Phiên nhập dữ liệu đã hết hạn hoặc không tìm thấy dữ liệu hợp lệ. Vui lòng tải lại file.</value>
+  </data>
+  <data name="Import_NoSheet" xml:space="preserve">
+    <value>File Excel không đúng định dạng hoặc không có sheet dữ liệu.</value>
+  </data>
+  <data name="Import_NoWorksheet" xml:space="preserve">
+    <value>File Excel không đúng định dạng hoặc không có trang tính dữ liệu.</value>
+  </data>
+  <data name="Import_NoRows" xml:space="preserve">
+    <value>File Excel không có dòng dữ liệu nào để nhập.</value>
+  </data>
+  <data name="Import_NoRowsPreview" xml:space="preserve">
+    <value>File Excel không chứa dòng dữ liệu nào.</value>
+  </data>
+  <data name="Import_RowError" xml:space="preserve">
+    <value>Dòng {0}: {1}</value>
+  </data>
+  <data name="Import_FullNameRequired" xml:space="preserve">
+    <value>Họ và tên không được để trống.</value>
+  </data>
+  <data name="Import_UsernameRequired" xml:space="preserve">
+    <value>Tên đăng nhập không được để trống.</value>
+  </data>
+  <data name="Import_EmailRequired" xml:space="preserve">
+    <value>Email không được để trống.</value>
+  </data>
+  <data name="Import_UsernameExistsInSystem" xml:space="preserve">
+    <value>Tên đăng nhập '{0}' đã tồn tại trong hệ thống.</value>
+  </data>
+  <data name="Import_UsernameExists" xml:space="preserve">
+    <value>Tên đăng nhập '{0}' đã tồn tại.</value>
+  </data>
+  <data name="Import_StoreInvalid" xml:space="preserve">
+    <value>Mã cửa hàng '{0}' không hợp lệ hoặc không tồn tại. Vui lòng xem sheet '{1}'.</value>
+  </data>
+  <data name="Import_StoreNotFound" xml:space="preserve">
+    <value>Mã cửa hàng '{0}' không tồn tại. Vui lòng xem sheet '{1}'.</value>
+  </data>
+  <data name="Import_EmpCodeExistsInSystem" xml:space="preserve">
+    <value>Mã nhân viên '{0}' đã tồn tại trong hệ thống.</value>
+  </data>
+  <data name="Import_EmpCodeExists" xml:space="preserve">
+    <value>Mã nhân viên '{0}' đã tồn tại.</value>
+  </data>
+  <data name="Import_StoreNotRequired" xml:space="preserve">
+    <value>Không yêu cầu</value>
+  </data>
+  <data name="Err_EmployeeNotFound" xml:space="preserve">
+    <value>Không tìm thấy nhân viên ID {0}.</value>
+  </data>
+  <data name="Template_SheetEmployees" xml:space="preserve">
+    <value>Danh sách nhân viên</value>
+  </data>
+  <data name="Template_SheetStores" xml:space="preserve">
+    <value>Danh mục Cửa hàng</value>
+  </data>
+  <data name="Template_Col_FullName" xml:space="preserve">
+    <value>Họ và tên (*)</value>
+  </data>
+  <data name="Template_Col_Username" xml:space="preserve">
+    <value>Tên đăng nhập (*)</value>
+  </data>
+  <data name="Template_Col_Email" xml:space="preserve">
+    <value>Email (*)</value>
+  </data>
+  <data name="Template_Col_Phone" xml:space="preserve">
+    <value>Số điện thoại</value>
+  </data>
+  <data name="Template_Col_Gender" xml:space="preserve">
+    <value>Giới tính (Nam/Nữ/Khác)</value>
+  </data>
+  <data name="Template_Col_DateOfBirth" xml:space="preserve">
+    <value>Ngày sinh (dd/MM/yyyy)</value>
+  </data>
+  <data name="Template_Col_Role" xml:space="preserve">
+    <value>Vai trò (*)</value>
+  </data>
+  <data name="Template_Col_StoreId" xml:space="preserve">
+    <value>Mã cửa hàng (*)</value>
+  </data>
+  <data name="Template_Col_EmpCode" xml:space="preserve">
+    <value>Mã nhân viên (*)</value>
+  </data>
+  <data name="Template_Col_EmploymentType" xml:space="preserve">
+    <value>Hình thức (Toàn thời gian/Bán thời gian)</value>
+  </data>
+  <data name="Template_Col_JoinDate" xml:space="preserve">
+    <value>Ngày vào làm (dd/MM/yyyy)</value>
+  </data>
+  <data name="Template_Col_HourlyRate" xml:space="preserve">
+    <value>Lương theo giờ (VNĐ)</value>
+  </data>
+  <data name="Template_Col_BaseSalary" xml:space="preserve">
+    <value>Lương cơ bản (VNĐ)</value>
+  </data>
+  <data name="Template_Store_Col_Id" xml:space="preserve">
+    <value>Mã cửa hàng (StoreId)</value>
+  </data>
+  <data name="Template_Store_Col_Name" xml:space="preserve">
+    <value>Tên cửa hàng</value>
+  </data>
+  <data name="Template_Store_Col_Address" xml:space="preserve">
+    <value>Địa chỉ</value>
+  </data>
+  <data name="Template_Sample_Male" xml:space="preserve">
+    <value>Nam</value>
+  </data>
+  <data name="Template_Sample_Female" xml:space="preserve">
+    <value>Nữ</value>
+  </data>
+  <data name="Template_Sample_PartTime" xml:space="preserve">
+    <value>Bán thời gian</value>
+  </data>
+  <data name="Template_Sample_FullTime" xml:space="preserve">
+    <value>Toàn thời gian</value>
+  </data>
+  <data name="Export_SheetName" xml:space="preserve">
+    <value>Nhân viên</value>
+  </data>
+  <data name="Export_Col_No" xml:space="preserve">
+    <value>STT</value>
+  </data>
+  <data name="Export_Col_EmpCode" xml:space="preserve">
+    <value>Mã nhân viên</value>
+  </data>
+  <data name="Export_Col_FullName" xml:space="preserve">
+    <value>Họ và tên</value>
+  </data>
+  <data name="Export_Col_Account" xml:space="preserve">
+    <value>Tài khoản</value>
+  </data>
+  <data name="Export_Col_Role" xml:space="preserve">
+    <value>Vai trò</value>
+  </data>
+  <data name="Export_Col_Store" xml:space="preserve">
+    <value>Cửa hàng</value>
+  </data>
+  <data name="Export_Col_EmploymentType" xml:space="preserve">
+    <value>Hình thức</value>
+  </data>
+  <data name="Export_Col_Status" xml:space="preserve">
+    <value>Trạng thái</value>
+  </data>
+  <data name="Export_Col_JoinDate" xml:space="preserve">
+    <value>Ngày vào làm</value>
+  </data>
+  <data name="Export_Col_HourlyRate" xml:space="preserve">
+    <value>Lương theo giờ</value>
+  </data>
+  <data name="Export_Col_BaseSalary" xml:space="preserve">
+    <value>Lương cơ bản</value>
+  </data>
+  <data name="Export_Col_LeaveBalance" xml:space="preserve">
+    <value>Phép năm còn lại</value>
+  </data>
+  <data name="Excel_Col_Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Excel_Col_Phone" xml:space="preserve">
+    <value>Số ĐT</value>
+  </data>
+  <data name="Excel_SupportedFormat" xml:space="preserve">
+    <value>Định dạng hỗ trợ: .xlsx (Microsoft Excel)</value>
+  </data>
+  <data name="Excel_AutoValidated" xml:space="preserve">
+    <value>Dữ liệu được kiểm tra tự động trước khi lưu</value>
+  </data>
+  <data name="Excel_ServerConnectionError" xml:space="preserve">
+    <value>Lỗi kết nối máy chủ: </value>
+  </data>
+  <data name="Toast_SaveFailed" xml:space="preserve">
+    <value>Lưu dữ liệu thất bại.</value>
+  </data>
+  <data name="Toast_SaveError" xml:space="preserve">
+    <value>Lỗi khi lưu: </value>
+  </data>
+  <data name="Placeholder_ResignReason" xml:space="preserve">
+    <value>Nhập lý do thôi việc (ví dụ: chuyển chỗ ở, hết hạn hợp đồng...)</value>
+  </data>
+  <data name="Label_EmployeeNumber" xml:space="preserve">
+    <value>Nhân viên #{0}</value>
+  </data>
+  <data name="ImportModal_ProcessedRows" xml:space="preserve">
+    <value>Số dòng đã xử lý:</value>
+  </data>
+  <data name="ImportModal_FailedRows" xml:space="preserve">
+    <value>Số dòng lỗi:</value>
+  </data>
+  <data name="ImportModal_RowNumber" xml:space="preserve">
+    <value>Số dòng</value>
+  </data>
+  <data name="ImportModal_Reason" xml:space="preserve">
+    <value>Lý do</value>
+  </data>
+  <data name="ImportModal_Value" xml:space="preserve">
+    <value>Giá trị</value>
+  </data>
+  <data name="ImportModal_ApplyData" xml:space="preserve">
+    <value>Áp dụng dữ liệu</value>
+  </data>
+  <data name="Create_SubTitle" xml:space="preserve">
+    <value>Thêm hồ sơ nhân viên mới và phân công vào cửa hàng</value>
+  </data>
+  <data name="Import_PhoneInvalid" xml:space="preserve">
+    <value>Số điện thoại '{0}' không hợp lệ (phải gồm đúng 10 chữ số và bắt đầu bằng số 0).</value>
   </data>
 </root>

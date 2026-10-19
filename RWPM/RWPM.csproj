@@ -64,6 +64,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ShiftRegistrationResource.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Shared\PayrollResource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PayrollResource.resx</DependentUpon>
+    </Compile>
     <Compile Update="Resources\Shared\RequestResource.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -87,6 +92,10 @@
     <EmbeddedResource Update="Resources\Shared\NavigationBarResource.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>NavigationBarResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Shared\PayrollResource.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>PayrollResource.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\Shared\SharedResource.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
