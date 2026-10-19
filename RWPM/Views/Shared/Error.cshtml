@@ -1,6 +1,6 @@
 ﻿@model ErrorViewModel
 @{
-    ViewData["Title"] = "Error";
+    ViewData["Title"] = RWPM.Resources.Shared.ErrorPage.Title;
 }
 
 <div class="container">
@@ -10,7 +10,7 @@
     @if (Model.ShowRequestId)
     {
         <p class="text-muted">
-            <small>Request ID: <code>@Model.RequestId</code></small>
+            <small>@RWPM.Resources.Shared.ErrorPage.RequestId <code>@Model.RequestId</code></small>
         </p>
     }
     <p><strong>@SharedResource.Detail: </strong>@Model.Message</p>

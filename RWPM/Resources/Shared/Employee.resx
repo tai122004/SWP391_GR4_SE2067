@@ -381,4 +381,235 @@
   <data name="Excel_Step1_Note" xml:space="preserve">
     <value>Please ensure the Excel file matches the template structure. Default account password after import will be: Aa@123456</value>
   </data>
+  <data name="Import_InvalidFile" xml:space="preserve">
+    <value>Please select a valid Excel file (.xlsx).</value>
+  </data>
+  <data name="Import_OnlyXlsx" xml:space="preserve">
+    <value>Only Excel files (.xlsx) are supported.</value>
+  </data>
+  <data name="Import_SuccessAll" xml:space="preserve">
+    <value>Successfully imported {0}/{1} employees from the Excel file!</value>
+  </data>
+  <data name="Import_SuccessPartial" xml:space="preserve">
+    <value>Successfully imported {0} employees. Skipped {1} invalid rows. Details: {2}</value>
+  </data>
+  <data name="Import_Failed" xml:space="preserve">
+    <value>Import failed. {0}</value>
+  </data>
+  <data name="Import_ProcessError" xml:space="preserve">
+    <value>Error while processing the Excel file: {0}</value>
+  </data>
+  <data name="Import_InvalidSession" xml:space="preserve">
+    <value>The import session is invalid or has expired.</value>
+  </data>
+  <data name="Import_ConfirmSuccess" xml:space="preserve">
+    <value>Successfully imported {0} employees into the system!</value>
+  </data>
+  <data name="Import_SessionExpired" xml:space="preserve">
+    <value>The import session has expired or no valid data was found. Please upload the file again.</value>
+  </data>
+  <data name="Import_NoSheet" xml:space="preserve">
+    <value>The Excel file has an invalid format or no data sheet.</value>
+  </data>
+  <data name="Import_NoWorksheet" xml:space="preserve">
+    <value>The Excel file has an invalid format or no data worksheet.</value>
+  </data>
+  <data name="Import_NoRows" xml:space="preserve">
+    <value>The Excel file has no data rows to import.</value>
+  </data>
+  <data name="Import_NoRowsPreview" xml:space="preserve">
+    <value>The Excel file contains no data rows.</value>
+  </data>
+  <data name="Import_RowError" xml:space="preserve">
+    <value>Row {0}: {1}</value>
+  </data>
+  <data name="Import_FullNameRequired" xml:space="preserve">
+    <value>Full name must not be empty.</value>
+  </data>
+  <data name="Import_UsernameRequired" xml:space="preserve">
+    <value>Username must not be empty.</value>
+  </data>
+  <data name="Import_EmailRequired" xml:space="preserve">
+    <value>Email must not be empty.</value>
+  </data>
+  <data name="Import_UsernameExistsInSystem" xml:space="preserve">
+    <value>Username '{0}' already exists in the system.</value>
+  </data>
+  <data name="Import_UsernameExists" xml:space="preserve">
+    <value>Username '{0}' already exists.</value>
+  </data>
+  <data name="Import_StoreInvalid" xml:space="preserve">
+    <value>Store ID '{0}' is invalid or does not exist. Please see the '{1}' sheet.</value>
+  </data>
+  <data name="Import_StoreNotFound" xml:space="preserve">
+    <value>Store ID '{0}' does not exist. Please see the '{1}' sheet.</value>
+  </data>
+  <data name="Import_EmpCodeExistsInSystem" xml:space="preserve">
+    <value>Employee code '{0}' already exists in the system.</value>
+  </data>
+  <data name="Import_EmpCodeExists" xml:space="preserve">
+    <value>Employee code '{0}' already exists.</value>
+  </data>
+  <data name="Import_StoreNotRequired" xml:space="preserve">
+    <value>Not required</value>
+  </data>
+  <data name="Err_EmployeeNotFound" xml:space="preserve">
+    <value>Employee with ID {0} was not found.</value>
+  </data>
+  <data name="Template_SheetEmployees" xml:space="preserve">
+    <value>Employee list</value>
+  </data>
+  <data name="Template_SheetStores" xml:space="preserve">
+    <value>Store list</value>
+  </data>
+  <data name="Template_Col_FullName" xml:space="preserve">
+    <value>Full name (*)</value>
+  </data>
+  <data name="Template_Col_Username" xml:space="preserve">
+    <value>Username (*)</value>
+  </data>
+  <data name="Template_Col_Email" xml:space="preserve">
+    <value>Email (*)</value>
+  </data>
+  <data name="Template_Col_Phone" xml:space="preserve">
+    <value>Phone number</value>
+  </data>
+  <data name="Template_Col_Gender" xml:space="preserve">
+    <value>Gender (Male/Female/Other)</value>
+  </data>
+  <data name="Template_Col_DateOfBirth" xml:space="preserve">
+    <value>Date of birth (dd/MM/yyyy)</value>
+  </data>
+  <data name="Template_Col_Role" xml:space="preserve">
+    <value>Role (*)</value>
+  </data>
+  <data name="Template_Col_StoreId" xml:space="preserve">
+    <value>Store ID (*)</value>
+  </data>
+  <data name="Template_Col_EmpCode" xml:space="preserve">
+    <value>Employee code (*)</value>
+  </data>
+  <data name="Template_Col_EmploymentType" xml:space="preserve">
+    <value>Employment type (FullTime/PartTime)</value>
+  </data>
+  <data name="Template_Col_JoinDate" xml:space="preserve">
+    <value>Join date (dd/MM/yyyy)</value>
+  </data>
+  <data name="Template_Col_HourlyRate" xml:space="preserve">
+    <value>Hourly rate (VND)</value>
+  </data>
+  <data name="Template_Col_BaseSalary" xml:space="preserve">
+    <value>Base salary (VND)</value>
+  </data>
+  <data name="Template_Store_Col_Id" xml:space="preserve">
+    <value>Store ID (StoreId)</value>
+  </data>
+  <data name="Template_Store_Col_Name" xml:space="preserve">
+    <value>Store name</value>
+  </data>
+  <data name="Template_Store_Col_Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="Template_Sample_Male" xml:space="preserve">
+    <value>Male</value>
+  </data>
+  <data name="Template_Sample_Female" xml:space="preserve">
+    <value>Female</value>
+  </data>
+  <data name="Template_Sample_PartTime" xml:space="preserve">
+    <value>PartTime</value>
+  </data>
+  <data name="Template_Sample_FullTime" xml:space="preserve">
+    <value>FullTime</value>
+  </data>
+  <data name="Export_SheetName" xml:space="preserve">
+    <value>Employees</value>
+  </data>
+  <data name="Export_Col_No" xml:space="preserve">
+    <value>No.</value>
+  </data>
+  <data name="Export_Col_EmpCode" xml:space="preserve">
+    <value>Employee code</value>
+  </data>
+  <data name="Export_Col_FullName" xml:space="preserve">
+    <value>Full name</value>
+  </data>
+  <data name="Export_Col_Account" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="Export_Col_Role" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="Export_Col_Store" xml:space="preserve">
+    <value>Store</value>
+  </data>
+  <data name="Export_Col_EmploymentType" xml:space="preserve">
+    <value>Employment type</value>
+  </data>
+  <data name="Export_Col_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Export_Col_JoinDate" xml:space="preserve">
+    <value>Join date</value>
+  </data>
+  <data name="Export_Col_HourlyRate" xml:space="preserve">
+    <value>Hourly rate</value>
+  </data>
+  <data name="Export_Col_BaseSalary" xml:space="preserve">
+    <value>Base salary</value>
+  </data>
+  <data name="Export_Col_LeaveBalance" xml:space="preserve">
+    <value>Remaining annual leave</value>
+  </data>
+  <data name="Excel_Col_Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Excel_Col_Phone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="Excel_SupportedFormat" xml:space="preserve">
+    <value>Supported format: .xlsx (Microsoft Excel)</value>
+  </data>
+  <data name="Excel_AutoValidated" xml:space="preserve">
+    <value>Data is validated automatically before saving</value>
+  </data>
+  <data name="Excel_ServerConnectionError" xml:space="preserve">
+    <value>Server connection error: </value>
+  </data>
+  <data name="Toast_SaveFailed" xml:space="preserve">
+    <value>Failed to save data.</value>
+  </data>
+  <data name="Toast_SaveError" xml:space="preserve">
+    <value>Error while saving: </value>
+  </data>
+  <data name="Placeholder_ResignReason" xml:space="preserve">
+    <value>Enter the reason for leaving (e.g. relocation, contract expired...)</value>
+  </data>
+  <data name="Label_EmployeeNumber" xml:space="preserve">
+    <value>Employee #{0}</value>
+  </data>
+  <data name="ImportModal_ProcessedRows" xml:space="preserve">
+    <value>Processed rows:</value>
+  </data>
+  <data name="ImportModal_FailedRows" xml:space="preserve">
+    <value>Failed rows:</value>
+  </data>
+  <data name="ImportModal_RowNumber" xml:space="preserve">
+    <value>Row number</value>
+  </data>
+  <data name="ImportModal_Reason" xml:space="preserve">
+    <value>Reason</value>
+  </data>
+  <data name="ImportModal_Value" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="ImportModal_ApplyData" xml:space="preserve">
+    <value>Apply data</value>
+  </data>
+  <data name="Create_SubTitle" xml:space="preserve">
+    <value>Add a new employee profile and assign them to a store</value>
+  </data>
+  <data name="Import_PhoneInvalid" xml:space="preserve">
+    <value>Phone number '{0}' is invalid (it must have exactly 10 digits and start with 0).</value>
+  </data>
 </root>

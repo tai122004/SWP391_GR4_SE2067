@@ -817,4 +817,259 @@ Cách bật lại nhanh:
   </data>
   <data name="Pagination_Previous" xml:space="preserve"><value>Trước</value></data>
   <data name="Pagination_Next" xml:space="preserve"><value>Sau</value></data>
+  <data name="Range" xml:space="preserve">
+    <value>{0} phải nằm trong khoảng từ {1} đến {2}.</value>
+  </data>
+  <data name="Js_Required" xml:space="preserve">
+    <value>Vui lòng nhập thông tin cho trường này.</value>
+  </data>
+  <data name="Js_Number" xml:space="preserve">
+    <value>Vui lòng nhập một số hợp lệ.</value>
+  </data>
+  <data name="Js_Digits" xml:space="preserve">
+    <value>Vui lòng chỉ nhập chữ số.</value>
+  </data>
+  <data name="Js_Step" xml:space="preserve">
+    <value>Vui lòng nhập bội số của {0}.</value>
+  </data>
+  <data name="Js_Min" xml:space="preserve">
+    <value>Vui lòng nhập giá trị lớn hơn hoặc bằng {0}.</value>
+  </data>
+  <data name="Js_Max" xml:space="preserve">
+    <value>Vui lòng nhập giá trị nhỏ hơn hoặc bằng {0}.</value>
+  </data>
+  <data name="Js_Email" xml:space="preserve">
+    <value>Vui lòng nhập địa chỉ email hợp lệ.</value>
+  </data>
+  <data name="Js_Url" xml:space="preserve">
+    <value>Vui lòng nhập đường dẫn hợp lệ.</value>
+  </data>
+  <data name="Js_Date" xml:space="preserve">
+    <value>Vui lòng nhập ngày hợp lệ.</value>
+  </data>
+  <data name="Js_MaxLength" xml:space="preserve">
+    <value>Vui lòng nhập không quá {0} ký tự.</value>
+  </data>
+  <data name="Js_MinLength" xml:space="preserve">
+    <value>Vui lòng nhập ít nhất {0} ký tự.</value>
+  </data>
+  <data name="Js_Pattern" xml:space="preserve">
+    <value>Định dạng không hợp lệ.</value>
+  </data>
+  <data name="Js_EqualTo" xml:space="preserve">
+    <value>Giá trị nhập lại không khớp.</value>
+  </data>
+  <data name="Js_Remote" xml:space="preserve">
+    <value>Vui lòng kiểm tra lại trường này.</value>
+  </data>
+  <data name="Js_ConfirmTitle" xml:space="preserve">
+    <value>Xác nhận thao tác</value>
+  </data>
+  <data name="Js_ConfirmOk" xml:space="preserve">
+    <value>Đồng ý</value>
+  </data>
+  <data name="Js_Copied" xml:space="preserve">
+    <value>Đã sao chép vào bộ nhớ tạm!</value>
+  </data>
+  <data name="Button_Close" xml:space="preserve">
+    <value>Đóng</value>
+  </data>
+  <data name="Processing" xml:space="preserve">
+    <value>Đang xử lý...</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Đăng nhập</value>
+  </data>
+  <data name="Language_Vietnamese" xml:space="preserve">
+    <value>Tiếng Việt</value>
+  </data>
+  <data name="Language_English" xml:space="preserve">
+    <value>Tiếng Anh</value>
+  </data>
+  <data name="Layout_ToggleNavigation" xml:space="preserve">
+    <value>Mở/đóng menu điều hướng</value>
+  </data>
+  <data name="Loading_ProcessingRequest" xml:space="preserve">
+    <value>Vui lòng đợi trong khi hệ thống xử lý yêu cầu của bạn...</value>
+  </data>
+  <data name="Loading_CancelProgress" xml:space="preserve">
+    <value>Hủy tiến trình</value>
+  </data>
+  <data name="Privacy_Title" xml:space="preserve">
+    <value>Chính sách quyền riêng tư</value>
+  </data>
+  <data name="Privacy_Body" xml:space="preserve">
+    <value>Trang này dùng để trình bày chi tiết chính sách quyền riêng tư của hệ thống.</value>
+  </data>
+  <data name="Js_Close" xml:space="preserve">
+    <value>Đóng</value>
+  </data>
+  <data name="Js_Account" xml:space="preserve">
+    <value>Tài khoản</value>
+  </data>
+  <data name="Js_Password" xml:space="preserve">
+    <value>Mật khẩu</value>
+  </data>
+  <data name="Js_PasswordMinLength" xml:space="preserve">
+    <value>Mật khẩu mới phải có ít nhất 6 ký tự!</value>
+  </data>
+  <data name="Js_PasswordMismatch" xml:space="preserve">
+    <value>Xác nhận mật khẩu không khớp!</value>
+  </data>
+  <data name="Js_Saving" xml:space="preserve">
+    <value>Đang lưu...</value>
+  </data>
+  <data name="Js_ResetPasswordSuccess" xml:space="preserve">
+    <value>Đặt lại mật khẩu cho tài khoản {0} thành công!</value>
+  </data>
+  <data name="Js_ResetPasswordError" xml:space="preserve">
+    <value>Lỗi khi đặt lại mật khẩu!</value>
+  </data>
+  <data name="Attendance_Err_NotInAllowedTime" xml:space="preserve">
+    <value>Không nằm trong thời gian cho phép chấm công.</value>
+  </data>
+  <data name="Attendance_Warn_LateCheckIn" xml:space="preserve">
+    <value>Bạn đã chấm công vào làm thành công! (Đi muộn {0} phút, vượt quá {1} phút cho phép của ca). Thời gian tính giờ làm việc sẽ được bắt đầu từ thời điểm bạn vào làm.</value>
+  </data>
+  <data name="Attendance_Warn_EarlyCheckOut" xml:space="preserve">
+    <value>Bạn đã chấm công tan làm thành công! (Về sớm {0} phút, vượt quá thời gian cho phép {1} phút của ca). Thời gian tính giờ làm việc sẽ kết thúc tại thời điểm bạn tan làm.</value>
+  </data>
+  <data name="Attendance_Err_RecordNotFound" xml:space="preserve">
+    <value>Bản ghi chấm công không tồn tại!</value>
+  </data>
+  <data name="Attendance_Err_AdjustReasonRequired" xml:space="preserve">
+    <value>Lý do điều chỉnh không được để trống!</value>
+  </data>
+  <data name="Attendance_AdjustSuccess" xml:space="preserve">
+    <value>Điều chỉnh chấm công thành công!</value>
+  </data>
+  <data name="Attendance_Scope_Branch" xml:space="preserve">
+    <value>Chi nhánh {0}</value>
+  </data>
+  <data name="Attendance_Scope_YourStore" xml:space="preserve">
+    <value>Cửa hàng của bạn</value>
+  </data>
+  <data name="Attendance_Scope_Company" xml:space="preserve">
+    <value>Toàn công ty</value>
+  </data>
+  <data name="Attendance_EmployeeHistory" xml:space="preserve">
+    <value>Lịch sử nhân viên</value>
+  </data>
+  <data name="Attendance_DefaultShiftName" xml:space="preserve">
+    <value>Ca làm việc</value>
+  </data>
+  <data name="Attendance_AdjDetail_Title" xml:space="preserve">
+    <value>Chi tiết điều chỉnh chấm công</value>
+  </data>
+  <data name="Attendance_AdjDetail_Employee" xml:space="preserve">
+    <value>Nhân viên:</value>
+  </data>
+  <data name="Attendance_AdjDetail_WorkDate" xml:space="preserve">
+    <value>Ngày làm việc:</value>
+  </data>
+  <data name="Attendance_AdjDetail_Shift" xml:space="preserve">
+    <value>Ca làm việc:</value>
+  </data>
+  <data name="Attendance_AdjDetail_CurrentIn" xml:space="preserve">
+    <value>Giờ vào hiện tại:</value>
+  </data>
+  <data name="Attendance_AdjDetail_CurrentOut" xml:space="preserve">
+    <value>Giờ ra hiện tại:</value>
+  </data>
+  <data name="Attendance_AdjDetail_History" xml:space="preserve">
+    <value>Lịch sử điều chỉnh:</value>
+  </data>
+  <data name="Attendance_AdjDetail_ModifiedBy" xml:space="preserve">
+    <value>Người điều chỉnh:</value>
+  </data>
+  <data name="Attendance_AdjDetail_Before" xml:space="preserve">
+    <value>Giờ trước khi sửa:</value>
+  </data>
+  <data name="Attendance_AdjDetail_After" xml:space="preserve">
+    <value>Giờ sau điều chỉnh:</value>
+  </data>
+  <data name="Attendance_AdjDetail_Reason" xml:space="preserve">
+    <value>Lý do điều chỉnh / Ghi chú:</value>
+  </data>
+  <data name="Attendance_AdjDetail_ApprovedNote" xml:space="preserve">
+    <value>Bản ghi chấm công này đã được quản lý phê duyệt và cập nhật giờ làm việc.</value>
+  </data>
+  <data name="StringLength" xml:space="preserve">
+    <value>{0} phải có độ dài từ {2} đến {1} ký tự.</value>
+  </data>
+  <data name="StringLengthMax" xml:space="preserve">
+    <value>{0} không được vượt quá {1} ký tự.</value>
+  </data>
+  <data name="EmailAddress" xml:space="preserve">
+    <value>{0} không phải là địa chỉ email hợp lệ.</value>
+  </data>
+  <data name="PhoneInvalid" xml:space="preserve">
+    <value>{0} không phải là số điện thoại hợp lệ.</value>
+  </data>
+  <data name="Compare" xml:space="preserve">
+    <value>{0} và {1} không khớp nhau.</value>
+  </data>
+  <data name="RegularExpression" xml:space="preserve">
+    <value>{0} không đúng định dạng.</value>
+  </data>
+  <data name="RegularExpression_VnPhone" xml:space="preserve">
+    <value>{0} phải gồm đúng 10 chữ số và bắt đầu bằng số 0 (VD: 0912345678).</value>
+  </data>
+  <data name="Binding_ValueMustBeANumber" xml:space="preserve">
+    <value>{0} phải là một số.</value>
+  </data>
+  <data name="Binding_NonPropertyValueMustBeANumber" xml:space="preserve">
+    <value>Trường này phải là một số.</value>
+  </data>
+  <data name="Binding_AttemptedValueIsInvalid" xml:space="preserve">
+    <value>Giá trị '{0}' không hợp lệ cho {1}.</value>
+  </data>
+  <data name="Binding_NonPropertyAttemptedValueIsInvalid" xml:space="preserve">
+    <value>Giá trị '{0}' không hợp lệ.</value>
+  </data>
+  <data name="Binding_UnknownValueIsInvalid" xml:space="preserve">
+    <value>Giá trị nhập vào không hợp lệ cho {0}.</value>
+  </data>
+  <data name="Binding_NonPropertyUnknownValueIsInvalid" xml:space="preserve">
+    <value>Giá trị nhập vào không hợp lệ.</value>
+  </data>
+  <data name="Binding_ValueIsInvalid" xml:space="preserve">
+    <value>Giá trị '{0}' không hợp lệ.</value>
+  </data>
+  <data name="Binding_ValueMustNotBeNull" xml:space="preserve">
+    <value>Vui lòng nhập thông tin cho trường này.</value>
+  </data>
+  <data name="Binding_MissingBindRequiredValue" xml:space="preserve">
+    <value>Chưa nhập giá trị cho {0}.</value>
+  </data>
+  <data name="Binding_MissingKeyOrValue" xml:space="preserve">
+    <value>Vui lòng nhập giá trị.</value>
+  </data>
+  <data name="Binding_MissingRequestBodyRequiredValue" xml:space="preserve">
+    <value>Nội dung yêu cầu không được để trống.</value>
+  </data>
+  <data name="Js_TimeAm" xml:space="preserve">
+    <value>SA</value>
+  </data>
+  <data name="Js_TimePm" xml:space="preserve">
+    <value>CH</value>
+  </data>
+  <data name="Js_TimePlaceholder" xml:space="preserve">
+    <value>hh:mm SA</value>
+  </data>
+  <data name="Js_TimeSuggestions" xml:space="preserve">
+    <value>Gợi ý khung giờ</value>
+  </data>
+  <data name="Js_TimeCommon" xml:space="preserve">
+    <value>Giờ thường dùng</value>
+  </data>
+  <data name="Js_TimeAll" xml:space="preserve">
+    <value>Tất cả (mỗi 30 phút)</value>
+  </data>
+  <data name="Js_TimeInvalid" xml:space="preserve">
+    <value>Giờ không hợp lệ (VD: 07:30 SA).</value>
+  </data>
+  <data name="Js_TimeClear" xml:space="preserve">
+    <value>Xóa giờ</value>
+  </data>
 </root>

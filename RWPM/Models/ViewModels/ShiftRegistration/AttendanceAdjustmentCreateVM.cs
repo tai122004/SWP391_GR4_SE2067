@@ -1,3 +1,4 @@
+using RWPM.Common.Attributes;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
@@ -20,8 +21,9 @@ namespace RWPM.Models.ViewModels.ShiftRegistration
 
         public string? RequestedCheckOutTime { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng nhập lý do điều chỉnh")]
-        [MaxLength(500, ErrorMessage = "Lý do không được vượt quá 500 ký tự")]
+        [RequiredLocalization]
+        [MaxLengthLocalized(500)]
+        [Display(Name = "Adj_ReasonField", ResourceType = typeof(RWPM.Resources.Shared.RequestResource))]
         public string Reason { get; set; } = string.Empty;
 
         public TimeSpan? ParsedRequestedCheckInTime => ParseTime(RequestedCheckInTime);

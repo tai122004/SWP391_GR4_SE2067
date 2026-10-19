@@ -34,7 +34,7 @@ namespace RWPM.Controllers
             _shiftService = shiftService;
         }
 
-        public async Task<IActionResult> Index(string start, string end, int? status, string? type = null)
+        public async Task<IActionResult> Index(string start, string end, int? status, string? type = null, string? q = null, int pageNumber = 1)
         {
             DateTime startDate;
             DateTime endDate;
@@ -206,12 +206,14 @@ namespace RWPM.Controllers
 
             foreach (var a in allAdjustments)
             {
-                string inOutDesc = $"Vào: {(a.RequestedCheckInTime.HasValue ? a.RequestedCheckInTime.Value.ToString(@"hh\:mm") : "-")} | Ra: {(a.RequestedCheckOutTime.HasValue ? a.RequestedCheckOutTime.Value.ToString(@"hh\:mm") : "-")}";
+                string inOutDesc = string.Format(RequestResource.Adj_InOutSummary,
+                    a.RequestedCheckInTime.HasValue ? a.RequestedCheckInTime.Value.ToString(@"hh\:mm") : "-",
+                    a.RequestedCheckOutTime.HasValue ? a.RequestedCheckOutTime.Value.ToString(@"hh\:mm") : "-");
                 unifiedList.Add(new RequestItemVM
                 {
                     Id = a.AttendanceAdjustmentRequestId,
                     RequestType = "Attendance",
-                    RequestTypeName = "Sửa chấm công",
+                    RequestTypeName = RequestResource.AttendanceAdjustment,
                     Code = "YCDC" + a.CreatedDate.ToString("yyMMdd") + "-" + a.AttendanceAdjustmentRequestId.ToString("D3"),
                     EmployeeId = a.EmployeeId,
                     EmployeeName = a.Employee?.Account?.FullName ?? a.Employee?.Username ?? "N/A",
@@ -221,10 +223,13 @@ namespace RWPM.Controllers
                     CreatedDate = a.CreatedDate,
                     CreatedDateStr = a.CreatedDate.ToString("dd/MM/yyyy HH:mm"),
                     Status = a.Status,
-                    ShiftName = a.Shift?.ShiftName ?? "Ca làm việc",
+                    ShiftName = a.Shift?.ShiftName ?? RequestResource.Adj_DefaultShiftName,
                     WorkDateStr = a.WorkDate.ToString("dd/MM/yyyy"),
                     Note = a.Reason,
-                    RejectionReason = a.RejectionReason,
+                    // Default rejection text is stored in Vietnamese; translate it at display time
+                    RejectionReason = a.RejectionReason == RWPM.Services.Implementation.AttendanceAdjustmentService.DefaultRejectionReason
+                        ? RequestResource.Adj_DefaultRejectReason
+                        : a.RejectionReason,
                     ApprovedBy = a.ApprovedBy,
                     ApprovedAtStr = a.ApprovedAt?.ToString("dd/MM/yyyy HH:mm"),
                     ActualCheckInTimeStr = a.CurrentCheckInTime?.ToString(@"hh\:mm") ?? "-",
@@ -253,10 +258,21 @@ namespace RWPM.Controllers
                 filtered = filtered.Where(x => x.RequestType == type).ToList();
             }
 
+            // Tìm kiếm phía server (mã đơn, nhân viên, ca làm, chi nhánh...) để tìm được trên tất cả các trang
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                var keyword = q.Trim();
+                bool Has(string? value) => !string.IsNullOrEmpty(value) && value.Contains(keyword, StringComparison.OrdinalIgnoreCase);
+                filtered = filtered.Where(x => Has(x.Code) || Has(x.EmployeeName) || Has(x.EmployeeCode) || Has(x.ShiftName)
+                                            || Has(x.StoreName) || Has(x.RequestTypeName) || Has(x.WorkDateStr) || Has(x.Note)
+                                            || Has(x.SwapSummary)).ToList();
+            }
+
             ViewBag.StartDate = startDate.ToString("yyyy-MM-dd");
             ViewBag.EndDate = endDate.ToString("yyyy-MM-dd");
             ViewBag.CurrentStatus = status;
             ViewBag.CurrentType = type;
+            ViewBag.SearchQuery = q;
 
             if (isAdmin || isStoreManager)
             {
@@ -280,7 +296,26 @@ namespace RWPM.Controllers
                 ViewBag.Shifts = await _shiftService.GetAllAsync();
             }
 
-            return View(filtered.OrderByDescending(x => x.CreatedDate).ToList());
+            // Phân trang (tái sử dụng PaginationRes + _PaginationPartial như các màn hình danh sách khác)
+            var ordered = filtered.OrderByDescending(x => x.CreatedDate).ToList();
+            var paging = new RWPM.Common.Models.PagedReq { PageNumber = pageNumber };
+            int totalPages = Math.Max(1, (int)Math.Ceiling(ordered.Count / (double)paging.PageSize));
+            paging.PageNumber = Math.Clamp(paging.PageNumber, 1, totalPages);
+            var pageItems = ordered.Skip((paging.PageNumber - 1) * paging.PageSize).Take(paging.PageSize).ToList();
+
+            ViewBag.Pagination = new RWPM.Common.Models.PaginationRes<RequestItemVM>(pageItems, paging.PageNumber, paging.PageSize, ordered.Count)
+                .ToPaginationRes(new Dictionary<string, string?>
+                {
+                    ["start"] = ViewBag.StartDate,
+                    ["end"] = ViewBag.EndDate,
+                    ["status"] = status?.ToString(),
+                    ["type"] = type,
+                    ["q"] = q
+                });
+            ViewBag.TotalFiltered = ordered.Count;
+            ViewBag.ExportItems = ordered; // Xuất file vẫn lấy toàn bộ danh sách đã lọc, không chỉ trang hiện tại
+
+            return View(pageItems);
         }
 
         [HttpGet]
@@ -288,7 +323,7 @@ namespace RWPM.Controllers
         {
             var username = User.Identity?.Name;
             var emp = await _context.Employee.Include(e => e.Store).FirstOrDefaultAsync(e => e.Username == username);
-            if (emp == null) return NotFound(new { success = false, message = "Employee profile not found." });
+            if (emp == null) return NotFound(new { success = false, message = RequestResource.Err_EmployeeProfileNotFound });
 
             var myShifts = await _shiftSwapService.GetEligibleShiftsToSwapAsync(emp.EmployeeId);
             var coworkers = await _shiftSwapService.GetStoreCoworkersAsync(emp.EmployeeId, emp.StoreId ?? 0);
@@ -376,7 +411,7 @@ namespace RWPM.Controllers
 
             if (targetEmployee == null)
             {
-                return NotFound(new { success = false, message = "Employee profile not found." });
+                return NotFound(new { success = false, message = RequestResource.Err_EmployeeProfileNotFound });
             }
 
             return Json(new
@@ -402,7 +437,7 @@ namespace RWPM.Controllers
                 if (!isAdmin && !isStoreManager)
                 {
                     var emp = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
-                    if (emp == null) return Unauthorized(new { success = false, message = "Employee not found." });
+                    if (emp == null) return Unauthorized(new { success = false, message = RequestResource.Err_EmployeeNotFound });
                     model.EmployeeId = emp.EmployeeId;
                 }
                 else if (model.EmployeeId <= 0)
@@ -443,7 +478,7 @@ namespace RWPM.Controllers
                         var swapReq = await _shiftSwapService.GetByIdAsync(id);
                         if (swapReq == null || currentEmployee == null || swapReq.StoreId != currentEmployee.StoreId)
                         {
-                            return Json(new { success = false, message = "Bạn không có quyền duyệt yêu cầu đổi ca của cửa hàng khác." });
+                            return Json(new { success = false, message = RequestResource.Err_NoPermissionApproveSwapOtherStore });
                         }
                     }
 
@@ -467,7 +502,7 @@ namespace RWPM.Controllers
                         var request = await _leaveRequestService.GetByIdAsync(id);
                         if (request == null || currentEmployee == null || request.StoreId != currentEmployee.StoreId)
                         {
-                            return Json(new { success = false, message = "Bạn không có quyền duyệt yêu cầu của cửa hàng khác." });
+                            return Json(new { success = false, message = RequestResource.Err_NoPermissionApproveOtherStore });
                         }
                     }
 
@@ -487,7 +522,7 @@ namespace RWPM.Controllers
                     var request = await _attendanceAdjustmentService.GetByIdAsync(id);
                     if (request == null)
                     {
-                        return Json(new { success = false, message = "Không tìm thấy yêu cầu điều chỉnh chấm công." });
+                        return Json(new { success = false, message = RequestResource.Adj_ErrNotFound });
                     }
 
                     var currentUsername = User.Identity?.Name;
@@ -497,7 +532,7 @@ namespace RWPM.Controllers
                     // 1. Chống tự duyệt: Không ai được tự phê duyệt đơn của chính mình
                     if (!string.IsNullOrEmpty(currentUsername) && currentUsername == requesterUsername)
                     {
-                        return Json(new { success = false, message = "Bạn không thể tự phê duyệt đơn sửa chấm công của chính mình!" });
+                        return Json(new { success = false, message = RequestResource.Adj_ErrSelfApprove });
                     }
 
                     // 2. Nếu người làm đơn là Quản lý cửa hàng hoặc HR: CHỈ DUY NHẤT Admin / SuperAdmin mới có quyền duyệt
@@ -506,7 +541,7 @@ namespace RWPM.Controllers
                     {
                         if (!User.IsInRole("Admin") && !User.IsInRole("SuperAdmin"))
                         {
-                            return Json(new { success = false, message = "Đơn sửa chấm công của Quản lý cửa hàng và HR chỉ có Quản trị viên (Admin) mới có quyền phê duyệt!" });
+                            return Json(new { success = false, message = RequestResource.Adj_ErrAdminOnly });
                         }
                     }
 
@@ -517,7 +552,7 @@ namespace RWPM.Controllers
                         var currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == currentUsername);
                         if (currentEmployee == null || request.StoreId != currentEmployee.StoreId)
                         {
-                            return Json(new { success = false, message = "Bạn không có quyền duyệt yêu cầu của nhân viên cửa hàng khác." });
+                            return Json(new { success = false, message = RequestResource.Err_NoPermissionApproveOtherStoreEmployee });
                         }
                     }
 
@@ -527,12 +562,12 @@ namespace RWPM.Controllers
                         var parsedOut = AttendanceAdjustmentCreateVM.ParseTime(approvedCheckOutTime);
 
                         await _attendanceAdjustmentService.ApproveAsync(id, currentUsername ?? "manager", parsedIn, parsedOut, approverNote);
-                        return Json(new { success = true, message = "Phê duyệt và cập nhật giờ chấm công thành công!" });
+                        return Json(new { success = true, message = RequestResource.Adj_ApproveSuccess });
                     }
                     else
                     {
                         await _attendanceAdjustmentService.RejectAsync(id, reason ?? "", currentUsername ?? "manager");
-                        return Json(new { success = true, message = "Đã từ chối yêu cầu điều chỉnh chấm công." });
+                        return Json(new { success = true, message = RequestResource.Adj_RejectSuccess });
                     }
                 }
                 else
@@ -544,7 +579,7 @@ namespace RWPM.Controllers
                         var request = await _shiftRegistrationService.GetByIdAsync(id);
                         if (request == null || currentEmployee == null || request.StoreId != currentEmployee.StoreId)
                         {
-                            return Json(new { success = false, message = "Bạn không có quyền duyệt yêu cầu của cửa hàng khác." });
+                            return Json(new { success = false, message = RequestResource.Err_NoPermissionApproveOtherStore });
                         }
                     }
 
@@ -559,7 +594,7 @@ namespace RWPM.Controllers
                 {
                     if (ex is DbUpdateException)
                     {
-                        message = "Lỗi cơ sở dữ liệu: " + ex.InnerException.Message;
+                        message = string.Format(RequestResource.Err_Database, ex.InnerException.Message);
                     }
                 }
                 return Json(new { success = false, message = message });
@@ -581,7 +616,7 @@ namespace RWPM.Controllers
                         var swapReq = await _shiftSwapService.GetByIdAsync(id);
                         if (swapReq == null || currentEmployee == null || swapReq.StoreId != currentEmployee.StoreId)
                         {
-                            return Json(new { success = false, message = "Bạn không có quyền xóa yêu cầu đổi ca của cửa hàng khác." });
+                            return Json(new { success = false, message = RequestResource.Err_NoPermissionDeleteSwapOtherStore });
                         }
                     }
 
@@ -596,7 +631,7 @@ namespace RWPM.Controllers
                 else if (requestType == "Attendance")
                 {
                     await _attendanceAdjustmentService.DeleteAsync(id, User.Identity?.Name ?? "system");
-                    return Json(new { success = true, message = "Xóa yêu cầu điều chỉnh chấm công thành công." });
+                    return Json(new { success = true, message = RequestResource.Adj_DeleteSuccess });
                 }
                 else
                 {
@@ -619,7 +654,7 @@ namespace RWPM.Controllers
             {
                 if (model?.Ids == null || !model.Ids.Any())
                 {
-                    return Json(new { success = false, message = "Không có yêu cầu nào được chọn." });
+                    return Json(new { success = false, message = RequestResource.Err_NoRequestSelected });
                 }
 
                 if (model.RequestType == "ShiftSwap")
@@ -641,7 +676,7 @@ namespace RWPM.Controllers
                         {
                             if (currentEmployee == null || swapReq.StoreId != currentEmployee.StoreId)
                             {
-                                return Json(new { success = false, message = "Bạn không có quyền duyệt yêu cầu đổi ca của cửa hàng khác." });
+                                return Json(new { success = false, message = RequestResource.Err_NoPermissionApproveSwapOtherStore });
                             }
                         }
 
@@ -691,7 +726,7 @@ namespace RWPM.Controllers
                         // Chống tự duyệt
                         if (currentUsername == requesterUsername)
                         {
-                            return Json(new { success = false, message = "Bạn không thể tự duyệt đơn của chính mình!" });
+                            return Json(new { success = false, message = RequestResource.Err_SelfApprove });
                         }
 
                         // Đơn của StoreManager hoặc HR: Chỉ Admin duyệt
@@ -699,7 +734,7 @@ namespace RWPM.Controllers
                         {
                             if (!isSuperOrAdmin)
                             {
-                                return Json(new { success = false, message = "Đơn sửa chấm công của Quản lý cửa hàng và HR chỉ có Quản trị viên (Admin) mới có quyền phê duyệt!" });
+                                return Json(new { success = false, message = RequestResource.Adj_ErrAdminOnly });
                             }
                         }
 
@@ -708,7 +743,7 @@ namespace RWPM.Controllers
                         {
                             if (currentEmployee == null || request.StoreId != currentEmployee.StoreId)
                             {
-                                return Json(new { success = false, message = "Bạn không có quyền duyệt yêu cầu của nhân viên cửa hàng khác." });
+                                return Json(new { success = false, message = RequestResource.Err_NoPermissionApproveOtherStoreEmployee });
                             }
                         }
 
@@ -732,7 +767,7 @@ namespace RWPM.Controllers
                     var requests = await _context.ShiftRegistration.Where(x => model.Ids.Contains(x.ShiftRegistrationId)).ToListAsync();
                     if (currentEmployee == null || requests.Any(x => x.StoreId != currentEmployee.StoreId))
                     {
-                        return Json(new { success = false, message = "Bạn không có quyền duyệt yêu cầu của cửa hàng khác." });
+                        return Json(new { success = false, message = RequestResource.Err_NoPermissionApproveOtherStore });
                     }
                 }
 
@@ -746,7 +781,7 @@ namespace RWPM.Controllers
                 {
                     if (ex is DbUpdateException)
                     {
-                        message = "Lỗi cơ sở dữ liệu: " + ex.InnerException.Message;
+                        message = string.Format(RequestResource.Err_Database, ex.InnerException.Message);
                     }
                 }
                 return Json(new { success = false, message = message });
@@ -758,7 +793,7 @@ namespace RWPM.Controllers
         {
             var username = User.Identity?.Name;
             var emp = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
-            if (emp == null) return NotFound(new { success = false, message = "Employee profile not found." });
+            if (emp == null) return NotFound(new { success = false, message = RequestResource.Err_EmployeeProfileNotFound });
 
             var recentDays = DateTime.Today.AddDays(-30);
             var records = await _context.AttendanceRecord
@@ -777,7 +812,7 @@ namespace RWPM.Controllers
                     attendanceId = r.AttendanceId,
                     dateStr = r.Date.ToString("dd/MM/yyyy"),
                     workDate = r.Date.ToString("yyyy-MM-dd"),
-                    shiftName = r.Shift?.ShiftName ?? "Ca làm việc",
+                    shiftName = r.Shift?.ShiftName ?? RequestResource.Adj_DefaultShiftName,
                     shiftId = r.ShiftId,
                     checkIn = r.CheckInTime.HasValue ? r.CheckInTime.Value.ToString(@"hh\:mm") : "",
                     checkOut = r.CheckOutTime.HasValue ? r.CheckOutTime.Value.ToString(@"hh\:mm") : ""
@@ -793,12 +828,12 @@ namespace RWPM.Controllers
             {
                 if (model == null)
                 {
-                    return Json(new { success = false, message = "Dữ liệu yêu cầu không hợp lệ hoặc thiếu thông tin." });
+                    return Json(new { success = false, message = RequestResource.Err_InvalidRequestData });
                 }
 
                 var username = User.Identity?.Name ?? "system";
                 await _attendanceAdjustmentService.CreateRequestAsync(model, username);
-                return Json(new { success = true, message = "Gửi yêu cầu điều chỉnh chấm công thành công! Vui lòng chờ quản lý phê duyệt." });
+                return Json(new { success = true, message = RequestResource.Adj_SubmitSuccess });
             }
             catch (Exception ex)
             {

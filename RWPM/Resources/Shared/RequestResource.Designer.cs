@@ -450,5 +450,643 @@ namespace RWPM.Resources.Shared {
         public static string Leave_DeleteSuccess => ResourceManager.GetString("Leave_DeleteSuccess", resourceCulture);
         public static string Leave_DaysUnit => ResourceManager.GetString("Leave_DaysUnit", resourceCulture);
         public static string Leave_InsufficientBalance => ResourceManager.GetString("Leave_InsufficientBalance", resourceCulture);
+    
+
+        public static string Page_Subtitle {
+            get {
+                return ResourceManager.GetString("Page_Subtitle", resourceCulture);
+            }
+        }
+
+        public static string Status_Approved {
+            get {
+                return ResourceManager.GetString("Status_Approved", resourceCulture);
+            }
+        }
+
+        public static string Status_Rejected {
+            get {
+                return ResourceManager.GetString("Status_Rejected", resourceCulture);
+            }
+        }
+
+        public static string Stats_Filtering {
+            get {
+                return ResourceManager.GetString("Stats_Filtering", resourceCulture);
+            }
+        }
+
+        public static string Filter_SearchPlaceholder {
+            get {
+                return ResourceManager.GetString("Filter_SearchPlaceholder", resourceCulture);
+            }
+        }
+
+        public static string Filter_ResetTitle {
+            get {
+                return ResourceManager.GetString("Filter_ResetTitle", resourceCulture);
+            }
+        }
+
+        public static string Filter_Reset {
+            get {
+                return ResourceManager.GetString("Filter_Reset", resourceCulture);
+            }
+        }
+
+        public static string Filter_AllStatuses {
+            get {
+                return ResourceManager.GetString("Filter_AllStatuses", resourceCulture);
+            }
+        }
+
+        public static string AttendanceAdjustment {
+            get {
+                return ResourceManager.GetString("AttendanceAdjustment", resourceCulture);
+            }
+        }
+
+        public static string List_Title {
+            get {
+                return ResourceManager.GetString("List_Title", resourceCulture);
+            }
+        }
+
+        public static string List_EmptyDesc {
+            get {
+                return ResourceManager.GetString("List_EmptyDesc", resourceCulture);
+            }
+        }
+
+        public static string Detail_RequestCode {
+            get {
+                return ResourceManager.GetString("Detail_RequestCode", resourceCulture);
+            }
+        }
+
+        public static string Detail_SentAt {
+            get {
+                return ResourceManager.GetString("Detail_SentAt", resourceCulture);
+            }
+        }
+
+        public static string Detail_ContentTitle {
+            get {
+                return ResourceManager.GetString("Detail_ContentTitle", resourceCulture);
+            }
+        }
+
+        public static string Detail_AttendanceTitle {
+            get {
+                return ResourceManager.GetString("Detail_AttendanceTitle", resourceCulture);
+            }
+        }
+
+        public static string Detail_EmployeeNote {
+            get {
+                return ResourceManager.GetString("Detail_EmployeeNote", resourceCulture);
+            }
+        }
+
+        public static string Detail_Reviewer {
+            get {
+                return ResourceManager.GetString("Detail_Reviewer", resourceCulture);
+            }
+        }
+
+        public static string Detail_ProposedTime {
+            get {
+                return ResourceManager.GetString("Detail_ProposedTime", resourceCulture);
+            }
+        }
+
+        public static string Detail_AtTime {
+            get {
+                return ResourceManager.GetString("Detail_AtTime", resourceCulture);
+            }
+        }
+
+        public static string Empty_Title {
+            get {
+                return ResourceManager.GetString("Empty_Title", resourceCulture);
+            }
+        }
+
+        public static string Empty_Desc {
+            get {
+                return ResourceManager.GetString("Empty_Desc", resourceCulture);
+            }
+        }
+
+        public static string Notice_AdminOnly {
+            get {
+                return ResourceManager.GetString("Notice_AdminOnly", resourceCulture);
+            }
+        }
+
+        public static string Notice_StoreMismatch {
+            get {
+                return ResourceManager.GetString("Notice_StoreMismatch", resourceCulture);
+            }
+        }
+
+        public static string Banner_Approved {
+            get {
+                return ResourceManager.GetString("Banner_Approved", resourceCulture);
+            }
+        }
+
+        public static string Banner_Rejected {
+            get {
+                return ResourceManager.GetString("Banner_Rejected", resourceCulture);
+            }
+        }
+
+        public static string Banner_ProcessedBy {
+            get {
+                return ResourceManager.GetString("Banner_ProcessedBy", resourceCulture);
+            }
+        }
+
+        public static string Banner_DefaultManager {
+            get {
+                return ResourceManager.GetString("Banner_DefaultManager", resourceCulture);
+            }
+        }
+
+        public static string Swap_NoAvailableShifts {
+            get {
+                return ResourceManager.GetString("Swap_NoAvailableShifts", resourceCulture);
+            }
+        }
+
+        public static string Leave_EndBeforeStart {
+            get {
+                return ResourceManager.GetString("Leave_EndBeforeStart", resourceCulture);
+            }
+        }
+
+        public static string Leave_ExceedsBalance {
+            get {
+                return ResourceManager.GetString("Leave_ExceedsBalance", resourceCulture);
+            }
+        }
+
+        public static string Leave_ErrEmployeeNotFound {
+            get {
+                return ResourceManager.GetString("Leave_ErrEmployeeNotFound", resourceCulture);
+            }
+        }
+
+        public static string Leave_ErrPastDates {
+            get {
+                return ResourceManager.GetString("Leave_ErrPastDates", resourceCulture);
+            }
+        }
+
+        public static string Leave_ErrOverlap {
+            get {
+                return ResourceManager.GetString("Leave_ErrOverlap", resourceCulture);
+            }
+        }
+
+        public static string Leave_ErrInsufficientCreate {
+            get {
+                return ResourceManager.GetString("Leave_ErrInsufficientCreate", resourceCulture);
+            }
+        }
+
+        public static string Leave_ErrNotFound {
+            get {
+                return ResourceManager.GetString("Leave_ErrNotFound", resourceCulture);
+            }
+        }
+
+        public static string Leave_ErrAlreadyProcessed {
+            get {
+                return ResourceManager.GetString("Leave_ErrAlreadyProcessed", resourceCulture);
+            }
+        }
+
+        public static string Leave_ErrInsufficientApprove {
+            get {
+                return ResourceManager.GetString("Leave_ErrInsufficientApprove", resourceCulture);
+            }
+        }
+
+        public static string Leave_ErrDeleteOnlyPending {
+            get {
+                return ResourceManager.GetString("Leave_ErrDeleteOnlyPending", resourceCulture);
+            }
+        }
+
+        public static string Leave_ErrNoPermissionDelete {
+            get {
+                return ResourceManager.GetString("Leave_ErrNoPermissionDelete", resourceCulture);
+            }
+        }
+
+        public static string LeaveType_Paid {
+            get {
+                return ResourceManager.GetString("LeaveType_Paid", resourceCulture);
+            }
+        }
+
+        public static string LeaveType_Unpaid {
+            get {
+                return ResourceManager.GetString("LeaveType_Unpaid", resourceCulture);
+            }
+        }
+
+        public static string Adj_Info {
+            get {
+                return ResourceManager.GetString("Adj_Info", resourceCulture);
+            }
+        }
+
+        public static string Adj_SelectRecord {
+            get {
+                return ResourceManager.GetString("Adj_SelectRecord", resourceCulture);
+            }
+        }
+
+        public static string Adj_LoadingRecords {
+            get {
+                return ResourceManager.GetString("Adj_LoadingRecords", resourceCulture);
+            }
+        }
+
+        public static string Adj_SelectShiftPrompt {
+            get {
+                return ResourceManager.GetString("Adj_SelectShiftPrompt", resourceCulture);
+            }
+        }
+
+        public static string Adj_NoRecords {
+            get {
+                return ResourceManager.GetString("Adj_NoRecords", resourceCulture);
+            }
+        }
+
+        public static string Adj_RequestedCheckIn {
+            get {
+                return ResourceManager.GetString("Adj_RequestedCheckIn", resourceCulture);
+            }
+        }
+
+        public static string Adj_RequestedCheckOut {
+            get {
+                return ResourceManager.GetString("Adj_RequestedCheckOut", resourceCulture);
+            }
+        }
+
+        public static string Adj_Reason {
+            get {
+                return ResourceManager.GetString("Adj_Reason", resourceCulture);
+            }
+        }
+
+        public static string Adj_ReasonField {
+            get {
+                return ResourceManager.GetString("Adj_ReasonField", resourceCulture);
+            }
+        }
+
+        public static string Adj_ReasonPlaceholder {
+            get {
+                return ResourceManager.GetString("Adj_ReasonPlaceholder", resourceCulture);
+            }
+        }
+
+        public static string Adj_ErrSelectShift {
+            get {
+                return ResourceManager.GetString("Adj_ErrSelectShift", resourceCulture);
+            }
+        }
+
+        public static string Adj_ErrReasonRequired {
+            get {
+                return ResourceManager.GetString("Adj_ErrReasonRequired", resourceCulture);
+            }
+        }
+
+        public static string Adj_ErrTimeRequired {
+            get {
+                return ResourceManager.GetString("Adj_ErrTimeRequired", resourceCulture);
+            }
+        }
+
+        public static string Adj_InOutSummary {
+            get {
+                return ResourceManager.GetString("Adj_InOutSummary", resourceCulture);
+            }
+        }
+
+        public static string Adj_DefaultShiftName {
+            get {
+                return ResourceManager.GetString("Adj_DefaultShiftName", resourceCulture);
+            }
+        }
+
+        public static string Adj_SubmitSuccess {
+            get {
+                return ResourceManager.GetString("Adj_SubmitSuccess", resourceCulture);
+            }
+        }
+
+        public static string Adj_ApproveSuccess {
+            get {
+                return ResourceManager.GetString("Adj_ApproveSuccess", resourceCulture);
+            }
+        }
+
+        public static string Adj_RejectSuccess {
+            get {
+                return ResourceManager.GetString("Adj_RejectSuccess", resourceCulture);
+            }
+        }
+
+        public static string Adj_DeleteSuccess {
+            get {
+                return ResourceManager.GetString("Adj_DeleteSuccess", resourceCulture);
+            }
+        }
+
+        public static string Adj_DefaultRejectReason {
+            get {
+                return ResourceManager.GetString("Adj_DefaultRejectReason", resourceCulture);
+            }
+        }
+
+        public static string Adj_ErrNotFound {
+            get {
+                return ResourceManager.GetString("Adj_ErrNotFound", resourceCulture);
+            }
+        }
+
+        public static string Adj_ErrSelfApprove {
+            get {
+                return ResourceManager.GetString("Adj_ErrSelfApprove", resourceCulture);
+            }
+        }
+
+        public static string Adj_ErrAdminOnly {
+            get {
+                return ResourceManager.GetString("Adj_ErrAdminOnly", resourceCulture);
+            }
+        }
+
+        public static string Adj_ErrInvalidData {
+            get {
+                return ResourceManager.GetString("Adj_ErrInvalidData", resourceCulture);
+            }
+        }
+
+        public static string Adj_ErrEmployeeNotFound {
+            get {
+                return ResourceManager.GetString("Adj_ErrEmployeeNotFound", resourceCulture);
+            }
+        }
+
+        public static string Adj_ErrOtherEmployeeRecord {
+            get {
+                return ResourceManager.GetString("Adj_ErrOtherEmployeeRecord", resourceCulture);
+            }
+        }
+
+        public static string Adj_ErrPendingForShift {
+            get {
+                return ResourceManager.GetString("Adj_ErrPendingForShift", resourceCulture);
+            }
+        }
+
+        public static string Adj_ErrPendingForShiftDate {
+            get {
+                return ResourceManager.GetString("Adj_ErrPendingForShiftDate", resourceCulture);
+            }
+        }
+
+        public static string Adj_ErrAlreadyProcessed {
+            get {
+                return ResourceManager.GetString("Adj_ErrAlreadyProcessed", resourceCulture);
+            }
+        }
+
+        public static string Adj_ErrDeleteOnlyPending {
+            get {
+                return ResourceManager.GetString("Adj_ErrDeleteOnlyPending", resourceCulture);
+            }
+        }
+
+        public static string Adj_ErrNoPermissionDelete {
+            get {
+                return ResourceManager.GetString("Adj_ErrNoPermissionDelete", resourceCulture);
+            }
+        }
+
+        public static string Appr_Title {
+            get {
+                return ResourceManager.GetString("Appr_Title", resourceCulture);
+            }
+        }
+
+        public static string Appr_WorkDate {
+            get {
+                return ResourceManager.GetString("Appr_WorkDate", resourceCulture);
+            }
+        }
+
+        public static string Appr_OriginalTime {
+            get {
+                return ResourceManager.GetString("Appr_OriginalTime", resourceCulture);
+            }
+        }
+
+        public static string Appr_RequestedTime {
+            get {
+                return ResourceManager.GetString("Appr_RequestedTime", resourceCulture);
+            }
+        }
+
+        public static string Appr_EmployeeReason {
+            get {
+                return ResourceManager.GetString("Appr_EmployeeReason", resourceCulture);
+            }
+        }
+
+        public static string Appr_ApprovedCheckIn {
+            get {
+                return ResourceManager.GetString("Appr_ApprovedCheckIn", resourceCulture);
+            }
+        }
+
+        public static string Appr_ApprovedCheckOut {
+            get {
+                return ResourceManager.GetString("Appr_ApprovedCheckOut", resourceCulture);
+            }
+        }
+
+        public static string Appr_ApproverNote {
+            get {
+                return ResourceManager.GetString("Appr_ApproverNote", resourceCulture);
+            }
+        }
+
+        public static string Appr_ApproverNotePlaceholder {
+            get {
+                return ResourceManager.GetString("Appr_ApproverNotePlaceholder", resourceCulture);
+            }
+        }
+
+        public static string Appr_ConfirmButton {
+            get {
+                return ResourceManager.GetString("Appr_ConfirmButton", resourceCulture);
+            }
+        }
+
+        public static string Appr_NoReason {
+            get {
+                return ResourceManager.GetString("Appr_NoReason", resourceCulture);
+            }
+        }
+
+        public static string Appr_ErrTimeRequired {
+            get {
+                return ResourceManager.GetString("Appr_ErrTimeRequired", resourceCulture);
+            }
+        }
+
+        public static string Processing {
+            get {
+                return ResourceManager.GetString("Processing", resourceCulture);
+            }
+        }
+
+        public static string Toast_OperationUnsuccessful {
+            get {
+                return ResourceManager.GetString("Toast_OperationUnsuccessful", resourceCulture);
+            }
+        }
+
+        public static string Err_EmployeeProfileNotFound {
+            get {
+                return ResourceManager.GetString("Err_EmployeeProfileNotFound", resourceCulture);
+            }
+        }
+
+        public static string Err_EmployeeNotFound {
+            get {
+                return ResourceManager.GetString("Err_EmployeeNotFound", resourceCulture);
+            }
+        }
+
+        public static string Err_NoPermissionApproveSwapOtherStore {
+            get {
+                return ResourceManager.GetString("Err_NoPermissionApproveSwapOtherStore", resourceCulture);
+            }
+        }
+
+        public static string Err_NoPermissionApproveOtherStore {
+            get {
+                return ResourceManager.GetString("Err_NoPermissionApproveOtherStore", resourceCulture);
+            }
+        }
+
+        public static string Err_NoPermissionApproveOtherStoreEmployee {
+            get {
+                return ResourceManager.GetString("Err_NoPermissionApproveOtherStoreEmployee", resourceCulture);
+            }
+        }
+
+        public static string Err_NoPermissionDeleteSwapOtherStore {
+            get {
+                return ResourceManager.GetString("Err_NoPermissionDeleteSwapOtherStore", resourceCulture);
+            }
+        }
+
+        public static string Err_NoRequestSelected {
+            get {
+                return ResourceManager.GetString("Err_NoRequestSelected", resourceCulture);
+            }
+        }
+
+        public static string Err_SelfApprove {
+            get {
+                return ResourceManager.GetString("Err_SelfApprove", resourceCulture);
+            }
+        }
+
+        public static string Err_InvalidRequestData {
+            get {
+                return ResourceManager.GetString("Err_InvalidRequestData", resourceCulture);
+            }
+        }
+
+        public static string Err_Database {
+            get {
+                return ResourceManager.GetString("Err_Database", resourceCulture);
+            }
+        }
+
+        public static string Export_NoData {
+            get {
+                return ResourceManager.GetString("Export_NoData", resourceCulture);
+            }
+        }
+
+        public static string Export_Success {
+            get {
+                return ResourceManager.GetString("Export_Success", resourceCulture);
+            }
+        }
+
+        public static string Export_ColType {
+            get {
+                return ResourceManager.GetString("Export_ColType", resourceCulture);
+            }
+        }
+
+        public static string Export_ColSender {
+            get {
+                return ResourceManager.GetString("Export_ColSender", resourceCulture);
+            }
+        }
+
+        public static string Export_ColBranch {
+            get {
+                return ResourceManager.GetString("Export_ColBranch", resourceCulture);
+            }
+        }
+
+        public static string Export_ColShiftContent {
+            get {
+                return ResourceManager.GetString("Export_ColShiftContent", resourceCulture);
+            }
+        }
+
+        public static string Export_ColCreatedDate {
+            get {
+                return ResourceManager.GetString("Export_ColCreatedDate", resourceCulture);
+            }
+        }
+
+        public static string Export_ColApprover {
+            get {
+                return ResourceManager.GetString("Export_ColApprover", resourceCulture);
+            }
+        }
+
+        public static string Export_FileName {
+            get {
+                return ResourceManager.GetString("Export_FileName", resourceCulture);
+            }
+        }
+    
+
+        public static string Filter_SearchEnterHint {
+            get {
+                return ResourceManager.GetString("Filter_SearchEnterHint", resourceCulture);
+            }
+        }
     }
 }

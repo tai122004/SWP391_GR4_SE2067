@@ -67,7 +67,7 @@ namespace RWPM.Controllers
 
         public IActionResult AccessDenied(string? returnUrl = null)
         {
-            AlertHelper.AddErrorMessage(TempData, "Bạn không có quyền truy cập chức năng này!");
+            AlertHelper.AddErrorMessage(TempData, RWPM.Resources.Shared.Auth.Err_AccessDenied);
             return RedirectToAction("Index", "Home");
         }
     }

@@ -7,6 +7,13 @@
 (function (window, document) {
     'use strict';
 
+    // Chuỗi đa ngôn ngữ do _Layout.cshtml xuất ra từ SharedResource (window.AppI18n)
+    function t(key, fallback) {
+        var dict = window.AppI18n || {};
+        return dict[key] || fallback || key;
+    }
+    window.AppText = t;
+
     var TOAST_DURATION = 7000;
     var TOAST_STYLES = {
         success: { bg: 'bg-success text-white', icon: 'bi-check-circle-fill', close: 'btn-close-white', sub: 'text-white-50' },
@@ -63,7 +70,7 @@
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'btn-close ' + style.close + ' mt-1';
-        btn.setAttribute('aria-label', 'Close');
+        btn.setAttribute('aria-label', t('close', 'Close'));
         right.appendChild(btn);
 
         row.appendChild(left);
@@ -146,8 +153,6 @@
     function AppConfirm(options) {
         if (typeof options === 'string') options = { message: options };
         options = options || {};
-        var lang = (document.documentElement.lang || 'vi').toLowerCase();
-        var isVi = lang.indexOf('en') !== 0;
         var type = options.type || guessType((options.title || '') + ' ' + (options.message || '') + ' ' + (options.confirmText || ''));
         var cfg = CONFIRM_TYPES[type] || CONFIRM_TYPES.primary;
 
@@ -160,12 +165,12 @@
         var iconWrap = el.querySelector('.app-confirm-icon');
         iconWrap.className = 'app-confirm-icon rounded-circle d-inline-flex align-items-center justify-content-center mb-3 bg-' + cfg.color + ' bg-opacity-10 text-' + cfg.color;
         iconWrap.querySelector('i').className = 'bi ' + (options.icon || cfg.icon) + ' fs-2';
-        el.querySelector('.app-confirm-title').textContent = options.title || (isVi ? 'Xác nhận thao tác' : 'Please confirm');
+        el.querySelector('.app-confirm-title').textContent = options.title || t('confirmTitle', 'Please confirm');
         el.querySelector('.app-confirm-message').textContent = options.message || '';
         var okBtn = el.querySelector('.app-confirm-ok');
         okBtn.className = 'btn px-4 app-confirm-ok ' + cfg.btn;
-        okBtn.textContent = options.confirmText || (isVi ? 'Đồng ý' : 'Confirm');
-        el.querySelector('.app-confirm-cancel').textContent = options.cancelText || (isVi ? 'Hủy' : 'Cancel');
+        okBtn.textContent = options.confirmText || t('confirmOk', 'Confirm');
+        el.querySelector('.app-confirm-cancel').textContent = options.cancelText || t('cancel', 'Cancel');
 
         var modal = bootstrap.Modal.getOrCreateInstance(el, { backdrop: 'static' });
 
@@ -246,6 +251,180 @@
 })(window, document);
 
 // =======================================================
+// VALIDATE: LỖI HIỂN THỊ NGAY DƯỚI TỪNG Ô NHẬP (ĐA NGÔN NGỮ)
+// 1. Form có jQuery Validation (unobtrusive): tự tạo <span data-valmsg-for> cho ô nào còn thiếu,
+//    và dịch các thông báo mặc định (step, min, max, email...) theo ngôn ngữ đang chọn.
+// 2. Form không dùng jQuery Validation (modal, form AJAX...): chặn bong bóng mặc định của trình duyệt,
+//    hiển thị lỗi bên dưới ô nhập bằng tiếng Việt/Anh theo resource.
+// 3. Lỗi trả về từ server (ModelState) được gắn đúng vào từng ô (window.AppServerErrors do _Layout xuất ra).
+// =======================================================
+(function (window, document, $) {
+    'use strict';
+    var t = window.AppText || function (k, f) { return f || k; };
+
+    function cssEscape(v) { return window.CSS && CSS.escape ? CSS.escape(v) : String(v).replace(/(["\\.\[\]#:])/g, '\\$1'); }
+
+    // Vị trí đặt thông báo: sau input-group / select2 / chính ô nhập
+    function anchorOf(field) {
+        var group = field.closest('.input-group');
+        if (group) return group;
+        var next = field.nextElementSibling;
+        if (next && next.classList && next.classList.contains('select2')) return next;
+        return field;
+    }
+
+    function messageHolder(field, create) {
+        var form = field.form || document;
+        var name = field.getAttribute('name');
+        if (name) {
+            var existing = form.querySelector('[data-valmsg-for="' + cssEscape(name) + '"]');
+            if (existing) return existing;
+        }
+        var anchor = anchorOf(field);
+        var sib = anchor.nextElementSibling;
+        if (sib && sib.classList.contains('app-field-error')) return sib;
+        if (!create) return null;
+        var span = document.createElement('span');
+        span.className = 'app-field-error text-danger small d-block mt-1';
+        if (name) {
+            span.setAttribute('data-valmsg-for', name);
+            span.setAttribute('data-valmsg-replace', 'true');
+            span.classList.add('field-validation-valid');
+        }
+        anchor.parentNode.insertBefore(span, anchor.nextSibling);
+        return span;
+    }
+
+    function showError(field, message) {
+        var holder = messageHolder(field, true);
+        holder.textContent = message;
+        holder.classList.remove('field-validation-valid');
+        holder.classList.add('field-validation-error');
+        field.classList.add('is-invalid', 'input-validation-error');
+    }
+
+    function clearError(field) {
+        var holder = messageHolder(field, false);
+        if (holder && !holder.hasAttribute('data-valmsg-for-locked')) {
+            holder.textContent = '';
+            holder.classList.remove('field-validation-error');
+            holder.classList.add('field-validation-valid');
+        }
+        field.classList.remove('is-invalid', 'input-validation-error');
+    }
+
+    // Thông báo bản địa hóa cho HTML5 validity
+    function nativeMessage(field) {
+        var v = field.validity;
+        if (v.valueMissing) return field.getAttribute('data-val-required') || t('required', 'This field is required.');
+        if (v.typeMismatch) return field.type === 'email' ? t('email') : (field.type === 'url' ? t('url') : t('pattern'));
+        if (v.badInput) return field.type === 'date' ? t('date') : t('number');
+        if (v.stepMismatch) return t('step').replace('{0}', field.getAttribute('step'));
+        if (v.rangeUnderflow) return t('min').replace('{0}', field.getAttribute('min'));
+        if (v.rangeOverflow) return t('max').replace('{0}', field.getAttribute('max'));
+        if (v.tooLong) return t('maxlength').replace('{0}', field.getAttribute('maxlength'));
+        if (v.tooShort) return t('minlength').replace('{0}', field.getAttribute('minlength'));
+        if (v.patternMismatch) return field.getAttribute('title') || t('pattern');
+        return field.validationMessage;
+    }
+
+    // (2) Form không có jQuery Validation: thay bong bóng trình duyệt bằng lỗi dưới ô nhập
+    var firstInvalidHandled = null;
+    document.addEventListener('invalid', function (e) {
+        var field = e.target;
+        if (!field || !field.form) return;
+        e.preventDefault();
+        showError(field, nativeMessage(field));
+        if (firstInvalidHandled !== field.form) {
+            firstInvalidHandled = field.form;
+            try { field.focus({ preventScroll: false }); } catch (err) { field.focus(); }
+            setTimeout(function () { firstInvalidHandled = null; }, 0);
+        }
+    }, true);
+
+    function revalidate(e) {
+        var field = e.target;
+        if (!field || !field.classList || !field.classList.contains('is-invalid')) return;
+        if (field.form && $ && $.data && $(field.form).data('validator')) return; // jQuery Validation tự xử lý
+        if (field.checkValidity && field.checkValidity()) clearError(field);
+    }
+    document.addEventListener('input', revalidate, true);
+    document.addEventListener('change', revalidate, true);
+
+    function prepareForms() {
+        // (1) Tạo chỗ hiển thị lỗi cho mọi ô có data-val nhưng chưa có <span asp-validation-for>
+        document.querySelectorAll('form [data-val="true"][name]').forEach(function (field) {
+            if (field.type === 'hidden') return;
+            messageHolder(field, true);
+        });
+
+        // Dịch thông báo mặc định của jQuery Validation
+        if ($ && $.validator) {
+            var fmt = $.validator.format;
+            $.extend($.validator.messages, {
+                required: t('required'),
+                remote: t('remote'),
+                email: t('email'),
+                url: t('url'),
+                date: t('date'),
+                dateISO: t('date'),
+                number: t('number'),
+                digits: t('digits'),
+                equalTo: t('equalTo'),
+                maxlength: fmt(t('maxlength')),
+                minlength: fmt(t('minlength')),
+                max: fmt(t('max')),
+                min: fmt(t('min')),
+                step: fmt(t('step'))
+            });
+            // Số kiểu Việt Nam (25.000 / 25000,5) vẫn được chấp nhận ở phía client
+            $.validator.methods.number = function (value, element) {
+                return this.optional(element) || /^-?\d+([.,]\d+)?$/.test(String(value).replace(/\s/g, ''));
+            };
+        }
+
+        // (3) Lỗi từ server: gắn vào đúng ô nhập
+        var serverErrors = window.AppServerErrors || {};
+        Object.keys(serverErrors).forEach(function (key) {
+            if (!key) return;
+            var field = document.querySelector('[name="' + cssEscape(key) + '"]');
+            if (!field) return;
+            var holder = messageHolder(field, true);
+            if (!holder.textContent.trim()) {
+                holder.textContent = serverErrors[key];
+                holder.classList.remove('field-validation-valid');
+                holder.classList.add('field-validation-error');
+            }
+            field.classList.add('is-invalid', 'input-validation-error');
+        });
+    }
+
+    // Chạy trước jquery.validate.unobtrusive (được nạp sau site.js) để span có sẵn khi nó parse form
+    if ($) { $(prepareForms); } else { document.addEventListener('DOMContentLoaded', prepareForms); }
+
+    // Menu dropdown (VD: nút "Thao tác") nằm trong bảng/khung có thanh cuộn bị che mất:
+    // cho menu thoát ra khỏi khung bằng định vị fixed (Popper strategy 'fixed') -> luôn hiển thị đầy đủ.
+    // Đăng ký trên window (capture) để chạy TRƯỚC handler của Bootstrap (Bootstrap bắt sự kiện ở document, capture)
+    window.addEventListener('click', function (e) {
+        var toggle = e.target.closest ? e.target.closest('[data-bs-toggle="dropdown"]') : null;
+        if (!toggle || typeof bootstrap === 'undefined' || !bootstrap.Dropdown) return;
+        if (!toggle.closest('.table-responsive, .overflow-auto, .overflow-hidden, .overflow-scroll, .modal-body')) return;
+        if (bootstrap.Dropdown.getInstance(toggle)) return;
+        bootstrap.Dropdown.getOrCreateInstance(toggle, { popperConfig: { strategy: 'fixed' } });
+    }, true);
+
+    // Ô số điện thoại: chỉ cho nhập chữ số, tối đa 10 số (quy tắc: 10 số, bắt đầu bằng 0)
+    document.addEventListener('input', function (e) {
+        var el = e.target;
+        if (!el || !el.matches || !el.matches('[data-phone-input]')) return;
+        var digits = el.value.replace(/\D/g, '').slice(0, 10);
+        if (digits !== el.value) el.value = digits;
+    }, true);
+
+    window.AppValidation = { showError: showError, clearError: clearError };
+})(window, document, window.jQuery);
+
+// =======================================================
 // UI/UX UTILITIES: TỐI ƯU HÓA THAO TÁC NGƯỜI DÙNG
 // =======================================================
 
@@ -276,9 +455,9 @@ function copyToClipboard(text, successMessage) {
     if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(text).then(() => {
             if (typeof AppToast !== 'undefined') {
-                AppToast.success(successMessage || 'Đã sao chép vào bộ nhớ tạm!');
+                AppToast.success(successMessage || AppText('copied'));
             } else {
-                AppToast.success(successMessage || 'Đã sao chép!');
+                AppToast.success(successMessage || AppText('copied'));
             }
         }).catch(err => {
             console.error('Lỗi khi sao chép:', err);
@@ -294,7 +473,7 @@ function copyToClipboard(text, successMessage) {
         try {
             document.execCommand('copy');
             if (typeof AppToast !== 'undefined') {
-                AppToast.success(successMessage || 'Đã sao chép vào bộ nhớ tạm!');
+                AppToast.success(successMessage || AppText('copied'));
             }
         } catch (err) {
             console.error('Fallback copy error', err);
@@ -322,8 +501,8 @@ function generateUsernameFromFullName(fullName) {
 // 4. Modal Đổi Mật Khẩu Nhanh
 function updateQuickResetCopyText() {
     const modalEl = $('#modalQuickResetPassword');
-    const labelAccount = modalEl.data('label-account') || 'Account';
-    const labelPassword = modalEl.data('label-password') || 'Password';
+    const labelAccount = modalEl.data('label-account') || AppText('account', 'Account');
+    const labelPassword = modalEl.data('label-password') || AppText('password', 'Password');
     const username = $('#quickResetModal_Username').val();
     const password = $('#quickResetModal_NewPassword').val();
     $('#quickResetModal_CopyText').text(`${labelAccount}: ${username} | ${labelPassword}: ${password}`);
@@ -359,10 +538,10 @@ function submitQuickResetPassword() {
     const confirmPassword = $('#quickResetModal_ConfirmPassword').val();
     const token = $('input[name="__RequestVerificationToken"]').val();
 
-    const msgMinLen = modal.data('err-minlen') || 'New password must be at least 6 characters!';
-    const msgMismatch = modal.data('err-match') || 'Password confirmation does not match!';
-    const textSaving = modal.data('text-saving') || 'Saving...';
-    const msgSuccess = modal.data('toast-success') || `Reset password for account ${username} successfully!`;
+    const msgMinLen = modal.data('err-minlen') || AppText('passwordMinLength');
+    const msgMismatch = modal.data('err-match') || AppText('passwordMismatch');
+    const textSaving = modal.data('text-saving') || AppText('saving');
+    const msgSuccess = modal.data('toast-success') || AppText('resetPasswordSuccess').replace('{0}', username);
 
     if (!newPassword || newPassword.length < 6) {
         if (typeof AppToast !== 'undefined') {
@@ -409,7 +588,7 @@ function submitQuickResetPassword() {
             }
         },
         error: function (xhr) {
-            const msg = xhr.responseText || 'Error resetting password!';
+            const msg = xhr.responseText || AppText('resetPasswordError');
             if (typeof AppToast !== 'undefined') {
                 AppToast.error(msg);
             } else {

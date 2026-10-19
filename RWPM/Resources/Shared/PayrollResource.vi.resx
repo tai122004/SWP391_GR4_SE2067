@@ -1,0 +1,737 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Payroll_Title" xml:space="preserve">
+    <value>Quản lý Bảng lương</value>
+  </data>
+  <data name="Payroll_AutoTitle" xml:space="preserve">
+    <value>Bảng lương {0} - {1}</value>
+  </data>
+  <data name="Common_Days" xml:space="preserve">
+    <value>{0} ngày</value>
+  </data>
+  <data name="Unit_Hours" xml:space="preserve">
+    <value>giờ</value>
+  </data>
+  <data name="Unit_Dong" xml:space="preserve">
+    <value>đ</value>
+  </data>
+  <data name="Unit_Vnd" xml:space="preserve">
+    <value>VNĐ</value>
+  </data>
+  <data name="Status_Locked" xml:space="preserve">
+    <value>Đã chốt</value>
+  </data>
+  <data name="Status_Draft" xml:space="preserve">
+    <value>Bản nháp</value>
+  </data>
+  <data name="Status_LockedBadge" xml:space="preserve">
+    <value>Đã chốt (Locked)</value>
+  </data>
+  <data name="Status_DraftBadge" xml:space="preserve">
+    <value>Bản nháp (Draft)</value>
+  </data>
+  <data name="DetailStatus_Valid" xml:space="preserve">
+    <value>Hợp lệ</value>
+  </data>
+  <data name="DetailStatus_MissingRate" xml:space="preserve">
+    <value>Thiếu đơn giá</value>
+  </data>
+  <data name="DetailStatus_HasWarnings" xml:space="preserve">
+    <value>Có cảnh báo</value>
+  </data>
+  <data name="DetailStatus_HasMissingShifts" xml:space="preserve">
+    <value>Có ca thiếu</value>
+  </data>
+  <data name="DetailStatus_NoHourlyRate" xml:space="preserve">
+    <value>Chưa có HourlyRate</value>
+  </data>
+  <data name="DetailStatus_HasMissingData" xml:space="preserve">
+    <value>Có ca thiếu dữ liệu</value>
+  </data>
+  <data name="Index_ScopeLabel" xml:space="preserve">
+    <value>Phạm vi:</value>
+  </data>
+  <data name="Index_ScopeAssignedStore" xml:space="preserve">
+    <value>Chi nhánh được phân công quản lý</value>
+  </data>
+  <data name="Index_Subtitle" xml:space="preserve">
+    <value>Tính lương và theo dõi quỹ lương định kỳ cho nhân viên toàn hệ thống</value>
+  </data>
+  <data name="Index_YearLabel" xml:space="preserve">
+    <value>Năm:</value>
+  </data>
+  <data name="Index_CalculateNewButton" xml:space="preserve">
+    <value>Tính lương kỳ mới</value>
+  </data>
+  <data name="Index_GapsTitle" xml:space="preserve">
+    <value>Có {0} khoảng ngày chưa được tính lương!</value>
+  </data>
+  <data name="Index_GapsDescription" xml:space="preserve">
+    <value>Các ngày dưới đây nằm giữa 2 kỳ lương nhưng không thuộc kỳ nào, nhân viên sẽ không được trả công cho những ngày này. Hãy tính bù để đảm bảo đủ ngày công.</value>
+  </data>
+  <data name="Index_GapFillButton" xml:space="preserve">
+    <value>Tính bù</value>
+  </data>
+  <data name="Index_CardTotalPayrolls" xml:space="preserve">
+    <value>Tổng kỳ lương</value>
+  </data>
+  <data name="Index_CardAnnualGross" xml:space="preserve">
+    <value>Tổng quỹ lương năm</value>
+  </data>
+  <data name="Index_CardLocked" xml:space="preserve">
+    <value>Kỳ đã chốt</value>
+  </data>
+  <data name="Index_ListTitle" xml:space="preserve">
+    <value>Danh sách Bảng lương Năm {0}</value>
+  </data>
+  <data name="Index_PeriodCount" xml:space="preserve">
+    <value>{0} kỳ lương</value>
+  </data>
+  <data name="Index_Empty" xml:space="preserve">
+    <value>Chưa có kỳ lương nào trong năm {0}. Hãy bấm "Tính lương kỳ mới" để bắt đầu!</value>
+  </data>
+  <data name="Index_CreatedLabel" xml:space="preserve">
+    <value>Tạo:</value>
+  </data>
+  <data name="Index_LockedLabel" xml:space="preserve">
+    <value>Chốt:</value>
+  </data>
+  <data name="Col_Period" xml:space="preserve">
+    <value>Kỳ lương</value>
+  </data>
+  <data name="Col_DateRange" xml:space="preserve">
+    <value>Chu kỳ ngày</value>
+  </data>
+  <data name="Col_Status" xml:space="preserve">
+    <value>Trạng thái</value>
+  </data>
+  <data name="Col_EmployeeCount" xml:space="preserve">
+    <value>Số nhân viên</value>
+  </data>
+  <data name="Col_TotalHours" xml:space="preserve">
+    <value>Tổng giờ làm</value>
+  </data>
+  <data name="Col_TotalSalaryVnd" xml:space="preserve">
+    <value>Tổng lương (VNĐ)</value>
+  </data>
+  <data name="Col_CreatedLocked" xml:space="preserve">
+    <value>Người tạo / Chốt</value>
+  </data>
+  <data name="Col_Actions" xml:space="preserve">
+    <value>Thao tác</value>
+  </data>
+  <data name="Action_ViewDetail" xml:space="preserve">
+    <value>Xem chi tiết</value>
+  </data>
+  <data name="Action_ExportExcel" xml:space="preserve">
+    <value>Xuất Excel</value>
+  </data>
+  <data name="Action_DeleteDraft" xml:space="preserve">
+    <value>Xóa kỳ nháp</value>
+  </data>
+  <data name="Action_Recalculate" xml:space="preserve">
+    <value>Tính lại</value>
+  </data>
+  <data name="Action_Lock" xml:space="preserve">
+    <value>Chốt bảng lương</value>
+  </data>
+  <data name="Action_Unlock" xml:space="preserve">
+    <value>Mở khóa bảng lương</value>
+  </data>
+  <data name="Confirm_DeleteDraft" xml:space="preserve">
+    <value>Bạn có chắc chắn muốn xóa kỳ lương nháp {0} - {1} không? Sau khi xóa, khoảng ngày này sẽ trở thành khoảng trống cần tính bù.</value>
+  </data>
+  <data name="Confirm_DeleteDraftTitle" xml:space="preserve">
+    <value>Xóa kỳ lương nháp</value>
+  </data>
+  <data name="Confirm_DeleteDraftOk" xml:space="preserve">
+    <value>Xóa kỳ lương</value>
+  </data>
+  <data name="Confirm_Recalculate" xml:space="preserve">
+    <value>Bạn có chắc chắn muốn tính toán lại toàn bộ bảng lương này? Dữ liệu nháp hiện tại sẽ được ghi đè.</value>
+  </data>
+  <data name="Confirm_RecalculateTitle" xml:space="preserve">
+    <value>Tính lại bảng lương</value>
+  </data>
+  <data name="Confirm_Lock" xml:space="preserve">
+    <value>Sau khi chốt, bảng lương sẽ được bảo vệ bất biến. Bạn có chắc chắn muốn chốt?</value>
+  </data>
+  <data name="Calc_Intro" xml:space="preserve">
+    <value>Hệ thống sẽ tổng hợp giờ làm việc thực tế trong khoảng ngày bạn chọn. Các kỳ lương phải &lt;strong&gt;nối tiếp liên tục&lt;/strong&gt; để không bỏ sót ngày công.</value>
+  </data>
+  <data name="Calc_LastPeriodInfo" xml:space="preserve">
+    <value>Kỳ gần nhất kết thúc ngày &lt;strong&gt;{0}&lt;/strong&gt; → kỳ mới bắt buộc bắt đầu từ &lt;strong&gt;{1}&lt;/strong&gt;.</value>
+  </data>
+  <data name="Calc_FirstPeriodInfo" xml:space="preserve">
+    <value>Đây là kỳ lương đầu tiên, bạn có thể chọn ngày bắt đầu. Các kỳ sau sẽ tự động nối tiếp từ kỳ này.</value>
+  </data>
+  <data name="Calc_FromDate" xml:space="preserve">
+    <value>Từ ngày</value>
+  </data>
+  <data name="Calc_ToDate" xml:space="preserve">
+    <value>Đến ngày</value>
+  </data>
+  <data name="Calc_StartLockedHint" xml:space="preserve">
+    <value>Tự động nối tiếp kỳ trước</value>
+  </data>
+  <data name="Calc_SubmitButton" xml:space="preserve">
+    <value>Bắt đầu tính lương</value>
+  </data>
+  <data name="Js_LatestEnd" xml:space="preserve">
+    <value>Muộn nhất: {0}</value>
+  </data>
+  <data name="Js_AlreadyCalculatedUntil" xml:space="preserve">
+    <value>Đã tính lương đến hết ngày {0}. Kỳ tiếp theo chỉ có thể tạo từ ngày {1} trở đi.</value>
+  </data>
+  <data name="Js_EndBeforeStart" xml:space="preserve">
+    <value>Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu ({0}).</value>
+  </data>
+  <data name="Js_EndAfterToday" xml:space="preserve">
+    <value>Ngày kết thúc không được vượt quá hôm nay ({0}).</value>
+  </data>
+  <data name="Js_MaxOneMonth" xml:space="preserve">
+    <value>Một kỳ lương tối đa 1 tháng. Ngày kết thúc muộn nhất là {0}.</value>
+  </data>
+  <data name="Js_SummaryPeriodLabel" xml:space="preserve">
+    <value>Kỳ lương:</value>
+  </data>
+  <data name="Js_NextPeriodStartsFrom" xml:space="preserve">
+    <value>Kỳ sau sẽ bắt đầu từ</value>
+  </data>
+  <data name="Js_GapFillInfo" xml:space="preserve">
+    <value>Tính bù khoảng ngày bị hổng, bắt đầu từ &lt;strong&gt;{0}&lt;/strong&gt;. Nếu khoảng trống dài hơn 1 tháng, hãy tính bù nhiều lần.</value>
+  </data>
+  <data name="Js_Calculating" xml:space="preserve">
+    <value>Đang tính lương...</value>
+  </data>
+  <data name="Detail_PeriodLabel" xml:space="preserve">
+    <value>Kỳ tính công:</value>
+  </data>
+  <data name="Detail_LockedByLabel" xml:space="preserve">
+    <value>Chốt bởi:</value>
+  </data>
+  <data name="Detail_AlertTitle" xml:space="preserve">
+    <value>Phát hiện dữ liệu cần xử lý trước khi thanh toán</value>
+  </data>
+  <data name="Detail_AlertMissingRate" xml:space="preserve">
+    <value>Có &lt;strong&gt;{0}&lt;/strong&gt; nhân viên chưa được thiết lập &lt;code&gt;HourlyRate&lt;/code&gt; (Lương tính ra = 0). Hãy cập nhật mức lương trước khi chốt!</value>
+  </data>
+  <data name="Detail_AlertWarnings" xml:space="preserve">
+    <value>Có &lt;strong&gt;{0}&lt;/strong&gt; nhân viên có ca chấm công bất thường hoặc thiếu giờ vào/ra.</value>
+  </data>
+  <data name="Detail_CardTotalEmployees" xml:space="preserve">
+    <value>Tổng nhân viên</value>
+  </data>
+  <data name="Detail_CardTotalFund" xml:space="preserve">
+    <value>Tổng quỹ lương kỳ</value>
+  </data>
+  <data name="Detail_CardWarnings" xml:space="preserve">
+    <value>Cảnh báo / Bất thường</value>
+  </data>
+  <data name="Filter_AllStores" xml:space="preserve">
+    <value>-- Tất cả chi nhánh --</value>
+  </data>
+  <data name="Filter_AllStatuses" xml:space="preserve">
+    <value>-- Tất cả trạng thái --</value>
+  </data>
+  <data name="Filter_SearchPlaceholder" xml:space="preserve">
+    <value>Tìm theo Mã NV, Họ tên...</value>
+  </data>
+  <data name="Filter_Reset" xml:space="preserve">
+    <value>Đặt lại</value>
+  </data>
+  <data name="Col_EmployeeCode" xml:space="preserve">
+    <value>Mã NV</value>
+  </data>
+  <data name="Col_FullName" xml:space="preserve">
+    <value>Họ và tên</value>
+  </data>
+  <data name="Col_Store" xml:space="preserve">
+    <value>Chi nhánh</value>
+  </data>
+  <data name="Col_EmploymentType" xml:space="preserve">
+    <value>Hình thức</value>
+  </data>
+  <data name="Col_RatePerHour" xml:space="preserve">
+    <value>Đơn giá / Giờ</value>
+  </data>
+  <data name="Col_ActualHours" xml:space="preserve">
+    <value>Giờ thực tế</value>
+  </data>
+  <data name="Col_PaidLeaveHours" xml:space="preserve">
+    <value>Giờ nghỉ phép</value>
+  </data>
+  <data name="Col_UnpaidLeave" xml:space="preserve">
+    <value>Nghỉ K.Lương</value>
+  </data>
+  <data name="Col_PayableHours" xml:space="preserve">
+    <value>Tổng giờ tính lương</value>
+  </data>
+  <data name="Col_TotalSalary" xml:space="preserve">
+    <value>Tổng tiền lương</value>
+  </data>
+  <data name="Col_Detail" xml:space="preserve">
+    <value>Chi tiết</value>
+  </data>
+  <data name="Detail_Empty" xml:space="preserve">
+    <value>Không tìm thấy nhân viên nào phù hợp với bộ lọc.</value>
+  </data>
+  <data name="Detail_NoRate" xml:space="preserve">
+    <value>Chưa có</value>
+  </data>
+  <data name="Detail_ViewAttendanceTooltip" xml:space="preserve">
+    <value>Xem chi tiết chấm công</value>
+  </data>
+  <data name="Detail_TotalRow" xml:space="preserve">
+    <value>TỔNG CỘNG ({0} nhân viên)</value>
+  </data>
+  <data name="Audit_Title" xml:space="preserve">
+    <value>Nhật ký thao tác kỳ lương (Audit Trail)</value>
+  </data>
+  <data name="Audit_ColTime" xml:space="preserve">
+    <value>Thời gian</value>
+  </data>
+  <data name="Audit_ColAction" xml:space="preserve">
+    <value>Hành động</value>
+  </data>
+  <data name="Audit_ColOperator" xml:space="preserve">
+    <value>Người thực hiện</value>
+  </data>
+  <data name="Audit_ColDetails" xml:space="preserve">
+    <value>Chi tiết / Lý do</value>
+  </data>
+  <data name="Audit_ReasonLabel" xml:space="preserve">
+    <value>Lý do:</value>
+  </data>
+  <data name="AuditAction_Calculate" xml:space="preserve">
+    <value>Tính lương</value>
+  </data>
+  <data name="AuditAction_Recalculate" xml:space="preserve">
+    <value>Tính lại</value>
+  </data>
+  <data name="AuditAction_Lock" xml:space="preserve">
+    <value>Chốt</value>
+  </data>
+  <data name="AuditAction_Unlock" xml:space="preserve">
+    <value>Mở khóa</value>
+  </data>
+  <data name="AuditDetail_Calculate" xml:space="preserve">
+    <value>Khởi tạo bảng lương: {0} nhân viên, tổng giờ công: {1}h, tổng tiền: {2} VNĐ</value>
+  </data>
+  <data name="AuditDetail_Recalculate" xml:space="preserve">
+    <value>Tính lại bảng lương: {0} nhân viên, tổng giờ công: {1}h, tổng tiền: {2} VNĐ</value>
+  </data>
+  <data name="AuditDetail_Lock" xml:space="preserve">
+    <value>Chốt bảng lương thành công với {0} nhân viên, tổng quỹ lương: {1} VNĐ</value>
+  </data>
+  <data name="AuditDetail_Unlock" xml:space="preserve">
+    <value>Mở khóa bảng lương về trạng thái Nháp. Lý do: {0}</value>
+  </data>
+  <data name="Unlock_ModalTitle" xml:space="preserve">
+    <value>Mở khóa Bảng lương</value>
+  </data>
+  <data name="Unlock_Intro" xml:space="preserve">
+    <value>Sau khi mở khóa, bảng lương sẽ quay về trạng thái &lt;strong&gt;Bản nháp (Draft)&lt;/strong&gt;, cho phép chỉnh sửa hoặc tính toán lại.</value>
+  </data>
+  <data name="Unlock_ReasonLabel" xml:space="preserve">
+    <value>Lý do mở khóa</value>
+  </data>
+  <data name="Unlock_ReasonPlaceholder" xml:space="preserve">
+    <value>Nhập lý do cần điều chỉnh lại...</value>
+  </data>
+  <data name="Unlock_Submit" xml:space="preserve">
+    <value>Xác nhận mở khóa</value>
+  </data>
+  <data name="Unlock_DefaultReason" xml:space="preserve">
+    <value>HR mở khóa bảng lương</value>
+  </data>
+  <data name="Emp_PageTitle" xml:space="preserve">
+    <value>Chi tiết chấm công &amp; lương: {0}</value>
+  </data>
+  <data name="Emp_Heading" xml:space="preserve">
+    <value>Chi tiết Bảng lương: {0}</value>
+  </data>
+  <data name="Label_EmployeeCode" xml:space="preserve">
+    <value>Mã NV:</value>
+  </data>
+  <data name="Label_Store" xml:space="preserve">
+    <value>Chi nhánh:</value>
+  </data>
+  <data name="Label_EmploymentType" xml:space="preserve">
+    <value>Hình thức:</value>
+  </data>
+  <data name="Label_Period" xml:space="preserve">
+    <value>Kỳ:</value>
+  </data>
+  <data name="Label_FullName" xml:space="preserve">
+    <value>Họ tên:</value>
+  </data>
+  <data name="Emp_LockedBadge" xml:space="preserve">
+    <value>Dữ liệu đã khóa (Bất biến)</value>
+  </data>
+  <data name="Emp_BackToPayroll" xml:space="preserve">
+    <value>Quay lại bảng lương</value>
+  </data>
+  <data name="Emp_CardRate" xml:space="preserve">
+    <value>Mức lương / Giờ</value>
+  </data>
+  <data name="Emp_NoRate" xml:space="preserve">
+    <value>Chưa có đơn giá</value>
+  </data>
+  <data name="Emp_FixedRate" xml:space="preserve">
+    <value>Đơn giá giờ làm cố định</value>
+  </data>
+  <data name="Card_ActualHours" xml:space="preserve">
+    <value>Giờ làm thực tế</value>
+  </data>
+  <data name="Card_ScheduledHours" xml:space="preserve">
+    <value>Lịch phân ca: {0} h</value>
+  </data>
+  <data name="Card_PaidLeave" xml:space="preserve">
+    <value>Nghỉ phép hưởng lương</value>
+  </data>
+  <data name="Emp_ApprovedLeave" xml:space="preserve">
+    <value>Đã duyệt: {0} ngày ({1} ngày K.Lương)</value>
+  </data>
+  <data name="Emp_CardTotalSalaryPeriod" xml:space="preserve">
+    <value>Tổng tiền lương kỳ</value>
+  </data>
+  <data name="Emp_SalaryFormula" xml:space="preserve">
+    <value>{0} h tính lương × {1} đ</value>
+  </data>
+  <data name="Emp_CardDataStatus" xml:space="preserve">
+    <value>Trạng thái dữ liệu</value>
+  </data>
+  <data name="Emp_DailyTitle" xml:space="preserve">
+    <value>Chi tiết ca &amp; ngày công trong kỳ ({0} mục)</value>
+  </data>
+  <data name="Emp_SnapshotBadge" xml:space="preserve">
+    <value>Dữ liệu Snapshot lưu vết</value>
+  </data>
+  <data name="Col_WorkDate" xml:space="preserve">
+    <value>Ngày làm</value>
+  </data>
+  <data name="Col_Shift" xml:space="preserve">
+    <value>Ca làm việc</value>
+  </data>
+  <data name="Col_ShiftTime" xml:space="preserve">
+    <value>Khung giờ ca</value>
+  </data>
+  <data name="Col_ShiftTimeShort" xml:space="preserve">
+    <value>Khung giờ</value>
+  </data>
+  <data name="Col_CheckIn" xml:space="preserve">
+    <value>Giờ vào</value>
+  </data>
+  <data name="Col_CheckOut" xml:space="preserve">
+    <value>Giờ ra</value>
+  </data>
+  <data name="Col_PayableHoursShort" xml:space="preserve">
+    <value>Giờ tính lương</value>
+  </data>
+  <data name="Col_PayableHoursCount" xml:space="preserve">
+    <value>Số giờ tính lương</value>
+  </data>
+  <data name="Col_SourceType" xml:space="preserve">
+    <value>Loại nguồn</value>
+  </data>
+  <data name="Col_LeaveType" xml:space="preserve">
+    <value>Loại nghỉ</value>
+  </data>
+  <data name="Col_Reason" xml:space="preserve">
+    <value>Lý do</value>
+  </data>
+  <data name="Col_LockedDate" xml:space="preserve">
+    <value>Ngày chốt</value>
+  </data>
+  <data name="Cell_PaidLeave" xml:space="preserve">
+    <value>Nghỉ phép</value>
+  </data>
+  <data name="Cell_Missing" xml:space="preserve">
+    <value>Thiếu</value>
+  </data>
+  <data name="Source_Attendance" xml:space="preserve">
+    <value>Chấm công</value>
+  </data>
+  <data name="Source_PaidLeave" xml:space="preserve">
+    <value>Phép có lương</value>
+  </data>
+  <data name="Source_UnpaidLeave" xml:space="preserve">
+    <value>Phép không lương</value>
+  </data>
+  <data name="Source_MissingAttendance" xml:space="preserve">
+    <value>Thiếu chấm công</value>
+  </data>
+  <data name="Snap_MissingInOut" xml:space="preserve">
+    <value>Thiếu giờ vào/ra</value>
+  </data>
+  <data name="Snap_LateAndEarly" xml:space="preserve">
+    <value>Đi muộn &amp; Về sớm</value>
+  </data>
+  <data name="Snap_Late" xml:space="preserve">
+    <value>Đi muộn</value>
+  </data>
+  <data name="Snap_Early" xml:space="preserve">
+    <value>Về sớm</value>
+  </data>
+  <data name="Snap_UnpaidLeave" xml:space="preserve">
+    <value>Nghỉ không lương</value>
+  </data>
+  <data name="Snap_AbsentMissing" xml:space="preserve">
+    <value>Vắng / Thiếu chấm công</value>
+  </data>
+  <data name="Status_Abnormal" xml:space="preserve">
+    <value>Bất thường</value>
+  </data>
+  <data name="Status_FullWork" xml:space="preserve">
+    <value>Đủ công</value>
+  </data>
+  <data name="Shift_Unknown" xml:space="preserve">
+    <value>Không xác định</value>
+  </data>
+  <data name="Shift_Flexible" xml:space="preserve">
+    <value>Ca linh hoạt</value>
+  </data>
+  <data name="Emp_NoAttendanceInPeriod" xml:space="preserve">
+    <value>Không có bản ghi chấm công nào trong kỳ này.</value>
+  </data>
+  <data name="Emp_LeaveTitle" xml:space="preserve">
+    <value>Đơn nghỉ phép đã duyệt trong kỳ ({0} đơn)</value>
+  </data>
+  <data name="Leave_Approved" xml:space="preserve">
+    <value>Đã phê duyệt</value>
+  </data>
+  <data name="Note_AttendanceIncomplete" xml:space="preserve">
+    <value>Chưa hoàn tất chấm công</value>
+  </data>
+  <data name="Note_LeaveApproved" xml:space="preserve">
+    <value>Đơn nghỉ phép #{0} đã duyệt</value>
+  </data>
+  <data name="Note_UnpaidLeave" xml:space="preserve">
+    <value>Nghỉ không hưởng lương</value>
+  </data>
+  <data name="Note_UnpaidLeaveNonEligible" xml:space="preserve">
+    <value>Part-time/Thử việc nghỉ không hưởng lương</value>
+  </data>
+  <data name="Note_ShiftNoAttendance" xml:space="preserve">
+    <value>Ca {0} đã duyệt nhưng không có chấm công</value>
+  </data>
+  <data name="Warn_MissingRate" xml:space="preserve">
+    <value>Chưa thiết lập đơn giá theo giờ (HourlyRate).</value>
+  </data>
+  <data name="Warn_Abnormal" xml:space="preserve">
+    <value>Có {0} ca bất thường/thiếu chấm công ({1}).</value>
+  </data>
+  <data name="Warn_MissingInOutTag" xml:space="preserve">
+    <value>Thiếu vào/ra</value>
+  </data>
+  <data name="Warn_ShiftFallback" xml:space="preserve">
+    <value>Ca</value>
+  </data>
+  <data name="Store_OfficeHR" xml:space="preserve">
+    <value>Văn phòng / HR</value>
+  </data>
+  <data name="My_Title" xml:space="preserve">
+    <value>Phiếu lương của tôi</value>
+  </data>
+  <data name="My_Subtitle" xml:space="preserve">
+    <value>Theo dõi thu nhập và chi tiết ngày công đã được chốt duyệt</value>
+  </data>
+  <data name="My_Empty" xml:space="preserve">
+    <value>Bạn chưa có phiếu lương nào đã được chốt.</value>
+  </data>
+  <data name="My_ViewPayslip" xml:space="preserve">
+    <value>Xem phiếu lương</value>
+  </data>
+  <data name="My_DetailPageTitle" xml:space="preserve">
+    <value>Phiếu lương: {0}</value>
+  </data>
+  <data name="My_DetailHeading" xml:space="preserve">
+    <value>Phiếu Lương: {0}</value>
+  </data>
+  <data name="My_BackToList" xml:space="preserve">
+    <value>Quay lại danh sách</value>
+  </data>
+  <data name="My_ApprovedDays" xml:space="preserve">
+    <value>Đã duyệt: {0} ngày</value>
+  </data>
+  <data name="My_CardHourlyRate" xml:space="preserve">
+    <value>Mức lương theo giờ</value>
+  </data>
+  <data name="My_TotalPayableHours" xml:space="preserve">
+    <value>Tổng giờ tính lương: {0} h</value>
+  </data>
+  <data name="My_SalaryFormula" xml:space="preserve">
+    <value>{0} h × {1} đ</value>
+  </data>
+  <data name="My_DailyTitle" xml:space="preserve">
+    <value>Chi tiết ngày công &amp; giờ tính lương trong kỳ ({0} mục)</value>
+  </data>
+  <data name="My_OfficialBadge" xml:space="preserve">
+    <value>Bản chốt chính thức</value>
+  </data>
+  <data name="My_NoAttendance" xml:space="preserve">
+    <value>Không có bản ghi chấm công nào.</value>
+  </data>
+  <data name="Err_PayrollNotFound" xml:space="preserve">
+    <value>Không tìm thấy kỳ lương!</value>
+  </data>
+  <data name="Toast_CalculateSuccess" xml:space="preserve">
+    <value>Tính lương kỳ {0} - {1} thành công với {2} nhân viên!</value>
+  </data>
+  <data name="Err_CalculateFailed" xml:space="preserve">
+    <value>Lỗi tính lương: {0}</value>
+  </data>
+  <data name="Toast_RecalculateSuccess" xml:space="preserve">
+    <value>Tính lại bảng lương {0} - {1} thành công!</value>
+  </data>
+  <data name="Err_RecalculateFailed" xml:space="preserve">
+    <value>Lỗi tính lại bảng lương: {0}</value>
+  </data>
+  <data name="Toast_LockSuccess" xml:space="preserve">
+    <value>Đã chốt bảng lương thành công! Dữ liệu bảng lương hiện đã được bảo vệ bất biến.</value>
+  </data>
+  <data name="Err_LockFailed" xml:space="preserve">
+    <value>Lỗi chốt bảng lương: {0}</value>
+  </data>
+  <data name="Toast_UnlockSuccess" xml:space="preserve">
+    <value>Đã mở khóa bảng lương để điều chỉnh.</value>
+  </data>
+  <data name="Err_UnlockFailed" xml:space="preserve">
+    <value>Lỗi mở khóa bảng lương: {0}</value>
+  </data>
+  <data name="Toast_DeleteSuccess" xml:space="preserve">
+    <value>Đã xóa kỳ lương nháp thành công.</value>
+  </data>
+  <data name="Err_DeleteFailed" xml:space="preserve">
+    <value>Lỗi xóa kỳ lương: {0}</value>
+  </data>
+  <data name="Err_EmployeeDetailNotFound" xml:space="preserve">
+    <value>Không tìm thấy dữ liệu chi tiết của nhân viên trong kỳ lương!</value>
+  </data>
+  <data name="Err_ExportFailed" xml:space="preserve">
+    <value>Lỗi xuất Excel: {0}</value>
+  </data>
+  <data name="Err_PayslipNotFound" xml:space="preserve">
+    <value>Không tìm thấy phiếu lương này!</value>
+  </data>
+  <data name="Err_PayslipNotLocked" xml:space="preserve">
+    <value>Bảng lương này chưa được chốt duyệt!</value>
+  </data>
+  <data name="Err_PayrollNotFoundId" xml:space="preserve">
+    <value>Không tìm thấy kỳ lương ID {0}</value>
+  </data>
+  <data name="Err_EndAfterToday" xml:space="preserve">
+    <value>Ngày kết thúc ({0}) không được vượt quá hôm nay ({1}). Chỉ tính lương cho những ngày đã làm việc.</value>
+  </data>
+  <data name="Err_MaxOneMonth" xml:space="preserve">
+    <value>Một kỳ lương tối đa 1 tháng. Với ngày bắt đầu {0}, ngày kết thúc muộn nhất là {1}.</value>
+  </data>
+  <data name="Err_MustStartFrom" xml:space="preserve">
+    <value>Kỳ lương phải bắt đầu từ ngày {0} (ngay sau kỳ "{1}"). Nếu bắt đầu từ {2}, các ngày {0} - {3} sẽ không được tính lương.</value>
+  </data>
+  <data name="Err_MustEndBefore" xml:space="preserve">
+    <value>Kỳ lương này nằm trước kỳ "{0}" nên phải kết thúc đúng ngày {1} để không bị hổng ngày công.</value>
+  </data>
+  <data name="Err_SelectBothDates" xml:space="preserve">
+    <value>Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc.</value>
+  </data>
+  <data name="Err_StartAfterEnd" xml:space="preserve">
+    <value>Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc.</value>
+  </data>
+  <data name="Err_Overlap" xml:space="preserve">
+    <value>Kỳ lương bị trùng với kỳ hiện có {0} - {1}.</value>
+  </data>
+  <data name="Err_AlreadyLocked" xml:space="preserve">
+    <value>Kỳ lương {0} - {1} đã được chốt, không thể tính lại!</value>
+  </data>
+  <data name="Err_LockMissingRate" xml:space="preserve">
+    <value>Không thể chốt bảng lương! Còn {0} nhân viên chưa có đơn giá lương ({1}). Vui lòng cập nhật đơn giá trước khi chốt.</value>
+  </data>
+  <data name="Err_LockWarnings" xml:space="preserve">
+    <value>Không thể chốt bảng lương! Còn {0} nhân viên có ca bất thường hoặc thiếu chấm công ({1}). Vui lòng xử lý giải trình chấm công trước khi chốt.</value>
+  </data>
+  <data name="Err_DeleteLocked" xml:space="preserve">
+    <value>Không thể xóa kỳ lương đã chốt (Locked)!</value>
+  </data>
+  <data name="Excel_FileName" xml:space="preserve">
+    <value>BangLuong_{0}_{1}</value>
+  </data>
+  <data name="Excel_CompanyTitle" xml:space="preserve">
+    <value>RWPM - HỆ THỐNG QUẢN LÝ NHÂN SỰ &amp; CHẤM CÔNG CHUỖI CỬA HÀNG THỜI TRANG</value>
+  </data>
+  <data name="Excel_ReportTitle" xml:space="preserve">
+    <value>BẢNG LƯƠNG NHÂN VIÊN {0} - {1}</value>
+  </data>
+  <data name="Excel_ExportInfo" xml:space="preserve">
+    <value>Ngày xuất: {0} | Trạng thái: {1} | Phạm vi: {2}</value>
+  </data>
+  <data name="Excel_StatusLocked" xml:space="preserve">
+    <value>Đã chốt (Bất biến)</value>
+  </data>
+  <data name="Excel_ScopeAll" xml:space="preserve">
+    <value>Toàn hệ thống</value>
+  </data>
+  <data name="Excel_ColNo" xml:space="preserve">
+    <value>STT</value>
+  </data>
+  <data name="Excel_ColRate" xml:space="preserve">
+    <value>Đơn giá/giờ (VNĐ)</value>
+  </data>
+  <data name="Excel_ColPaidLeaveHours" xml:space="preserve">
+    <value>Giờ nghỉ hưởng lương</value>
+  </data>
+  <data name="Excel_ColUnpaidDays" xml:space="preserve">
+    <value>Nghỉ không lương (ngày)</value>
+  </data>
+  <data name="Excel_ColSalary" xml:space="preserve">
+    <value>Tổng tiền lương (VNĐ)</value>
+  </data>
+  <data name="Excel_ColStatusNote" xml:space="preserve">
+    <value>Trạng thái / Ghi chú</value>
+  </data>
+  <data name="Excel_Total" xml:space="preserve">
+    <value>TỔNG CỘNG</value>
+  </data>
+</root>

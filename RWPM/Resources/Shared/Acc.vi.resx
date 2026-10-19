@@ -433,4 +433,61 @@
   <data name="Update_Section_Role" xml:space="preserve">
     <value>Quyền hạn hệ thống</value>
   </data>
+  <data name="Err_SelectStoreForEmployee" xml:space="preserve">
+    <value>Vui lòng chọn cửa hàng làm việc cho nhân viên này.</value>
+  </data>
+  <data name="Err_EmployeeCodeRequired" xml:space="preserve">
+    <value>Vui lòng nhập mã nhân viên.</value>
+  </data>
+  <data name="Err_EmployeeCodeRequiredHr" xml:space="preserve">
+    <value>Vui lòng nhập mã nhân viên cho nhân sự HR.</value>
+  </data>
+  <data name="Err_EmployeeCodeExists" xml:space="preserve">
+    <value>Mã nhân viên '{0}' đã tồn tại trong hệ thống.</value>
+  </data>
+  <data name="Err_EmployeeCodeUsedByOther" xml:space="preserve">
+    <value>Mã nhân viên '{0}' đã được sử dụng bởi nhân viên khác.</value>
+  </data>
+  <data name="Err_HourlyRateRequiredHrCreate" xml:space="preserve">
+    <value>Vui lòng nhập mức lương theo giờ để có thể tính lương cho HR.</value>
+  </data>
+  <data name="Err_HourlyRateRequiredHrEdit" xml:space="preserve">
+    <value>Vui lòng nhập mức lương theo giờ để tính lương cho HR.</value>
+  </data>
+  <data name="Err_EmailInUse" xml:space="preserve">
+    <value>Email '{0}' đã được sử dụng bởi một tài khoản khác.</value>
+  </data>
+  <data name="Err_PhoneInUse" xml:space="preserve">
+    <value>Số điện thoại '{0}' đã được sử dụng bởi một tài khoản khác.</value>
+  </data>
+  <data name="Err_CannotCreateAdmin" xml:space="preserve">
+    <value>Không thể tạo tài khoản quản trị (Admin)!</value>
+  </data>
+  <data name="Err_CannotChangeRoleToAdmin" xml:space="preserve">
+    <value>Không thể chuyển vai trò sang quản trị (Admin)!</value>
+  </data>
+  <data name="Notice_CreatedAccount" xml:space="preserve">
+    <value>Đã tạo tài khoản: {0} | Mật khẩu: {1}</value>
+  </data>
+  <data name="Toast_ChangePasswordSuccess" xml:space="preserve">
+    <value>Đổi mật khẩu thành công!</value>
+  </data>
+  <data name="Create_Section_HrInfo" xml:space="preserve">
+    <value>2. Hồ sơ nhân viên &amp; Lương (Nhân sự - HR)</value>
+  </data>
+  <data name="Create_HrInfoHint" xml:space="preserve">
+    <value>Tài khoản có vai trò Nhân sự (HR) có thể chọn chi nhánh làm việc (hoặc trụ sở) và được tự động tạo hồ sơ nhân viên để chấm công, đăng ký ca làm việc và tính lương.</value>
+  </data>
+  <data name="Unit_Vnd" xml:space="preserve">
+    <value>VNĐ</value>
+  </data>
+  <data name="Excel_Col_Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Excel_SupportedFormat" xml:space="preserve">
+    <value>Định dạng hỗ trợ: .xlsx (Microsoft Excel)</value>
+  </data>
+  <data name="Excel_AutoValidated" xml:space="preserve">
+    <value>Dữ liệu được kiểm tra tự động trước khi lưu</value>
+  </data>
 </root>

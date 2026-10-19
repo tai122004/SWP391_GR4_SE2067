@@ -43,7 +43,7 @@ namespace RWPM.Services.Implementation
             var store = await GetByIdAsync(storeId, options);
             if (store == null)
             {
-                throw new ModelValidationException("Store_NotExists", $"Không tìm thấy cửa hàng với ID {storeId}.");
+                throw new ModelValidationException("Store_NotExists", $"ID {storeId}");
             }
             return store;
         }
@@ -129,7 +129,7 @@ namespace RWPM.Services.Implementation
 
             if (await ExistsByCodeAsync(entity.StoreCode))
             {
-                throw new ModelValidationException("StoreCode_Exists", $"Mã cửa hàng '{entity.StoreCode}' đã tồn tại trong hệ thống.");
+                throw new ModelValidationException("StoreCode_Exists", entity.StoreCode);
             }
 
             entity.CreatedDate = DateTime.Now;
@@ -150,7 +150,7 @@ namespace RWPM.Services.Implementation
 
             if (await ExistsByCodeAsync(entity.StoreCode, entity.StoreId))
             {
-                throw new ModelValidationException("StoreCode_Exists", $"Mã cửa hàng '{entity.StoreCode}' đã được sử dụng bởi cửa hàng khác.");
+                throw new ModelValidationException("StoreCode_Exists", entity.StoreCode);
             }
 
             existingStore.StoreCode = entity.StoreCode;
@@ -180,13 +180,13 @@ namespace RWPM.Services.Implementation
             var hasEmployees = await _ctx.Employee.AnyAsync(e => e.StoreId == entity.StoreId);
             if (hasEmployees)
             {
-                throw new ModelValidationException("Store_Delete_HaveEmployeeUse", $"Không thể xóa cửa hàng '{store.StoreName}' vì đang có nhân viên thuộc cửa hàng này.");
+                throw new ModelValidationException("Store_Delete_HaveEmployeeUse", store.StoreName);
             }
 
             var hasShiftRegs = await _ctx.ShiftRegistration.AnyAsync(s => s.StoreId == entity.StoreId);
             if (hasShiftRegs)
             {
-                throw new ModelValidationException("Store_Delete_HaveShiftRegUse", $"Không thể xóa cửa hàng '{store.StoreName}' vì đã có dữ liệu đăng ký ca thuộc cửa hàng này.");
+                throw new ModelValidationException("Store_Delete_HaveShiftRegUse", store.StoreName);
             }
             _ctx.Store.Remove(store);
             await _ctx.SaveChangesAsync();

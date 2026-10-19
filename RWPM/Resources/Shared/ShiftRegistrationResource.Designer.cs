@@ -338,5 +338,762 @@ namespace RWPM.Resources.Shared {
                 return ResourceManager.GetString("Subtitle", resourceCulture);
             }
         }
+    
+
+        public static string Header_Branch {
+            get {
+                return ResourceManager.GetString("Header_Branch", resourceCulture);
+            }
+        }
+
+        public static string Header_Description {
+            get {
+                return ResourceManager.GetString("Header_Description", resourceCulture);
+            }
+        }
+
+        public static string Status_NotRegistered {
+            get {
+                return ResourceManager.GetString("Status_NotRegistered", resourceCulture);
+            }
+        }
+
+        public static string Status_NewlySelected {
+            get {
+                return ResourceManager.GetString("Status_NewlySelected", resourceCulture);
+            }
+        }
+
+        public static string Status_Pending {
+            get {
+                return ResourceManager.GetString("Status_Pending", resourceCulture);
+            }
+        }
+
+        public static string Status_Approved {
+            get {
+                return ResourceManager.GetString("Status_Approved", resourceCulture);
+            }
+        }
+
+        public static string Status_Overdue {
+            get {
+                return ResourceManager.GetString("Status_Overdue", resourceCulture);
+            }
+        }
+
+        public static string Status_Rejected {
+            get {
+                return ResourceManager.GetString("Status_Rejected", resourceCulture);
+            }
+        }
+
+        public static string Status_RejectedLong {
+            get {
+                return ResourceManager.GetString("Status_RejectedLong", resourceCulture);
+            }
+        }
+
+        public static string Status_Unregister {
+            get {
+                return ResourceManager.GetString("Status_Unregister", resourceCulture);
+            }
+        }
+
+        public static string Status_NotApplicable {
+            get {
+                return ResourceManager.GetString("Status_NotApplicable", resourceCulture);
+            }
+        }
+
+        public static string Tab_MyRegistration {
+            get {
+                return ResourceManager.GetString("Tab_MyRegistration", resourceCulture);
+            }
+        }
+
+        public static string Tab_ManagerSchedule {
+            get {
+                return ResourceManager.GetString("Tab_ManagerSchedule", resourceCulture);
+            }
+        }
+
+        public static string Label_Store {
+            get {
+                return ResourceManager.GetString("Label_Store", resourceCulture);
+            }
+        }
+
+        public static string Nav_PrevWeek {
+            get {
+                return ResourceManager.GetString("Nav_PrevWeek", resourceCulture);
+            }
+        }
+
+        public static string Nav_GoToCurrentWeek {
+            get {
+                return ResourceManager.GetString("Nav_GoToCurrentWeek", resourceCulture);
+            }
+        }
+
+        public static string Nav_ThisWeek {
+            get {
+                return ResourceManager.GetString("Nav_ThisWeek", resourceCulture);
+            }
+        }
+
+        public static string Nav_NextWeek {
+            get {
+                return ResourceManager.GetString("Nav_NextWeek", resourceCulture);
+            }
+        }
+
+        public static string Picker_PrevYear {
+            get {
+                return ResourceManager.GetString("Picker_PrevYear", resourceCulture);
+            }
+        }
+
+        public static string Picker_PrevMonth {
+            get {
+                return ResourceManager.GetString("Picker_PrevMonth", resourceCulture);
+            }
+        }
+
+        public static string Picker_NextMonth {
+            get {
+                return ResourceManager.GetString("Picker_NextMonth", resourceCulture);
+            }
+        }
+
+        public static string Picker_NextYear {
+            get {
+                return ResourceManager.GetString("Picker_NextYear", resourceCulture);
+            }
+        }
+
+        public static string Picker_Mon {
+            get {
+                return ResourceManager.GetString("Picker_Mon", resourceCulture);
+            }
+        }
+
+        public static string Picker_Tue {
+            get {
+                return ResourceManager.GetString("Picker_Tue", resourceCulture);
+            }
+        }
+
+        public static string Picker_Wed {
+            get {
+                return ResourceManager.GetString("Picker_Wed", resourceCulture);
+            }
+        }
+
+        public static string Picker_Thu {
+            get {
+                return ResourceManager.GetString("Picker_Thu", resourceCulture);
+            }
+        }
+
+        public static string Picker_Fri {
+            get {
+                return ResourceManager.GetString("Picker_Fri", resourceCulture);
+            }
+        }
+
+        public static string Picker_Sat {
+            get {
+                return ResourceManager.GetString("Picker_Sat", resourceCulture);
+            }
+        }
+
+        public static string Picker_Sun {
+            get {
+                return ResourceManager.GetString("Picker_Sun", resourceCulture);
+            }
+        }
+
+        public static string Picker_Hint {
+            get {
+                return ResourceManager.GetString("Picker_Hint", resourceCulture);
+            }
+        }
+
+        public static string Picker_MonthYearFormat {
+            get {
+                return ResourceManager.GetString("Picker_MonthYearFormat", resourceCulture);
+            }
+        }
+
+        public static string Week_Format {
+            get {
+                return ResourceManager.GetString("Week_Format", resourceCulture);
+            }
+        }
+
+        public static string Day_Mon {
+            get {
+                return ResourceManager.GetString("Day_Mon", resourceCulture);
+            }
+        }
+
+        public static string Day_Tue {
+            get {
+                return ResourceManager.GetString("Day_Tue", resourceCulture);
+            }
+        }
+
+        public static string Day_Wed {
+            get {
+                return ResourceManager.GetString("Day_Wed", resourceCulture);
+            }
+        }
+
+        public static string Day_Thu {
+            get {
+                return ResourceManager.GetString("Day_Thu", resourceCulture);
+            }
+        }
+
+        public static string Day_Fri {
+            get {
+                return ResourceManager.GetString("Day_Fri", resourceCulture);
+            }
+        }
+
+        public static string Day_Sat {
+            get {
+                return ResourceManager.GetString("Day_Sat", resourceCulture);
+            }
+        }
+
+        public static string Day_Sun {
+            get {
+                return ResourceManager.GetString("Day_Sun", resourceCulture);
+            }
+        }
+
+        public static string Toolbar_ReloadTitle {
+            get {
+                return ResourceManager.GetString("Toolbar_ReloadTitle", resourceCulture);
+            }
+        }
+
+        public static string Toolbar_Refresh {
+            get {
+                return ResourceManager.GetString("Toolbar_Refresh", resourceCulture);
+            }
+        }
+
+        public static string Toolbar_CopyWeek {
+            get {
+                return ResourceManager.GetString("Toolbar_CopyWeek", resourceCulture);
+            }
+        }
+
+        public static string Summary_Title {
+            get {
+                return ResourceManager.GetString("Summary_Title", resourceCulture);
+            }
+        }
+
+        public static string Summary_NewSelected {
+            get {
+                return ResourceManager.GetString("Summary_NewSelected", resourceCulture);
+            }
+        }
+
+        public static string Summary_Pending {
+            get {
+                return ResourceManager.GetString("Summary_Pending", resourceCulture);
+            }
+        }
+
+        public static string Summary_Approved {
+            get {
+                return ResourceManager.GetString("Summary_Approved", resourceCulture);
+            }
+        }
+
+        public static string Summary_TotalHours {
+            get {
+                return ResourceManager.GetString("Summary_TotalHours", resourceCulture);
+            }
+        }
+
+        public static string Summary_HoursFormat {
+            get {
+                return ResourceManager.GetString("Summary_HoursFormat", resourceCulture);
+            }
+        }
+
+        public static string Summary_ResetTitle {
+            get {
+                return ResourceManager.GetString("Summary_ResetTitle", resourceCulture);
+            }
+        }
+
+        public static string Summary_Reset {
+            get {
+                return ResourceManager.GetString("Summary_Reset", resourceCulture);
+            }
+        }
+
+        public static string Modal_RegisterTitle {
+            get {
+                return ResourceManager.GetString("Modal_RegisterTitle", resourceCulture);
+            }
+        }
+
+        public static string Modal_EmployeeLabel {
+            get {
+                return ResourceManager.GetString("Modal_EmployeeLabel", resourceCulture);
+            }
+        }
+
+        public static string Modal_SelectAvailableShift {
+            get {
+                return ResourceManager.GetString("Modal_SelectAvailableShift", resourceCulture);
+            }
+        }
+
+        public static string Modal_DateFormat {
+            get {
+                return ResourceManager.GetString("Modal_DateFormat", resourceCulture);
+            }
+        }
+
+        public static string Modal_LoadingShifts {
+            get {
+                return ResourceManager.GetString("Modal_LoadingShifts", resourceCulture);
+            }
+        }
+
+        public static string Modal_NoShiftsForDay {
+            get {
+                return ResourceManager.GetString("Modal_NoShiftsForDay", resourceCulture);
+            }
+        }
+
+        public static string Modal_LoadShiftsError {
+            get {
+                return ResourceManager.GetString("Modal_LoadShiftsError", resourceCulture);
+            }
+        }
+
+        public static string View_Subtitle {
+            get {
+                return ResourceManager.GetString("View_Subtitle", resourceCulture);
+            }
+        }
+
+        public static string View_RejectionReason {
+            get {
+                return ResourceManager.GetString("View_RejectionReason", resourceCulture);
+            }
+        }
+
+        public static string View_Approver {
+            get {
+                return ResourceManager.GetString("View_Approver", resourceCulture);
+            }
+        }
+
+        public static string View_CancelShift {
+            get {
+                return ResourceManager.GetString("View_CancelShift", resourceCulture);
+            }
+        }
+
+        public static string View_ApprovedNotice {
+            get {
+                return ResourceManager.GetString("View_ApprovedNotice", resourceCulture);
+            }
+        }
+
+        public static string Grid_ShiftColumn {
+            get {
+                return ResourceManager.GetString("Grid_ShiftColumn", resourceCulture);
+            }
+        }
+
+        public static string Grid_Today {
+            get {
+                return ResourceManager.GetString("Grid_Today", resourceCulture);
+            }
+        }
+
+        public static string Grid_NoShiftsTitle {
+            get {
+                return ResourceManager.GetString("Grid_NoShiftsTitle", resourceCulture);
+            }
+        }
+
+        public static string Grid_NoShiftsDesc {
+            get {
+                return ResourceManager.GetString("Grid_NoShiftsDesc", resourceCulture);
+            }
+        }
+
+        public static string Grid_WorkHoursFormat {
+            get {
+                return ResourceManager.GetString("Grid_WorkHoursFormat", resourceCulture);
+            }
+        }
+
+        public static string Slot_ApprovedTitle {
+            get {
+                return ResourceManager.GetString("Slot_ApprovedTitle", resourceCulture);
+            }
+        }
+
+        public static string Slot_RejectedTitle {
+            get {
+                return ResourceManager.GetString("Slot_RejectedTitle", resourceCulture);
+            }
+        }
+
+        public static string Slot_PendingTitle {
+            get {
+                return ResourceManager.GetString("Slot_PendingTitle", resourceCulture);
+            }
+        }
+
+        public static string Slot_PastTitle {
+            get {
+                return ResourceManager.GetString("Slot_PastTitle", resourceCulture);
+            }
+        }
+
+        public static string Slot_UnavailableTitle {
+            get {
+                return ResourceManager.GetString("Slot_UnavailableTitle", resourceCulture);
+            }
+        }
+
+        public static string Slot_AvailableTitle {
+            get {
+                return ResourceManager.GetString("Slot_AvailableTitle", resourceCulture);
+            }
+        }
+
+        public static string Slot_ViewDetails {
+            get {
+                return ResourceManager.GetString("Slot_ViewDetails", resourceCulture);
+            }
+        }
+
+        public static string Slot_Details {
+            get {
+                return ResourceManager.GetString("Slot_Details", resourceCulture);
+            }
+        }
+
+        public static string Btn_Sending {
+            get {
+                return ResourceManager.GetString("Btn_Sending", resourceCulture);
+            }
+        }
+
+        public static string Toast_RegisterSuccess {
+            get {
+                return ResourceManager.GetString("Toast_RegisterSuccess", resourceCulture);
+            }
+        }
+
+        public static string Toast_CopiedFormat {
+            get {
+                return ResourceManager.GetString("Toast_CopiedFormat", resourceCulture);
+            }
+        }
+
+        public static string Toast_CancelSuccess {
+            get {
+                return ResourceManager.GetString("Toast_CancelSuccess", resourceCulture);
+            }
+        }
+
+        public static string Toast_CancelFailed {
+            get {
+                return ResourceManager.GetString("Toast_CancelFailed", resourceCulture);
+            }
+        }
+
+        public static string Toast_SystemError {
+            get {
+                return ResourceManager.GetString("Toast_SystemError", resourceCulture);
+            }
+        }
+
+        public static string Err_EmployeeNotFound {
+            get {
+                return ResourceManager.GetString("Err_EmployeeNotFound", resourceCulture);
+            }
+        }
+
+        public static string Err_ShiftNotFoundOrInactive {
+            get {
+                return ResourceManager.GetString("Err_ShiftNotFoundOrInactive", resourceCulture);
+            }
+        }
+
+        public static string Err_ShiftNotAppliedToStore {
+            get {
+                return ResourceManager.GetString("Err_ShiftNotAppliedToStore", resourceCulture);
+            }
+        }
+
+        public static string Err_ApprovedCannotCancel {
+            get {
+                return ResourceManager.GetString("Err_ApprovedCannotCancel", resourceCulture);
+            }
+        }
+
+        public static string Err_CannotCancelPast {
+            get {
+                return ResourceManager.GetString("Err_CannotCancelPast", resourceCulture);
+            }
+        }
+
+        public static string Err_EmployeeProfileNotFound {
+            get {
+                return ResourceManager.GetString("Err_EmployeeProfileNotFound", resourceCulture);
+            }
+        }
+
+        public static string Err_PastDateRegistration {
+            get {
+                return ResourceManager.GetString("Err_PastDateRegistration", resourceCulture);
+            }
+        }
+
+        public static string Err_AlreadyRegistered {
+            get {
+                return ResourceManager.GetString("Err_AlreadyRegistered", resourceCulture);
+            }
+        }
+
+        public static string Err_ShiftAlreadyRegisteredOnDate {
+            get {
+                return ResourceManager.GetString("Err_ShiftAlreadyRegisteredOnDate", resourceCulture);
+            }
+        }
+
+        public static string Leave_Paid {
+            get {
+                return ResourceManager.GetString("Leave_Paid", resourceCulture);
+            }
+        }
+
+        public static string Leave_Unpaid {
+            get {
+                return ResourceManager.GetString("Leave_Unpaid", resourceCulture);
+            }
+        }
+
+        public static string Err_OnApprovedLeave {
+            get {
+                return ResourceManager.GetString("Err_OnApprovedLeave", resourceCulture);
+            }
+        }
+
+        public static string Err_ShiftNotAvailable {
+            get {
+                return ResourceManager.GetString("Err_ShiftNotAvailable", resourceCulture);
+            }
+        }
+
+        public static string Err_ShiftOverlap {
+            get {
+                return ResourceManager.GetString("Err_ShiftOverlap", resourceCulture);
+            }
+        }
+
+        public static string Swap_SourceNotFound {
+            get {
+                return ResourceManager.GetString("Swap_SourceNotFound", resourceCulture);
+            }
+        }
+
+        public static string Swap_OnlyApproved {
+            get {
+                return ResourceManager.GetString("Swap_OnlyApproved", resourceCulture);
+            }
+        }
+
+        public static string Swap_SelectPeerAndShift {
+            get {
+                return ResourceManager.GetString("Swap_SelectPeerAndShift", resourceCulture);
+            }
+        }
+
+        public static string Swap_SameShift {
+            get {
+                return ResourceManager.GetString("Swap_SameShift", resourceCulture);
+            }
+        }
+
+        public static string Swap_WithSelf {
+            get {
+                return ResourceManager.GetString("Swap_WithSelf", resourceCulture);
+            }
+        }
+
+        public static string Swap_PeerShiftNotFound {
+            get {
+                return ResourceManager.GetString("Swap_PeerShiftNotFound", resourceCulture);
+            }
+        }
+
+        public static string Swap_PeerShiftNotApproved {
+            get {
+                return ResourceManager.GetString("Swap_PeerShiftNotApproved", resourceCulture);
+            }
+        }
+
+        public static string Swap_SameBranchOnly {
+            get {
+                return ResourceManager.GetString("Swap_SameBranchOnly", resourceCulture);
+            }
+        }
+
+        public static string Swap_SameShiftAndDay {
+            get {
+                return ResourceManager.GetString("Swap_SameShiftAndDay", resourceCulture);
+            }
+        }
+
+        public static string Swap_PeerAlreadyScheduled {
+            get {
+                return ResourceManager.GetString("Swap_PeerAlreadyScheduled", resourceCulture);
+            }
+        }
+
+        public static string Swap_RequesterAlreadyScheduled {
+            get {
+                return ResourceManager.GetString("Swap_RequesterAlreadyScheduled", resourceCulture);
+            }
+        }
+
+        public static string Swap_EitherHasPending {
+            get {
+                return ResourceManager.GetString("Swap_EitherHasPending", resourceCulture);
+            }
+        }
+
+        public static string Swap_SelectNewShiftAndDate {
+            get {
+                return ResourceManager.GetString("Swap_SelectNewShiftAndDate", resourceCulture);
+            }
+        }
+
+        public static string Swap_SameAsCurrent {
+            get {
+                return ResourceManager.GetString("Swap_SameAsCurrent", resourceCulture);
+            }
+        }
+
+        public static string Swap_NewShiftNotFound {
+            get {
+                return ResourceManager.GetString("Swap_NewShiftNotFound", resourceCulture);
+            }
+        }
+
+        public static string Swap_YouAlreadyScheduled {
+            get {
+                return ResourceManager.GetString("Swap_YouAlreadyScheduled", resourceCulture);
+            }
+        }
+
+        public static string Swap_ThisHasPending {
+            get {
+                return ResourceManager.GetString("Swap_ThisHasPending", resourceCulture);
+            }
+        }
+
+        public static string Swap_RequestNotFound {
+            get {
+                return ResourceManager.GetString("Swap_RequestNotFound", resourceCulture);
+            }
+        }
+
+        public static string Swap_AlreadyProcessed {
+            get {
+                return ResourceManager.GetString("Swap_AlreadyProcessed", resourceCulture);
+            }
+        }
+
+        public static string Swap_OriginalNotFound {
+            get {
+                return ResourceManager.GetString("Swap_OriginalNotFound", resourceCulture);
+            }
+        }
+
+        public static string Swap_OriginalNoLongerApproved {
+            get {
+                return ResourceManager.GetString("Swap_OriginalNoLongerApproved", resourceCulture);
+            }
+        }
+
+        public static string Swap_OriginalNotOwned {
+            get {
+                return ResourceManager.GetString("Swap_OriginalNotOwned", resourceCulture);
+            }
+        }
+
+        public static string Swap_PeerShiftNoLongerApproved {
+            get {
+                return ResourceManager.GetString("Swap_PeerShiftNoLongerApproved", resourceCulture);
+            }
+        }
+
+        public static string Swap_PeerShiftNotOwned {
+            get {
+                return ResourceManager.GetString("Swap_PeerShiftNotOwned", resourceCulture);
+            }
+        }
+
+        public static string Swap_TargetEmployeeAlreadyScheduled {
+            get {
+                return ResourceManager.GetString("Swap_TargetEmployeeAlreadyScheduled", resourceCulture);
+            }
+        }
+
+        public static string Swap_RequesterEmployeeAlreadyScheduled {
+            get {
+                return ResourceManager.GetString("Swap_RequesterEmployeeAlreadyScheduled", resourceCulture);
+            }
+        }
+
+        public static string Swap_EmployeeAlreadyScheduledNewDate {
+            get {
+                return ResourceManager.GetString("Swap_EmployeeAlreadyScheduledNewDate", resourceCulture);
+            }
+        }
+
+        public static string Swap_DuplicateViolation {
+            get {
+                return ResourceManager.GetString("Swap_DuplicateViolation", resourceCulture);
+            }
+        }
+
+        public static string Swap_DatabaseError {
+            get {
+                return ResourceManager.GetString("Swap_DatabaseError", resourceCulture);
+            }
+        }
+
+        public static string Swap_DeleteOnlyPending {
+            get {
+                return ResourceManager.GetString("Swap_DeleteOnlyPending", resourceCulture);
+            }
+        }
+
+        public static string Swap_DeleteNoPermission {
+            get {
+                return ResourceManager.GetString("Swap_DeleteNoPermission", resourceCulture);
+            }
+        }
     }
 }

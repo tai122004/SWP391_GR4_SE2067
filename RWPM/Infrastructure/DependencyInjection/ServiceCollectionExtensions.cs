@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using RWPM.Common.Localization;
 using RWPM.Hubs.Config;
 using RWPM.Infrastructure.Data;
 //using RWPM.Infrastructure.Services.Abstraction;
@@ -80,8 +81,11 @@ namespace RWPM.Infrastructure.DependencyInjection
             #region Localization
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services
-                .AddControllersWithViews()
+                .AddControllersWithViews(options => options.UseLocalizedBindingMessages())
                 .AddViewLocalization();
+            // Chạy sau DataAnnotationsMetadataProvider -> dịch cả [Required] ngầm định của string không nullable
+            services.PostConfigure<Microsoft.AspNetCore.Mvc.MvcOptions>(options =>
+                options.ModelMetadataDetailsProviders.Add(new RWPM.Common.Localization.LocalizedValidationMetadataProvider()));
             #endregion
 
             services.AddScoped<IFileStorageService, LocalFileSystemStorage>();

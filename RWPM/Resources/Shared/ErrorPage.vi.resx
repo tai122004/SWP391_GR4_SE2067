@@ -123,4 +123,10 @@
   <data name="Header2" xml:space="preserve">
     <value>Đã xảy ra lỗi khi xử lý yêu cầu của bạn.</value>
   </data>
+  <data name="Title" xml:space="preserve">
+    <value>Lỗi</value>
+  </data>
+  <data name="RequestId" xml:space="preserve">
+    <value>Mã yêu cầu:</value>
+  </data>
 </root>

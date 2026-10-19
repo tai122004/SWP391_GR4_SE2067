@@ -11,6 +11,7 @@ using RWPM.Models.ViewModels.Employee;
 using RWPM.Services.Abstraction;
 using System.IO;
 using Microsoft.Extensions.Caching.Memory;
+using EmpRes = RWPM.Resources.Shared.Employee;
 
 namespace RWPM.Services.Implementation
 {
@@ -42,7 +43,7 @@ namespace RWPM.Services.Implementation
             var employee = await GetByIdAsync(employeeId, options);
             if (employee == null)
             {
-                throw new KeyNotFoundException($"Khong tim thay nhan vien voi ID {employeeId}.");
+                throw new KeyNotFoundException(string.Format(EmpRes.Err_EmployeeNotFound, employeeId));
             }
             return employee;
         }
@@ -134,7 +135,7 @@ namespace RWPM.Services.Implementation
             entity.Username = entity.Username.Trim();
 
             var existing = await _ctx.Employee.Include(e => e.Account).FirstOrDefaultAsync(e => e.EmployeeId == entity.EmployeeId);
-            if (existing == null) throw new KeyNotFoundException($"Không tìm thấy nhân viên ID {entity.EmployeeId}");
+            if (existing == null) throw new KeyNotFoundException(string.Format(EmpRes.Err_EmployeeNotFound, entity.EmployeeId));
 
             await ValidateAsync(entity, entity.EmployeeId);
 
@@ -216,7 +217,7 @@ namespace RWPM.Services.Implementation
         public async Task ResignAsync(int employeeId, DateTime resignDate, string? reason)
         {
             var employee = await _ctx.Employee.Include(e => e.Account).FirstOrDefaultAsync(e => e.EmployeeId == employeeId);
-            if (employee == null) throw new KeyNotFoundException($"Không tìm thấy nhân viên ID {employeeId}.");
+            if (employee == null) throw new KeyNotFoundException(string.Format(EmpRes.Err_EmployeeNotFound, employeeId));
 
             employee.Status = EmploymentStatus.Resigned;
             employee.IsActive = false;
@@ -294,22 +295,22 @@ namespace RWPM.Services.Implementation
             var employees = await query.OrderBy(e => e.StoreId).ThenBy(e => e.EmployeeCode).ToListAsync();
 
             using var workbook = new ClosedXML.Excel.XLWorkbook();
-            var worksheet = workbook.Worksheets.Add("Employees");
+            var worksheet = workbook.Worksheets.Add(EmpRes.Export_SheetName);
 
             // Header labels
-            worksheet.Cell(1, 1).Value = "STT";
-            worksheet.Cell(1, 2).Value = "Mã nhân viên";
-            worksheet.Cell(1, 3).Value = "Họ và tên";
-            worksheet.Cell(1, 4).Value = "Tài khoản";
-            worksheet.Cell(1, 5).Value = "Vai trò";
-            worksheet.Cell(1, 6).Value = "Cửa hàng";
-            worksheet.Cell(1, 7).Value = "Hình thức";
-            worksheet.Cell(1, 8).Value = "Trạng thái";
-            worksheet.Cell(1, 9).Value = "Số điện thoại";
-            worksheet.Cell(1, 10).Value = "Ngày vào làm";
-            worksheet.Cell(1, 11).Value = "Lương theo giờ";
-            worksheet.Cell(1, 12).Value = "Lương cơ bản";
-            worksheet.Cell(1, 13).Value = "Phép năm còn lại";
+            worksheet.Cell(1, 1).Value = EmpRes.Export_Col_No;
+            worksheet.Cell(1, 2).Value = EmpRes.Export_Col_EmpCode;
+            worksheet.Cell(1, 3).Value = EmpRes.Export_Col_FullName;
+            worksheet.Cell(1, 4).Value = EmpRes.Export_Col_Account;
+            worksheet.Cell(1, 5).Value = EmpRes.Export_Col_Role;
+            worksheet.Cell(1, 6).Value = EmpRes.Export_Col_Store;
+            worksheet.Cell(1, 7).Value = EmpRes.Export_Col_EmploymentType;
+            worksheet.Cell(1, 8).Value = EmpRes.Export_Col_Status;
+            worksheet.Cell(1, 9).Value = EmpRes.Template_Col_Phone;
+            worksheet.Cell(1, 10).Value = EmpRes.Export_Col_JoinDate;
+            worksheet.Cell(1, 11).Value = EmpRes.Export_Col_HourlyRate;
+            worksheet.Cell(1, 12).Value = EmpRes.Export_Col_BaseSalary;
+            worksheet.Cell(1, 13).Value = EmpRes.Export_Col_LeaveBalance;
 
             var headerRange = worksheet.Range(1, 1, 1, 13);
             headerRange.Style.Font.Bold = true;
@@ -348,20 +349,20 @@ namespace RWPM.Services.Implementation
             using var workbook = new ClosedXML.Excel.XLWorkbook();
 
             // Sheet 1: Danh sách nhân viên
-            var ws = workbook.Worksheets.Add("Danh sách nhân viên");
-            ws.Cell(1, 1).Value = "Họ và tên (*)";
-            ws.Cell(1, 2).Value = "Tên đăng nhập (*)";
-            ws.Cell(1, 3).Value = "Email (*)";
-            ws.Cell(1, 4).Value = "Số điện thoại";
-            ws.Cell(1, 5).Value = "Giới tính (Nam/Nữ/Khác)";
-            ws.Cell(1, 6).Value = "Ngày sinh (dd/MM/yyyy)";
-            ws.Cell(1, 7).Value = "Vai trò (*)";
-            ws.Cell(1, 8).Value = "Mã cửa hàng (*)";
-            ws.Cell(1, 9).Value = "Mã nhân viên (*)";
-            ws.Cell(1, 10).Value = "Hình thức (Toàn thời gian/Bán thời gian)";
-            ws.Cell(1, 11).Value = "Ngày vào làm (dd/MM/yyyy)";
-            ws.Cell(1, 12).Value = "Lương theo giờ (VNĐ)";
-            ws.Cell(1, 13).Value = "Lương cơ bản (VNĐ)";
+            var ws = workbook.Worksheets.Add(EmpRes.Template_SheetEmployees);
+            ws.Cell(1, 1).Value = EmpRes.Template_Col_FullName;
+            ws.Cell(1, 2).Value = EmpRes.Template_Col_Username;
+            ws.Cell(1, 3).Value = EmpRes.Template_Col_Email;
+            ws.Cell(1, 4).Value = EmpRes.Template_Col_Phone;
+            ws.Cell(1, 5).Value = EmpRes.Template_Col_Gender;
+            ws.Cell(1, 6).Value = EmpRes.Template_Col_DateOfBirth;
+            ws.Cell(1, 7).Value = EmpRes.Template_Col_Role;
+            ws.Cell(1, 8).Value = EmpRes.Template_Col_StoreId;
+            ws.Cell(1, 9).Value = EmpRes.Template_Col_EmpCode;
+            ws.Cell(1, 10).Value = EmpRes.Template_Col_EmploymentType;
+            ws.Cell(1, 11).Value = EmpRes.Template_Col_JoinDate;
+            ws.Cell(1, 12).Value = EmpRes.Template_Col_HourlyRate;
+            ws.Cell(1, 13).Value = EmpRes.Template_Col_BaseSalary;
 
             var header = ws.Range(1, 1, 1, 13);
             header.Style.Font.Bold = true;
@@ -376,12 +377,12 @@ namespace RWPM.Services.Implementation
             ws.Cell(2, 2).Value = "nguyenvanan";
             ws.Cell(2, 3).Value = "an.nguyen@example.com";
             ws.Cell(2, 4).Value = "0912345678";
-            ws.Cell(2, 5).Value = "Nam";
+            ws.Cell(2, 5).Value = EmpRes.Template_Sample_Male;
             ws.Cell(2, 6).Value = "15/05/1998";
             ws.Cell(2, 7).Value = "Employee";
             ws.Cell(2, 8).Value = sampleStoreId;
             ws.Cell(2, 9).Value = "NV26001";
-            ws.Cell(2, 10).Value = "Bán thời gian";
+            ws.Cell(2, 10).Value = EmpRes.Template_Sample_PartTime;
             ws.Cell(2, 11).Value = DateTime.Today.ToString("dd/MM/yyyy");
             ws.Cell(2, 12).Value = 25000;
             ws.Cell(2, 13).Value = "";
@@ -391,12 +392,12 @@ namespace RWPM.Services.Implementation
             ws.Cell(3, 2).Value = "tranthibich";
             ws.Cell(3, 3).Value = "bich.tran@example.com";
             ws.Cell(3, 4).Value = "0987654321";
-            ws.Cell(3, 5).Value = "Nữ";
+            ws.Cell(3, 5).Value = EmpRes.Template_Sample_Female;
             ws.Cell(3, 6).Value = "20/10/1995";
             ws.Cell(3, 7).Value = "StoreManager";
             ws.Cell(3, 8).Value = sampleStoreId;
             ws.Cell(3, 9).Value = "NV26002";
-            ws.Cell(3, 10).Value = "Toàn thời gian";
+            ws.Cell(3, 10).Value = EmpRes.Template_Sample_FullTime;
             ws.Cell(3, 11).Value = DateTime.Today.ToString("dd/MM/yyyy");
             ws.Cell(3, 12).Value = "";
             ws.Cell(3, 13).Value = 12000000;
@@ -404,10 +405,10 @@ namespace RWPM.Services.Implementation
             ws.Columns().AdjustToContents();
 
             // Sheet 2: Danh mục Cửa hàng tham chiếu
-            var wsStore = workbook.Worksheets.Add("Danh mục Cửa hàng");
-            wsStore.Cell(1, 1).Value = "Mã cửa hàng (StoreId)";
-            wsStore.Cell(1, 2).Value = "Tên cửa hàng";
-            wsStore.Cell(1, 3).Value = "Địa chỉ";
+            var wsStore = workbook.Worksheets.Add(EmpRes.Template_SheetStores);
+            wsStore.Cell(1, 1).Value = EmpRes.Template_Store_Col_Id;
+            wsStore.Cell(1, 2).Value = EmpRes.Template_Store_Col_Name;
+            wsStore.Cell(1, 3).Value = EmpRes.Template_Store_Col_Address;
 
             var storeHeader = wsStore.Range(1, 1, 1, 3);
             storeHeader.Style.Font.Bold = true;
@@ -437,14 +438,14 @@ namespace RWPM.Services.Implementation
             var worksheet = workbook.Worksheet(1);
             if (worksheet == null)
             {
-                result.ErrorMessages.Add("File Excel không đúng định dạng hoặc không có sheet dữ liệu.");
+                result.ErrorMessages.Add(EmpRes.Import_NoSheet);
                 return result;
             }
 
             var rows = worksheet.RangeUsed()?.RowsUsed()?.Skip(1);
             if (rows == null || !rows.Any())
             {
-                result.ErrorMessages.Add("File Excel không có dòng dữ liệu nào để nhập.");
+                result.ErrorMessages.Add(EmpRes.Import_NoRows);
                 return result;
             }
 
@@ -486,28 +487,37 @@ namespace RWPM.Services.Implementation
                 if (string.IsNullOrWhiteSpace(fullName))
                 {
                     result.FailureCount++;
-                    result.ErrorMessages.Add($"Dòng {rowNum}: Họ và tên không được để trống.");
+                    result.ErrorMessages.Add(string.Format(EmpRes.Import_RowError, rowNum, EmpRes.Import_FullNameRequired));
                     continue;
                 }
 
                 if (string.IsNullOrWhiteSpace(username))
                 {
                     result.FailureCount++;
-                    result.ErrorMessages.Add($"Dòng {rowNum}: Tên đăng nhập không được để trống.");
+                    result.ErrorMessages.Add(string.Format(EmpRes.Import_RowError, rowNum, EmpRes.Import_UsernameRequired));
+                    continue;
+                }
+
+                // Số điện thoại: 10 số, bắt đầu bằng 0 (Excel hay làm mất số 0 đầu -> tự thêm lại)
+                phone = PhoneHelper.Normalize(phone);
+                if (!string.IsNullOrEmpty(phone) && !PhoneHelper.IsValid(phone))
+                {
+                    result.FailureCount++;
+                    result.ErrorMessages.Add(string.Format(EmpRes.Import_RowError, rowNum, string.Format(EmpRes.Import_PhoneInvalid, phone)));
                     continue;
                 }
 
                 if (cachedUsernames.Contains(username))
                 {
                     result.FailureCount++;
-                    result.ErrorMessages.Add($"Dòng {rowNum}: Tên đăng nhập '{username}' đã tồn tại trong hệ thống.");
+                    result.ErrorMessages.Add(string.Format(EmpRes.Import_RowError, rowNum, string.Format(EmpRes.Import_UsernameExistsInSystem, username)));
                     continue;
                 }
 
                 if (string.IsNullOrWhiteSpace(email))
                 {
                     result.FailureCount++;
-                    result.ErrorMessages.Add($"Dòng {rowNum}: Email không được để trống.");
+                    result.ErrorMessages.Add(string.Format(EmpRes.Import_RowError, rowNum, EmpRes.Import_EmailRequired));
                     continue;
                 }
 
@@ -556,7 +566,7 @@ namespace RWPM.Services.Implementation
                     if (!int.TryParse(storeStr, out parsedStoreId) || !validStoreIds.Contains(parsedStoreId))
                     {
                         result.FailureCount++;
-                        result.ErrorMessages.Add($"Dòng {rowNum}: Mã cửa hàng '{storeStr}' không hợp lệ hoặc không tồn tại. Vui lòng xem sheet 'Danh mục Cửa hàng'.");
+                        result.ErrorMessages.Add(string.Format(EmpRes.Import_RowError, rowNum, string.Format(EmpRes.Import_StoreInvalid, storeStr, EmpRes.Template_SheetStores)));
                         continue;
                     }
 
@@ -568,7 +578,7 @@ namespace RWPM.Services.Implementation
                     if (cachedEmployeeCodes.Contains(empCode))
                     {
                         result.FailureCount++;
-                        result.ErrorMessages.Add($"Dòng {rowNum}: Mã nhân viên '{empCode}' đã tồn tại trong hệ thống.");
+                        result.ErrorMessages.Add(string.Format(EmpRes.Import_RowError, rowNum, string.Format(EmpRes.Import_EmpCodeExistsInSystem, empCode)));
                         continue;
                     }
                 }
@@ -659,13 +669,13 @@ namespace RWPM.Services.Implementation
             var worksheet = workbook.Worksheet(1);
             if (worksheet == null)
             {
-                throw new Exception("File Excel không đúng định dạng hoặc không có trang tính dữ liệu.");
+                throw new Exception(EmpRes.Import_NoWorksheet);
             }
 
             var rows = worksheet.RangeUsed()?.RowsUsed()?.Skip(1);
             if (rows == null || !rows.Any())
             {
-                throw new Exception("File Excel không chứa dòng dữ liệu nào.");
+                throw new Exception(EmpRes.Import_NoRowsPreview);
             }
 
             var cachedUsernames = (await _ctx.Acc.Select(x => x.Username).ToListAsync()).ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -714,26 +724,35 @@ namespace RWPM.Services.Implementation
                 if (string.IsNullOrWhiteSpace(fullName))
                 {
                     previewRow.IsValid = false;
-                    previewRow.ErrorMessage = "Họ và tên không được để trống.";
+                    previewRow.ErrorMessage = EmpRes.Import_FullNameRequired;
+                }
+
+                // Kiểm tra Số điện thoại: 10 số, bắt đầu bằng 0 (tự thêm số 0 đầu nếu Excel làm mất)
+                phone = PhoneHelper.Normalize(phone);
+                previewRow.Phone = phone;
+                if (previewRow.IsValid && !string.IsNullOrEmpty(phone) && !PhoneHelper.IsValid(phone))
+                {
+                    previewRow.IsValid = false;
+                    previewRow.ErrorMessage = string.Format(EmpRes.Import_PhoneInvalid, phone);
                 }
 
                 // Kiểm tra Username
                 if (previewRow.IsValid && string.IsNullOrWhiteSpace(username))
                 {
                     previewRow.IsValid = false;
-                    previewRow.ErrorMessage = "Tên đăng nhập không được để trống.";
+                    previewRow.ErrorMessage = EmpRes.Import_UsernameRequired;
                 }
                 else if (previewRow.IsValid && (cachedUsernames.Contains(username) || batchUsernames.Contains(username)))
                 {
                     previewRow.IsValid = false;
-                    previewRow.ErrorMessage = $"Tên đăng nhập '{username}' đã tồn tại.";
+                    previewRow.ErrorMessage = string.Format(EmpRes.Import_UsernameExists, username);
                 }
 
                 // Kiểm tra Email
                 if (previewRow.IsValid && string.IsNullOrWhiteSpace(email))
                 {
                     previewRow.IsValid = false;
-                    previewRow.ErrorMessage = "Email không được để trống.";
+                    previewRow.ErrorMessage = EmpRes.Import_EmailRequired;
                 }
 
                 // Parse Role
@@ -772,7 +791,7 @@ namespace RWPM.Services.Implementation
                     if (!int.TryParse(storeStr, out parsedStoreId) || !storesDict.ContainsKey(parsedStoreId))
                     {
                         previewRow.IsValid = false;
-                        previewRow.ErrorMessage = $"Mã cửa hàng '{storeStr}' không tồn tại. Vui lòng xem sheet 'Danh mục Cửa hàng'.";
+                        previewRow.ErrorMessage = string.Format(EmpRes.Import_StoreNotFound, storeStr, EmpRes.Template_SheetStores);
                     }
                     else
                     {
@@ -790,13 +809,13 @@ namespace RWPM.Services.Implementation
                         if (cachedEmployeeCodes.Contains(empCode) || batchEmployeeCodes.Contains(empCode))
                         {
                             previewRow.IsValid = false;
-                            previewRow.ErrorMessage = $"Mã nhân viên '{empCode}' đã tồn tại.";
+                            previewRow.ErrorMessage = string.Format(EmpRes.Import_EmpCodeExists, empCode);
                         }
                     }
                 }
                 else
                 {
-                    previewRow.StoreDisplay = "Không yêu cầu";
+                    previewRow.StoreDisplay = EmpRes.Import_StoreNotRequired;
                 }
 
                 // Parse EmploymentType
@@ -857,7 +876,7 @@ namespace RWPM.Services.Implementation
         {
             if (!_cache.TryGetValue($"ImportPreview_{importToken}", out List<EmployeeImportValidItemDto>? validItems) || validItems == null || !validItems.Any())
             {
-                throw new Exception("Phiên nhập dữ liệu đã hết hạn hoặc không tìm thấy dữ liệu hợp lệ. Vui lòng tải lại file.");
+                throw new Exception(EmpRes.Import_SessionExpired);
             }
 
             var hasher = new Microsoft.AspNetCore.Identity.PasswordHasher<Acc>();

@@ -33,11 +33,11 @@ namespace RWPM.Models.ViewModels.Store
         public string? Longitude { get; set; } = "105.553973";
 
         [Display(Name = "MinAllowedDistanceMeters", ResourceType = typeof(Resources.Models.Store))]
-        [Range(0, 10000)]
+        [RangeLocalized(0, 10000)]
         public int MinAllowedDistanceMeters { get; set; } = 0;
 
         [Display(Name = "AllowedRadiusMeters", ResourceType = typeof(Resources.Models.Store))]
-        [Range(10, 10000)]
+        [RangeLocalized(10, 10000)]
         public int AllowedRadiusMeters { get; set; } = 100;
 
         [Display(Name = "IsActive", ResourceType = typeof(Resources.Models.Store))]

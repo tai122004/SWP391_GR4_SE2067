@@ -288,4 +288,16 @@
   <data name="AttTable_Empty" xml:space="preserve">
     <value>Hôm nay chưa có lượt chấm công nào tại chi nhánh này.</value>
   </data>
+  <data name="Err_CheckInput" xml:space="preserve">
+    <value>Vui lòng kiểm tra lại thông tin nhập: {0}</value>
+  </data>
+  <data name="Search_DefaultLocationSuffix" xml:space="preserve">
+    <value>{0} (Vị trí mặc định)</value>
+  </data>
+  <data name="Search_DefaultFallbackName" xml:space="preserve">
+    <value>Hà Nội, Việt Nam</value>
+  </data>
+  <data name="Delete_WarningLabel" xml:space="preserve">
+    <value>Cảnh báo:</value>
+  </data>
 </root>

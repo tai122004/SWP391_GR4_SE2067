@@ -163,4 +163,382 @@
   <data name="Subtitle" xml:space="preserve">
     <value>Track, register, and manage weekly work schedules.</value>
   </data>
+  <data name="Header_Branch" xml:space="preserve">
+    <value>Branch:</value>
+  </data>
+  <data name="Header_Description" xml:space="preserve">
+    <value>Choose suitable shifts for the week and send a registration request to your manager for approval.</value>
+  </data>
+  <data name="Status_NotRegistered" xml:space="preserve">
+    <value>Not registered</value>
+  </data>
+  <data name="Status_NewlySelected" xml:space="preserve">
+    <value>Newly selected</value>
+  </data>
+  <data name="Status_Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="Status_Approved" xml:space="preserve">
+    <value>Approved</value>
+  </data>
+  <data name="Status_Overdue" xml:space="preserve">
+    <value>Overdue</value>
+  </data>
+  <data name="Status_Rejected" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+  <data name="Status_RejectedLong" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+  <data name="Status_Unregister" xml:space="preserve">
+    <value>Unregister</value>
+  </data>
+  <data name="Status_NotApplicable" xml:space="preserve">
+    <value>Not applicable</value>
+  </data>
+  <data name="Tab_MyRegistration" xml:space="preserve">
+    <value>My shift registration</value>
+  </data>
+  <data name="Tab_ManagerSchedule" xml:space="preserve">
+    <value>Manage schedule</value>
+  </data>
+  <data name="Label_Store" xml:space="preserve">
+    <value>Store:</value>
+  </data>
+  <data name="Nav_PrevWeek" xml:space="preserve">
+    <value>Previous week</value>
+  </data>
+  <data name="Nav_GoToCurrentWeek" xml:space="preserve">
+    <value>Go to the current week</value>
+  </data>
+  <data name="Nav_ThisWeek" xml:space="preserve">
+    <value>This week</value>
+  </data>
+  <data name="Nav_NextWeek" xml:space="preserve">
+    <value>Next week</value>
+  </data>
+  <data name="Picker_PrevYear" xml:space="preserve">
+    <value>Previous year</value>
+  </data>
+  <data name="Picker_PrevMonth" xml:space="preserve">
+    <value>Previous month</value>
+  </data>
+  <data name="Picker_NextMonth" xml:space="preserve">
+    <value>Next month</value>
+  </data>
+  <data name="Picker_NextYear" xml:space="preserve">
+    <value>Next year</value>
+  </data>
+  <data name="Picker_Mon" xml:space="preserve">
+    <value>Mo</value>
+  </data>
+  <data name="Picker_Tue" xml:space="preserve">
+    <value>Tu</value>
+  </data>
+  <data name="Picker_Wed" xml:space="preserve">
+    <value>We</value>
+  </data>
+  <data name="Picker_Thu" xml:space="preserve">
+    <value>Th</value>
+  </data>
+  <data name="Picker_Fri" xml:space="preserve">
+    <value>Fr</value>
+  </data>
+  <data name="Picker_Sat" xml:space="preserve">
+    <value>Sa</value>
+  </data>
+  <data name="Picker_Sun" xml:space="preserve">
+    <value>Su</value>
+  </data>
+  <data name="Picker_Hint" xml:space="preserve">
+    <value>Click any week row to select it</value>
+  </data>
+  <data name="Picker_MonthYearFormat" xml:space="preserve">
+    <value>Month {0} / {1}</value>
+  </data>
+  <data name="Week_Format" xml:space="preserve">
+    <value>Week {0}</value>
+  </data>
+  <data name="Day_Mon" xml:space="preserve">
+    <value>Monday</value>
+  </data>
+  <data name="Day_Tue" xml:space="preserve">
+    <value>Tuesday</value>
+  </data>
+  <data name="Day_Wed" xml:space="preserve">
+    <value>Wednesday</value>
+  </data>
+  <data name="Day_Thu" xml:space="preserve">
+    <value>Thursday</value>
+  </data>
+  <data name="Day_Fri" xml:space="preserve">
+    <value>Friday</value>
+  </data>
+  <data name="Day_Sat" xml:space="preserve">
+    <value>Saturday</value>
+  </data>
+  <data name="Day_Sun" xml:space="preserve">
+    <value>Sunday</value>
+  </data>
+  <data name="Toolbar_ReloadTitle" xml:space="preserve">
+    <value>Reload data</value>
+  </data>
+  <data name="Toolbar_Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Toolbar_CopyWeek" xml:space="preserve">
+    <value>Copy week</value>
+  </data>
+  <data name="Summary_Title" xml:space="preserve">
+    <value>Weekly summary:</value>
+  </data>
+  <data name="Summary_NewSelected" xml:space="preserve">
+    <value>newly selected</value>
+  </data>
+  <data name="Summary_Pending" xml:space="preserve">
+    <value>pending</value>
+  </data>
+  <data name="Summary_Approved" xml:space="preserve">
+    <value>approved</value>
+  </data>
+  <data name="Summary_TotalHours" xml:space="preserve">
+    <value>Estimated total hours:</value>
+  </data>
+  <data name="Summary_HoursFormat" xml:space="preserve">
+    <value>{0} h</value>
+  </data>
+  <data name="Summary_ResetTitle" xml:space="preserve">
+    <value>Discard unsaved changes</value>
+  </data>
+  <data name="Summary_Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Modal_RegisterTitle" xml:space="preserve">
+    <value>Register shift</value>
+  </data>
+  <data name="Modal_EmployeeLabel" xml:space="preserve">
+    <value>Employee:</value>
+  </data>
+  <data name="Modal_SelectAvailableShift" xml:space="preserve">
+    <value>Select available shifts:</value>
+  </data>
+  <data name="Modal_DateFormat" xml:space="preserve">
+    <value>Date: {0}</value>
+  </data>
+  <data name="Modal_LoadingShifts" xml:space="preserve">
+    <value>Loading shift list...</value>
+  </data>
+  <data name="Modal_NoShiftsForDay" xml:space="preserve">
+    <value>No shifts are available for this day.</value>
+  </data>
+  <data name="Modal_LoadShiftsError" xml:space="preserve">
+    <value>Failed to load the shift list.</value>
+  </data>
+  <data name="View_Subtitle" xml:space="preserve">
+    <value>Details of the registered shift</value>
+  </data>
+  <data name="View_RejectionReason" xml:space="preserve">
+    <value>Rejection reason:</value>
+  </data>
+  <data name="View_Approver" xml:space="preserve">
+    <value>Approved by:</value>
+  </data>
+  <data name="View_CancelShift" xml:space="preserve">
+    <value>Cancel shift</value>
+  </data>
+  <data name="View_ApprovedNotice" xml:space="preserve">
+    <value>This shift is approved and cannot be cancelled by you.</value>
+  </data>
+  <data name="Grid_ShiftColumn" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="Grid_Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="Grid_NoShiftsTitle" xml:space="preserve">
+    <value>No shifts available</value>
+  </data>
+  <data name="Grid_NoShiftsDesc" xml:space="preserve">
+    <value>The current branch has no active shifts configured.</value>
+  </data>
+  <data name="Grid_WorkHoursFormat" xml:space="preserve">
+    <value>{0}h of work</value>
+  </data>
+  <data name="Slot_ApprovedTitle" xml:space="preserve">
+    <value>Shift approved · Click to view details</value>
+  </data>
+  <data name="Slot_RejectedTitle" xml:space="preserve">
+    <value>Shift rejected · Click to view the reason</value>
+  </data>
+  <data name="Slot_PendingTitle" xml:space="preserve">
+    <value>Shift pending approval · Uncheck to cancel the request</value>
+  </data>
+  <data name="Slot_PastTitle" xml:space="preserve">
+    <value>Cannot register shifts for past dates</value>
+  </data>
+  <data name="Slot_UnavailableTitle" xml:space="preserve">
+    <value>This shift is not yet or no longer effective</value>
+  </data>
+  <data name="Slot_AvailableTitle" xml:space="preserve">
+    <value>Click to select this shift for registration</value>
+  </data>
+  <data name="Slot_ViewDetails" xml:space="preserve">
+    <value>View details</value>
+  </data>
+  <data name="Slot_Details" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Btn_Sending" xml:space="preserve">
+    <value>Sending...</value>
+  </data>
+  <data name="Toast_RegisterSuccess" xml:space="preserve">
+    <value>Shift registered successfully!</value>
+  </data>
+  <data name="Toast_CopiedFormat" xml:space="preserve">
+    <value>Copied {0} valid shifts. Please click 'Register week' to submit.</value>
+  </data>
+  <data name="Toast_CancelSuccess" xml:space="preserve">
+    <value>Shift registration cancelled successfully!</value>
+  </data>
+  <data name="Toast_CancelFailed" xml:space="preserve">
+    <value>Unable to cancel the shift.</value>
+  </data>
+  <data name="Toast_SystemError" xml:space="preserve">
+    <value>System error</value>
+  </data>
+  <data name="Err_EmployeeNotFound" xml:space="preserve">
+    <value>Employee not found.</value>
+  </data>
+  <data name="Err_ShiftNotFoundOrInactive" xml:space="preserve">
+    <value>Shift with ID {0} does not exist or is no longer active.</value>
+  </data>
+  <data name="Err_ShiftNotAppliedToStore" xml:space="preserve">
+    <value>Shift {0} does not apply to the employee's branch.</value>
+  </data>
+  <data name="Err_ApprovedCannotCancel" xml:space="preserve">
+    <value>This shift has already been approved. You cannot cancel it yourself; please contact your manager!</value>
+  </data>
+  <data name="Err_CannotCancelPast" xml:space="preserve">
+    <value>Cannot cancel a shift in the past.</value>
+  </data>
+  <data name="Err_EmployeeProfileNotFound" xml:space="preserve">
+    <value>Your employee profile could not be found to register shifts.</value>
+  </data>
+  <data name="Err_PastDateRegistration" xml:space="preserve">
+    <value>Cannot register shifts for past dates.</value>
+  </data>
+  <data name="Err_AlreadyRegistered" xml:space="preserve">
+    <value>This shift is already registered for this employee on the selected date.</value>
+  </data>
+  <data name="Err_ShiftAlreadyRegisteredOnDate" xml:space="preserve">
+    <value>Shift {0} is already registered for {1}.</value>
+  </data>
+  <data name="Leave_Paid" xml:space="preserve">
+    <value>paid leave</value>
+  </data>
+  <data name="Leave_Unpaid" xml:space="preserve">
+    <value>unpaid leave</value>
+  </data>
+  <data name="Err_OnApprovedLeave" xml:space="preserve">
+    <value>The employee has approved {0} on {1} (leave request #{2}). A shift cannot be scheduled on this day.</value>
+  </data>
+  <data name="Err_ShiftNotAvailable" xml:space="preserve">
+    <value>The shift is inactive, expired, or not applied at the branch.</value>
+  </data>
+  <data name="Err_ShiftOverlap" xml:space="preserve">
+    <value>Overlapping shifts: {0} ({1}) and {2} ({3}).</value>
+  </data>
+  <data name="Swap_SourceNotFound" xml:space="preserve">
+    <value>The shift to swap does not exist.</value>
+  </data>
+  <data name="Swap_OnlyApproved" xml:space="preserve">
+    <value>Only approved shifts can be swapped.</value>
+  </data>
+  <data name="Swap_SelectPeerAndShift" xml:space="preserve">
+    <value>Please select a coworker and the shift you want to swap with.</value>
+  </data>
+  <data name="Swap_SameShift" xml:space="preserve">
+    <value>You cannot select the same shift to swap.</value>
+  </data>
+  <data name="Swap_WithSelf" xml:space="preserve">
+    <value>You cannot swap shifts with yourself using a coworker swap.</value>
+  </data>
+  <data name="Swap_PeerShiftNotFound" xml:space="preserve">
+    <value>The coworker's shift does not exist.</value>
+  </data>
+  <data name="Swap_PeerShiftNotApproved" xml:space="preserve">
+    <value>The coworker's shift is not approved.</value>
+  </data>
+  <data name="Swap_SameBranchOnly" xml:space="preserve">
+    <value>You can only swap shifts with coworkers in the same branch.</value>
+  </data>
+  <data name="Swap_SameShiftAndDay" xml:space="preserve">
+    <value>These two registrations are the same shift on the same day; no swap is needed.</value>
+  </data>
+  <data name="Swap_PeerAlreadyScheduled" xml:space="preserve">
+    <value>The coworker is already scheduled for that shift on {0} and cannot take this swap.</value>
+  </data>
+  <data name="Swap_RequesterAlreadyScheduled" xml:space="preserve">
+    <value>You are already scheduled for that shift on {0} and cannot take this shift.</value>
+  </data>
+  <data name="Swap_EitherHasPending" xml:space="preserve">
+    <value>One of the two shifts already has another pending swap request.</value>
+  </data>
+  <data name="Swap_SelectNewShiftAndDate" xml:space="preserve">
+    <value>Please select the new shift and new work date to change to.</value>
+  </data>
+  <data name="Swap_SameAsCurrent" xml:space="preserve">
+    <value>The new shift and date are the same as the current shift.</value>
+  </data>
+  <data name="Swap_NewShiftNotFound" xml:space="preserve">
+    <value>The new shift does not exist or is no longer active.</value>
+  </data>
+  <data name="Swap_YouAlreadyScheduled" xml:space="preserve">
+    <value>You are already scheduled for that shift on {0}.</value>
+  </data>
+  <data name="Swap_ThisHasPending" xml:space="preserve">
+    <value>This shift already has another pending swap request.</value>
+  </data>
+  <data name="Swap_RequestNotFound" xml:space="preserve">
+    <value>The shift swap request does not exist.</value>
+  </data>
+  <data name="Swap_AlreadyProcessed" xml:space="preserve">
+    <value>This shift swap request has already been processed.</value>
+  </data>
+  <data name="Swap_OriginalNotFound" xml:space="preserve">
+    <value>The original shift does not exist.</value>
+  </data>
+  <data name="Swap_OriginalNoLongerApproved" xml:space="preserve">
+    <value>The original shift is no longer approved.</value>
+  </data>
+  <data name="Swap_OriginalNotOwned" xml:space="preserve">
+    <value>The original shift no longer belongs to the employee who requested the swap.</value>
+  </data>
+  <data name="Swap_PeerShiftNoLongerApproved" xml:space="preserve">
+    <value>The coworker's shift is no longer approved.</value>
+  </data>
+  <data name="Swap_PeerShiftNotOwned" xml:space="preserve">
+    <value>The coworker's shift no longer belongs to this coworker (it may have been swapped already).</value>
+  </data>
+  <data name="Swap_TargetEmployeeAlreadyScheduled" xml:space="preserve">
+    <value>The receiving employee ({0}) is already scheduled for that shift on {1}.</value>
+  </data>
+  <data name="Swap_RequesterEmployeeAlreadyScheduled" xml:space="preserve">
+    <value>The requesting employee ({0}) is already scheduled for that shift on {1}.</value>
+  </data>
+  <data name="Swap_EmployeeAlreadyScheduledNewDate" xml:space="preserve">
+    <value>The employee is already scheduled for this new shift and date ({0}).</value>
+  </data>
+  <data name="Swap_DuplicateViolation" xml:space="preserve">
+    <value>Cannot approve the swap because it would create a duplicate schedule (the employee already has an overlapping shift that day).</value>
+  </data>
+  <data name="Swap_DatabaseError" xml:space="preserve">
+    <value>Database error while updating the shift swap: {0}</value>
+  </data>
+  <data name="Swap_DeleteOnlyPending" xml:space="preserve">
+    <value>Only pending shift swap requests can be deleted.</value>
+  </data>
+  <data name="Swap_DeleteNoPermission" xml:space="preserve">
+    <value>You do not have permission to delete this shift swap request.</value>
+  </data>
 </root>

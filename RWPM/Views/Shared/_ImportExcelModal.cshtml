@@ -1,9 +1,10 @@
-﻿<div class="modal fade" id="importExcelModal" tabindex="-1" aria-labelledby="importExcelModalLabel" aria-hidden="true">
+﻿@using ImportEmployeeResource = RWPM.Resources.Shared.Employee
+<div class="modal fade" id="importExcelModal" tabindex="-1" aria-labelledby="importExcelModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content border-0 shadow-lg">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="importExcelModalLabel">📁 Import Excel File</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title" id="importExcelModalLabel">📁 @SharedResource.Button_ImportExcel</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="@SharedResource.Button_Cancel"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-4">
@@ -11,7 +12,7 @@
                     <div class="border border-2 border-dashed rounded-3 p-2 text-center bg-light" data-role="drop-area">
                         <input type="file" class="form-control visually-hidden" data-role="excel-input" name="excelFile" accept=".xlsx,.xls" />
                         <p class="mb-2">@SharedResource.DragOrDropFile</p>
-                        <button type="button" class="btn btn-outline-primary btn-sm" data-role="browse-btn">Browse File</button>
+                        <button type="button" class="btn btn-outline-primary btn-sm" data-role="browse-btn">@SharedResource.Button_BrowseFile</button>
                         <!-- File name display -->
                         <div data-role="file-name" class="mt-2 text-success fw-semibold" style="display:none;"></div>
                     </div>
@@ -22,11 +23,11 @@
 
                     <ul class="list-group mb-3">
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <strong class="text-primary">Processed rows:</strong>
+                            <strong class="text-primary">@ImportEmployeeResource.ImportModal_ProcessedRows</strong>
                             <strong data-role="processedRow">0</strong>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <strong class="text-danger">Failed rows:</strong>
+                            <strong class="text-danger">@ImportEmployeeResource.ImportModal_FailedRows</strong>
                             <strong data-role="errors">0</strong>
                         </li>
                     </ul>
@@ -35,9 +36,9 @@
                         <table class="table table-bordered table-sm table-striped table-hover mb-0">
                             <thead class="table-danger" style="position: sticky; top: 0;">
                                 <tr>
-                                    <th>Row Number</th>
-                                    <th>Reason</th>
-                                    <th>Value</th>
+                                    <th>@ImportEmployeeResource.ImportModal_RowNumber</th>
+                                    <th>@ImportEmployeeResource.ImportModal_Reason</th>
+                                    <th>@ImportEmployeeResource.ImportModal_Value</th>
                                 </tr>
                             </thead>
                             <tbody data-role="failures-table-body"></tbody>
@@ -49,7 +50,7 @@
             <div class="modal-footer">
                 <button type="button" data-role="apply-btn" class="btn btn-success" disabled>
                     <span class="spinner-border spinner-border-sm me-2" style="display: none" role="status" id="applySpinner"></span>
-                    Apply Data
+                    @ImportEmployeeResource.ImportModal_ApplyData
                 </button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@SharedResource.Button_Cancel</button>
             </div>

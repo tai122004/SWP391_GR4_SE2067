@@ -1,13 +1,14 @@
+using RWPM.Common.Attributes;
 using System.ComponentModel.DataAnnotations;
 
 namespace RWPM.Models.ViewModels.Shift
 {
     public class ShiftUpdateActiveStatusVM
     {
-        [Required]
+        [RequiredLocalization]
         public int? ShiftId { get; set; }
 
-        [Required]
+        [RequiredLocalization]
         public bool? IsActive { get; set; }
     }
 }

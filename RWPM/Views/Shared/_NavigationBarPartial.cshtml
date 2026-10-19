@@ -2,13 +2,13 @@
 @using RWPM.Resources.Shared
 @using System.Globalization
 
-<aside class="app-sidebar" id="appSidebar" aria-label="Main navigation">
+<aside class="app-sidebar" id="appSidebar" aria-label="@NavigationBarResource.MainNavigation">
     <a class="app-brand" asp-controller="Home" asp-action="Index">
         <span class="app-brand-name">RWPM</span>
-        <span class="app-brand-caption">WORKFORCE MANAGEMENT</span>
+        <span class="app-brand-caption">@NavigationBarResource.BrandCaption</span>
     </a>
     <nav class="app-nav">
-        <a class="app-nav-link" asp-controller="Home" asp-action="Index" data-nav-controller="Home"><i class="bi bi-grid-1x2"></i><span>@(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "vi" ? "Tổng quan" : "Dashboard")</span></a>
+        <a class="app-nav-link" asp-controller="Home" asp-action="Index" data-nav-controller="Home"><i class="bi bi-grid-1x2"></i><span>@NavigationBarResource.Dashboard</span></a>
         @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("AreaManager") || User.IsInRole("SuperAdmin") || User.IsInRole("StoreManager"))
         {
             @if (!User.IsInRole("StoreManager") || User.IsInRole("Admin") || User.IsInRole("HR"))
@@ -30,11 +30,11 @@
         <a class="app-nav-link" asp-controller="Request" asp-action="Index" data-nav-controller="Request"><i class="bi bi-inbox"></i><span>@RequestResource.RequestsAndApprovals</span></a>
         @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("AreaManager") || User.IsInRole("SuperAdmin") || User.IsInRole("StoreManager"))
         {
-            <a class="app-nav-link" asp-controller="Payroll" asp-action="Index" data-nav-controller="Payroll"><i class="bi bi-cash-stack"></i><span>@(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "vi" ? "Bảng lương" : "Payroll")</span></a>
+            <a class="app-nav-link" asp-controller="Payroll" asp-action="Index" data-nav-controller="Payroll"><i class="bi bi-cash-stack"></i><span>@NavigationBarResource.Payroll</span></a>
         }
         else
         {
-            <a class="app-nav-link" asp-controller="Payroll" asp-action="MyPayslips" data-nav-controller="Payroll"><i class="bi bi-receipt"></i><span>@(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "vi" ? "Phiếu lương" : "My Payslips")</span></a>
+            <a class="app-nav-link" asp-controller="Payroll" asp-action="MyPayslips" data-nav-controller="Payroll"><i class="bi bi-receipt"></i><span>@NavigationBarResource.MyPayslips</span></a>
         }
     </nav>
 </aside>

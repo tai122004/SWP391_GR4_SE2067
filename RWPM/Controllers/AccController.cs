@@ -15,6 +15,8 @@ using RWPM.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using RWPM.Models.ViewModels.Employee;
 using RWPM.Common.Enums;
+using AccRes = RWPM.Resources.Shared.Acc;
+using EmpRes = RWPM.Resources.Shared.Employee;
 
 namespace RWPM.Controllers
 {
@@ -66,13 +68,13 @@ namespace RWPM.Controllers
         {
             if (file == null || file.Length == 0)
             {
-                AlertHelper.AddErrorMessage(TempData, "Vui lòng chọn một file Excel (.xlsx) hợp lệ.");
+                AlertHelper.AddErrorMessage(TempData, EmpRes.Import_InvalidFile);
                 return RedirectToAction(nameof(Index));
             }
 
             if (!Path.GetExtension(file.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
             {
-                AlertHelper.AddErrorMessage(TempData, "Hệ thống chỉ hỗ trợ file định dạng Excel (.xlsx).");
+                AlertHelper.AddErrorMessage(TempData, EmpRes.Import_OnlyXlsx);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -83,20 +85,20 @@ namespace RWPM.Controllers
 
                 if (result.SuccessCount > 0 && result.FailureCount == 0)
                 {
-                    AlertHelper.AddSuccessMessage(TempData, $"Nhập thành công {result.SuccessCount}/{result.TotalRows} nhân viên từ file Excel!");
+                    AlertHelper.AddSuccessMessage(TempData, string.Format(EmpRes.Import_SuccessAll, result.SuccessCount, result.TotalRows));
                 }
                 else if (result.SuccessCount > 0 && result.FailureCount > 0)
                 {
-                    AlertHelper.AddWarningMessage(TempData, $"Nhập thành công {result.SuccessCount} nhân viên. Bỏ qua {result.FailureCount} dòng lỗi. Chi tiết: {string.Join(" | ", result.ErrorMessages.Take(3))}");
+                    AlertHelper.AddWarningMessage(TempData, string.Format(EmpRes.Import_SuccessPartial, result.SuccessCount, result.FailureCount, string.Join(" | ", result.ErrorMessages.Take(3))));
                 }
                 else
                 {
-                    AlertHelper.AddErrorMessage(TempData, $"Nhập thất bại. {string.Join(" | ", result.ErrorMessages.Take(5))}");
+                    AlertHelper.AddErrorMessage(TempData, string.Format(EmpRes.Import_Failed, string.Join(" | ", result.ErrorMessages.Take(5))));
                 }
             }
             catch (Exception ex)
             {
-                AlertHelper.AddErrorMessage(TempData, $"Lỗi khi xử lý file Excel: {ex.Message}");
+                AlertHelper.AddErrorMessage(TempData, string.Format(EmpRes.Import_ProcessError, ex.Message));
             }
 
             return RedirectToAction(nameof(Index));
@@ -109,12 +111,12 @@ namespace RWPM.Controllers
         {
             if (file == null || file.Length == 0)
             {
-                return Json(new { success = false, message = "Vui lòng chọn một file Excel (.xlsx) hợp lệ." });
+                return Json(new { success = false, message = EmpRes.Import_InvalidFile });
             }
 
             if (!Path.GetExtension(file.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
             {
-                return Json(new { success = false, message = "Hệ thống chỉ hỗ trợ file định dạng Excel (.xlsx)." });
+                return Json(new { success = false, message = EmpRes.Import_OnlyXlsx });
             }
 
             try
@@ -136,13 +138,13 @@ namespace RWPM.Controllers
         {
             if (string.IsNullOrWhiteSpace(request?.ImportToken))
             {
-                return Json(new { success = false, message = "Mã phiên nhập không hợp lệ hoặc đã hết hạn." });
+                return Json(new { success = false, message = EmpRes.Import_InvalidSession });
             }
 
             try
             {
                 var count = await _employeeService.ConfirmImportAsync(request.ImportToken, User.Identity?.Name ?? "system");
-                return Json(new { success = true, count = count, message = $"Nhập thành công {count} nhân viên vào hệ thống!" });
+                return Json(new { success = true, count = count, message = string.Format(EmpRes.Import_ConfirmSuccess, count) });
             }
             catch (Exception ex)
             {
@@ -192,18 +194,18 @@ namespace RWPM.Controllers
             {
                 if (!viewModel.StoreId.HasValue || viewModel.StoreId <= 0)
                 {
-                    ModelState.AddModelError(nameof(viewModel.StoreId), "Vui lòng chọn cửa hàng làm việc cho nhân viên này.");
+                    ModelState.AddModelError(nameof(viewModel.StoreId), AccRes.Err_SelectStoreForEmployee);
                 }
                 if (string.IsNullOrWhiteSpace(viewModel.EmployeeCode))
                 {
-                    ModelState.AddModelError(nameof(viewModel.EmployeeCode), "Vui lòng nhập mã nhân viên.");
+                    ModelState.AddModelError(nameof(viewModel.EmployeeCode), AccRes.Err_EmployeeCodeRequired);
                 }
                 else
                 {
                     var codeExists = await _context.Employee.AnyAsync(e => e.EmployeeCode == viewModel.EmployeeCode.Trim());
                     if (codeExists)
                     {
-                        ModelState.AddModelError(nameof(viewModel.EmployeeCode), $"Mã nhân viên '{viewModel.EmployeeCode}' đã tồn tại trong hệ thống.");
+                        ModelState.AddModelError(nameof(viewModel.EmployeeCode), string.Format(AccRes.Err_EmployeeCodeExists, viewModel.EmployeeCode));
                     }
                 }
             }
@@ -218,20 +220,20 @@ namespace RWPM.Controllers
 
                 if (string.IsNullOrWhiteSpace(viewModel.EmployeeCode))
                 {
-                    ModelState.AddModelError(nameof(viewModel.EmployeeCode), "Vui lòng nhập mã nhân viên cho nhân sự HR.");
+                    ModelState.AddModelError(nameof(viewModel.EmployeeCode), AccRes.Err_EmployeeCodeRequiredHr);
                 }
                 else
                 {
                     var codeExists = await _context.Employee.AnyAsync(e => e.EmployeeCode == viewModel.EmployeeCode.Trim());
                     if (codeExists)
                     {
-                        ModelState.AddModelError(nameof(viewModel.EmployeeCode), $"Mã nhân viên '{viewModel.EmployeeCode}' đã tồn tại trong hệ thống.");
+                        ModelState.AddModelError(nameof(viewModel.EmployeeCode), string.Format(AccRes.Err_EmployeeCodeExists, viewModel.EmployeeCode));
                     }
                 }
 
                 if (!viewModel.HourlyRate.HasValue || viewModel.HourlyRate <= 0)
                 {
-                    ModelState.AddModelError(nameof(viewModel.HourlyRate), "Vui lòng nhập mức lương theo giờ để có thể tính lương cho HR.");
+                    ModelState.AddModelError(nameof(viewModel.HourlyRate), AccRes.Err_HourlyRateRequiredHrCreate);
                 }
             }
 
@@ -242,7 +244,7 @@ namespace RWPM.Controllers
                 var emailExists = await _context.Acc.AnyAsync(a => a.Email.ToLower() == trimmedEmail);
                 if (emailExists)
                 {
-                    ModelState.AddModelError(nameof(viewModel.Email), $"Email '{viewModel.Email}' đã được sử dụng bởi một tài khoản khác.");
+                    ModelState.AddModelError(nameof(viewModel.Email), string.Format(AccRes.Err_EmailInUse, viewModel.Email));
                 }
             }
 
@@ -253,7 +255,7 @@ namespace RWPM.Controllers
                 var phoneExists = await _context.Acc.AnyAsync(a => a.PhoneNumber == trimmedPhone);
                 if (phoneExists)
                 {
-                    ModelState.AddModelError(nameof(viewModel.PhoneNumber), $"Số điện thoại '{viewModel.PhoneNumber}' đã được sử dụng bởi một tài khoản khác.");
+                    ModelState.AddModelError(nameof(viewModel.PhoneNumber), string.Format(AccRes.Err_PhoneInUse, viewModel.PhoneNumber));
                 }
             }
 
@@ -285,7 +287,7 @@ namespace RWPM.Controllers
                 }
 
                 AlertHelper.CreateSuccess(TempData);
-                TempData["CreatedAccountNotice"] = $"Đã tạo tài khoản: {createdAcc.Username} | Mật khẩu: {viewModel.Password}";
+                TempData["CreatedAccountNotice"] = string.Format(AccRes.Notice_CreatedAccount, createdAcc.Username, viewModel.Password);
             }
             catch (ModelValidationException ex)
             {
@@ -356,18 +358,18 @@ namespace RWPM.Controllers
             {
                 if (!viewModel.StoreId.HasValue || viewModel.StoreId <= 0)
                 {
-                    ModelState.AddModelError(nameof(viewModel.StoreId), "Vui lòng chọn cửa hàng làm việc cho nhân viên này.");
+                    ModelState.AddModelError(nameof(viewModel.StoreId), AccRes.Err_SelectStoreForEmployee);
                 }
                 if (string.IsNullOrWhiteSpace(viewModel.EmployeeCode))
                 {
-                    ModelState.AddModelError(nameof(viewModel.EmployeeCode), "Vui lòng nhập mã nhân viên.");
+                    ModelState.AddModelError(nameof(viewModel.EmployeeCode), AccRes.Err_EmployeeCodeRequired);
                 }
                 else
                 {
                     var duplicateEmp = await _context.Employee.AnyAsync(e => e.EmployeeCode == viewModel.EmployeeCode.Trim() && e.Username != viewModel.Username);
                     if (duplicateEmp)
                     {
-                        ModelState.AddModelError(nameof(viewModel.EmployeeCode), $"Mã nhân viên '{viewModel.EmployeeCode}' đã được sử dụng bởi nhân viên khác.");
+                        ModelState.AddModelError(nameof(viewModel.EmployeeCode), string.Format(AccRes.Err_EmployeeCodeUsedByOther, viewModel.EmployeeCode));
                     }
                 }
             }
@@ -382,20 +384,20 @@ namespace RWPM.Controllers
 
                 if (string.IsNullOrWhiteSpace(viewModel.EmployeeCode))
                 {
-                    ModelState.AddModelError(nameof(viewModel.EmployeeCode), "Vui lòng nhập mã nhân viên cho nhân sự HR.");
+                    ModelState.AddModelError(nameof(viewModel.EmployeeCode), AccRes.Err_EmployeeCodeRequiredHr);
                 }
                 else
                 {
                     var duplicateEmp = await _context.Employee.AnyAsync(e => e.EmployeeCode == viewModel.EmployeeCode.Trim() && e.Username != viewModel.Username);
                     if (duplicateEmp)
                     {
-                        ModelState.AddModelError(nameof(viewModel.EmployeeCode), $"Mã nhân viên '{viewModel.EmployeeCode}' đã được sử dụng bởi nhân viên khác.");
+                        ModelState.AddModelError(nameof(viewModel.EmployeeCode), string.Format(AccRes.Err_EmployeeCodeUsedByOther, viewModel.EmployeeCode));
                     }
                 }
 
                 if (!viewModel.HourlyRate.HasValue || viewModel.HourlyRate <= 0)
                 {
-                    ModelState.AddModelError(nameof(viewModel.HourlyRate), "Vui lòng nhập mức lương theo giờ để tính lương cho HR.");
+                    ModelState.AddModelError(nameof(viewModel.HourlyRate), AccRes.Err_HourlyRateRequiredHrEdit);
                 }
             }
 
@@ -406,7 +408,7 @@ namespace RWPM.Controllers
                 var emailExists = await _context.Acc.AnyAsync(a => a.Username != id && a.Email.ToLower() == trimmedEmail);
                 if (emailExists)
                 {
-                    ModelState.AddModelError(nameof(viewModel.Email), $"Email '{viewModel.Email}' đã được sử dụng bởi một tài khoản khác.");
+                    ModelState.AddModelError(nameof(viewModel.Email), string.Format(AccRes.Err_EmailInUse, viewModel.Email));
                 }
             }
 
@@ -417,7 +419,7 @@ namespace RWPM.Controllers
                 var phoneExists = await _context.Acc.AnyAsync(a => a.Username != id && a.PhoneNumber == trimmedPhone);
                 if (phoneExists)
                 {
-                    ModelState.AddModelError(nameof(viewModel.PhoneNumber), $"Số điện thoại '{viewModel.PhoneNumber}' đã được sử dụng bởi một tài khoản khác.");
+                    ModelState.AddModelError(nameof(viewModel.PhoneNumber), string.Format(AccRes.Err_PhoneInUse, viewModel.PhoneNumber));
                 }
             }
 
@@ -648,7 +650,7 @@ namespace RWPM.Controllers
                     NewPassword = request.NewPassword,
                     ConfirmPassword = request.ConfirmPassword
                 });
-                return Ok(new { success = true, message = "Đổi mật khẩu thành công!" });
+                return Ok(new { success = true, message = AccRes.Toast_ChangePasswordSuccess });
             }
             catch (ModelValidationException ex)
             {

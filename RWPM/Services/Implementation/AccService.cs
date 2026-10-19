@@ -38,7 +38,7 @@ namespace RWPM.Services.Implementation
 
             //II. Validation
             if (entity.Role == AccountRole.Admin)
-                throw new Exception("Can't create admin account!");
+                throw new Exception(Resources.Shared.Acc.Err_CannotCreateAdmin);
 
             if (await ExistsAsync(entity.Username))
                 throw new ModelValidationException("Acc_UsernameExists", entity.Username);
@@ -48,7 +48,7 @@ namespace RWPM.Services.Implementation
                 var trimmedEmail = entity.Email.Trim().ToLower();
                 if (await _ctx.Acc.AnyAsync(a => a.Email.ToLower() == trimmedEmail))
                 {
-                    throw new InvalidOperationException($"Email '{entity.Email}' đã được sử dụng bởi một tài khoản khác.");
+                    throw new InvalidOperationException(string.Format(Resources.Shared.Acc.Err_EmailInUse, entity.Email));
                 }
             }
 
@@ -57,7 +57,7 @@ namespace RWPM.Services.Implementation
                 var trimmedPhone = entity.PhoneNumber.Trim();
                 if (await _ctx.Acc.AnyAsync(a => a.PhoneNumber == trimmedPhone))
                 {
-                    throw new InvalidOperationException($"Số điện thoại '{entity.PhoneNumber}' đã được sử dụng bởi một tài khoản khác.");
+                    throw new InvalidOperationException(string.Format(Resources.Shared.Acc.Err_PhoneInUse, entity.PhoneNumber));
                 }
             }
 
@@ -189,7 +189,7 @@ namespace RWPM.Services.Implementation
 
             // II. Validation
             if (entity.Role == AccountRole.Admin)
-                throw new Exception("Can't change role to admin!");
+                throw new Exception(Resources.Shared.Acc.Err_CannotChangeRoleToAdmin);
 
             var updateEntity = await GetRequiredByIdAsync(entity.Username, new QueryOptions<Acc>()
             {
@@ -201,7 +201,7 @@ namespace RWPM.Services.Implementation
                 var trimmedEmail = entity.Email.Trim().ToLower();
                 if (await _ctx.Acc.AnyAsync(a => a.Username != entity.Username && a.Email.ToLower() == trimmedEmail))
                 {
-                    throw new InvalidOperationException($"Email '{entity.Email}' đã được sử dụng bởi một tài khoản khác.");
+                    throw new InvalidOperationException(string.Format(Resources.Shared.Acc.Err_EmailInUse, entity.Email));
                 }
             }
 
@@ -210,7 +210,7 @@ namespace RWPM.Services.Implementation
                 var trimmedPhone = entity.PhoneNumber.Trim();
                 if (await _ctx.Acc.AnyAsync(a => a.Username != entity.Username && a.PhoneNumber == trimmedPhone))
                 {
-                    throw new InvalidOperationException($"Số điện thoại '{entity.PhoneNumber}' đã được sử dụng bởi một tài khoản khác.");
+                    throw new InvalidOperationException(string.Format(Resources.Shared.Acc.Err_PhoneInUse, entity.PhoneNumber));
                 }
             }
 

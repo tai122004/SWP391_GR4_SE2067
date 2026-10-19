@@ -56,7 +56,7 @@
             <div class="row g-3 mb-3">
                 <div class="col-md-4">
                     <label class="form-label fw-semibold small" asp-for="PhoneNumber">@AccountModelResource.PhoneNumber</label>
-                    <input class="form-control" asp-for="PhoneNumber" placeholder="0901234567" />
+                    <input class="form-control" asp-for="PhoneNumber" type="tel" inputmode="numeric" maxlength="10" data-phone-input autocomplete="off" placeholder="0901234567" />
                     <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
                 </div>
                 <div class="col-md-4">
@@ -95,7 +95,8 @@
                 <div class="col-12">
                     <label class="form-label fw-semibold small required" asp-for="Password">@AccountModelResource.Password</label>
                     <div class="input-group">
-                        <input type="password" class="form-control font-monospace" asp-for="Password" id="accPassword" placeholder="@AccountSharedResource.Placeholder_Password" autocomplete="off" />
+                        @* Ô mật khẩu mặc định không render lại giá trị khi form báo lỗi -> gán value tường minh để giữ nguyên mật khẩu đã tạo *@
+                        <input type="password" class="form-control font-monospace" asp-for="Password" value="@Model?.Password" id="accPassword" placeholder="@AccountSharedResource.Placeholder_Password" autocomplete="new-password" />
                         <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('accPassword', 'toggleIcon')" title="@AccountModelResource.Password">
                             <i class="bi bi-eye" id="toggleIcon"></i>
                         </button>
@@ -155,7 +156,7 @@
                     <div class="col-md-6" id="hourlyRateCol">
                         <label class="form-label fw-semibold small required" asp-for="HourlyRate">@EmployeeModelResource.HourlyRate</label>
                         <div class="input-group">
-                            <input class="form-control" asp-for="HourlyRate" type="number" step="1000" placeholder="25000" />
+                            <input class="form-control" asp-for="HourlyRate" asp-format="{0:0}" type="number" min="0" step="1000" placeholder="25000" />
                             <span class="input-group-text small">@SharedResource.Unit_VndPerHour</span>
                         </div>
                         <span asp-validation-for="HourlyRate" class="text-danger small"></span>
@@ -203,14 +204,18 @@
             }
         }
 
-        function generateAndSetPassword() {
-            const pass = generateRandomPassword(8);
+        function showPasswordForCopy(pass) {
             const input = document.getElementById('accPassword');
             input.type = 'text';
             document.getElementById('toggleIcon').className = 'bi bi-eye-slash';
-            $('#accPassword').val(pass);
             $('#generatedPassText').text(pass);
             $('#passwordCopyAlert').removeClass('d-none').addClass('d-flex');
+        }
+
+        function generateAndSetPassword() {
+            const pass = generateRandomPassword(8);
+            $('#accPassword').val(pass);
+            showPasswordForCopy(pass);
         }
 
         // Tự động ẩn/hiện và cấu hình trường thông tin hồ sơ theo Role
@@ -243,8 +248,8 @@
                 $('#hourlyRateCol').removeClass('col-md-12').addClass('col-md-6');
 
                 $('#storeSelectInput').prop('disabled', false);
-                $('#employeeSectionTitleText').text('2. Hồ sơ nhân viên & Lương (Nhân sự - HR)');
-                $('#storeInfoHintText').text('Tài khoản có vai trò Nhân sự (HR) có thể chọn chi nhánh làm việc (hoặc trụ sở) và được tự động tạo hồ sơ nhân viên để chấm công, đăng ký ca làm việc và tính lương.');
+                $('#employeeSectionTitleText').text(@Json.Serialize(AccountSharedResource.Create_Section_HrInfo));
+                $('#storeInfoHintText').text(@Json.Serialize(AccountSharedResource.Create_HrInfoHint));
             } else {
                 $('#storeAssignmentSection').slideUp(200);
                 $('#storeSelectInput').prop('disabled', true);
@@ -254,9 +259,15 @@
         $('#accRoleSelect').on('change', updateStoreSectionVisibility);
 
         $(document).ready(function () {
-            if (!$('#accPassword').val()) {
+            const currentPass = $('#accPassword').val();
+            if (!currentPass) {
                 generateAndSetPassword();
+            } else {
+                // Form vừa báo lỗi (VD: trùng email/SĐT): giữ nguyên mật khẩu đã tạo, không sinh mật khẩu mới
+                showPasswordForCopy(currentPass);
             }
+            // Người dùng tự sửa mật khẩu -> cập nhật dòng "Mật khẩu: ..." để sao chép đúng
+            $('#accPassword').on('input', function () { $('#generatedPassText').text(this.value); });
             updateStoreSectionVisibility();
         });
     </script>

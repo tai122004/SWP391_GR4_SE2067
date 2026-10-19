@@ -90,7 +90,7 @@
                 <div class="col-md-6">
                     <label class="form-label fw-semibold small" asp-for="HourlyRate">@EmployeeModelResource.HourlyRate</label>
                     <div class="input-group">
-                        <input class="form-control" asp-for="HourlyRate" type="number" step="1000" placeholder="25000" />
+                        <input class="form-control" asp-for="HourlyRate" asp-format="{0:0}" type="number" min="0" step="1000" placeholder="25000" />
                         <span class="input-group-text small">@SharedResource.Unit_VndPerHour</span>
                     </div>
                     <span asp-validation-for="HourlyRate" class="text-danger small"></span>
@@ -117,7 +117,7 @@
                     <label class="form-label fw-semibold small" asp-for="PhoneNumber">@AccModelResource.PhoneNumber</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                        <input class="form-control" asp-for="PhoneNumber" placeholder="0901234567" />
+                        <input class="form-control" asp-for="PhoneNumber" type="tel" inputmode="numeric" maxlength="10" data-phone-input autocomplete="off" placeholder="0901234567" />
                     </div>
                     <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
                 </div>

@@ -4,6 +4,7 @@ using RWPM.Infrastructure.Data;
 using RWPM.Models.Entities;
 using RWPM.Models.ViewModels.ShiftRegistration;
 using RWPM.Services.Abstraction;
+using SR = RWPM.Resources.Shared.ShiftRegistrationResource;
 
 namespace RWPM.Services.Implementation
 {
@@ -63,12 +64,12 @@ namespace RWPM.Services.Implementation
 
             if (sourceReg == null)
             {
-                throw new InvalidOperationException("Ca làm việc cần đổi không tồn tại.");
+                throw new InvalidOperationException(SR.Swap_SourceNotFound);
             }
 
             if (sourceReg.Status != RegistrationStatus.Approved)
             {
-                throw new InvalidOperationException("Chỉ có thể đổi những ca làm việc đã được phê duyệt.");
+                throw new InvalidOperationException(SR.Swap_OnlyApproved);
             }
 
             var request = new ShiftSwapRequest
@@ -86,17 +87,17 @@ namespace RWPM.Services.Implementation
             {
                 if (!model.TargetEmployeeId.HasValue || !model.TargetRegistrationId.HasValue)
                 {
-                    throw new InvalidOperationException("Vui lòng chọn đồng nghiệp và ca làm việc muốn đổi cùng.");
+                    throw new InvalidOperationException(SR.Swap_SelectPeerAndShift);
                 }
 
                 if (model.SourceRegistrationId == model.TargetRegistrationId.Value)
                 {
-                    throw new InvalidOperationException("Không thể chọn cùng một ca làm việc để đổi.");
+                    throw new InvalidOperationException(SR.Swap_SameShift);
                 }
 
                 if (model.TargetEmployeeId.Value == sourceReg.EmployeeId)
                 {
-                    throw new InvalidOperationException("Không thể đổi ca với chính mình theo hình thức đổi ca với đồng nghiệp.");
+                    throw new InvalidOperationException(SR.Swap_WithSelf);
                 }
 
                 var targetReg = await _context.ShiftRegistration
@@ -107,22 +108,22 @@ namespace RWPM.Services.Implementation
 
                 if (targetReg == null)
                 {
-                    throw new InvalidOperationException("Ca làm việc của đồng nghiệp không tồn tại.");
+                    throw new InvalidOperationException(SR.Swap_PeerShiftNotFound);
                 }
 
                 if (targetReg.Status != RegistrationStatus.Approved)
                 {
-                    throw new InvalidOperationException("Ca làm việc của đồng nghiệp không ở trạng thái đã được phê duyệt.");
+                    throw new InvalidOperationException(SR.Swap_PeerShiftNotApproved);
                 }
 
                 if (targetReg.StoreId != sourceReg.StoreId)
                 {
-                    throw new InvalidOperationException("Chỉ có thể đổi ca với đồng nghiệp trong cùng một chi nhánh.");
+                    throw new InvalidOperationException(SR.Swap_SameBranchOnly);
                 }
 
                 if (sourceReg.ShiftId == targetReg.ShiftId && sourceReg.WorkDate.Date == targetReg.WorkDate.Date)
                 {
-                    throw new InvalidOperationException("Hai ca làm việc này cùng ca và cùng ngày, không cần đổi.");
+                    throw new InvalidOperationException(SR.Swap_SameShiftAndDay);
                 }
 
                 // Kiểm tra xem đồng nghiệp đã có ca trùng với ca gốc của người yêu cầu chưa
@@ -134,7 +135,7 @@ namespace RWPM.Services.Implementation
                     x.Status != RegistrationStatus.Rejected);
                 if (targetHasDuplicate)
                 {
-                    throw new InvalidOperationException($"Đồng nghiệp đã có lịch làm việc trong ca ngày {sourceReg.WorkDate:dd/MM/yyyy}, không thể nhận đổi ca này.");
+                    throw new InvalidOperationException(string.Format(SR.Swap_PeerAlreadyScheduled, sourceReg.WorkDate.ToString("dd/MM/yyyy")));
                 }
 
                 // Kiểm tra xem người yêu cầu đã có ca trùng với ca đích của đồng nghiệp chưa
@@ -146,7 +147,7 @@ namespace RWPM.Services.Implementation
                     x.Status != RegistrationStatus.Rejected);
                 if (requesterHasDuplicate)
                 {
-                    throw new InvalidOperationException($"Bạn đã có lịch làm việc trong ca ngày {targetReg.WorkDate:dd/MM/yyyy}, không thể nhận ca này.");
+                    throw new InvalidOperationException(string.Format(SR.Swap_RequesterAlreadyScheduled, targetReg.WorkDate.ToString("dd/MM/yyyy")));
                 }
 
                 // Kiểm tra xem một trong hai ca có đơn đổi ca khác đang chờ duyệt không
@@ -158,7 +159,7 @@ namespace RWPM.Services.Implementation
                      x.TargetRegistrationId == targetReg.ShiftRegistrationId));
                 if (hasPendingSwap)
                 {
-                    throw new InvalidOperationException("Một trong hai ca làm việc đang có yêu cầu đổi ca khác chờ duyệt.");
+                    throw new InvalidOperationException(SR.Swap_EitherHasPending);
                 }
 
                 request.TargetEmployeeId = model.TargetEmployeeId.Value;
@@ -168,18 +169,18 @@ namespace RWPM.Services.Implementation
             {
                 if (!model.TargetShiftId.HasValue || !model.TargetWorkDate.HasValue)
                 {
-                    throw new InvalidOperationException("Vui lòng chọn ca mới và ngày làm việc mới muốn đổi sang.");
+                    throw new InvalidOperationException(SR.Swap_SelectNewShiftAndDate);
                 }
 
                 if (sourceReg.ShiftId == model.TargetShiftId.Value && sourceReg.WorkDate.Date == model.TargetWorkDate.Value.Date)
                 {
-                    throw new InvalidOperationException("Ca mới và ngày mới trùng với ca hiện tại.");
+                    throw new InvalidOperationException(SR.Swap_SameAsCurrent);
                 }
 
                 var shift = await _context.Shift.FirstOrDefaultAsync(x => x.ShiftId == model.TargetShiftId.Value && x.IsActive);
                 if (shift == null)
                 {
-                    throw new InvalidOperationException("Ca làm việc mới không tồn tại hoặc đã ngừng hoạt động.");
+                    throw new InvalidOperationException(SR.Swap_NewShiftNotFound);
                 }
 
                 var isDuplicate = await _context.ShiftRegistration.AnyAsync(x => 
@@ -191,7 +192,7 @@ namespace RWPM.Services.Implementation
 
                 if (isDuplicate)
                 {
-                    throw new InvalidOperationException($"Bạn đã có lịch làm việc trong ca ngày {model.TargetWorkDate.Value:dd/MM/yyyy}.");
+                    throw new InvalidOperationException(string.Format(SR.Swap_YouAlreadyScheduled, model.TargetWorkDate.Value.ToString("dd/MM/yyyy")));
                 }
 
                 var hasPendingSwap = await _context.ShiftSwapRequest.AnyAsync(x =>
@@ -200,7 +201,7 @@ namespace RWPM.Services.Implementation
                      x.TargetRegistrationId == sourceReg.ShiftRegistrationId));
                 if (hasPendingSwap)
                 {
-                    throw new InvalidOperationException("Ca làm việc này đang có yêu cầu đổi ca khác chờ duyệt.");
+                    throw new InvalidOperationException(SR.Swap_ThisHasPending);
                 }
 
                 request.TargetShiftId = model.TargetShiftId.Value;
@@ -254,12 +255,12 @@ namespace RWPM.Services.Implementation
             var swapReq = await GetByIdAsync(id);
             if (swapReq == null)
             {
-                throw new InvalidOperationException("Yêu cầu đổi ca không tồn tại.");
+                throw new InvalidOperationException(SR.Swap_RequestNotFound);
             }
 
             if (swapReq.Status != RegistrationStatus.Pending)
             {
-                throw new InvalidOperationException("Yêu cầu đổi ca này đã được xử lý trước đó.");
+                throw new InvalidOperationException(SR.Swap_AlreadyProcessed);
             }
 
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -272,17 +273,17 @@ namespace RWPM.Services.Implementation
 
                 if (sourceReg == null)
                 {
-                    throw new InvalidOperationException("Ca làm việc gốc không tồn tại.");
+                    throw new InvalidOperationException(SR.Swap_OriginalNotFound);
                 }
 
                 if (sourceReg.Status != RegistrationStatus.Approved)
                 {
-                    throw new InvalidOperationException("Ca làm việc gốc không còn ở trạng thái được phê duyệt.");
+                    throw new InvalidOperationException(SR.Swap_OriginalNoLongerApproved);
                 }
 
                 if (sourceReg.EmployeeId != swapReq.RequesterEmployeeId)
                 {
-                    throw new InvalidOperationException("Ca làm việc gốc không còn thuộc về nhân viên gửi yêu cầu đổi ca.");
+                    throw new InvalidOperationException(SR.Swap_OriginalNotOwned);
                 }
 
                 if (swapReq.TargetRegistrationId.HasValue && swapReq.TargetEmployeeId.HasValue)
@@ -295,17 +296,17 @@ namespace RWPM.Services.Implementation
 
                     if (targetReg == null)
                     {
-                        throw new InvalidOperationException("Ca làm việc của đồng nghiệp không tồn tại.");
+                        throw new InvalidOperationException(SR.Swap_PeerShiftNotFound);
                     }
 
                     if (targetReg.Status != RegistrationStatus.Approved)
                     {
-                        throw new InvalidOperationException("Ca làm việc của đồng nghiệp không còn ở trạng thái được phê duyệt.");
+                        throw new InvalidOperationException(SR.Swap_PeerShiftNoLongerApproved);
                     }
 
                     if (targetReg.EmployeeId != swapReq.TargetEmployeeId.Value)
                     {
-                        throw new InvalidOperationException("Ca làm việc của đồng nghiệp không còn thuộc về đồng nghiệp này (có thể đã đổi trước đó).");
+                        throw new InvalidOperationException(SR.Swap_PeerShiftNotOwned);
                     }
 
                     var originalRequesterId = sourceReg.EmployeeId;
@@ -322,7 +323,7 @@ namespace RWPM.Services.Implementation
                     if (targetHasDuplicate)
                     {
                         var targetName = targetReg.Employee?.Account?.FullName ?? targetReg.Employee?.EmployeeCode ?? $"ID {originalTargetId}";
-                        throw new InvalidOperationException($"Nhân viên nhận đổi ({targetName}) đã có lịch làm việc trong ca ngày {sourceReg.WorkDate:dd/MM/yyyy}.");
+                        throw new InvalidOperationException(string.Format(SR.Swap_TargetEmployeeAlreadyScheduled, targetName, sourceReg.WorkDate.ToString("dd/MM/yyyy")));
                     }
 
                     var requesterHasDuplicate = await _context.ShiftRegistration.AnyAsync(x =>
@@ -335,7 +336,7 @@ namespace RWPM.Services.Implementation
                     if (requesterHasDuplicate)
                     {
                         var requesterName = sourceReg.Employee?.Account?.FullName ?? sourceReg.Employee?.EmployeeCode ?? $"ID {originalRequesterId}";
-                        throw new InvalidOperationException($"Nhân viên gửi yêu cầu ({requesterName}) đã có lịch làm việc trong ca ngày {targetReg.WorkDate:dd/MM/yyyy}.");
+                        throw new InvalidOperationException(string.Format(SR.Swap_RequesterEmployeeAlreadyScheduled, requesterName, targetReg.WorkDate.ToString("dd/MM/yyyy")));
                     }
 
                     // Hoán đổi nhân viên giữa 2 ca
@@ -363,7 +364,7 @@ namespace RWPM.Services.Implementation
 
                     if (isDuplicate)
                     {
-                        throw new InvalidOperationException($"Nhân viên đã có lịch làm việc trong ca và ngày mới này ({swapReq.TargetWorkDate.Value:dd/MM/yyyy}).");
+                        throw new InvalidOperationException(string.Format(SR.Swap_EmployeeAlreadyScheduledNewDate, swapReq.TargetWorkDate.Value.ToString("dd/MM/yyyy")));
                     }
 
                     sourceReg.ShiftId = swapReq.TargetShiftId.Value;
@@ -389,9 +390,9 @@ namespace RWPM.Services.Implementation
                 var innerMsg = ex.InnerException?.Message ?? ex.Message;
                 if (innerMsg.Contains("IX_ShiftRegistration_Employee_Shift_Date") || innerMsg.Contains("UNIQUE KEY"))
                 {
-                    throw new InvalidOperationException("Không thể duyệt đổi ca do vi phạm trùng lặp lịch làm việc (nhân viên đã có ca trùng trong ngày).");
+                    throw new InvalidOperationException(SR.Swap_DuplicateViolation);
                 }
-                throw new InvalidOperationException($"Lỗi cơ sở dữ liệu khi cập nhật đổi ca: {innerMsg}");
+                throw new InvalidOperationException(string.Format(SR.Swap_DatabaseError, innerMsg));
             }
             catch
             {
@@ -405,12 +406,12 @@ namespace RWPM.Services.Implementation
             var swapReq = await _context.ShiftSwapRequest.FindAsync(id);
             if (swapReq == null)
             {
-                throw new InvalidOperationException("Yêu cầu đổi ca không tồn tại.");
+                throw new InvalidOperationException(SR.Swap_RequestNotFound);
             }
 
             if (swapReq.Status != RegistrationStatus.Pending)
             {
-                throw new InvalidOperationException("Yêu cầu đổi ca này đã được xử lý trước đó.");
+                throw new InvalidOperationException(SR.Swap_AlreadyProcessed);
             }
 
             swapReq.Status = RegistrationStatus.Rejected;
@@ -431,17 +432,17 @@ namespace RWPM.Services.Implementation
 
             if (swapReq == null)
             {
-                throw new InvalidOperationException("Yêu cầu đổi ca không tồn tại.");
+                throw new InvalidOperationException(SR.Swap_RequestNotFound);
             }
 
             if (swapReq.Status != RegistrationStatus.Pending)
             {
-                throw new InvalidOperationException("Chỉ có thể xóa yêu cầu đổi ca đang chờ phê duyệt.");
+                throw new InvalidOperationException(SR.Swap_DeleteOnlyPending);
             }
 
             if (swapReq.RequesterEmployee?.Username != username && swapReq.CreatedBy != username)
             {
-                throw new UnauthorizedAccessException("Bạn không có quyền xóa yêu cầu đổi ca này.");
+                throw new UnauthorizedAccessException(SR.Swap_DeleteNoPermission);
             }
 
             _context.ShiftSwapRequest.Remove(swapReq);

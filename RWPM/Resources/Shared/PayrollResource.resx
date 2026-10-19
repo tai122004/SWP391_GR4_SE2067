@@ -1,0 +1,737 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Payroll_Title" xml:space="preserve">
+    <value>Payroll management</value>
+  </data>
+  <data name="Payroll_AutoTitle" xml:space="preserve">
+    <value>Payroll {0} - {1}</value>
+  </data>
+  <data name="Common_Days" xml:space="preserve">
+    <value>{0} days</value>
+  </data>
+  <data name="Unit_Hours" xml:space="preserve">
+    <value>hours</value>
+  </data>
+  <data name="Unit_Dong" xml:space="preserve">
+    <value>VND</value>
+  </data>
+  <data name="Unit_Vnd" xml:space="preserve">
+    <value>VND</value>
+  </data>
+  <data name="Status_Locked" xml:space="preserve">
+    <value>Locked</value>
+  </data>
+  <data name="Status_Draft" xml:space="preserve">
+    <value>Draft</value>
+  </data>
+  <data name="Status_LockedBadge" xml:space="preserve">
+    <value>Locked</value>
+  </data>
+  <data name="Status_DraftBadge" xml:space="preserve">
+    <value>Draft</value>
+  </data>
+  <data name="DetailStatus_Valid" xml:space="preserve">
+    <value>Valid</value>
+  </data>
+  <data name="DetailStatus_MissingRate" xml:space="preserve">
+    <value>Missing rate</value>
+  </data>
+  <data name="DetailStatus_HasWarnings" xml:space="preserve">
+    <value>Has warnings</value>
+  </data>
+  <data name="DetailStatus_HasMissingShifts" xml:space="preserve">
+    <value>Missing shifts</value>
+  </data>
+  <data name="DetailStatus_NoHourlyRate" xml:space="preserve">
+    <value>No hourly rate</value>
+  </data>
+  <data name="DetailStatus_HasMissingData" xml:space="preserve">
+    <value>Shifts with missing data</value>
+  </data>
+  <data name="Index_ScopeLabel" xml:space="preserve">
+    <value>Scope:</value>
+  </data>
+  <data name="Index_ScopeAssignedStore" xml:space="preserve">
+    <value>Assigned branch</value>
+  </data>
+  <data name="Index_Subtitle" xml:space="preserve">
+    <value>Calculate payroll and track the periodic payroll fund for employees across the system</value>
+  </data>
+  <data name="Index_YearLabel" xml:space="preserve">
+    <value>Year:</value>
+  </data>
+  <data name="Index_CalculateNewButton" xml:space="preserve">
+    <value>Calculate new period</value>
+  </data>
+  <data name="Index_GapsTitle" xml:space="preserve">
+    <value>{0} date range(s) have not been included in any payroll!</value>
+  </data>
+  <data name="Index_GapsDescription" xml:space="preserve">
+    <value>The dates below fall between two payroll periods but belong to neither, so employees will not be paid for them. Back-fill them to make sure every workday is covered.</value>
+  </data>
+  <data name="Index_GapFillButton" xml:space="preserve">
+    <value>Back-fill</value>
+  </data>
+  <data name="Index_CardTotalPayrolls" xml:space="preserve">
+    <value>Total payroll periods</value>
+  </data>
+  <data name="Index_CardAnnualGross" xml:space="preserve">
+    <value>Annual payroll fund</value>
+  </data>
+  <data name="Index_CardLocked" xml:space="preserve">
+    <value>Locked periods</value>
+  </data>
+  <data name="Index_ListTitle" xml:space="preserve">
+    <value>Payrolls for {0}</value>
+  </data>
+  <data name="Index_PeriodCount" xml:space="preserve">
+    <value>{0} periods</value>
+  </data>
+  <data name="Index_Empty" xml:space="preserve">
+    <value>No payroll periods in {0} yet. Click "Calculate new period" to get started!</value>
+  </data>
+  <data name="Index_CreatedLabel" xml:space="preserve">
+    <value>Created:</value>
+  </data>
+  <data name="Index_LockedLabel" xml:space="preserve">
+    <value>Locked:</value>
+  </data>
+  <data name="Col_Period" xml:space="preserve">
+    <value>Payroll period</value>
+  </data>
+  <data name="Col_DateRange" xml:space="preserve">
+    <value>Date range</value>
+  </data>
+  <data name="Col_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Col_EmployeeCount" xml:space="preserve">
+    <value>Employees</value>
+  </data>
+  <data name="Col_TotalHours" xml:space="preserve">
+    <value>Total hours</value>
+  </data>
+  <data name="Col_TotalSalaryVnd" xml:space="preserve">
+    <value>Total salary (VND)</value>
+  </data>
+  <data name="Col_CreatedLocked" xml:space="preserve">
+    <value>Created / Locked by</value>
+  </data>
+  <data name="Col_Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="Action_ViewDetail" xml:space="preserve">
+    <value>View details</value>
+  </data>
+  <data name="Action_ExportExcel" xml:space="preserve">
+    <value>Export Excel</value>
+  </data>
+  <data name="Action_DeleteDraft" xml:space="preserve">
+    <value>Delete draft</value>
+  </data>
+  <data name="Action_Recalculate" xml:space="preserve">
+    <value>Recalculate</value>
+  </data>
+  <data name="Action_Lock" xml:space="preserve">
+    <value>Lock payroll</value>
+  </data>
+  <data name="Action_Unlock" xml:space="preserve">
+    <value>Unlock payroll</value>
+  </data>
+  <data name="Confirm_DeleteDraft" xml:space="preserve">
+    <value>Are you sure you want to delete the draft payroll {0} - {1}? After deletion, this date range becomes a gap that must be back-filled.</value>
+  </data>
+  <data name="Confirm_DeleteDraftTitle" xml:space="preserve">
+    <value>Delete draft payroll</value>
+  </data>
+  <data name="Confirm_DeleteDraftOk" xml:space="preserve">
+    <value>Delete payroll</value>
+  </data>
+  <data name="Confirm_Recalculate" xml:space="preserve">
+    <value>Are you sure you want to recalculate this entire payroll? The current draft data will be overwritten.</value>
+  </data>
+  <data name="Confirm_RecalculateTitle" xml:space="preserve">
+    <value>Recalculate payroll</value>
+  </data>
+  <data name="Confirm_Lock" xml:space="preserve">
+    <value>Once locked, the payroll becomes immutable. Are you sure you want to lock it?</value>
+  </data>
+  <data name="Calc_Intro" xml:space="preserve">
+    <value>The system will total the actual working hours within the date range you choose. Payroll periods must be &lt;strong&gt;continuous&lt;/strong&gt; so that no workday is missed.</value>
+  </data>
+  <data name="Calc_LastPeriodInfo" xml:space="preserve">
+    <value>The latest period ended on &lt;strong&gt;{0}&lt;/strong&gt; → the new period must start from &lt;strong&gt;{1}&lt;/strong&gt;.</value>
+  </data>
+  <data name="Calc_FirstPeriodInfo" xml:space="preserve">
+    <value>This is the first payroll period, so you can choose the start date. Later periods will automatically continue from this one.</value>
+  </data>
+  <data name="Calc_FromDate" xml:space="preserve">
+    <value>From date</value>
+  </data>
+  <data name="Calc_ToDate" xml:space="preserve">
+    <value>To date</value>
+  </data>
+  <data name="Calc_StartLockedHint" xml:space="preserve">
+    <value>Automatically continues from the previous period</value>
+  </data>
+  <data name="Calc_SubmitButton" xml:space="preserve">
+    <value>Start calculating</value>
+  </data>
+  <data name="Js_LatestEnd" xml:space="preserve">
+    <value>Latest: {0}</value>
+  </data>
+  <data name="Js_AlreadyCalculatedUntil" xml:space="preserve">
+    <value>Payroll has already been calculated through {0}. The next period can only be created from {1} onwards.</value>
+  </data>
+  <data name="Js_EndBeforeStart" xml:space="preserve">
+    <value>The end date must be on or after the start date ({0}).</value>
+  </data>
+  <data name="Js_EndAfterToday" xml:space="preserve">
+    <value>The end date cannot be later than today ({0}).</value>
+  </data>
+  <data name="Js_MaxOneMonth" xml:space="preserve">
+    <value>A payroll period is at most 1 month. The latest possible end date is {0}.</value>
+  </data>
+  <data name="Js_SummaryPeriodLabel" xml:space="preserve">
+    <value>Payroll period:</value>
+  </data>
+  <data name="Js_NextPeriodStartsFrom" xml:space="preserve">
+    <value>The next period will start from</value>
+  </data>
+  <data name="Js_GapFillInfo" xml:space="preserve">
+    <value>Back-filling a missing date range, starting from &lt;strong&gt;{0}&lt;/strong&gt;. If the gap is longer than 1 month, back-fill it several times.</value>
+  </data>
+  <data name="Js_Calculating" xml:space="preserve">
+    <value>Calculating payroll...</value>
+  </data>
+  <data name="Detail_PeriodLabel" xml:space="preserve">
+    <value>Working period:</value>
+  </data>
+  <data name="Detail_LockedByLabel" xml:space="preserve">
+    <value>Locked by:</value>
+  </data>
+  <data name="Detail_AlertTitle" xml:space="preserve">
+    <value>Data that must be resolved before payment was detected</value>
+  </data>
+  <data name="Detail_AlertMissingRate" xml:space="preserve">
+    <value>&lt;strong&gt;{0}&lt;/strong&gt; employee(s) have no &lt;code&gt;HourlyRate&lt;/code&gt; set (calculated salary = 0). Update their pay rate before locking!</value>
+  </data>
+  <data name="Detail_AlertWarnings" xml:space="preserve">
+    <value>&lt;strong&gt;{0}&lt;/strong&gt; employee(s) have abnormal attendance shifts or missing check-in/out.</value>
+  </data>
+  <data name="Detail_CardTotalEmployees" xml:space="preserve">
+    <value>Total employees</value>
+  </data>
+  <data name="Detail_CardTotalFund" xml:space="preserve">
+    <value>Period payroll fund</value>
+  </data>
+  <data name="Detail_CardWarnings" xml:space="preserve">
+    <value>Warnings / Anomalies</value>
+  </data>
+  <data name="Filter_AllStores" xml:space="preserve">
+    <value>-- All branches --</value>
+  </data>
+  <data name="Filter_AllStatuses" xml:space="preserve">
+    <value>-- All statuses --</value>
+  </data>
+  <data name="Filter_SearchPlaceholder" xml:space="preserve">
+    <value>Search by employee code, name...</value>
+  </data>
+  <data name="Filter_Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Col_EmployeeCode" xml:space="preserve">
+    <value>Employee code</value>
+  </data>
+  <data name="Col_FullName" xml:space="preserve">
+    <value>Full name</value>
+  </data>
+  <data name="Col_Store" xml:space="preserve">
+    <value>Branch</value>
+  </data>
+  <data name="Col_EmploymentType" xml:space="preserve">
+    <value>Employment type</value>
+  </data>
+  <data name="Col_RatePerHour" xml:space="preserve">
+    <value>Rate / Hour</value>
+  </data>
+  <data name="Col_ActualHours" xml:space="preserve">
+    <value>Actual hours</value>
+  </data>
+  <data name="Col_PaidLeaveHours" xml:space="preserve">
+    <value>Leave hours</value>
+  </data>
+  <data name="Col_UnpaidLeave" xml:space="preserve">
+    <value>Unpaid leave</value>
+  </data>
+  <data name="Col_PayableHours" xml:space="preserve">
+    <value>Total payable hours</value>
+  </data>
+  <data name="Col_TotalSalary" xml:space="preserve">
+    <value>Total salary</value>
+  </data>
+  <data name="Col_Detail" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Detail_Empty" xml:space="preserve">
+    <value>No employees match the filter.</value>
+  </data>
+  <data name="Detail_NoRate" xml:space="preserve">
+    <value>Not set</value>
+  </data>
+  <data name="Detail_ViewAttendanceTooltip" xml:space="preserve">
+    <value>View attendance details</value>
+  </data>
+  <data name="Detail_TotalRow" xml:space="preserve">
+    <value>TOTAL ({0} employees)</value>
+  </data>
+  <data name="Audit_Title" xml:space="preserve">
+    <value>Payroll activity log (Audit Trail)</value>
+  </data>
+  <data name="Audit_ColTime" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="Audit_ColAction" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="Audit_ColOperator" xml:space="preserve">
+    <value>Performed by</value>
+  </data>
+  <data name="Audit_ColDetails" xml:space="preserve">
+    <value>Details / Reason</value>
+  </data>
+  <data name="Audit_ReasonLabel" xml:space="preserve">
+    <value>Reason:</value>
+  </data>
+  <data name="AuditAction_Calculate" xml:space="preserve">
+    <value>Calculate</value>
+  </data>
+  <data name="AuditAction_Recalculate" xml:space="preserve">
+    <value>Recalculate</value>
+  </data>
+  <data name="AuditAction_Lock" xml:space="preserve">
+    <value>Lock</value>
+  </data>
+  <data name="AuditAction_Unlock" xml:space="preserve">
+    <value>Unlock</value>
+  </data>
+  <data name="AuditDetail_Calculate" xml:space="preserve">
+    <value>Payroll created: {0} employees, total work hours: {1}h, total amount: {2} VND</value>
+  </data>
+  <data name="AuditDetail_Recalculate" xml:space="preserve">
+    <value>Payroll recalculated: {0} employees, total work hours: {1}h, total amount: {2} VND</value>
+  </data>
+  <data name="AuditDetail_Lock" xml:space="preserve">
+    <value>Payroll locked successfully with {0} employees, total payroll fund: {1} VND</value>
+  </data>
+  <data name="AuditDetail_Unlock" xml:space="preserve">
+    <value>Payroll unlocked back to Draft. Reason: {0}</value>
+  </data>
+  <data name="Unlock_ModalTitle" xml:space="preserve">
+    <value>Unlock payroll</value>
+  </data>
+  <data name="Unlock_Intro" xml:space="preserve">
+    <value>After unlocking, the payroll returns to &lt;strong&gt;Draft&lt;/strong&gt; status so it can be edited or recalculated.</value>
+  </data>
+  <data name="Unlock_ReasonLabel" xml:space="preserve">
+    <value>Unlock reason</value>
+  </data>
+  <data name="Unlock_ReasonPlaceholder" xml:space="preserve">
+    <value>Enter the reason for the adjustment...</value>
+  </data>
+  <data name="Unlock_Submit" xml:space="preserve">
+    <value>Confirm unlock</value>
+  </data>
+  <data name="Unlock_DefaultReason" xml:space="preserve">
+    <value>HR unlocked the payroll</value>
+  </data>
+  <data name="Emp_PageTitle" xml:space="preserve">
+    <value>Attendance &amp; salary details: {0}</value>
+  </data>
+  <data name="Emp_Heading" xml:space="preserve">
+    <value>Payroll details: {0}</value>
+  </data>
+  <data name="Label_EmployeeCode" xml:space="preserve">
+    <value>Employee code:</value>
+  </data>
+  <data name="Label_Store" xml:space="preserve">
+    <value>Branch:</value>
+  </data>
+  <data name="Label_EmploymentType" xml:space="preserve">
+    <value>Type:</value>
+  </data>
+  <data name="Label_Period" xml:space="preserve">
+    <value>Period:</value>
+  </data>
+  <data name="Label_FullName" xml:space="preserve">
+    <value>Full name:</value>
+  </data>
+  <data name="Emp_LockedBadge" xml:space="preserve">
+    <value>Data locked (immutable)</value>
+  </data>
+  <data name="Emp_BackToPayroll" xml:space="preserve">
+    <value>Back to payroll</value>
+  </data>
+  <data name="Emp_CardRate" xml:space="preserve">
+    <value>Rate / Hour</value>
+  </data>
+  <data name="Emp_NoRate" xml:space="preserve">
+    <value>No rate set</value>
+  </data>
+  <data name="Emp_FixedRate" xml:space="preserve">
+    <value>Fixed hourly rate</value>
+  </data>
+  <data name="Card_ActualHours" xml:space="preserve">
+    <value>Actual work hours</value>
+  </data>
+  <data name="Card_ScheduledHours" xml:space="preserve">
+    <value>Scheduled: {0} h</value>
+  </data>
+  <data name="Card_PaidLeave" xml:space="preserve">
+    <value>Paid leave</value>
+  </data>
+  <data name="Emp_ApprovedLeave" xml:space="preserve">
+    <value>Approved: {0} days ({1} days unpaid)</value>
+  </data>
+  <data name="Emp_CardTotalSalaryPeriod" xml:space="preserve">
+    <value>Period salary total</value>
+  </data>
+  <data name="Emp_SalaryFormula" xml:space="preserve">
+    <value>{0} payable h × {1} VND</value>
+  </data>
+  <data name="Emp_CardDataStatus" xml:space="preserve">
+    <value>Data status</value>
+  </data>
+  <data name="Emp_DailyTitle" xml:space="preserve">
+    <value>Shift &amp; workday details in the period ({0} items)</value>
+  </data>
+  <data name="Emp_SnapshotBadge" xml:space="preserve">
+    <value>Snapshot audit data</value>
+  </data>
+  <data name="Col_WorkDate" xml:space="preserve">
+    <value>Work date</value>
+  </data>
+  <data name="Col_Shift" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="Col_ShiftTime" xml:space="preserve">
+    <value>Shift hours</value>
+  </data>
+  <data name="Col_ShiftTimeShort" xml:space="preserve">
+    <value>Time slot</value>
+  </data>
+  <data name="Col_CheckIn" xml:space="preserve">
+    <value>Check-in</value>
+  </data>
+  <data name="Col_CheckOut" xml:space="preserve">
+    <value>Check-out</value>
+  </data>
+  <data name="Col_PayableHoursShort" xml:space="preserve">
+    <value>Payable hours</value>
+  </data>
+  <data name="Col_PayableHoursCount" xml:space="preserve">
+    <value>Payable hours</value>
+  </data>
+  <data name="Col_SourceType" xml:space="preserve">
+    <value>Source</value>
+  </data>
+  <data name="Col_LeaveType" xml:space="preserve">
+    <value>Leave type</value>
+  </data>
+  <data name="Col_Reason" xml:space="preserve">
+    <value>Reason</value>
+  </data>
+  <data name="Col_LockedDate" xml:space="preserve">
+    <value>Locked date</value>
+  </data>
+  <data name="Cell_PaidLeave" xml:space="preserve">
+    <value>Paid leave</value>
+  </data>
+  <data name="Cell_Missing" xml:space="preserve">
+    <value>Missing</value>
+  </data>
+  <data name="Source_Attendance" xml:space="preserve">
+    <value>Attendance</value>
+  </data>
+  <data name="Source_PaidLeave" xml:space="preserve">
+    <value>Paid leave</value>
+  </data>
+  <data name="Source_UnpaidLeave" xml:space="preserve">
+    <value>Unpaid leave</value>
+  </data>
+  <data name="Source_MissingAttendance" xml:space="preserve">
+    <value>Missing attendance</value>
+  </data>
+  <data name="Snap_MissingInOut" xml:space="preserve">
+    <value>Missing check-in/out</value>
+  </data>
+  <data name="Snap_LateAndEarly" xml:space="preserve">
+    <value>Late &amp; left early</value>
+  </data>
+  <data name="Snap_Late" xml:space="preserve">
+    <value>Late</value>
+  </data>
+  <data name="Snap_Early" xml:space="preserve">
+    <value>Left early</value>
+  </data>
+  <data name="Snap_UnpaidLeave" xml:space="preserve">
+    <value>Unpaid leave</value>
+  </data>
+  <data name="Snap_AbsentMissing" xml:space="preserve">
+    <value>Absent / Missing attendance</value>
+  </data>
+  <data name="Status_Abnormal" xml:space="preserve">
+    <value>Abnormal</value>
+  </data>
+  <data name="Status_FullWork" xml:space="preserve">
+    <value>Complete</value>
+  </data>
+  <data name="Shift_Unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="Shift_Flexible" xml:space="preserve">
+    <value>Flexible shift</value>
+  </data>
+  <data name="Emp_NoAttendanceInPeriod" xml:space="preserve">
+    <value>No attendance records in this period.</value>
+  </data>
+  <data name="Emp_LeaveTitle" xml:space="preserve">
+    <value>Approved leave requests in the period ({0} requests)</value>
+  </data>
+  <data name="Leave_Approved" xml:space="preserve">
+    <value>Approved</value>
+  </data>
+  <data name="Note_AttendanceIncomplete" xml:space="preserve">
+    <value>Attendance not completed</value>
+  </data>
+  <data name="Note_LeaveApproved" xml:space="preserve">
+    <value>Leave request #{0} approved</value>
+  </data>
+  <data name="Note_UnpaidLeave" xml:space="preserve">
+    <value>Unpaid leave</value>
+  </data>
+  <data name="Note_UnpaidLeaveNonEligible" xml:space="preserve">
+    <value>Part-time/probation leave without pay</value>
+  </data>
+  <data name="Note_ShiftNoAttendance" xml:space="preserve">
+    <value>Shift {0} was approved but has no attendance record</value>
+  </data>
+  <data name="Warn_MissingRate" xml:space="preserve">
+    <value>Hourly rate (HourlyRate) has not been set.</value>
+  </data>
+  <data name="Warn_Abnormal" xml:space="preserve">
+    <value>{0} abnormal/missing-attendance shift(s) ({1}).</value>
+  </data>
+  <data name="Warn_MissingInOutTag" xml:space="preserve">
+    <value>Missing in/out</value>
+  </data>
+  <data name="Warn_ShiftFallback" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="Store_OfficeHR" xml:space="preserve">
+    <value>Office / HR</value>
+  </data>
+  <data name="My_Title" xml:space="preserve">
+    <value>My payslips</value>
+  </data>
+  <data name="My_Subtitle" xml:space="preserve">
+    <value>Track your income and workday details that have been locked and approved</value>
+  </data>
+  <data name="My_Empty" xml:space="preserve">
+    <value>You have no locked payslips yet.</value>
+  </data>
+  <data name="My_ViewPayslip" xml:space="preserve">
+    <value>View payslip</value>
+  </data>
+  <data name="My_DetailPageTitle" xml:space="preserve">
+    <value>Payslip: {0}</value>
+  </data>
+  <data name="My_DetailHeading" xml:space="preserve">
+    <value>Payslip: {0}</value>
+  </data>
+  <data name="My_BackToList" xml:space="preserve">
+    <value>Back to list</value>
+  </data>
+  <data name="My_ApprovedDays" xml:space="preserve">
+    <value>Approved: {0} days</value>
+  </data>
+  <data name="My_CardHourlyRate" xml:space="preserve">
+    <value>Hourly rate</value>
+  </data>
+  <data name="My_TotalPayableHours" xml:space="preserve">
+    <value>Total payable hours: {0} h</value>
+  </data>
+  <data name="My_SalaryFormula" xml:space="preserve">
+    <value>{0} h × {1} VND</value>
+  </data>
+  <data name="My_DailyTitle" xml:space="preserve">
+    <value>Workday &amp; payable-hour details in the period ({0} items)</value>
+  </data>
+  <data name="My_OfficialBadge" xml:space="preserve">
+    <value>Official locked version</value>
+  </data>
+  <data name="My_NoAttendance" xml:space="preserve">
+    <value>No attendance records.</value>
+  </data>
+  <data name="Err_PayrollNotFound" xml:space="preserve">
+    <value>Payroll period not found!</value>
+  </data>
+  <data name="Toast_CalculateSuccess" xml:space="preserve">
+    <value>Payroll for {0} - {1} calculated successfully for {2} employees!</value>
+  </data>
+  <data name="Err_CalculateFailed" xml:space="preserve">
+    <value>Payroll calculation error: {0}</value>
+  </data>
+  <data name="Toast_RecalculateSuccess" xml:space="preserve">
+    <value>Payroll {0} - {1} recalculated successfully!</value>
+  </data>
+  <data name="Err_RecalculateFailed" xml:space="preserve">
+    <value>Payroll recalculation error: {0}</value>
+  </data>
+  <data name="Toast_LockSuccess" xml:space="preserve">
+    <value>Payroll locked successfully! The payroll data is now protected and immutable.</value>
+  </data>
+  <data name="Err_LockFailed" xml:space="preserve">
+    <value>Payroll lock error: {0}</value>
+  </data>
+  <data name="Toast_UnlockSuccess" xml:space="preserve">
+    <value>Payroll unlocked for adjustment.</value>
+  </data>
+  <data name="Err_UnlockFailed" xml:space="preserve">
+    <value>Payroll unlock error: {0}</value>
+  </data>
+  <data name="Toast_DeleteSuccess" xml:space="preserve">
+    <value>Draft payroll period deleted successfully.</value>
+  </data>
+  <data name="Err_DeleteFailed" xml:space="preserve">
+    <value>Payroll deletion error: {0}</value>
+  </data>
+  <data name="Err_EmployeeDetailNotFound" xml:space="preserve">
+    <value>No details found for this employee in the payroll period!</value>
+  </data>
+  <data name="Err_ExportFailed" xml:space="preserve">
+    <value>Excel export error: {0}</value>
+  </data>
+  <data name="Err_PayslipNotFound" xml:space="preserve">
+    <value>Payslip not found!</value>
+  </data>
+  <data name="Err_PayslipNotLocked" xml:space="preserve">
+    <value>This payroll has not been locked and approved yet!</value>
+  </data>
+  <data name="Err_PayrollNotFoundId" xml:space="preserve">
+    <value>Payroll period with ID {0} not found</value>
+  </data>
+  <data name="Err_EndAfterToday" xml:space="preserve">
+    <value>The end date ({0}) cannot be later than today ({1}). Payroll can only be calculated for days already worked.</value>
+  </data>
+  <data name="Err_MaxOneMonth" xml:space="preserve">
+    <value>A payroll period is at most 1 month. With start date {0}, the latest end date is {1}.</value>
+  </data>
+  <data name="Err_MustStartFrom" xml:space="preserve">
+    <value>The payroll period must start on {0} (right after period "{1}"). If it starts on {2}, the days {0} - {3} will not be paid.</value>
+  </data>
+  <data name="Err_MustEndBefore" xml:space="preserve">
+    <value>This payroll period is before period "{0}", so it must end exactly on {1} to avoid missing workdays.</value>
+  </data>
+  <data name="Err_SelectBothDates" xml:space="preserve">
+    <value>Please select both the start date and the end date.</value>
+  </data>
+  <data name="Err_StartAfterEnd" xml:space="preserve">
+    <value>The start date must be on or before the end date.</value>
+  </data>
+  <data name="Err_Overlap" xml:space="preserve">
+    <value>The payroll period overlaps the existing period {0} - {1}.</value>
+  </data>
+  <data name="Err_AlreadyLocked" xml:space="preserve">
+    <value>Payroll period {0} - {1} is already locked and cannot be recalculated!</value>
+  </data>
+  <data name="Err_LockMissingRate" xml:space="preserve">
+    <value>Cannot lock the payroll! {0} employee(s) still have no pay rate ({1}). Please update their rates before locking.</value>
+  </data>
+  <data name="Err_LockWarnings" xml:space="preserve">
+    <value>Cannot lock the payroll! {0} employee(s) still have abnormal shifts or missing attendance ({1}). Please resolve the attendance explanations before locking.</value>
+  </data>
+  <data name="Err_DeleteLocked" xml:space="preserve">
+    <value>Cannot delete a locked payroll period!</value>
+  </data>
+  <data name="Excel_FileName" xml:space="preserve">
+    <value>Payroll_{0}_{1}</value>
+  </data>
+  <data name="Excel_CompanyTitle" xml:space="preserve">
+    <value>RWPM - HR &amp; ATTENDANCE MANAGEMENT SYSTEM FOR FASHION RETAIL CHAINS</value>
+  </data>
+  <data name="Excel_ReportTitle" xml:space="preserve">
+    <value>EMPLOYEE PAYROLL {0} - {1}</value>
+  </data>
+  <data name="Excel_ExportInfo" xml:space="preserve">
+    <value>Exported: {0} | Status: {1} | Scope: {2}</value>
+  </data>
+  <data name="Excel_StatusLocked" xml:space="preserve">
+    <value>Locked (immutable)</value>
+  </data>
+  <data name="Excel_ScopeAll" xml:space="preserve">
+    <value>Entire system</value>
+  </data>
+  <data name="Excel_ColNo" xml:space="preserve">
+    <value>No.</value>
+  </data>
+  <data name="Excel_ColRate" xml:space="preserve">
+    <value>Rate/hour (VND)</value>
+  </data>
+  <data name="Excel_ColPaidLeaveHours" xml:space="preserve">
+    <value>Paid leave hours</value>
+  </data>
+  <data name="Excel_ColUnpaidDays" xml:space="preserve">
+    <value>Unpaid leave (days)</value>
+  </data>
+  <data name="Excel_ColSalary" xml:space="preserve">
+    <value>Total salary (VND)</value>
+  </data>
+  <data name="Excel_ColStatusNote" xml:space="preserve">
+    <value>Status / Note</value>
+  </data>
+  <data name="Excel_Total" xml:space="preserve">
+    <value>TOTAL</value>
+  </data>
+</root>

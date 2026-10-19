@@ -4,10 +4,10 @@ namespace RWPM.Common.Enums
 {
     public enum LeaveType
     {
-        [Display(Name = "Có phép (Hưởng lương - Trừ phép năm)")]
+        [Display(ResourceType = typeof(Resources.Shared.RequestResource), Name = "LeaveType_Paid")]
         Paid = 0,
 
-        [Display(Name = "Không phép (Không lương)")]
+        [Display(ResourceType = typeof(Resources.Shared.RequestResource), Name = "LeaveType_Unpaid")]
         Unpaid = 1
     }
 }

@@ -173,4 +173,67 @@
   <data name="ViewSelectedStores" xml:space="preserve"><value>View selected stores</value></data>
   <data name="LatenessTolerance" xml:space="preserve"><value>Lateness tolerance (minutes)</value></data>
   <data name="EarlyDepartureTolerance" xml:space="preserve"><value>Early departure tolerance (minutes)</value></data>
+  <data name="Err_DeleteNotSupported" xml:space="preserve">
+    <value>The system applies a data preservation policy (soft delete). Shifts cannot be permanently deleted; please switch the Status toggle to 'Inactive' instead.</value>
+  </data>
+  <data name="Err_StoreInactive" xml:space="preserve">
+    <value>The store does not exist or is no longer active.</value>
+  </data>
+  <data name="Err_ManagerNoStore" xml:space="preserve">
+    <value>This manager account has not been assigned to an active store.</value>
+  </data>
+  <data name="Err_ShiftNotFound" xml:space="preserve">
+    <value>Shift {0} was not found.</value>
+  </data>
+  <data name="Err_NoCreatePermission" xml:space="preserve">
+    <value>You do not have permission to create shifts.</value>
+  </data>
+  <data name="Err_CreateOnlyManagedStore" xml:space="preserve">
+    <value>You can only create shifts for the store you manage.</value>
+  </data>
+  <data name="Err_NoEditPermission" xml:space="preserve">
+    <value>You do not have permission to edit shifts.</value>
+  </data>
+  <data name="Err_EditSharedOrOtherStore" xml:space="preserve">
+    <value>Shared shifts or shifts of another store cannot be edited from this store.</value>
+  </data>
+  <data name="Err_ShiftUsed" xml:space="preserve">
+    <value>This shift is already in use. Please create a new shift to change working hours, validity or the attendance policy.</value>
+  </data>
+  <data name="Err_NoChangePermission" xml:space="preserve">
+    <value>You do not have permission to change shifts.</value>
+  </data>
+  <data name="Err_NotManagedStore" xml:space="preserve">
+    <value>This shift does not belong to the store you manage.</value>
+  </data>
+  <data name="Err_InactiveSystemWide" xml:space="preserve">
+    <value>This shift has been deactivated system-wide; please contact an Admin.</value>
+  </data>
+  <data name="Err_FutureRegistrations" xml:space="preserve">
+    <value>There are registrations from today onwards. Please handle them before deactivating the shift or removing an applicable store.</value>
+  </data>
+  <data name="Toast_StatusUpdateFailed" xml:space="preserve">
+    <value>Unable to update the shift status.</value>
+  </data>
+  <data name="Preset_Title" xml:space="preserve">
+    <value>Suggested time frames</value>
+  </data>
+  <data name="Preset_Morning" xml:space="preserve">
+    <value>Morning shift</value>
+  </data>
+  <data name="Preset_Afternoon" xml:space="preserve">
+    <value>Afternoon shift</value>
+  </data>
+  <data name="Preset_Evening" xml:space="preserve">
+    <value>Evening shift</value>
+  </data>
+  <data name="Preset_Night" xml:space="preserve">
+    <value>Night shift</value>
+  </data>
+  <data name="Preset_Office" xml:space="preserve">
+    <value>Office hours</value>
+  </data>
+  <data name="Preset_Hint" xml:space="preserve">
+    <value>Click a frame to fill start/end time (and break) automatically.</value>
+  </data>
 </root>

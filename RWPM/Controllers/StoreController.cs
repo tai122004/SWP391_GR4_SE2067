@@ -90,8 +90,16 @@ namespace RWPM.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var errorMsg = string.Join(" | ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                AlertHelper.AddErrorMessage(TempData, "Vui lòng kiểm tra lại thông tin nhập: " + errorMsg);
+                // Lỗi theo từng trường đã hiển thị ngay dưới ô nhập; toast chỉ dùng cho lỗi chung (không gắn với trường nào)
+                var generalErrors = ModelState
+                    .Where(kv => string.IsNullOrEmpty(kv.Key))
+                    .SelectMany(kv => kv.Value!.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+                if (generalErrors.Count > 0)
+                {
+                    AlertHelper.AddErrorMessage(TempData, string.Format(RWPM.Resources.Shared.Store.Err_CheckInput, string.Join(" | ", generalErrors)));
+                }
                 await PopulateManagerSelectListAsync(viewModel.ManagerId);
                 return View(viewModel);
             }
@@ -138,8 +146,16 @@ namespace RWPM.Controllers
 
             if (!ModelState.IsValid)
             {
-                var errorMsg = string.Join(" | ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                AlertHelper.AddErrorMessage(TempData, "Vui lòng kiểm tra lại thông tin nhập: " + errorMsg);
+                // Lỗi theo từng trường đã hiển thị ngay dưới ô nhập; toast chỉ dùng cho lỗi chung (không gắn với trường nào)
+                var generalErrors = ModelState
+                    .Where(kv => string.IsNullOrEmpty(kv.Key))
+                    .SelectMany(kv => kv.Value!.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+                if (generalErrors.Count > 0)
+                {
+                    AlertHelper.AddErrorMessage(TempData, string.Format(RWPM.Resources.Shared.Store.Err_CheckInput, string.Join(" | ", generalErrors)));
+                }
                 await PopulateManagerSelectListAsync(viewModel.ManagerId);
                 return View(viewModel);
             }
@@ -221,6 +237,10 @@ namespace RWPM.Controllers
             {
                 await _storeService.UpdateActiveStatusAsync(viewModel.StoreId!.Value, viewModel.IsActive!.Value);
                 return Ok();
+            }
+            catch (ModelValidationException ex)
+            {
+                return BadRequest(ex.GetErrorString(_localizer));
             }
             catch (Exception ex)
             {
@@ -340,7 +360,7 @@ namespace RWPM.Controllers
                         new {
                             lat = kvp.Value.lat.ToString(System.Globalization.CultureInfo.InvariantCulture),
                             lon = kvp.Value.lon.ToString(System.Globalization.CultureInfo.InvariantCulture),
-                            display_name = $"{cleanedQuery} (Vị trí mặc định)"
+                            display_name = string.Format(RWPM.Resources.Shared.Store.Search_DefaultLocationSuffix, cleanedQuery)
                         }
                     });
                 }
@@ -352,7 +372,7 @@ namespace RWPM.Controllers
                 new {
                     lat = "21.0285",
                     lon = "105.8542",
-                    display_name = "Hà Nội, Việt Nam"
+                    display_name = RWPM.Resources.Shared.Store.Search_DefaultFallbackName
                 }
             });
         }

@@ -173,4 +173,67 @@
   <data name="ViewSelectedStores" xml:space="preserve"><value>Xem chi nhánh đã chọn</value></data>
   <data name="LatenessTolerance" xml:space="preserve"><value>Thời gian cho phép đi muộn (phút)</value></data>
   <data name="EarlyDepartureTolerance" xml:space="preserve"><value>Thời gian cho phép về sớm (phút)</value></data>
+  <data name="Err_DeleteNotSupported" xml:space="preserve">
+    <value>Hệ thống áp dụng chính sách Bảo toàn dữ liệu (Soft Delete). Ca làm việc không hỗ trợ xóa vĩnh viễn khỏi hệ thống, vui lòng gạt tắt công tắc Trạng thái sang 'Ngừng hoạt động'.</value>
+  </data>
+  <data name="Err_StoreInactive" xml:space="preserve">
+    <value>Chi nhánh không tồn tại hoặc đã ngừng hoạt động.</value>
+  </data>
+  <data name="Err_ManagerNoStore" xml:space="preserve">
+    <value>Tài khoản quản lý chưa được gán chi nhánh hoạt động.</value>
+  </data>
+  <data name="Err_ShiftNotFound" xml:space="preserve">
+    <value>Không tìm thấy ca {0}.</value>
+  </data>
+  <data name="Err_NoCreatePermission" xml:space="preserve">
+    <value>Không có quyền tạo ca.</value>
+  </data>
+  <data name="Err_CreateOnlyManagedStore" xml:space="preserve">
+    <value>Chỉ được tạo ca cho chi nhánh đang quản lý.</value>
+  </data>
+  <data name="Err_NoEditPermission" xml:space="preserve">
+    <value>Không có quyền sửa ca.</value>
+  </data>
+  <data name="Err_EditSharedOrOtherStore" xml:space="preserve">
+    <value>Ca dùng chung hoặc ca thuộc chi nhánh khác không thể sửa tại cửa hàng này.</value>
+  </data>
+  <data name="Err_ShiftUsed" xml:space="preserve">
+    <value>Ca đã được sử dụng. Vui lòng tạo ca mới để thay đổi giờ làm, hiệu lực hoặc chính sách chấm công.</value>
+  </data>
+  <data name="Err_NoChangePermission" xml:space="preserve">
+    <value>Không có quyền thay đổi ca.</value>
+  </data>
+  <data name="Err_NotManagedStore" xml:space="preserve">
+    <value>Ca không thuộc chi nhánh đang quản lý.</value>
+  </data>
+  <data name="Err_InactiveSystemWide" xml:space="preserve">
+    <value>Ca đã bị ngừng hoạt động toàn hệ thống; vui lòng liên hệ Admin.</value>
+  </data>
+  <data name="Err_FutureRegistrations" xml:space="preserve">
+    <value>Còn đăng ký từ hôm nay trở đi. Hãy xử lý trước khi ngừng ca hoặc bỏ chi nhánh áp dụng.</value>
+  </data>
+  <data name="Toast_StatusUpdateFailed" xml:space="preserve">
+    <value>Không thể cập nhật trạng thái ca.</value>
+  </data>
+  <data name="Preset_Title" xml:space="preserve">
+    <value>Khung giờ gợi ý</value>
+  </data>
+  <data name="Preset_Morning" xml:space="preserve">
+    <value>Ca sáng</value>
+  </data>
+  <data name="Preset_Afternoon" xml:space="preserve">
+    <value>Ca chiều</value>
+  </data>
+  <data name="Preset_Evening" xml:space="preserve">
+    <value>Ca tối</value>
+  </data>
+  <data name="Preset_Night" xml:space="preserve">
+    <value>Ca đêm</value>
+  </data>
+  <data name="Preset_Office" xml:space="preserve">
+    <value>Hành chính</value>
+  </data>
+  <data name="Preset_Hint" xml:space="preserve">
+    <value>Bấm vào một khung để tự điền giờ bắt đầu/kết thúc (và giờ nghỉ).</value>
+  </data>
 </root>

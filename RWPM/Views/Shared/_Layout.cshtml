@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -26,7 +26,7 @@
     <partial name="_NavigationBarPartial" />
     <div class="app-shell">
         <header class="app-topbar">
-            <button class="app-menu-toggle" type="button" id="appMenuToggle" aria-label="Toggle navigation" aria-controls="appSidebar" aria-expanded="false"><i class="bi bi-list"></i></button>
+            <button class="app-menu-toggle" type="button" id="appMenuToggle" aria-label="@SharedResource.Layout_ToggleNavigation" aria-controls="appSidebar" aria-expanded="false"><i class="bi bi-list"></i></button>
             <div class="app-topbar-title">@ViewData["Title"]</div>
             <div class="app-topbar-actions">
                 <partial name="_LanguageSelector" />
@@ -62,18 +62,18 @@
 
                 <!-- Spinner -->
                 <div class="spinner-border text-light" style="width: 5rem; height: 5rem;" role="status">
-                    <span class="visually-hidden">Loading...</span>
+                    <span class="visually-hidden">@SharedResource.Loading...</span>
                 </div>
 
                 <!-- Progress bar and message -->
                 <div style="margin-top: 2rem;">
-                    <p style="font-size: 1.1rem;">Please wait while we process your request...</p>
+                    <p style="font-size: 1.1rem;">@SharedResource.Loading_ProcessingRequest</p>
 
                     <!-- Cancel button (Initially hidden) -->
                     <button id="loadingProgress_cancelProgressBtn" onclick="cancelProgress()"
                             style="display:none; margin-top: 1rem; padding: 10px 20px; font-size: 1rem; color: white;
                     background-color: #f44336; border: none; border-radius: 5px; cursor: pointer;">
-                        Cancel Progress
+                        @SharedResource.Loading_CancelProgress
                     </button>
 
                     <!-- Progress bar container -->
@@ -109,7 +109,9 @@
 
     <script type="text/javascript" src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
 
+    <partial name="_AppClientConfig" />
     <script type="text/javascript" src="~/js/site.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="~/js/time-picker.js" asp-append-version="true"></script>
     <script type="text/javascript" src="~/lib/moment/moment.min.js"></script>
     <script type="text/javascript" src="~/lib/daterangepicker/daterangepicker.min.js"></script>
     <script type="text/javascript" src="~/js/signalrBoot.js"></script>

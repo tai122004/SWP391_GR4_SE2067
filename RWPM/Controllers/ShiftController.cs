@@ -157,7 +157,7 @@ namespace RWPM.Controllers
         [Authorize(Roles = "Admin,StoreManager")]
         public IActionResult Delete(int id)
         {
-            AlertHelper.AddErrorMessage(TempData, "Hệ thống áp dụng chính sách Bảo toàn dữ liệu (Soft Delete). Ca làm việc không hỗ trợ xóa vĩnh viễn khỏi hệ thống, vui lòng gạt tắt công tắc Trạng thái sang 'Ngừng hoạt động'.");
+            AlertHelper.AddErrorMessage(TempData, RWPM.Resources.Shared.Shift.Err_DeleteNotSupported);
             return RedirectToAction(nameof(Index));
         }
 
@@ -167,7 +167,7 @@ namespace RWPM.Controllers
         [Authorize(Roles = "Admin,StoreManager")]
         public IActionResult DeleteConfirmed(int shiftId)
         {
-            AlertHelper.AddErrorMessage(TempData, "Hệ thống áp dụng chính sách Bảo toàn dữ liệu (Soft Delete). Ca làm việc không hỗ trợ xóa vĩnh viễn khỏi hệ thống, vui lòng gạt tắt công tắc Trạng thái sang 'Ngừng hoạt động'.");
+            AlertHelper.AddErrorMessage(TempData, RWPM.Resources.Shared.Shift.Err_DeleteNotSupported);
             return RedirectToAction(nameof(Index));
         }
 

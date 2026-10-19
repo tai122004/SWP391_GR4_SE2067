@@ -295,4 +295,322 @@
   <data name="Leave_InsufficientBalance" xml:space="preserve">
     <value>Số ngày xin nghỉ vượt quá số ngày phép năm còn lại (còn {0} ngày)!</value>
   </data>
+  <data name="Page_Subtitle" xml:space="preserve">
+    <value>Theo dõi, xét duyệt các yêu cầu đăng ký ca, đổi ca, xin nghỉ phép và điều chỉnh giờ chấm công.</value>
+  </data>
+  <data name="Status_Approved" xml:space="preserve">
+    <value>Đã chấp thuận</value>
+  </data>
+  <data name="Status_Rejected" xml:space="preserve">
+    <value>Đã từ chối</value>
+  </data>
+  <data name="Stats_Filtering" xml:space="preserve">
+    <value>Đang lọc</value>
+  </data>
+  <data name="Filter_SearchPlaceholder" xml:space="preserve">
+    <value>Tìm theo tên, mã đơn, ca làm...</value>
+  </data>
+  <data name="Filter_ResetTitle" xml:space="preserve">
+    <value>Xóa tất cả bộ lọc</value>
+  </data>
+  <data name="Filter_Reset" xml:space="preserve">
+    <value>Đặt lại bộ lọc</value>
+  </data>
+  <data name="Filter_AllStatuses" xml:space="preserve">
+    <value>Tất cả trạng thái</value>
+  </data>
+  <data name="AttendanceAdjustment" xml:space="preserve">
+    <value>Sửa chấm công</value>
+  </data>
+  <data name="List_Title" xml:space="preserve">
+    <value>Danh sách yêu cầu</value>
+  </data>
+  <data name="List_EmptyDesc" xml:space="preserve">
+    <value>Không có yêu cầu nào phù hợp với bộ lọc hiện tại.</value>
+  </data>
+  <data name="Detail_RequestCode" xml:space="preserve">
+    <value>Mã yêu cầu</value>
+  </data>
+  <data name="Detail_SentAt" xml:space="preserve">
+    <value>Thời gian gửi</value>
+  </data>
+  <data name="Detail_ContentTitle" xml:space="preserve">
+    <value>Nội dung chi tiết yêu cầu</value>
+  </data>
+  <data name="Detail_AttendanceTitle" xml:space="preserve">
+    <value>Chi tiết điều chỉnh giờ vào / ra</value>
+  </data>
+  <data name="Detail_EmployeeNote" xml:space="preserve">
+    <value>Lý do / Ghi chú của nhân viên</value>
+  </data>
+  <data name="Detail_Reviewer" xml:space="preserve">
+    <value>Người xét duyệt</value>
+  </data>
+  <data name="Detail_ProposedTime" xml:space="preserve">
+    <value>Giờ đề xuất sửa</value>
+  </data>
+  <data name="Detail_AtTime" xml:space="preserve">
+    <value>lúc {0}</value>
+  </data>
+  <data name="Empty_Title" xml:space="preserve">
+    <value>Chưa chọn yêu cầu nào</value>
+  </data>
+  <data name="Empty_Desc" xml:space="preserve">
+    <value>Vui lòng chọn một yêu cầu trong danh sách bên trái để xem chi tiết và phê duyệt.</value>
+  </data>
+  <data name="Notice_AdminOnly" xml:space="preserve">
+    <value>Đơn của Quản lý / HR — Chờ Admin phê duyệt</value>
+  </data>
+  <data name="Notice_StoreMismatch" xml:space="preserve">
+    <value>Đơn thuộc nhân viên chi nhánh khác</value>
+  </data>
+  <data name="Banner_Approved" xml:space="preserve">
+    <value>Yêu cầu đã được chấp thuận</value>
+  </data>
+  <data name="Banner_Rejected" xml:space="preserve">
+    <value>Yêu cầu đã bị từ chối</value>
+  </data>
+  <data name="Banner_ProcessedBy" xml:space="preserve">
+    <value>Xử lý bởi</value>
+  </data>
+  <data name="Banner_DefaultManager" xml:space="preserve">
+    <value>Quản lý</value>
+  </data>
+  <data name="Swap_NoAvailableShifts" xml:space="preserve">
+    <value>-- Không có ca nào khả dụng --</value>
+  </data>
+  <data name="Leave_EndBeforeStart" xml:space="preserve">
+    <value>Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu.</value>
+  </data>
+  <data name="Leave_ExceedsBalance" xml:space="preserve">
+    <value>Số ngày nghỉ ({0} ngày) vượt quá số ngày phép năm còn lại ({1} ngày)!</value>
+  </data>
+  <data name="Leave_ErrEmployeeNotFound" xml:space="preserve">
+    <value>Hồ sơ nhân viên không tồn tại.</value>
+  </data>
+  <data name="Leave_ErrPastDates" xml:space="preserve">
+    <value>Không thể tạo đơn xin nghỉ phép cho các ngày trong quá khứ.</value>
+  </data>
+  <data name="Leave_ErrOverlap" xml:space="preserve">
+    <value>Bạn đã có đơn xin nghỉ phép đang chờ duyệt hoặc đã duyệt trong khoảng thời gian này.</value>
+  </data>
+  <data name="Leave_ErrInsufficientCreate" xml:space="preserve">
+    <value>Số ngày phép năm còn lại ({0} ngày) không đủ để xin nghỉ {1} ngày có phép. Vui lòng chọn loại 'Nghỉ không phép' hoặc điều chỉnh thời gian.</value>
+  </data>
+  <data name="Leave_ErrNotFound" xml:space="preserve">
+    <value>Đơn xin nghỉ phép không tồn tại.</value>
+  </data>
+  <data name="Leave_ErrAlreadyProcessed" xml:space="preserve">
+    <value>Đơn xin nghỉ phép này đã được xử lý trước đó.</value>
+  </data>
+  <data name="Leave_ErrInsufficientApprove" xml:space="preserve">
+    <value>Nhân viên chỉ còn {0} ngày phép năm, không đủ để duyệt đơn nghỉ {1} ngày có phép.</value>
+  </data>
+  <data name="Leave_ErrDeleteOnlyPending" xml:space="preserve">
+    <value>Chỉ có thể xóa hoặc hủy đơn xin nghỉ phép đang chờ phê duyệt.</value>
+  </data>
+  <data name="Leave_ErrNoPermissionDelete" xml:space="preserve">
+    <value>Bạn không có quyền xóa đơn xin nghỉ phép này.</value>
+  </data>
+  <data name="LeaveType_Paid" xml:space="preserve">
+    <value>Có phép (Hưởng lương - Trừ phép năm)</value>
+  </data>
+  <data name="LeaveType_Unpaid" xml:space="preserve">
+    <value>Không phép (Không lương)</value>
+  </data>
+  <data name="Adj_Info" xml:space="preserve">
+    <value>Chọn bản ghi ca làm gần đây cần sửa chấm công và nhập lý do giải trình.</value>
+  </data>
+  <data name="Adj_SelectRecord" xml:space="preserve">
+    <value>Chọn ca làm việc cần sửa</value>
+  </data>
+  <data name="Adj_LoadingRecords" xml:space="preserve">
+    <value>-- Đang tải danh sách ca gần đây... --</value>
+  </data>
+  <data name="Adj_SelectShiftPrompt" xml:space="preserve">
+    <value>-- Chọn ca làm việc --</value>
+  </data>
+  <data name="Adj_NoRecords" xml:space="preserve">
+    <value>-- Chưa có bản ghi chấm công nào trong 30 ngày qua --</value>
+  </data>
+  <data name="Adj_RequestedCheckIn" xml:space="preserve">
+    <value>Giờ vào mong muốn</value>
+  </data>
+  <data name="Adj_RequestedCheckOut" xml:space="preserve">
+    <value>Giờ ra mong muốn</value>
+  </data>
+  <data name="Adj_Reason" xml:space="preserve">
+    <value>Lý do điều chỉnh / giải trình</value>
+  </data>
+  <data name="Adj_ReasonField" xml:space="preserve">
+    <value>Lý do điều chỉnh</value>
+  </data>
+  <data name="Adj_ReasonPlaceholder" xml:space="preserve">
+    <value>Ví dụ: Quên check-out khi tan ca, sự cố mạng/GPS...</value>
+  </data>
+  <data name="Adj_ErrSelectShift" xml:space="preserve">
+    <value>Vui lòng chọn ca làm việc cần sửa.</value>
+  </data>
+  <data name="Adj_ErrReasonRequired" xml:space="preserve">
+    <value>Vui lòng nhập lý do giải trình.</value>
+  </data>
+  <data name="Adj_ErrTimeRequired" xml:space="preserve">
+    <value>Vui lòng nhập ít nhất giờ vào hoặc giờ ra mong muốn.</value>
+  </data>
+  <data name="Adj_InOutSummary" xml:space="preserve">
+    <value>Vào: {0} | Ra: {1}</value>
+  </data>
+  <data name="Adj_DefaultShiftName" xml:space="preserve">
+    <value>Ca làm việc</value>
+  </data>
+  <data name="Adj_SubmitSuccess" xml:space="preserve">
+    <value>Gửi yêu cầu điều chỉnh chấm công thành công! Vui lòng chờ quản lý phê duyệt.</value>
+  </data>
+  <data name="Adj_ApproveSuccess" xml:space="preserve">
+    <value>Phê duyệt và cập nhật giờ chấm công thành công!</value>
+  </data>
+  <data name="Adj_RejectSuccess" xml:space="preserve">
+    <value>Đã từ chối yêu cầu điều chỉnh chấm công.</value>
+  </data>
+  <data name="Adj_DeleteSuccess" xml:space="preserve">
+    <value>Xóa yêu cầu điều chỉnh chấm công thành công.</value>
+  </data>
+  <data name="Adj_DefaultRejectReason" xml:space="preserve">
+    <value>Quản lý từ chối yêu cầu.</value>
+  </data>
+  <data name="Adj_ErrNotFound" xml:space="preserve">
+    <value>Không tìm thấy yêu cầu điều chỉnh chấm công.</value>
+  </data>
+  <data name="Adj_ErrSelfApprove" xml:space="preserve">
+    <value>Bạn không thể tự phê duyệt đơn sửa chấm công của chính mình!</value>
+  </data>
+  <data name="Adj_ErrAdminOnly" xml:space="preserve">
+    <value>Đơn sửa chấm công của Quản lý cửa hàng và HR chỉ có Quản trị viên (Admin) mới có quyền phê duyệt!</value>
+  </data>
+  <data name="Adj_ErrInvalidData" xml:space="preserve">
+    <value>Dữ liệu yêu cầu điều chỉnh không hợp lệ.</value>
+  </data>
+  <data name="Adj_ErrEmployeeNotFound" xml:space="preserve">
+    <value>Không tìm thấy thông tin hồ sơ nhân viên.</value>
+  </data>
+  <data name="Adj_ErrOtherEmployeeRecord" xml:space="preserve">
+    <value>Bạn không có quyền yêu cầu điều chỉnh bản ghi chấm công của nhân viên khác.</value>
+  </data>
+  <data name="Adj_ErrPendingForShift" xml:space="preserve">
+    <value>Bạn đã gửi yêu cầu điều chỉnh cho ca làm này và đang chờ quản lý phê duyệt.</value>
+  </data>
+  <data name="Adj_ErrPendingForShiftDate" xml:space="preserve">
+    <value>Bạn đã gửi yêu cầu điều chỉnh cho ca làm ngày này và đang chờ quản lý phê duyệt.</value>
+  </data>
+  <data name="Adj_ErrAlreadyProcessed" xml:space="preserve">
+    <value>Yêu cầu này đã được xử lý trước đó.</value>
+  </data>
+  <data name="Adj_ErrDeleteOnlyPending" xml:space="preserve">
+    <value>Chỉ có thể xóa yêu cầu khi đang ở trạng thái chờ duyệt.</value>
+  </data>
+  <data name="Adj_ErrNoPermissionDelete" xml:space="preserve">
+    <value>Bạn không có quyền xóa yêu cầu này.</value>
+  </data>
+  <data name="Appr_Title" xml:space="preserve">
+    <value>Phê duyệt điều chỉnh chấm công</value>
+  </data>
+  <data name="Appr_WorkDate" xml:space="preserve">
+    <value>Ngày làm việc</value>
+  </data>
+  <data name="Appr_OriginalTime" xml:space="preserve">
+    <value>Giờ chấm công gốc</value>
+  </data>
+  <data name="Appr_RequestedTime" xml:space="preserve">
+    <value>Giờ nhân viên xin sửa</value>
+  </data>
+  <data name="Appr_EmployeeReason" xml:space="preserve">
+    <value>Lý do giải trình của nhân viên</value>
+  </data>
+  <data name="Appr_ApprovedCheckIn" xml:space="preserve">
+    <value>Giờ vào duyệt</value>
+  </data>
+  <data name="Appr_ApprovedCheckOut" xml:space="preserve">
+    <value>Giờ ra duyệt</value>
+  </data>
+  <data name="Appr_ApproverNote" xml:space="preserve">
+    <value>Ghi chú của người duyệt</value>
+  </data>
+  <data name="Appr_ApproverNotePlaceholder" xml:space="preserve">
+    <value>Ghi chú phản hồi (không bắt buộc)</value>
+  </data>
+  <data name="Appr_ConfirmButton" xml:space="preserve">
+    <value>Xác nhận duyệt</value>
+  </data>
+  <data name="Appr_NoReason" xml:space="preserve">
+    <value>Không có</value>
+  </data>
+  <data name="Appr_ErrTimeRequired" xml:space="preserve">
+    <value>Vui lòng nhập ít nhất giờ vào hoặc giờ ra được phê duyệt.</value>
+  </data>
+  <data name="Processing" xml:space="preserve">
+    <value>Đang xử lý...</value>
+  </data>
+  <data name="Toast_OperationUnsuccessful" xml:space="preserve">
+    <value>Thao tác không thành công.</value>
+  </data>
+  <data name="Err_EmployeeProfileNotFound" xml:space="preserve">
+    <value>Không tìm thấy hồ sơ nhân viên.</value>
+  </data>
+  <data name="Err_EmployeeNotFound" xml:space="preserve">
+    <value>Không tìm thấy nhân viên.</value>
+  </data>
+  <data name="Err_NoPermissionApproveSwapOtherStore" xml:space="preserve">
+    <value>Bạn không có quyền duyệt yêu cầu đổi ca của cửa hàng khác.</value>
+  </data>
+  <data name="Err_NoPermissionApproveOtherStore" xml:space="preserve">
+    <value>Bạn không có quyền duyệt yêu cầu của cửa hàng khác.</value>
+  </data>
+  <data name="Err_NoPermissionApproveOtherStoreEmployee" xml:space="preserve">
+    <value>Bạn không có quyền duyệt yêu cầu của nhân viên cửa hàng khác.</value>
+  </data>
+  <data name="Err_NoPermissionDeleteSwapOtherStore" xml:space="preserve">
+    <value>Bạn không có quyền xóa yêu cầu đổi ca của cửa hàng khác.</value>
+  </data>
+  <data name="Err_NoRequestSelected" xml:space="preserve">
+    <value>Không có yêu cầu nào được chọn.</value>
+  </data>
+  <data name="Err_SelfApprove" xml:space="preserve">
+    <value>Bạn không thể tự duyệt đơn của chính mình!</value>
+  </data>
+  <data name="Err_InvalidRequestData" xml:space="preserve">
+    <value>Dữ liệu yêu cầu không hợp lệ hoặc thiếu thông tin.</value>
+  </data>
+  <data name="Err_Database" xml:space="preserve">
+    <value>Lỗi cơ sở dữ liệu: {0}</value>
+  </data>
+  <data name="Export_NoData" xml:space="preserve">
+    <value>Không có dữ liệu yêu cầu để xuất file.</value>
+  </data>
+  <data name="Export_Success" xml:space="preserve">
+    <value>Xuất file thành công!</value>
+  </data>
+  <data name="Export_ColType" xml:space="preserve">
+    <value>Loại yêu cầu</value>
+  </data>
+  <data name="Export_ColSender" xml:space="preserve">
+    <value>Người gửi</value>
+  </data>
+  <data name="Export_ColBranch" xml:space="preserve">
+    <value>Chi nhánh</value>
+  </data>
+  <data name="Export_ColShiftContent" xml:space="preserve">
+    <value>Ca làm / Nội dung</value>
+  </data>
+  <data name="Export_ColCreatedDate" xml:space="preserve">
+    <value>Ngày tạo</value>
+  </data>
+  <data name="Export_ColApprover" xml:space="preserve">
+    <value>Người duyệt</value>
+  </data>
+  <data name="Export_FileName" xml:space="preserve">
+    <value>Yeu_Cau_Va_Phe_Duyet</value>
+  </data>
+  <data name="Filter_SearchEnterHint" xml:space="preserve">
+    <value>Nhấn Enter để tìm trên tất cả các trang</value>
+  </data>
 </root>

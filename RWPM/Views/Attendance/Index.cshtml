@@ -9,7 +9,7 @@
     
     var myHistory = ViewBag.MyHistory as List<RWPM.Models.Entities.AttendanceRecord> ?? (Model != null && !isAdmin ? Model.ToList() : new List<RWPM.Models.Entities.AttendanceRecord>());
     var employeeHistory = ViewBag.EmployeeHistory as List<RWPM.Models.Entities.AttendanceRecord> ?? (isAdmin && Model != null ? Model.ToList() : new List<RWPM.Models.Entities.AttendanceRecord>());
-    string scopeTitle = ViewBag.ScopeTitle as string ?? (isAdmin ? "Toàn công ty" : "");
+    string scopeTitle = ViewBag.ScopeTitle as string ?? (isAdmin ? SharedResource.Attendance_Scope_Company : "");
     bool hasSearch = !string.IsNullOrWhiteSpace(searchQuery);
     string activeTab = ViewBag.ActiveTab as string ?? "my";
     bool isEmpTabActive = activeTab == "employees";
@@ -84,7 +84,7 @@
             <div class="mb-3">
                 <h4 class="fw-semibold text-dark d-flex align-items-center">
                     <i id="leftPanelIcon" class="bi @(canManage && isEmpTabActive ? "bi-people" : "bi-clock") me-2"></i>
-                    <span id="leftPanelHeader">@(canManage && isEmpTabActive ? (SharedResource.ResourceManager.GetString("Attendance_EmployeeList") ?? "Danh sách nhân viên") : SharedResource.ResourceManager.GetString("Attendance_Today"))</span>
+                    <span id="leftPanelHeader">@(canManage && isEmpTabActive ? SharedResource.Attendance_EmployeeList : SharedResource.Attendance_Today)</span>
                 </h4>
             </div>
             
@@ -115,7 +115,7 @@
                                             <div class="bg-white bg-opacity-75 p-2 rounded border" style="font-size: 0.85rem;">
                                                 <div class="d-flex justify-content-between align-items-center mb-1">
                                                     <span class="fw-bold text-dark">
-                                                        <i class="bi bi-clock-history text-primary me-1"></i>@(rec.Shift?.ShiftName ?? "Ca làm việc")
+                                                        <i class="bi bi-clock-history text-primary me-1"></i>@(rec.Shift?.ShiftName ?? SharedResource.Attendance_DefaultShiftName)
                                                     </span>
                                                     @if (rec.WorkHours.HasValue)
                                                     {
@@ -270,7 +270,7 @@
                 <!-- 1. DÀNH CHO ADMIN: Chỉ hiển thị Lịch sử nhân viên toàn công ty, không hiện tab chấm công cá nhân -->
                 <div class="mb-3 d-flex justify-content-between align-items-center">
                     <h4 class="fw-semibold text-dark d-flex align-items-center mb-0">
-                        <i class="bi bi-people me-2 text-primary"></i> Lịch sử nhân viên @(!string.IsNullOrEmpty(scopeTitle) ? $"({scopeTitle})" : "")
+                        <i class="bi bi-people me-2 text-primary"></i> @SharedResource.Attendance_EmployeeHistory @(!string.IsNullOrEmpty(scopeTitle) ? $"({scopeTitle})" : "")
                         <span class="badge rounded-pill bg-primary ms-2 fs-6">@employeeHistory.Count</span>
                     </h4>
                 </div>
@@ -424,7 +424,7 @@
                                 role="tab" 
                                 aria-controls="emp-history-pane" 
                                 aria-selected="@(isEmpTabActive ? "true" : "false")">
-                            <i class="bi bi-people me-1"></i> Lịch sử nhân viên @(!string.IsNullOrEmpty(scopeTitle) ? $"({scopeTitle})" : "")
+                            <i class="bi bi-people me-1"></i> @SharedResource.Attendance_EmployeeHistory @(!string.IsNullOrEmpty(scopeTitle) ? $"({scopeTitle})" : "")
                             <span class="badge rounded-pill bg-light text-dark ms-1">@employeeHistory.Count</span>
                         </button>
                     </div>
@@ -783,35 +783,35 @@
                 <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
                     <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
                         <h5 class="modal-title fw-bold text-dark fs-5">
-                            <i class="bi bi-clock-history text-primary me-2"></i>Chi tiết điều chỉnh chấm công
+                            <i class="bi bi-clock-history text-primary me-2"></i>@SharedResource.Attendance_AdjDetail_Title
                         </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@SharedResource.Button_Close"></button>
                     </div>
                     <div class="modal-body p-4 text-start">
                         <div class="p-3 mb-3 rounded-3 bg-light border">
                             <div class="row g-2 mb-2">
                                 <div class="col-6">
-                                    <span class="text-muted small d-block">Nhân viên:</span>
+                                    <span class="text-muted small d-block">@SharedResource.Attendance_AdjDetail_Employee</span>
                                     <span class="fw-bold text-dark">@(item.Account?.FullName ?? item.Username)</span>
                                 </div>
                                 <div class="col-6">
-                                    <span class="text-muted small d-block">Ngày làm việc:</span>
+                                    <span class="text-muted small d-block">@SharedResource.Attendance_AdjDetail_WorkDate</span>
                                     <span class="fw-bold text-dark">@item.Date.ToString("dd/MM/yyyy")</span>
                                 </div>
                             </div>
                             <div class="row g-2 mb-2">
                                 <div class="col-6">
-                                    <span class="text-muted small d-block">Ca làm việc:</span>
-                                    <span class="fw-bold text-dark">@(item.Shift?.ShiftName ?? "Ca làm việc")</span>
+                                    <span class="text-muted small d-block">@SharedResource.Attendance_AdjDetail_Shift</span>
+                                    <span class="fw-bold text-dark">@(item.Shift?.ShiftName ?? SharedResource.Attendance_DefaultShiftName)</span>
                                 </div>
                             </div>
                             <div class="row g-2">
                                 <div class="col-6">
-                                    <span class="text-muted small d-block">Giờ vào hiện tại:</span>
+                                    <span class="text-muted small d-block">@SharedResource.Attendance_AdjDetail_CurrentIn</span>
                                     <span class="fw-bold text-success">@(item.CheckInTime.HasValue ? item.CheckInTime.Value.ToString(@"hh\:mm") : "--:--")</span>
                                 </div>
                                 <div class="col-6">
-                                    <span class="text-muted small d-block">Giờ ra hiện tại:</span>
+                                    <span class="text-muted small d-block">@SharedResource.Attendance_AdjDetail_CurrentOut</span>
                                     <span class="fw-bold text-danger">@(item.CheckOutTime.HasValue ? item.CheckOutTime.Value.ToString(@"hh\:mm") : "--:--")</span>
                                 </div>
                             </div>
@@ -819,14 +819,14 @@
 
                         @if (item.AdjustmentHistories != null && item.AdjustmentHistories.Any())
                         {
-                            <h6 class="fw-bold small text-muted text-uppercase mb-2">Lịch sử điều chỉnh:</h6>
+                            <h6 class="fw-bold small text-muted text-uppercase mb-2">@SharedResource.Attendance_AdjDetail_History</h6>
                             <div class="list-group list-group-flush border rounded-3 overflow-hidden">
                                 @foreach (var hist in item.AdjustmentHistories.OrderByDescending(h => h.ModifiedAt))
                                 {
                                     <div class="list-group-item p-3">
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
-                                                <i class="bi bi-person-check me-1"></i>Người điều chỉnh: @hist.ModifiedBy
+                                                <i class="bi bi-person-check me-1"></i>@SharedResource.Attendance_AdjDetail_ModifiedBy @hist.ModifiedBy
                                             </span>
                                             <span class="small text-muted">
                                                 <i class="bi bi-clock me-1"></i>@hist.ModifiedAt.ToString("HH:mm dd/MM/yyyy")
@@ -834,7 +834,7 @@
                                         </div>
                                         <div class="row g-2 small mb-2 bg-light p-2 rounded">
                                             <div class="col-6">
-                                                <span class="text-muted">Giờ trước khi sửa:</span>
+                                                <span class="text-muted">@SharedResource.Attendance_AdjDetail_Before</span>
                                                 <div class="fw-semibold text-secondary">
                                                     @(hist.OldCheckInTime.HasValue ? hist.OldCheckInTime.Value.ToString(@"hh\:mm") : "--:--")
                                                     ~
@@ -842,7 +842,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-6">
-                                                <span class="text-muted">Giờ sau điều chỉnh:</span>
+                                                <span class="text-muted">@SharedResource.Attendance_AdjDetail_After</span>
                                                 <div class="fw-bold text-success">
                                                     @(hist.NewCheckInTime.HasValue ? hist.NewCheckInTime.Value.ToString(@"hh\:mm") : "--:--")
                                                     ~
@@ -851,7 +851,7 @@
                                             </div>
                                         </div>
                                         <div class="small">
-                                            <span class="text-muted">Lý do điều chỉnh / Ghi chú:</span>
+                                            <span class="text-muted">@SharedResource.Attendance_AdjDetail_Reason</span>
                                             <div class="text-dark mt-1 fst-italic">@hist.Reason</div>
                                         </div>
                                     </div>
@@ -861,12 +861,12 @@
                         else
                         {
                             <div class="alert alert-info py-2 small mb-0">
-                                <i class="bi bi-info-circle me-1"></i> Bản ghi chấm công này đã được quản lý phê duyệt và cập nhật giờ làm việc.
+                                <i class="bi bi-info-circle me-1"></i> @SharedResource.Attendance_AdjDetail_ApprovedNote
                             </div>
                         }
                     </div>
                     <div class="modal-footer border-top-0 pt-0 px-4 pb-4">
-                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal" style="border-radius: 8px;">Đóng</button>
+                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal" style="border-radius: 8px;">@SharedResource.Button_Close</button>
                     </div>
                 </div>
             </div>
@@ -938,7 +938,7 @@
             if (btnElement) {
                 btnElement.disabled = true;
                 var originalText = btnElement.innerHTML;
-                btnElement.innerHTML = '<i class="spinner-border spinner-border-sm me-1"></i> Đang định vị GPS...';
+                btnElement.innerHTML = '<i class="spinner-border spinner-border-sm me-1"></i> ' + @Json.Serialize(SharedResource.Processing);
             }
 
             if (gpsStatus) {
@@ -965,43 +965,24 @@
                         form.submit();
                         return;
                     }
-<<<<<<< HEAD
-                    var errorMsg = "";
-                    if (error.code === 1) { // PERMISSION_DENIED
-                        errorMsg = `@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSPermissionDenied"))`;
-                    } else {
-                        var template = `@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSUnknownError"))`;
-                        errorMsg = template.replace("{0}", error.message);
-                    }
-                    // Chỉ hiện alert khi thực sự có lỗi từ browser
-                    AppToast.error(errorMsg);
-                }, {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
-                });
-            } else {
-=======
                 }
 
->>>>>>> 3310e07fd9ea9088e590631c8924434d7d757f85
                 if (gpsStatus) gpsStatus.classList.add("d-none");
                 if (btnElement) {
                     btnElement.disabled = false;
                     btnElement.innerHTML = originalText;
                 }
-<<<<<<< HEAD
-                AppToast.error(`@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSNotSupported"))`);
-=======
 
                 var errorMsg = "";
                 if (error && error.code === 1) { // PERMISSION_DENIED
                     errorMsg = `@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSPermissionDenied"))`;
-                } else {
+                } else if (error) {
                     var template = `@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSUnknownError"))`;
-                    errorMsg = template.replace("{0}", error ? error.message : "Lỗi xác định vị trí");
+                    errorMsg = template.replace("{0}", error.message || "Lỗi xác định vị trí");
+                } else {
+                    errorMsg = `@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSNotSupported"))`;
                 }
-                alert(errorMsg);
+                AppToast.error(errorMsg);
             }
 
             if (navigator.geolocation) {
@@ -1020,7 +1001,6 @@
                 );
             } else {
                 handleGpsFailure(null);
->>>>>>> 3310e07fd9ea9088e590631c8924434d7d757f85
             }
         }
 
@@ -1158,7 +1138,7 @@
             empTabBtn.addEventListener("shown.bs.tab", function () {
                 if (personalClockInArea) personalClockInArea.classList.add("d-none");
                 if (managerEmpList) managerEmpList.classList.remove("d-none");
-                if (leftPanelHeader) leftPanelHeader.textContent = "@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_EmployeeList") ?? "Danh sách nhân viên")";
+                if (leftPanelHeader) leftPanelHeader.textContent = @Json.Serialize(SharedResource.Attendance_EmployeeList);
                 if (leftPanelIcon) {
                     leftPanelIcon.classList.remove("bi-clock");
                     leftPanelIcon.classList.add("bi-people");
@@ -1170,7 +1150,7 @@
             myTabBtn.addEventListener("shown.bs.tab", function () {
                 if (personalClockInArea) personalClockInArea.classList.remove("d-none");
                 if (managerEmpList) managerEmpList.classList.add("d-none");
-                if (leftPanelHeader) leftPanelHeader.textContent = "@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_Today"))";
+                if (leftPanelHeader) leftPanelHeader.textContent = @Json.Serialize(SharedResource.Attendance_Today);
                 if (leftPanelIcon) {
                     leftPanelIcon.classList.remove("bi-people");
                     leftPanelIcon.classList.add("bi-clock");
@@ -1180,9 +1160,9 @@
         }
 
         // --- PHÂN TRANG CHO TẤT CẢ CÁC BẢNG LỊCH SỬ (10 DÒNG / TRANG) ---
-        var totalRecordBarTemplate = `@Html.Raw(SharedResource.ResourceManager.GetString("TotalRecordBar") ?? "Hiển thị từ {0}–{1} của {2} dòng dữ liệu")`;
-        var previousAriaLabel = '@Html.Raw(SharedResource.ResourceManager.GetString("Pagination_Previous") ?? "Previous")';
-        var nextAriaLabel = '@Html.Raw(SharedResource.ResourceManager.GetString("Pagination_Next") ?? "Next")';
+        var totalRecordBarTemplate = @Json.Serialize(SharedResource.TotalRecordBar);
+        var previousAriaLabel = @Json.Serialize(SharedResource.Pagination_Previous);
+        var nextAriaLabel = @Json.Serialize(SharedResource.Pagination_Next);
 
         function initTablePagination(tableId, paginationContainerId, pageSize) {
             if (!pageSize) pageSize = 10;

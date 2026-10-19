@@ -203,5 +203,36 @@ namespace RWPM.Resources.Shared {
                 return ResourceManager.GetString("Wire", resourceCulture);
             }
         }
+    
+
+        public static string Dashboard {
+            get {
+                return ResourceManager.GetString("Dashboard", resourceCulture);
+            }
+        }
+
+        public static string Payroll {
+            get {
+                return ResourceManager.GetString("Payroll", resourceCulture);
+            }
+        }
+
+        public static string MyPayslips {
+            get {
+                return ResourceManager.GetString("MyPayslips", resourceCulture);
+            }
+        }
+
+        public static string BrandCaption {
+            get {
+                return ResourceManager.GetString("BrandCaption", resourceCulture);
+            }
+        }
+
+        public static string MainNavigation {
+            get {
+                return ResourceManager.GetString("MainNavigation", resourceCulture);
+            }
+        }
     }
 }
