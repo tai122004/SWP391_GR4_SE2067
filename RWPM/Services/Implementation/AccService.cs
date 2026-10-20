@@ -1,3 +1,4 @@
+using RWPM.Common.Validation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -33,34 +34,45 @@ namespace RWPM.Services.Implementation
 
         public async Task<Acc> CreateAsync(Acc entity)
         {
+            await using var accountTransaction = _ctx.Database.CurrentTransaction == null
+                ? await _ctx.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable) : null;
+
             //I. Pre-validation 
-            entity.Username = entity.Username.Trim();
+            entity.Username = entity.Username?.Trim() ?? "";
+            entity.FullName = entity.FullName?.Trim() ?? "";
+            entity.Email = entity.Email?.Trim() ?? "";
+            entity.PhoneNumber = entity.PhoneNumber?.Trim();
+            InputRules.ValidateAccount(entity.Username, entity.FullName, entity.Email, entity.PhoneNumber, entity.DateOfBirth, entity.Gender, entity.Role);
+
+            InputRules.ValidatePassword(entity.Password);
 
             //II. Validation
             if (entity.Role == AccountRole.Admin)
                 throw new Exception(Resources.Shared.Acc.Err_CannotCreateAdmin);
 
             if (await ExistsAsync(entity.Username))
-                throw new ModelValidationException("Acc_UsernameExists", entity.Username);
+                throw new InputValidationException("Username", InputRules.Text("Tài khoản đã tồn tại.", "Username already exists."));
 
             if (!string.IsNullOrWhiteSpace(entity.Email))
             {
                 var trimmedEmail = entity.Email.Trim().ToLower();
-                if (await _ctx.Acc.AnyAsync(a => a.Email.ToLower() == trimmedEmail))
+                if (await _ctx.Acc.AnyAsync(a => a.Email.Trim().ToLower() == trimmedEmail))
                 {
-                    throw new InvalidOperationException(string.Format(Resources.Shared.Acc.Err_EmailInUse, entity.Email));
+                    throw new InputValidationException("Email", string.Format(Resources.Shared.Acc.Err_EmailInUse, entity.Email));
                 }
             }
 
             if (!string.IsNullOrWhiteSpace(entity.PhoneNumber))
             {
                 var trimmedPhone = entity.PhoneNumber.Trim();
-                if (await _ctx.Acc.AnyAsync(a => a.PhoneNumber == trimmedPhone))
+                if (await _ctx.Acc.AnyAsync(a => a.PhoneNumber != null && a.PhoneNumber.Trim() == trimmedPhone))
                 {
-                    throw new InvalidOperationException(string.Format(Resources.Shared.Acc.Err_PhoneInUse, entity.PhoneNumber));
+                    throw new InputValidationException("PhoneNumber", string.Format(Resources.Shared.Acc.Err_PhoneInUse, entity.PhoneNumber));
                 }
             }
 
+            var actor = await WorkflowGuard.ActorAsync(_ctx, AccountHelper.GetCurrentUsername(_httpContextAccessor));
+            InputRules.Require(actor.Role is AccountRole.Admin or AccountRole.HR, "Role", "Không có quyền quản lý tài khoản.", "Not authorized to manage accounts.");
             await NavigationValidationAsync(entity);
 
             //III. Insert
@@ -81,6 +93,7 @@ namespace RWPM.Services.Implementation
             };
             await _ctx.Acc.AddAsync(createEntity);
             await _ctx.SaveChangesAsync();
+            if (accountTransaction != null) await accountTransaction.CommitAsync();
             return createEntity;
         }
 
@@ -137,6 +150,9 @@ namespace RWPM.Services.Implementation
 
         public async Task<PaginationRes<Acc>> SearchAsync(AccSearch searchObject, QueryOptions<Acc>? options = null)
         {
+            searchObject.PageNumber = Math.Clamp(searchObject.PageNumber, 1, 1000000);
+            searchObject.PageSize = Math.Clamp(searchObject.PageSize, 1, 50);
+
             // I. Prepare queryable
             var query = _ctx.Acc.AsQueryable();
 
@@ -184,8 +200,15 @@ namespace RWPM.Services.Implementation
 
         public async Task UpdateAsync(Acc entity)
         {
+            await using var accountTransaction = _ctx.Database.CurrentTransaction == null
+                ? await _ctx.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable) : null;
+
             // I. Pre-validation
-            entity.Username = entity.Username.Trim();
+            entity.Username = entity.Username?.Trim() ?? "";
+            entity.FullName = entity.FullName?.Trim() ?? "";
+            entity.Email = entity.Email?.Trim() ?? "";
+            entity.PhoneNumber = entity.PhoneNumber?.Trim();
+            InputRules.ValidateAccount(entity.Username, entity.FullName, entity.Email, entity.PhoneNumber, entity.DateOfBirth, entity.Gender, entity.Role);
 
             // II. Validation
             if (entity.Role == AccountRole.Admin)
@@ -199,23 +222,27 @@ namespace RWPM.Services.Implementation
             if (!string.IsNullOrWhiteSpace(entity.Email))
             {
                 var trimmedEmail = entity.Email.Trim().ToLower();
-                if (await _ctx.Acc.AnyAsync(a => a.Username != entity.Username && a.Email.ToLower() == trimmedEmail))
+                if (await _ctx.Acc.AnyAsync(a => a.Username != entity.Username && a.Email.Trim().ToLower() == trimmedEmail))
                 {
-                    throw new InvalidOperationException(string.Format(Resources.Shared.Acc.Err_EmailInUse, entity.Email));
+                    throw new InputValidationException("Email", string.Format(Resources.Shared.Acc.Err_EmailInUse, entity.Email));
                 }
             }
 
             if (!string.IsNullOrWhiteSpace(entity.PhoneNumber))
             {
                 var trimmedPhone = entity.PhoneNumber.Trim();
-                if (await _ctx.Acc.AnyAsync(a => a.Username != entity.Username && a.PhoneNumber == trimmedPhone))
+                if (await _ctx.Acc.AnyAsync(a => a.Username != entity.Username && a.PhoneNumber != null && a.PhoneNumber.Trim() == trimmedPhone))
                 {
-                    throw new InvalidOperationException(string.Format(Resources.Shared.Acc.Err_PhoneInUse, entity.PhoneNumber));
+                    throw new InputValidationException("PhoneNumber", string.Format(Resources.Shared.Acc.Err_PhoneInUse, entity.PhoneNumber));
                 }
             }
 
+            var actor = await WorkflowGuard.ActorAsync(_ctx, AccountHelper.GetCurrentUsername(_httpContextAccessor));
+            InputRules.Require(actor.Role is AccountRole.Admin or AccountRole.HR, "Role", "Không có quyền quản lý tài khoản.", "Not authorized to manage accounts.");
             await NavigationValidationAsync(entity);
 
+            if (updateEntity.Role == AccountRole.Admin && actor.Role != AccountRole.Admin)
+                throw new UnauthorizedAccessException(InputRules.Text("Không được sửa tài khoản Admin.", "Cannot edit an Admin account."));
             // III. Update
             updateEntity.FullName = entity.FullName.Trim();
             updateEntity.Role = entity.Role;
@@ -232,6 +259,7 @@ namespace RWPM.Services.Implementation
 
             // IV. Save
             await _ctx.SaveChangesAsync();
+            if (accountTransaction != null) await accountTransaction.CommitAsync();
         }
 
         public Task<bool> ExistsAsync(string username)
@@ -252,6 +280,8 @@ namespace RWPM.Services.Implementation
 
             if (string.Equals(oldPass, newPass))
                 throw new ModelValidationException("Acc_NewPassAndOldPassAreSame");
+
+            InputRules.ValidatePassword(newPass);
 
             // II. Check username and password
             var currentUsername = AccountHelper.GetCurrentUsername(_httpContextAccessor);
@@ -281,6 +311,14 @@ namespace RWPM.Services.Implementation
         /// <exception cref="Exception"></exception>
         public async Task ChangePasswordForAccountAsync(ChangePasswordAccDto changePasswordDto)
         {
+            var caller = AccountHelper.GetCurrentUsername(_httpContextAccessor);
+            var actor = await WorkflowGuard.ActorAsync(_ctx, caller);
+            if (actor.Role is not (AccountRole.Admin or AccountRole.HR))
+                throw new UnauthorizedAccessException(InputRules.Text("Không có quyền đổi mật khẩu tài khoản khác.", "Not allowed to reset another account password."));
+            var target = await GetRequiredByIdAsync(changePasswordDto.Username);
+            if (target.Role == AccountRole.Admin && actor.Role != AccountRole.Admin)
+                throw new UnauthorizedAccessException(InputRules.Text("Chỉ Admin được đổi mật khẩu Admin.", "Only Admin may reset an Admin password."));
+            InputRules.ValidatePassword(changePasswordDto.NewPassword);
             // I. Pre-validation
             if (string.IsNullOrWhiteSpace(changePasswordDto.Username))
                 throw new ArgumentNullException(nameof(changePasswordDto.Username));
@@ -299,7 +337,7 @@ namespace RWPM.Services.Implementation
             });
 
             currentUser.Password = _hasher.HashPassword(null!, changePasswordDto.NewPassword);
-            currentUser.UpdatedBy = changePasswordDto.Username;
+            currentUser.UpdatedBy = caller;
             currentUser.UpdatedDate = DateTime.Now;
 
             // IV: Save

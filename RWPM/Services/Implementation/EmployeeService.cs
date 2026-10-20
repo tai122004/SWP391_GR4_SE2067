@@ -1,3 +1,5 @@
+using System.Globalization;
+using RWPM.Common.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RWPM.Common;
@@ -79,6 +81,9 @@ namespace RWPM.Services.Implementation
 
         public async Task<PaginationRes<Employee>> SearchAsync(EmployeeSearch searchObject, QueryOptions<Employee>? options = null)
         {
+            searchObject.PageNumber = Math.Clamp(searchObject.PageNumber, 1, 1000000);
+            searchObject.PageSize = Math.Clamp(searchObject.PageSize, 1, 50);
+
             var query = _ctx.Employee
                 .Include(x => x.Account)
                 .Include(x => x.Store)
@@ -116,6 +121,9 @@ namespace RWPM.Services.Implementation
 
         public async Task<Employee> CreateAsync(Employee entity)
         {
+            await using var profileTransaction = _ctx.Database.CurrentTransaction == null
+                ? await _ctx.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable) : null;
+
             entity.EmployeeCode = entity.EmployeeCode.Trim();
             entity.Username = entity.Username.Trim();
 
@@ -126,11 +134,15 @@ namespace RWPM.Services.Implementation
 
             await _ctx.Employee.AddAsync(entity);
             await _ctx.SaveChangesAsync();
+            if (profileTransaction != null) await profileTransaction.CommitAsync();
             return entity;
         }
 
         public async Task UpdateAsync(Employee entity)
         {
+            await using var profileTransaction = _ctx.Database.CurrentTransaction == null
+                ? await _ctx.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable) : null;
+
             entity.EmployeeCode = entity.EmployeeCode.Trim();
             entity.Username = entity.Username.Trim();
 
@@ -166,11 +178,16 @@ namespace RWPM.Services.Implementation
             }
 
             await _ctx.SaveChangesAsync();
+            if (profileTransaction != null) await profileTransaction.CommitAsync();
         }
 
         public async Task DeleteAsync(Employee entity)
         {
             var employee = await GetRequiredByIdAsync(entity.EmployeeId);
+            if (await _ctx.PayrollDetail.AnyAsync(x => x.EmployeeId == employee.EmployeeId))
+                throw new InputValidationException("EmployeeId", InputRules.Text(
+                    "Không thể xóa nhân viên vì đã có dữ liệu bảng lương. Hãy chuyển nhân viên sang trạng thái ngừng hoạt động hoặc thôi việc để giữ lịch sử lương.",
+                    "Cannot delete an employee with payroll records. Deactivate or resign the employee to preserve payroll history."));
             _ctx.Employee.Remove(employee);
             await _ctx.SaveChangesAsync();
         }
@@ -219,6 +236,7 @@ namespace RWPM.Services.Implementation
             var employee = await _ctx.Employee.Include(e => e.Account).FirstOrDefaultAsync(e => e.EmployeeId == employeeId);
             if (employee == null) throw new KeyNotFoundException(string.Format(EmpRes.Err_EmployeeNotFound, employeeId));
 
+            InputRules.Require(resignDate != default && resignDate.Date >= employee.JoinDate.Date, "ResignDate", "Ngày nghỉ việc không được trước ngày vào làm.", "Resignation date cannot precede join date.");
             employee.Status = EmploymentStatus.Resigned;
             employee.IsActive = false;
             employee.ResignDate = resignDate.Date;
@@ -369,7 +387,7 @@ namespace RWPM.Services.Implementation
             header.Style.Fill.BackgroundColor = ClosedXML.Excel.XLColor.FromHtml("#0d6efd");
             header.Style.Font.FontColor = ClosedXML.Excel.XLColor.White;
 
-            var firstStore = await _ctx.Store.AsNoTracking().FirstOrDefaultAsync();
+            var firstStore = await _ctx.Store.AsNoTracking().Where(x => x.IsActive).FirstOrDefaultAsync();
             int sampleStoreId = firstStore?.StoreId ?? 1;
 
             // Dòng mẫu 1: Nhân viên
@@ -415,7 +433,7 @@ namespace RWPM.Services.Implementation
             storeHeader.Style.Fill.BackgroundColor = ClosedXML.Excel.XLColor.FromHtml("#198754");
             storeHeader.Style.Font.FontColor = ClosedXML.Excel.XLColor.White;
 
-            var stores = await _ctx.Store.AsNoTracking().ToListAsync();
+            var stores = await _ctx.Store.AsNoTracking().Where(x => x.IsActive).ToListAsync();
             int sRow = 2;
             foreach (var st in stores)
             {
@@ -433,525 +451,149 @@ namespace RWPM.Services.Implementation
 
         public async Task<EmployeeImportResultDto> ImportFromExcelAsync(Stream fileStream, string currentUsername)
         {
-            var result = new EmployeeImportResultDto();
-            using var workbook = new ClosedXML.Excel.XLWorkbook(fileStream);
-            var worksheet = workbook.Worksheet(1);
-            if (worksheet == null)
-            {
-                result.ErrorMessages.Add(EmpRes.Import_NoSheet);
-                return result;
-            }
-
-            var rows = worksheet.RangeUsed()?.RowsUsed()?.Skip(1);
-            if (rows == null || !rows.Any())
-            {
-                result.ErrorMessages.Add(EmpRes.Import_NoRows);
-                return result;
-            }
-
-            var cachedUsernames = (await _ctx.Acc.Select(x => x.Username).ToListAsync()).ToHashSet(StringComparer.OrdinalIgnoreCase);
-            var cachedEmployeeCodes = (await _ctx.Employee.Select(x => x.EmployeeCode).ToListAsync()).ToHashSet(StringComparer.OrdinalIgnoreCase);
-            var validStoreIds = (await _ctx.Store.Select(x => x.StoreId).ToListAsync()).ToHashSet();
-
-            var hasher = new Microsoft.AspNetCore.Identity.PasswordHasher<Acc>();
-            string defaultPasswordHash = hasher.HashPassword(null!, "Aa@123456");
-
-            var newAccounts = new List<Acc>();
-            var newEmployees = new List<Employee>();
-
-            foreach (var row in rows)
-            {
-                int rowNum = row.RowNumber();
-                string fullName = row.Cell(1).GetString()?.Trim() ?? string.Empty;
-                string username = row.Cell(2).GetString()?.Trim().ToLower() ?? string.Empty;
-                string email = row.Cell(3).GetString()?.Trim() ?? string.Empty;
-                string phone = row.Cell(4).GetString()?.Trim() ?? string.Empty;
-                string genderStr = row.Cell(5).GetString()?.Trim() ?? string.Empty;
-                string dobStr = row.Cell(6).GetString()?.Trim() ?? string.Empty;
-                string roleStr = row.Cell(7).GetString()?.Trim() ?? string.Empty;
-                string storeStr = row.Cell(8).GetString()?.Trim() ?? string.Empty;
-                string empCode = row.Cell(9).GetString()?.Trim() ?? string.Empty;
-                string empTypeStr = row.Cell(10).GetString()?.Trim() ?? string.Empty;
-                string joinDateStr = row.Cell(11).GetString()?.Trim() ?? string.Empty;
-                string hourlyRateStr = row.Cell(12).GetString()?.Trim() ?? string.Empty;
-                string baseSalaryStr = row.Cell(13).GetString()?.Trim() ?? string.Empty;
-
-                if (string.IsNullOrWhiteSpace(fullName) && string.IsNullOrWhiteSpace(username))
-                {
-                    continue; // Bỏ qua dòng trống
-                }
-
-                result.TotalRows++;
-
-                // Validation cơ bản
-                if (string.IsNullOrWhiteSpace(fullName))
-                {
-                    result.FailureCount++;
-                    result.ErrorMessages.Add(string.Format(EmpRes.Import_RowError, rowNum, EmpRes.Import_FullNameRequired));
-                    continue;
-                }
-
-                if (string.IsNullOrWhiteSpace(username))
-                {
-                    result.FailureCount++;
-                    result.ErrorMessages.Add(string.Format(EmpRes.Import_RowError, rowNum, EmpRes.Import_UsernameRequired));
-                    continue;
-                }
-
-                // Số điện thoại: 10 số, bắt đầu bằng 0 (Excel hay làm mất số 0 đầu -> tự thêm lại)
-                phone = PhoneHelper.Normalize(phone);
-                if (!string.IsNullOrEmpty(phone) && !PhoneHelper.IsValid(phone))
-                {
-                    result.FailureCount++;
-                    result.ErrorMessages.Add(string.Format(EmpRes.Import_RowError, rowNum, string.Format(EmpRes.Import_PhoneInvalid, phone)));
-                    continue;
-                }
-
-                if (cachedUsernames.Contains(username))
-                {
-                    result.FailureCount++;
-                    result.ErrorMessages.Add(string.Format(EmpRes.Import_RowError, rowNum, string.Format(EmpRes.Import_UsernameExistsInSystem, username)));
-                    continue;
-                }
-
-                if (string.IsNullOrWhiteSpace(email))
-                {
-                    result.FailureCount++;
-                    result.ErrorMessages.Add(string.Format(EmpRes.Import_RowError, rowNum, EmpRes.Import_EmailRequired));
-                    continue;
-                }
-
-                // Parse Role
-                AccountRole role = AccountRole.Employee;
-                if (roleStr.Equals("StoreManager", StringComparison.OrdinalIgnoreCase) || roleStr.Contains("Quản lý", StringComparison.OrdinalIgnoreCase))
-                {
-                    role = AccountRole.StoreManager;
-                }
-                else if (roleStr.Equals("HR", StringComparison.OrdinalIgnoreCase) || roleStr.Contains("Nhân sự", StringComparison.OrdinalIgnoreCase))
-                {
-                    role = AccountRole.HR;
-                }
-                else if (roleStr.Equals("Admin", StringComparison.OrdinalIgnoreCase) || roleStr.Contains("Quản trị", StringComparison.OrdinalIgnoreCase))
-                {
-                    role = AccountRole.Admin;
-                }
-                else
-                {
-                    role = AccountRole.Employee;
-                }
-
-                // Parse Gender
-                Gender gender = Gender.Other;
-                if (genderStr.Equals("Nam", StringComparison.OrdinalIgnoreCase) || genderStr.Equals("Male", StringComparison.OrdinalIgnoreCase))
-                {
-                    gender = Gender.Male;
-                }
-                else if (genderStr.Equals("Nữ", StringComparison.OrdinalIgnoreCase) || genderStr.Equals("Nu", StringComparison.OrdinalIgnoreCase) || genderStr.Equals("Female", StringComparison.OrdinalIgnoreCase))
-                {
-                    gender = Gender.Female;
-                }
-
-                // Parse DateOfBirth
-                DateTime? dateOfBirth = null;
-                if (DateTime.TryParse(dobStr, out var parsedDob))
-                {
-                    dateOfBirth = parsedDob;
-                }
-
-                bool isStoreRole = (role == AccountRole.StoreManager || role == AccountRole.Employee);
-                int parsedStoreId = 0;
-
-                if (isStoreRole)
-                {
-                    if (!int.TryParse(storeStr, out parsedStoreId) || !validStoreIds.Contains(parsedStoreId))
-                    {
-                        result.FailureCount++;
-                        result.ErrorMessages.Add(string.Format(EmpRes.Import_RowError, rowNum, string.Format(EmpRes.Import_StoreInvalid, storeStr, EmpRes.Template_SheetStores)));
-                        continue;
-                    }
-
-                    if (string.IsNullOrWhiteSpace(empCode))
-                    {
-                        empCode = $"NV{DateTime.Now:yyMMdd}{rowNum:D3}";
-                    }
-
-                    if (cachedEmployeeCodes.Contains(empCode))
-                    {
-                        result.FailureCount++;
-                        result.ErrorMessages.Add(string.Format(EmpRes.Import_RowError, rowNum, string.Format(EmpRes.Import_EmpCodeExistsInSystem, empCode)));
-                        continue;
-                    }
-                }
-
-                // Parse EmploymentType
-                EmploymentType empType = (empTypeStr.Contains("Toàn thời gian", StringComparison.OrdinalIgnoreCase) || empTypeStr.Equals("FullTime", StringComparison.OrdinalIgnoreCase))
-                    ? EmploymentType.FullTime
-                    : EmploymentType.PartTime;
-
-                // Parse JoinDate
-                DateTime joinDate = DateTime.Today;
-                if (DateTime.TryParse(joinDateStr, out var parsedJoinDate))
-                {
-                    joinDate = parsedJoinDate;
-                }
-
-                // Parse Rates
-                decimal? hourlyRate = decimal.TryParse(hourlyRateStr, out var hr) ? hr : null;
-                decimal? baseSalary = decimal.TryParse(baseSalaryStr, out var bs) ? bs : null;
-
-                var acc = new Acc
-                {
-                    Username = username,
-                    Password = defaultPasswordHash,
-                    FullName = fullName,
-                    Email = email,
-                    PhoneNumber = string.IsNullOrWhiteSpace(phone) ? null : phone,
-                    Gender = gender,
-                    DateOfBirth = dateOfBirth,
-                    Role = role,
-                    IsActive = true,
-                    CreatedDate = DateTime.Now,
-                    CreatedBy = currentUsername
-                };
-
-                newAccounts.Add(acc);
-                cachedUsernames.Add(username);
-
-                if (isStoreRole)
-                {
-                    var emp = new Employee
-                    {
-                        EmployeeCode = empCode,
-                        Username = username,
-                        StoreId = parsedStoreId,
-                        EmploymentType = empType,
-                        Status = EmploymentStatus.Official,
-                        JoinDate = joinDate,
-                        HourlyRate = hourlyRate,
-                        BaseSalary = baseSalary,
-                        AnnualLeaveBalance = 12,
-                        IsActive = true
-                    };
-
-                    newEmployees.Add(emp);
-                    cachedEmployeeCodes.Add(empCode);
-                }
-
-                result.SuccessCount++;
-            }
-
-            if (newAccounts.Any())
-            {
-                await _ctx.Acc.AddRangeAsync(newAccounts);
-            }
-
-            if (newEmployees.Any())
-            {
-                await _ctx.Employee.AddRangeAsync(newEmployees);
-            }
-
-            if (result.SuccessCount > 0)
-            {
-                await _ctx.SaveChangesAsync();
-            }
-
+            var preview = await PreviewImportFromExcelAsync(fileStream);
+            var result = new EmployeeImportResultDto { TotalRows = preview.TotalRows, FailureCount = preview.InvalidCount,
+                ErrorMessages = preview.Rows.Where(x => !x.IsValid).Select(x => $"{x.RowNum}: {x.ErrorMessage}").ToList() };
+            if (preview.ValidCount > 0) result.SuccessCount = await ConfirmImportAsync(preview.ImportToken, currentUsername);
             return result;
         }
 
+        private sealed record ImportSession(string Owner, List<EmployeeImportValidItemDto> Items);
+
         public async Task<EmployeeImportPreviewResultDto> PreviewImportFromExcelAsync(Stream fileStream)
         {
-            var result = new EmployeeImportPreviewResultDto
-            {
-                ImportToken = Guid.NewGuid().ToString("N")
-            };
-
+            var username = AccountHelper.GetCurrentUsername(_httpContextAccessor);
+            var actor = await WorkflowGuard.ActorAsync(_ctx, username);
+            if (actor.Role is not (AccountRole.Admin or AccountRole.HR)) throw new UnauthorizedAccessException();
             using var workbook = new ClosedXML.Excel.XLWorkbook(fileStream);
-            var worksheet = workbook.Worksheet(1);
-            if (worksheet == null)
-            {
-                throw new Exception(EmpRes.Import_NoWorksheet);
-            }
-
-            var rows = worksheet.RangeUsed()?.RowsUsed()?.Skip(1);
-            if (rows == null || !rows.Any())
-            {
-                throw new Exception(EmpRes.Import_NoRowsPreview);
-            }
-
-            var cachedUsernames = (await _ctx.Acc.Select(x => x.Username).ToListAsync()).ToHashSet(StringComparer.OrdinalIgnoreCase);
-            var cachedEmployeeCodes = (await _ctx.Employee.Select(x => x.EmployeeCode).ToListAsync()).ToHashSet(StringComparer.OrdinalIgnoreCase);
-            var storesDict = await _ctx.Store.AsNoTracking().ToDictionaryAsync(s => s.StoreId, s => s.StoreName);
-
-            var batchUsernames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            var batchEmployeeCodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
+            var worksheet = workbook.Worksheets.FirstOrDefault() ?? throw new InvalidOperationException(EmpRes.Import_NoWorksheet);
+            var rows = worksheet.RangeUsed()?.RowsUsed().Skip(1).ToList();
+            if (rows == null || rows.Count == 0) throw new InvalidOperationException(EmpRes.Import_NoRowsPreview);
+            InputRules.Require(rows.Count <= 5000, "File", "Mỗi lần chỉ nhập tối đa 5.000 dòng.", "Import at most 5,000 rows at a time.");
+            var stores = await _ctx.Store.AsNoTracking().Where(x => x.IsActive).ToDictionaryAsync(x => x.StoreId, x => x.StoreName);
+            var accounts = await _ctx.Acc.AsNoTracking().Select(x => new { x.Username, x.Email, x.PhoneNumber }).ToListAsync();
+            var usernames = accounts.Select(x => x.Username.Trim()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var emails = accounts.Select(x => x.Email.Trim()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var phones = accounts.Where(x => !string.IsNullOrWhiteSpace(x.PhoneNumber)).Select(x => x.PhoneNumber!.Trim()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var codes = (await _ctx.Employee.AsNoTracking().Select(x => x.EmployeeCode).ToListAsync()).Select(x => x.Trim()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var result = new EmployeeImportPreviewResultDto { ImportToken = Guid.NewGuid().ToString("N") };
             foreach (var row in rows)
             {
-                int rowNum = row.RowNumber();
-                string fullName = row.Cell(1).GetString()?.Trim() ?? string.Empty;
-                string username = row.Cell(2).GetString()?.Trim().ToLower() ?? string.Empty;
-                string email = row.Cell(3).GetString()?.Trim() ?? string.Empty;
-                string phone = row.Cell(4).GetString()?.Trim() ?? string.Empty;
-                string genderStr = row.Cell(5).GetString()?.Trim() ?? string.Empty;
-                string dobStr = row.Cell(6).GetString()?.Trim() ?? string.Empty;
-                string roleStr = row.Cell(7).GetString()?.Trim() ?? string.Empty;
-                string storeStr = row.Cell(8).GetString()?.Trim() ?? string.Empty;
-                string empCode = row.Cell(9).GetString()?.Trim() ?? string.Empty;
-                string empTypeStr = row.Cell(10).GetString()?.Trim() ?? string.Empty;
-                string joinDateStr = row.Cell(11).GetString()?.Trim() ?? string.Empty;
-                string hourlyRateStr = row.Cell(12).GetString()?.Trim() ?? string.Empty;
-                string baseSalaryStr = row.Cell(13).GetString()?.Trim() ?? string.Empty;
-
-                if (string.IsNullOrWhiteSpace(fullName) && string.IsNullOrWhiteSpace(username))
-                {
-                    continue; // Bỏ qua dòng trống
-                }
-
+                string Cell(int col) => row.Cell(col).GetString().Trim();
+                if (Enumerable.Range(1, 13).All(i => string.IsNullOrWhiteSpace(Cell(i)))) continue;
+                var preview = new EmployeeImportPreviewRowDto { RowNum = row.RowNumber(), FullName = Cell(1), Username = Cell(2), Email = Cell(3), Phone = Cell(4), EmpCode = Cell(9) };
                 result.TotalRows++;
-
-                var previewRow = new EmployeeImportPreviewRowDto
+                result.Rows.Add(preview);
+                try
                 {
-                    RowNum = rowNum,
-                    FullName = fullName,
-                    Username = username,
-                    Email = email,
-                    Phone = phone,
-                    EmpCode = empCode,
-                    IsValid = true
-                };
-
-                // Kiểm tra Họ tên
-                if (string.IsNullOrWhiteSpace(fullName))
-                {
-                    previewRow.IsValid = false;
-                    previewRow.ErrorMessage = EmpRes.Import_FullNameRequired;
-                }
-
-                // Kiểm tra Số điện thoại: 10 số, bắt đầu bằng 0 (tự thêm số 0 đầu nếu Excel làm mất)
-                phone = PhoneHelper.Normalize(phone);
-                previewRow.Phone = phone;
-                if (previewRow.IsValid && !string.IsNullOrEmpty(phone) && !PhoneHelper.IsValid(phone))
-                {
-                    previewRow.IsValid = false;
-                    previewRow.ErrorMessage = string.Format(EmpRes.Import_PhoneInvalid, phone);
-                }
-
-                // Kiểm tra Username
-                if (previewRow.IsValid && string.IsNullOrWhiteSpace(username))
-                {
-                    previewRow.IsValid = false;
-                    previewRow.ErrorMessage = EmpRes.Import_UsernameRequired;
-                }
-                else if (previewRow.IsValid && (cachedUsernames.Contains(username) || batchUsernames.Contains(username)))
-                {
-                    previewRow.IsValid = false;
-                    previewRow.ErrorMessage = string.Format(EmpRes.Import_UsernameExists, username);
-                }
-
-                // Kiểm tra Email
-                if (previewRow.IsValid && string.IsNullOrWhiteSpace(email))
-                {
-                    previewRow.IsValid = false;
-                    previewRow.ErrorMessage = EmpRes.Import_EmailRequired;
-                }
-
-                // Parse Role
-                AccountRole role = AccountRole.Employee;
-                if (roleStr.Equals("StoreManager", StringComparison.OrdinalIgnoreCase) || roleStr.Contains("Quản lý", StringComparison.OrdinalIgnoreCase))
-                {
-                    role = AccountRole.StoreManager;
-                }
-                else if (roleStr.Equals("HR", StringComparison.OrdinalIgnoreCase) || roleStr.Contains("Nhân sự", StringComparison.OrdinalIgnoreCase))
-                {
-                    role = AccountRole.HR;
-                }
-                else if (roleStr.Equals("Admin", StringComparison.OrdinalIgnoreCase) || roleStr.Contains("Quản trị", StringComparison.OrdinalIgnoreCase))
-                {
-                    role = AccountRole.Admin;
-                }
-                previewRow.RoleDisplay = UIHelper.GetDisplayName(role);
-
-                // Parse Gender
-                Gender gender = Gender.Other;
-                if (genderStr.Equals("Nam", StringComparison.OrdinalIgnoreCase) || genderStr.Equals("Male", StringComparison.OrdinalIgnoreCase))
-                {
-                    gender = Gender.Male;
-                }
-                else if (genderStr.Equals("Nữ", StringComparison.OrdinalIgnoreCase) || genderStr.Equals("Nu", StringComparison.OrdinalIgnoreCase) || genderStr.Equals("Female", StringComparison.OrdinalIgnoreCase))
-                {
-                    gender = Gender.Female;
-                }
-
-                DateTime? dateOfBirth = DateTime.TryParse(dobStr, out var parsedDob) ? parsedDob : null;
-                bool isStoreRole = (role == AccountRole.StoreManager || role == AccountRole.Employee);
-                int parsedStoreId = 0;
-
-                if (isStoreRole)
-                {
-                    if (!int.TryParse(storeStr, out parsedStoreId) || !storesDict.ContainsKey(parsedStoreId))
+                    var roleText = Cell(7).ToLowerInvariant();
+                    var role = roleText switch { "employee" or "nhân viên" => AccountRole.Employee,
+                        "storemanager" or "quản lý cửa hàng" => AccountRole.StoreManager,
+                        "hr" or "nhân sự" or "nhân sự (hr)" => AccountRole.HR,
+                        _ => throw new InputValidationException("Role", InputRules.Text("Vai trò không hợp lệ; không được nhập Admin.", "Invalid role; importing Admin is not allowed.")) };
+                    var genderText = Cell(5).ToLowerInvariant();
+                    var gender = genderText switch { "nam" or "male" => Gender.Male, "nữ" or "nu" or "female" => Gender.Female,
+                        "" or "other" or "khác" => Gender.Other,
+                        _ => throw new InputValidationException("Gender", InputRules.Text("Giới tính không hợp lệ.", "Invalid gender.")) };
+                    var phone = InputRules.ImportPhone(Cell(4));
+                    InputRules.Require(Cell(4).Length == 0 || phone.Length > 0, "PhoneNumber", "Số điện thoại không hợp lệ.", "Invalid phone number.");
+                    DateTime? Date(int col, bool required)
                     {
-                        previewRow.IsValid = false;
-                        previewRow.ErrorMessage = string.Format(EmpRes.Import_StoreNotFound, storeStr, EmpRes.Template_SheetStores);
+                        if (Cell(col).Length == 0 && !required) return null;
+                        if (row.Cell(col).DataType == ClosedXML.Excel.XLDataType.DateTime && row.Cell(col).TryGetValue<DateTime>(out var native)) return native.Date;
+                        if (DateTime.TryParseExact(Cell(col), new[] { "dd/MM/yyyy", "d/M/yyyy", "yyyy-MM-dd" }, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed)) return parsed.Date;
+                        throw new InputValidationException($"Column{col}", InputRules.Text($"Cột {col}: ngày phải theo dd/MM/yyyy hoặc yyyy-MM-dd.", $"Column {col}: date must use dd/MM/yyyy or yyyy-MM-dd."));
                     }
-                    else
+                    decimal? Money(int col)
                     {
-                        previewRow.StoreDisplay = storesDict[parsedStoreId];
+                        if (Cell(col).Length == 0) return null;
+                        if (row.Cell(col).DataType == ClosedXML.Excel.XLDataType.Number && row.Cell(col).TryGetValue<decimal>(out var numeric)) return numeric;
+                        if (decimal.TryParse(Cell(col), NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var parsed)) return parsed;
+                        throw new InputValidationException($"Column{col}", InputRules.Text($"Cột {col}: số tiền không hợp lệ.", $"Column {col}: invalid amount."));
                     }
-
-                    if (previewRow.IsValid)
-                    {
-                        if (string.IsNullOrWhiteSpace(empCode))
-                        {
-                            empCode = $"NV{DateTime.Now:yyMMdd}{rowNum:D3}";
-                            previewRow.EmpCode = empCode;
-                        }
-
-                        if (cachedEmployeeCodes.Contains(empCode) || batchEmployeeCodes.Contains(empCode))
-                        {
-                            previewRow.IsValid = false;
-                            previewRow.ErrorMessage = string.Format(EmpRes.Import_EmpCodeExists, empCode);
-                        }
-                    }
-                }
-                else
-                {
-                    previewRow.StoreDisplay = EmpRes.Import_StoreNotRequired;
-                }
-
-                // Parse EmploymentType
-                EmploymentType empType = (empTypeStr.Contains("Toàn thời gian", StringComparison.OrdinalIgnoreCase) || empTypeStr.Equals("FullTime", StringComparison.OrdinalIgnoreCase))
-                    ? EmploymentType.FullTime
-                    : EmploymentType.PartTime;
-                previewRow.EmploymentTypeDisplay = isStoreRole ? UIHelper.GetDisplayName(empType) : "-";
-
-                DateTime joinDate = DateTime.TryParse(joinDateStr, out var parsedJoinDate) ? parsedJoinDate : DateTime.Today;
-                decimal? hourlyRate = decimal.TryParse(hourlyRateStr, out var hr) ? hr : null;
-                decimal? baseSalary = decimal.TryParse(baseSalaryStr, out var bs) ? bs : null;
-
-                result.Rows.Add(previewRow);
-
-                if (previewRow.IsValid)
-                {
+                    var dob = Date(6, false);
+                    var joinDate = Date(11, true)!.Value;
+                    var empType = Cell(10).ToLowerInvariant() switch { "" or "fulltime" or "toàn thời gian" => EmploymentType.FullTime,
+                        "parttime" or "bán thời gian" => EmploymentType.PartTime,
+                        _ => throw new InputValidationException("EmploymentType", InputRules.Text("Hình thức làm việc không hợp lệ.", "Invalid employment type.")) };
+                    var code = Cell(9).Length > 0 ? Cell(9) : $"NV{DateTime.Today:yyMMdd}{row.RowNumber():D3}";
+                    var storeId = int.TryParse(Cell(8), out var id) ? id : 0;
+                    if (storeId == 0 && role == AccountRole.HR && Cell(8).Length == 0) storeId = stores.Keys.FirstOrDefault();
+                    var hourly = Money(12); var salary = Money(13);
+                    InputRules.ValidateAccount(Cell(2), Cell(1), Cell(3), phone, dob, gender, role);
+                    InputRules.ValidateEmployment(code, joinDate, dob, null, empType, EmploymentStatus.Official, hourly, salary, 12, null);
+                    InputRules.Require(role != AccountRole.HR || hourly > 0, "HourlyRate", "HR phải có đơn giá dương.", "HR requires a positive hourly rate.");
+                    InputRules.Require(stores.ContainsKey(storeId), "StoreId", "Chi nhánh không tồn tại hoặc đã ngừng hoạt động.", "Store does not exist or is inactive.");
+                    InputRules.Require(!usernames.Contains(Cell(2)), "Username", "Tài khoản đã tồn tại hoặc trùng trong file.", "Username already exists or is duplicated in the file.");
+                    InputRules.Require(!emails.Contains(Cell(3)), "Email", "Email đã tồn tại hoặc trùng trong file.", "Email already exists or is duplicated in the file.");
+                    InputRules.Require(phone.Length == 0 || !phones.Contains(phone), "PhoneNumber", "SĐT đã tồn tại hoặc trùng trong file.", "Phone already exists or is duplicated in the file.");
+                    InputRules.Require(!codes.Contains(code), "EmployeeCode", "Mã nhân viên đã tồn tại hoặc trùng trong file.", "Employee code already exists or is duplicated in the file.");
+                    usernames.Add(Cell(2)); emails.Add(Cell(3)); codes.Add(code); if (phone.Length > 0) phones.Add(phone);
+                    preview.IsValid = true; preview.Phone = phone; preview.EmpCode = code;
+                    preview.RoleDisplay = UIHelper.GetDisplayName(role); preview.StoreDisplay = stores[storeId]; preview.EmploymentTypeDisplay = UIHelper.GetDisplayName(empType);
+                    result.ValidItems.Add(new EmployeeImportValidItemDto { FullName = Cell(1), Username = Cell(2), Email = Cell(3), Phone = phone.Length == 0 ? null : phone,
+                        Gender = gender, DateOfBirth = dob, Role = role, IsStoreRole = true, StoreId = storeId, EmployeeCode = code,
+                        EmploymentType = empType, JoinDate = joinDate, HourlyRate = hourly, BaseSalary = salary });
                     result.ValidCount++;
-                    batchUsernames.Add(username);
-                    if (isStoreRole)
-                    {
-                        batchEmployeeCodes.Add(empCode);
-                    }
-
-                    result.ValidItems.Add(new EmployeeImportValidItemDto
-                    {
-                        FullName = fullName,
-                        Username = username,
-                        Email = email,
-                        Phone = string.IsNullOrWhiteSpace(phone) ? null : phone,
-                        Gender = gender,
-                        DateOfBirth = dateOfBirth,
-                        Role = role,
-                        IsStoreRole = isStoreRole,
-                        StoreId = parsedStoreId,
-                        EmployeeCode = empCode,
-                        EmploymentType = empType,
-                        JoinDate = joinDate,
-                        HourlyRate = hourlyRate,
-                        BaseSalary = baseSalary
-                    });
                 }
-                else
-                {
-                    result.InvalidCount++;
-                }
+                catch (InputValidationException ex) { preview.IsValid = false; preview.ErrorMessage = $"{ex.Field}: {ex.Message}"; result.InvalidCount++; }
             }
-
-            // Lưu danh sách hợp lệ vào cache trong 20 phút để chờ xác nhận
-            if (result.ValidItems.Any())
-            {
-                _cache.Set($"ImportPreview_{result.ImportToken}", result.ValidItems, TimeSpan.FromMinutes(20));
-            }
-
+            if (result.ValidItems.Count > 0) _cache.Set($"ImportPreview_{result.ImportToken}", new ImportSession(username, result.ValidItems), TimeSpan.FromMinutes(20));
             return result;
         }
 
         public async Task<int> ConfirmImportAsync(string importToken, string currentUsername)
         {
-            if (!_cache.TryGetValue($"ImportPreview_{importToken}", out List<EmployeeImportValidItemDto>? validItems) || validItems == null || !validItems.Any())
-            {
-                throw new Exception(EmpRes.Import_SessionExpired);
-            }
-
+            if (!_cache.TryGetValue($"ImportPreview_{importToken}", out ImportSession? session) || session == null || session.Owner != currentUsername)
+                throw new InvalidOperationException(EmpRes.Import_SessionExpired);
+            var actor = await WorkflowGuard.ActorAsync(_ctx, currentUsername);
+            if (actor.Role is not (AccountRole.Admin or AccountRole.HR)) throw new UnauthorizedAccessException();
+            await using var transaction = await _ctx.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
             var hasher = new Microsoft.AspNetCore.Identity.PasswordHasher<Acc>();
-            string defaultPasswordHash = hasher.HashPassword(null!, "Aa@123456");
-
-            var newAccounts = new List<Acc>();
-            var newEmployees = new List<Employee>();
-
-            foreach (var item in validItems)
+            foreach (var item in session.Items)
             {
-                var acc = new Acc
-                {
-                    Username = item.Username,
-                    Password = defaultPasswordHash,
-                    FullName = item.FullName,
-                    Email = item.Email,
-                    PhoneNumber = item.Phone,
-                    Gender = item.Gender,
-                    DateOfBirth = item.DateOfBirth,
-                    Role = item.Role,
-                    IsActive = true,
-                    CreatedDate = DateTime.Now,
-                    CreatedBy = currentUsername
-                };
-                newAccounts.Add(acc);
-
-                if (item.IsStoreRole)
-                {
-                    var emp = new Employee
-                    {
-                        EmployeeCode = item.EmployeeCode,
-                        Username = item.Username,
-                        StoreId = item.StoreId,
-                        EmploymentType = item.EmploymentType,
-                        Status = EmploymentStatus.Official,
-                        JoinDate = item.JoinDate,
-                        HourlyRate = item.HourlyRate,
-                        BaseSalary = item.BaseSalary,
-                        AnnualLeaveBalance = 12,
-                        IsActive = true
-                    };
-                    newEmployees.Add(emp);
-                }
+                InputRules.ValidateAccount(item.Username, item.FullName, item.Email, item.Phone, item.DateOfBirth, item.Gender, item.Role);
+                InputRules.ValidateEmployment(item.EmployeeCode, item.JoinDate, item.DateOfBirth, null, item.EmploymentType, EmploymentStatus.Official, item.HourlyRate, item.BaseSalary, 12, null);
+                InputRules.Require(await _ctx.Store.AnyAsync(x => x.StoreId == item.StoreId && x.IsActive), "StoreId", "Chi nhánh đã thay đổi; hãy xem trước file lại.", "Store changed; preview the file again.");
+                InputRules.Require(!await _ctx.Acc.AnyAsync(x => x.Username == item.Username || x.Email.Trim().ToLower() == item.Email.ToLower()
+                    || (item.Phone != null && x.PhoneNumber != null && x.PhoneNumber.Trim() == item.Phone)), "Email", "Tài khoản/email/SĐT đã tồn tại; hãy xem trước file lại.", "Account/email/phone now exists; preview again.");
+                InputRules.Require(!await _ctx.Employee.AnyAsync(x => x.EmployeeCode == item.EmployeeCode), "EmployeeCode", "Mã nhân viên đã tồn tại; hãy xem trước file lại.", "Employee code now exists; preview again.");
+                var acc = new Acc { Username = item.Username, FullName = item.FullName, Email = item.Email, PhoneNumber = item.Phone,
+                    DateOfBirth = item.DateOfBirth, Gender = item.Gender, Role = item.Role, IsActive = true, CreatedDate = DateTime.Now, CreatedBy = currentUsername };
+                acc.Password = hasher.HashPassword(acc, "Aa@123456");
+                _ctx.Acc.Add(acc);
+                _ctx.Employee.Add(new Employee { EmployeeCode = item.EmployeeCode, Username = item.Username, Account = acc, StoreId = item.StoreId,
+                    EmploymentType = item.EmploymentType, Status = EmploymentStatus.Official, JoinDate = item.JoinDate, HourlyRate = item.HourlyRate,
+                    BaseSalary = item.BaseSalary, AnnualLeaveBalance = 12, IsActive = true, CreatedDate = DateTime.Now, CreatedBy = currentUsername });
             }
-
-            if (newAccounts.Any())
-            {
-                await _ctx.Acc.AddRangeAsync(newAccounts);
-            }
-
-            if (newEmployees.Any())
-            {
-                await _ctx.Employee.AddRangeAsync(newEmployees);
-            }
-
-            int count = newAccounts.Count;
-            if (count > 0)
-            {
-                await _ctx.SaveChangesAsync();
-                _cache.Remove($"ImportPreview_{importToken}");
-            }
-
-            return count;
+            await _ctx.SaveChangesAsync();
+            await transaction.CommitAsync();
+            _cache.Remove($"ImportPreview_{importToken}");
+            return session.Items.Count;
         }
 
         private async Task ValidateAsync(Employee entity, int? excludeId = null)
         {
+            var account = await _ctx.Acc.FirstOrDefaultAsync(x => x.Username == entity.Username);
+            var keepingAccount = excludeId.HasValue && await _ctx.Employee.AsNoTracking().AnyAsync(x => x.EmployeeId == excludeId && x.Username == entity.Username);
+            InputRules.Require(account != null && (account.IsActive || keepingAccount)
+                && account.Role is AccountRole.Employee or AccountRole.StoreManager or AccountRole.HR,
+                "Username", "Tài khoản liên kết không tồn tại, bị khóa hoặc không phù hợp vai trò.", "Linked account is missing, inactive or has an invalid role.");
+            InputRules.ValidateBirthDate(account!.DateOfBirth);
+            InputRules.Require(!account.Gender.HasValue || Enum.IsDefined(account.Gender.Value), "Gender", "Giới tính không hợp lệ.", "Invalid gender.");
+            InputRules.Require(string.IsNullOrEmpty(account.PhoneNumber) || System.Text.RegularExpressions.Regex.IsMatch(account.PhoneNumber, @"^0[0-9]{9}$"), "PhoneNumber", "SĐT phải có 10 chữ số bắt đầu bằng 0.", "Phone must contain 10 digits starting with 0.");
+            InputRules.ValidateEmployment(entity.EmployeeCode, entity.JoinDate, account.DateOfBirth, entity.ResignDate,
+                entity.EmploymentType, entity.Status, entity.HourlyRate, entity.BaseSalary, entity.AnnualLeaveBalance, entity.CitizenId);
+            InputRules.Require(entity.StoreId.HasValue && await _ctx.Store.AnyAsync(x => x.StoreId == entity.StoreId && x.IsActive),
+                "StoreId", "Chi nhánh không tồn tại hoặc đã ngừng hoạt động.", "Store does not exist or is inactive.");
             if (await ExistsByCodeAsync(entity.EmployeeCode, excludeId))
             {
-                throw new ModelValidationException("Employee_CodeExists", entity.EmployeeCode);
+                throw new InputValidationException("EmployeeCode", InputRules.Text("Mã nhân viên đã tồn tại.", "Employee code already exists."));
             }
 
             if (await ExistsByUsernameAsync(entity.Username, excludeId))
             {
-                throw new ModelValidationException("Username_Exists", entity.Username);
+                throw new InputValidationException("Username", InputRules.Text("Tài khoản đã có hồ sơ nhân viên.", "Account already has an employee profile."));
             }
 
             if (entity.StoreId.HasValue && !await _ctx.Store.AnyAsync(s => s.StoreId == entity.StoreId.Value))

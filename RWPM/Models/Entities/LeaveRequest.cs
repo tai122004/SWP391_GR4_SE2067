@@ -31,6 +31,9 @@ namespace RWPM.Models.Entities
         [MaxLength(500)]
         public string Reason { get; set; } = string.Empty;
 
+        // null means a legacy leave with no reliable schedule snapshot; [] means no approved shifts.
+        public string? ScheduleSnapshotJson { get; set; }
+
         public RegistrationStatus Status { get; set; } = RegistrationStatus.Pending;
 
         [MaxLength(255)]

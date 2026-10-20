@@ -1,3 +1,4 @@
+using RWPM.Common.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -218,7 +219,9 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                AlertHelper.AddErrorMessage(TempData, ex.Message);
+                if (ex is InputValidationException input) ModelState.AddModelError(input.Field, input.Message);
+                else if (InputRules.Duplicate(ex) is { } duplicate) ModelState.AddModelError(duplicate.Field, duplicate.Message);
+                else AlertHelper.AddErrorMessage(TempData, ex.Message);
                 ViewBag.AccountList = await _employeeService.GetAvailableAccountsSelectListAsync(viewModel.Username);
                 ViewBag.StoreList = await _storeService.GetSelectListAsync();
                 return View(viewModel);
@@ -308,7 +311,9 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                AlertHelper.AddErrorMessage(TempData, ex.Message);
+                if (ex is InputValidationException input) ModelState.AddModelError(input.Field, input.Message);
+                else if (InputRules.Duplicate(ex) is { } duplicate) ModelState.AddModelError(duplicate.Field, duplicate.Message);
+                else AlertHelper.AddErrorMessage(TempData, ex.Message);
                 ViewBag.AccountList = await _employeeService.GetAvailableAccountsSelectListAsync(viewModel.Username);
                 ViewBag.StoreList = await _storeService.GetSelectListAsync();
                 return View(viewModel);
@@ -352,20 +357,33 @@ namespace RWPM.Controllers
         [Authorize(Roles = "Admin,HR,AreaManager,SuperAdmin")]
         public async Task<IActionResult> DeleteConfirmed(int employeeId)
         {
+            var isAjax = Request.Headers["X-Requested-With"] == "XMLHttpRequest";
             try
             {
                 var employee = await _employeeService.GetRequiredByIdAsync(employeeId);
                 await _employeeService.DeleteAsync(employee);
+                if (isAjax) return Json(new { success = true });
                 AlertHelper.DeleteSuccess(TempData);
+            }
+            catch (InputValidationException ex)
+            {
+                if (isAjax) return Conflict(new { message = ex.Message });
+                AlertHelper.AddErrorMessage(TempData, ex.Message);
+                return RedirectToAction(nameof(Delete), new { id = employeeId });
             }
             catch (ModelValidationException ex)
             {
-                AlertHelper.AddErrorMessage(TempData, ex.GetErrorString(_localizer));
+                var message = ex.GetErrorString(_localizer);
+                if (isAjax) return Conflict(new { message });
+                AlertHelper.AddErrorMessage(TempData, message);
                 return RedirectToAction(nameof(Delete), new { id = employeeId });
             }
             catch (Exception ex)
             {
-                AlertHelper.AddErrorMessage(TempData, ex.Message);
+                var message = InputRules.Text("Không thể xóa nhân viên vì còn dữ liệu liên quan. Hãy ngừng hoạt động hoặc cho thôi việc để giữ lịch sử.",
+                    "Cannot delete the employee because related records exist. Deactivate or resign the employee to preserve history.");
+                if (isAjax) return Conflict(new { message });
+                AlertHelper.AddErrorMessage(TempData, message);
                 return RedirectToAction(nameof(Delete), new { id = employeeId });
             }
 

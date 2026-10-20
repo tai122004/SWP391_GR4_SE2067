@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -229,7 +229,7 @@
     <value>Account &amp; password copied to clipboard!</value>
   </data>
   <data name="Err_MinLengthPassword" xml:space="preserve">
-    <value>New password must be at least 6 characters!</value>
+    <value>Password must contain 8–100 characters including uppercase, lowercase and a digit.</value>
   </data>
   <data name="Err_PasswordMismatch" xml:space="preserve">
     <value>Password confirmation does not match!</value>

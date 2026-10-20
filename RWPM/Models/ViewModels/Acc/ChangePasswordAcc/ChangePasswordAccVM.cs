@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using RWPM.Common.Attributes;
 using RWPM.Common;
 using System.ComponentModel.DataAnnotations;
@@ -14,6 +14,7 @@ namespace RWPM.Models.ViewModels.Acc.ChangePasswordAcc
         [Display(Name = "NewPassword", ResourceType = typeof(Resources.Models.ChangePassword))]
         [RequiredLocalization]
         [MaxLengthLocalized(100)]
+        [PersonnelInput("Password")]
         public string NewPassword { get; set; } = string.Empty;
 
         [Display(Name = "ConfirmNewPassword", ResourceType = typeof(Resources.Models.ChangePassword))]

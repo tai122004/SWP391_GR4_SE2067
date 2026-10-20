@@ -6,27 +6,32 @@ namespace RWPM.Models.ViewModels.Store
 {
     public class StoreEditVM
     {
+        private string _storeCode = string.Empty;
+        private string _storeName = string.Empty;
+        private string _address = string.Empty;
+        private string _phone = string.Empty;
+
         public int StoreId { get; set; }
 
         [Display(Name = "StoreCode", ResourceType = typeof(Resources.Models.Store))]
         [RequiredLocalization]
         [MaxLengthLocalized(20)]
         [RegexLocalized(@"^[a-zA-Z0-9_-]+$", "RegularExpression_CodeRegex")]
-        public string StoreCode { get; set; } = string.Empty;
+        public string StoreCode { get => _storeCode; set => _storeCode = value?.Trim() ?? string.Empty; }
 
         [Display(Name = "StoreName", ResourceType = typeof(Resources.Models.Store))]
         [RequiredLocalization]
         [MaxLengthLocalized(100)]
-        public string StoreName { get; set; } = string.Empty;
+        public string StoreName { get => _storeName; set => _storeName = value?.Trim() ?? string.Empty; }
 
         [Display(Name = "Address", ResourceType = typeof(Resources.Models.Store))]
         [MaxLengthLocalized(255)]
-        public string Address { get; set; } = string.Empty;
+        public string Address { get => _address; set => _address = value?.Trim() ?? string.Empty; }
 
         [Display(Name = "Phone", ResourceType = typeof(Resources.Models.Store))]
         [MaxLengthLocalized(20)]
         [RegexLocalized(@"^[0-9]*$", "RegularExpression_DigitsOnly")]
-        public string Phone { get; set; } = string.Empty;
+        public string Phone { get => _phone; set => _phone = value?.Trim() ?? string.Empty; }
 
         [Display(Name = "Latitude", ResourceType = typeof(Resources.Models.Store))]
         public string? Latitude { get; set; }

@@ -5,6 +5,9 @@ namespace RWPM.Models.ViewModels.ShiftRegistration
 {
     public class ShiftSwapCreateVM
     {
+        private string _swapType = "peer";
+        private string _reason = string.Empty;
+
         public int RequesterEmployeeId { get; set; }
 
         [RequiredLocalization]
@@ -12,7 +15,7 @@ namespace RWPM.Models.ViewModels.ShiftRegistration
         public int SourceRegistrationId { get; set; }
 
         // "peer" = đổi với đồng nghiệp, "direct" = chuyển sang ca khác
-        public string SwapType { get; set; } = "peer";
+        public string SwapType { get => _swapType; set => _swapType = value?.Trim() ?? string.Empty; }
 
         // Trường hợp đổi với đồng nghiệp (peer)
         public int? TargetEmployeeId { get; set; }
@@ -25,6 +28,6 @@ namespace RWPM.Models.ViewModels.ShiftRegistration
         [RequiredLocalization]
         [MaxLengthLocalized(255)]
         [Display(Name = "Swap_Reason", ResourceType = typeof(RWPM.Resources.Shared.RequestResource))]
-        public string Reason { get; set; } = string.Empty;
+        public string Reason { get => _reason; set => _reason = value?.Trim() ?? string.Empty; }
     }
 }

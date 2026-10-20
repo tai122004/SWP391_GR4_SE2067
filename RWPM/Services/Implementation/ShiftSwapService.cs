@@ -1,3 +1,4 @@
+using RWPM.Common.Validation;
 using Microsoft.EntityFrameworkCore;
 using RWPM.Common.Enums;
 using RWPM.Infrastructure.Data;
@@ -11,10 +12,14 @@ namespace RWPM.Services.Implementation
     public class ShiftSwapService : IShiftSwapService
     {
         private readonly DefaultDatabaseContext _context;
+        private readonly IHttpContextAccessor _accessor;
+        private readonly IShiftRegistrationService _schedules;
 
-        public ShiftSwapService(DefaultDatabaseContext context)
+        public ShiftSwapService(DefaultDatabaseContext context, IHttpContextAccessor accessor, IShiftRegistrationService schedules)
         {
             _context = context;
+            _accessor = accessor;
+            _schedules = schedules;
         }
 
         public async Task<List<ShiftRegistration>> GetEligibleShiftsToSwapAsync(int employeeId)
@@ -57,6 +62,10 @@ namespace RWPM.Services.Implementation
 
         public async Task<ShiftSwapRequest> CreateSwapRequestAsync(ShiftSwapCreateVM model, string username)
         {
+            ArgumentNullException.ThrowIfNull(model);
+            model.Reason = InputRules.Reason(model.Reason);
+            InputRules.Require(model.SwapType is "peer" or "direct", "SwapType", "Loại đổi ca không hợp lệ.", "Invalid swap type.");
+            await using var createTransaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
             var sourceReg = await _context.ShiftRegistration
                 .Include(x => x.Employee)
                 .Include(x => x.Shift)
@@ -72,6 +81,9 @@ namespace RWPM.Services.Implementation
                 throw new InvalidOperationException(SR.Swap_OnlyApproved);
             }
 
+            await WorkflowGuard.EmployeeAsync(_context, username, sourceReg.EmployeeId);
+            InputRules.Require(sourceReg.WorkDate.Date >= DateTime.Today, "WorkDate", "Không được đổi ca đã qua.", "Cannot swap a past shift.");
+            await WorkflowGuard.UnlockedPeriodAsync(_context, sourceReg.WorkDate.Date, sourceReg.WorkDate.Date);
             var request = new ShiftSwapRequest
             {
                 RequesterEmployeeId = sourceReg.EmployeeId,
@@ -208,9 +220,11 @@ namespace RWPM.Services.Implementation
                 request.TargetWorkDate = model.TargetWorkDate.Value.Date;
             }
 
+            await ValidateSwapScheduleAsync(request, sourceReg);
             _context.ShiftSwapRequest.Add(request);
             await _context.SaveChangesAsync();
 
+            await createTransaction.CommitAsync();
             return request;
         }
 
@@ -252,18 +266,21 @@ namespace RWPM.Services.Implementation
 
         public async Task ApproveSwapAsync(int id, string approverUsername)
         {
+            await using var transaction = _context.Database.CurrentTransaction == null
+                ? await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable) : null;
             var swapReq = await GetByIdAsync(id);
             if (swapReq == null)
             {
                 throw new InvalidOperationException(SR.Swap_RequestNotFound);
             }
 
+            await _context.Entry(swapReq).ReloadAsync();
             if (swapReq.Status != RegistrationStatus.Pending)
             {
                 throw new InvalidOperationException(SR.Swap_AlreadyProcessed);
             }
 
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            await WorkflowGuard.EmployeeAsync(_context, approverUsername, swapReq.RequesterEmployeeId, true);
             try
             {
                 var sourceReg = await _context.ShiftRegistration
@@ -276,6 +293,7 @@ namespace RWPM.Services.Implementation
                     throw new InvalidOperationException(SR.Swap_OriginalNotFound);
                 }
 
+                await _context.Entry(sourceReg).ReloadAsync();
                 if (sourceReg.Status != RegistrationStatus.Approved)
                 {
                     throw new InvalidOperationException(SR.Swap_OriginalNoLongerApproved);
@@ -286,6 +304,7 @@ namespace RWPM.Services.Implementation
                     throw new InvalidOperationException(SR.Swap_OriginalNotOwned);
                 }
 
+                await ValidateSwapScheduleAsync(swapReq, sourceReg);
                 if (swapReq.TargetRegistrationId.HasValue && swapReq.TargetEmployeeId.HasValue)
                 {
                     // Đổi ca với đồng nghiệp (Peer Swap)
@@ -299,6 +318,7 @@ namespace RWPM.Services.Implementation
                         throw new InvalidOperationException(SR.Swap_PeerShiftNotFound);
                     }
 
+                    await _context.Entry(targetReg).ReloadAsync();
                     if (targetReg.Status != RegistrationStatus.Approved)
                     {
                         throw new InvalidOperationException(SR.Swap_PeerShiftNoLongerApproved);
@@ -382,11 +402,11 @@ namespace RWPM.Services.Implementation
                 swapReq.UpdatedBy = approverUsername;
 
                 await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
+                if (transaction != null) await transaction.CommitAsync();
             }
             catch (DbUpdateException ex)
             {
-                await transaction.RollbackAsync();
+                if (transaction != null) await transaction.RollbackAsync();
                 var innerMsg = ex.InnerException?.Message ?? ex.Message;
                 if (innerMsg.Contains("IX_ShiftRegistration_Employee_Shift_Date") || innerMsg.Contains("UNIQUE KEY"))
                 {
@@ -396,24 +416,29 @@ namespace RWPM.Services.Implementation
             }
             catch
             {
-                await transaction.RollbackAsync();
+                if (transaction != null) await transaction.RollbackAsync();
                 throw;
             }
         }
 
         public async Task RejectSwapAsync(int id, string? reason, string approverUsername)
         {
+            reason = InputRules.Reason(reason);
+            await using var rejectionTransaction = _context.Database.CurrentTransaction == null
+                ? await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable) : null;
             var swapReq = await _context.ShiftSwapRequest.FindAsync(id);
             if (swapReq == null)
             {
                 throw new InvalidOperationException(SR.Swap_RequestNotFound);
             }
 
+            await _context.Entry(swapReq).ReloadAsync();
             if (swapReq.Status != RegistrationStatus.Pending)
             {
                 throw new InvalidOperationException(SR.Swap_AlreadyProcessed);
             }
 
+            await WorkflowGuard.EmployeeAsync(_context, approverUsername, swapReq.RequesterEmployeeId, true);
             swapReq.Status = RegistrationStatus.Rejected;
             swapReq.RejectionReason = reason;
             swapReq.ApprovedBy = approverUsername;
@@ -422,6 +447,31 @@ namespace RWPM.Services.Implementation
             swapReq.UpdatedBy = approverUsername;
 
             await _context.SaveChangesAsync();
+            if (rejectionTransaction != null) await rejectionTransaction.CommitAsync();
+        }
+
+        private async Task ValidateSwapScheduleAsync(ShiftSwapRequest req, ShiftRegistration source)
+        {
+            InputRules.Require(source.WorkDate.Date >= DateTime.Today, "WorkDate", "Không được đổi ca đã qua.", "Cannot swap a past shift.");
+            await WorkflowGuard.UnlockedPeriodAsync(_context, source.WorkDate.Date, source.WorkDate.Date);
+            var ignored = new List<int> { source.ShiftRegistrationId };
+            if (req.TargetRegistrationId.HasValue)
+            {
+                var target = await _context.ShiftRegistration.AsNoTracking().SingleOrDefaultAsync(x => x.ShiftRegistrationId == req.TargetRegistrationId.Value);
+                InputRules.Require(target != null && target.Status == RegistrationStatus.Approved && target.EmployeeId == req.TargetEmployeeId
+                    && target.StoreId == source.StoreId && target.EmployeeId != source.EmployeeId, "TargetRegistrationId", "Ca đồng nghiệp không còn hợp lệ.", "Peer registration is no longer valid.");
+                ignored.Add(target!.ShiftRegistrationId);
+                await _schedules.ValidateScheduleConstraintsAsync(source.EmployeeId, new() { new ShiftRegistration
+                    { EmployeeId = source.EmployeeId, StoreId = source.StoreId, ShiftId = target.ShiftId, WorkDate = target.WorkDate } }, ignored);
+                await _schedules.ValidateScheduleConstraintsAsync(target.EmployeeId, new() { new ShiftRegistration
+                    { EmployeeId = target.EmployeeId, StoreId = target.StoreId, ShiftId = source.ShiftId, WorkDate = source.WorkDate } }, ignored);
+            }
+            else
+            {
+                InputRules.Require(req.TargetShiftId.HasValue && req.TargetWorkDate.HasValue, "TargetShiftId", "Chưa chọn ca/ngày mới.", "Select a new shift and date.");
+                await _schedules.ValidateScheduleConstraintsAsync(source.EmployeeId, new() { new ShiftRegistration
+                    { EmployeeId = source.EmployeeId, StoreId = source.StoreId, ShiftId = req.TargetShiftId!.Value, WorkDate = req.TargetWorkDate!.Value.Date } }, ignored);
+            }
         }
 
         public async Task DeleteSwapAsync(int id, string username)

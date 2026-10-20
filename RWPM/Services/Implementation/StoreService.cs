@@ -1,3 +1,4 @@
+using RWPM.Common.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -80,6 +81,9 @@ namespace RWPM.Services.Implementation
 
         public async Task<PaginationRes<global::Store>> SearchAsync(StoreSearch searchObject, QueryOptions<global::Store>? options = null)
         {
+            searchObject.PageNumber = Math.Clamp(searchObject.PageNumber, 1, 1000000);
+            searchObject.PageSize = Math.Clamp(searchObject.PageSize, 1, 50);
+
             var query = _ctx.Store
                 .Include(x => x.Manager)
                 .ThenInclude(m => m!.Account)
@@ -111,13 +115,25 @@ namespace RWPM.Services.Implementation
             return new PaginationRes<global::Store>(data, searchObject.PageNumber, searchObject.PageSize, totalRecords);
         }
 
-        private static void NormalizeStoreTimes(global::Store entity)
+        private async Task ValidateStoreAsync(global::Store entity)
         {
-            if (entity.OpeningTime.HasValue && entity.ClosingTime.HasValue && entity.OpeningTime > entity.ClosingTime)
+            InputRules.Require(entity.OpeningTime.HasValue == entity.ClosingTime.HasValue, "ClosingTime", "Phải nhập đủ giờ mở và đóng cửa.", "Provide both opening and closing times.");
+            if (entity.OpeningTime.HasValue)
+                InputRules.Require(entity.OpeningTime >= TimeSpan.Zero && entity.OpeningTime < TimeSpan.FromDays(1)
+                    && entity.ClosingTime >= TimeSpan.Zero && entity.ClosingTime < TimeSpan.FromDays(1)
+                    && entity.OpeningTime != entity.ClosingTime, "ClosingTime", "Giờ mở/đóng không hợp lệ hoặc trùng nhau.", "Opening/closing times are invalid or identical.");
+            InputRules.Require((entity.Address?.Length ?? 0) <= 255, "Address", "Địa chỉ không được vượt quá 255 ký tự.", "Address cannot exceed 255 characters.");
+            InputRules.Require(string.IsNullOrEmpty(entity.Phone) || (entity.Phone.Length <= 20 && System.Text.RegularExpressions.Regex.IsMatch(entity.Phone, @"^[0-9]+$")),
+                "Phone", "SĐT chi nhánh chỉ gồm chữ số, tối đa 20 ký tự.", "Store phone must contain digits only, up to 20 characters.");
+            // Closing before opening denotes overnight operation; never silently swap the values.
+            InputRules.Require(entity.StoreCode.Length is > 0 and <= 20 && System.Text.RegularExpressions.Regex.IsMatch(entity.StoreCode, RWPM.Common.RegexHelper.CodeRegex), "StoreCode", "Mã chi nhánh không hợp lệ.", "Invalid store code.");
+            InputRules.Require(!string.IsNullOrWhiteSpace(entity.StoreName) && entity.StoreName.Length <= 100, "StoreName", "Tên chi nhánh không hợp lệ.", "Invalid store name.");
+            if (entity.ManagerId.HasValue)
             {
-                var temp = entity.OpeningTime;
-                entity.OpeningTime = entity.ClosingTime;
-                entity.ClosingTime = temp;
+                var manager = await _ctx.Employee.AsNoTracking().Include(x => x.Account).SingleOrDefaultAsync(x => x.EmployeeId == entity.ManagerId);
+                InputRules.Require(manager != null && manager.IsActive && manager.Account.IsActive && (manager.Account.Role is RWPM.Common.Enums.AccountRole.StoreManager or RWPM.Common.Enums.AccountRole.Admin or RWPM.Common.Enums.AccountRole.HR)
+                    && (entity.StoreId == 0 || manager.StoreId == entity.StoreId), "ManagerId", "Người quản lý không hoạt động, sai vai trò hoặc sai chi nhánh.", "Manager is inactive or has an invalid role/store.");
+                InputRules.Require(!await _ctx.Store.AnyAsync(x => x.ManagerId == entity.ManagerId && x.StoreId != entity.StoreId), "ManagerId", "Người quản lý đã được phân công chi nhánh khác.", "Manager is already assigned to another store.");
             }
         }
 
@@ -125,11 +141,11 @@ namespace RWPM.Services.Implementation
         {
             entity.StoreCode = entity.StoreCode.Trim();
             entity.StoreName = entity.StoreName.Trim();
-            NormalizeStoreTimes(entity);
+            await ValidateStoreAsync(entity);
 
             if (await ExistsByCodeAsync(entity.StoreCode))
             {
-                throw new ModelValidationException("StoreCode_Exists", entity.StoreCode);
+                throw new InputValidationException("StoreCode", InputRules.Text("Mã chi nhánh đã tồn tại.", "Store code already exists."));
             }
 
             entity.CreatedDate = DateTime.Now;
@@ -144,13 +160,13 @@ namespace RWPM.Services.Implementation
         {
             entity.StoreCode = entity.StoreCode.Trim();
             entity.StoreName = entity.StoreName.Trim();
-            NormalizeStoreTimes(entity);
+            await ValidateStoreAsync(entity);
 
             var existingStore = await GetRequiredByIdAsync(entity.StoreId);
 
             if (await ExistsByCodeAsync(entity.StoreCode, entity.StoreId))
             {
-                throw new ModelValidationException("StoreCode_Exists", entity.StoreCode);
+                throw new InputValidationException("StoreCode", InputRules.Text("Mã chi nhánh đã tồn tại.", "Store code already exists."));
             }
 
             existingStore.StoreCode = entity.StoreCode;
@@ -219,7 +235,7 @@ namespace RWPM.Services.Implementation
                 .FirstOrDefaultAsync(x => x.StoreId == storeId);
 
             if (store == null) return null;
-            NormalizeStoreTimes(store);
+
 
             var employees = await _ctx.Employee.AsNoTracking()
                 .Include(e => e.Account)

@@ -578,14 +578,18 @@
                 url: '/Employee/DeleteConfirmed',
                 type: 'POST',
                 data: { employeeId: employeeId, __RequestVerificationToken: token },
-                success: function () {
+                success: function (response) {
+                    if (!response || response.success !== true) {
+                        AppToast.error('@Html.Raw(SharedResource.OperationFailed)');
+                        return;
+                    }
                     $('#row-emp-' + employeeId).fadeOut(300, function () { $(this).remove(); });
                     const modalEl = document.getElementById('modalDeleteEmployee');
                     if (modalEl) { bootstrap.Modal.getInstance(modalEl)?.hide(); }
                     AppToast.success('@Html.Raw(SharedResource.Notification_DeletedSuccessfully)');
                 },
                 error: function (xhr) {
-                    AppToast.error((xhr.responseText || '@Html.Raw(SharedResource.OperationFailed)'));
+                    AppToast.error(xhr.responseJSON?.message || '@Html.Raw(SharedResource.OperationFailed)');
                 },
                 complete: function () {
                     btn.prop('disabled', false).html('<i class="bi bi-trash me-1"></i> @Html.Raw(EmployeeSharedResource.Confirm_Delete)');

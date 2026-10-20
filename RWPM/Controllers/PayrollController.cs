@@ -203,7 +203,7 @@ namespace RWPM.Controllers
 
             try
             {
-                await _payrollService.UnlockPayrollAsync(id, reason ?? PayrollDisplayText.DefaultUnlockReason, CurrentUsername);
+                await _payrollService.UnlockPayrollAsync(id, reason ?? "", CurrentUsername);
                 TempData["SuccessMessage"] = PayrollResource.Toast_UnlockSuccess;
             }
             catch (Exception ex)

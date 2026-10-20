@@ -6,6 +6,8 @@ namespace RWPM.Models.ViewModels.ShiftRegistration
 {
     public class LeaveRequestCreateVM
     {
+        private string _reason = string.Empty;
+
         public int EmployeeId { get; set; }
 
         [RequiredLocalization]
@@ -23,6 +25,6 @@ namespace RWPM.Models.ViewModels.ShiftRegistration
         [RequiredLocalization]
         [MaxLengthLocalized(500)]
         [Display(Name = "Leave_Reason", ResourceType = typeof(RWPM.Resources.Shared.RequestResource))]
-        public string Reason { get; set; } = string.Empty;
+        public string Reason { get => _reason; set => _reason = value?.Trim() ?? string.Empty; }
     }
 }

@@ -8,22 +8,30 @@ namespace RWPM.Models.ViewModels.Acc
 {
     public class AccCreateVM
     {
+        private string _username = string.Empty;
+        private string _fullName = string.Empty;
+        private string _email = string.Empty;
+        private string? _phoneNumber = null;
+        private string? _employeeCode = null;
+
         [Display(Name = "Username", ResourceType = typeof(Resources.Models.Acc))]
         [RequiredLocalization]
         [MinLengthLocalized(5)]
         [MaxLengthLocalized(30)]
         [RegexLocalized(RegexHelper.UsernameRegex, RegexHelper.UsernameRegexLocalization)]
-        public string Username { get; set; } = string.Empty;
+        public string Username { get => _username; set => _username = value?.Trim() ?? string.Empty; }
 
         [Display(Name = "Password", ResourceType = typeof(Resources.Models.Acc))]
         [RequiredLocalization]
         [MaxLengthLocalized(100)]
+        [PersonnelInput("Password")]
         public string Password { get; set; } = string.Empty;
 
         [Display(Name = "Fullname", ResourceType = typeof(Resources.Models.Acc))]
         [RequiredLocalization]
         [MaxLengthLocalized(100)]
-        public string FullName { get; set; } = string.Empty;
+        [PersonnelInput("Name")]
+        public string FullName { get => _fullName; set => _fullName = value?.Trim() ?? string.Empty; }
 
         [Display(Name = "Role", ResourceType = typeof(Resources.Models.Acc))]
         [RequiredLocalization]
@@ -35,24 +43,27 @@ namespace RWPM.Models.ViewModels.Acc
         [Display(Name = "Email", ResourceType = typeof(Resources.Models.Acc))]
         [RequiredLocalization]
         [EmailAddress(ErrorMessageResourceName = "EmailInvalid", ErrorMessageResourceType = typeof(Resources.Shared.Acc))]
-        public string Email { get; set; } = string.Empty;
+        [MaxLengthLocalized(100)]
+        [PersonnelInput("Email")]
+        public string Email { get => _email; set => _email = value?.Trim() ?? string.Empty; }
 
         [Display(Name = "PhoneNumber", ResourceType = typeof(Resources.Models.Acc))]
         [MaxLengthLocalized(10)]
         [RegexLocalized(RWPM.Common.Helper.PhoneHelper.VnPhonePattern, "RegularExpression_VnPhone")]
-        public string? PhoneNumber { get; set; }
+        public string? PhoneNumber { get => _phoneNumber; set => _phoneNumber = value?.Trim(); }
 
         [Display(Name = "DateOfBirth", ResourceType = typeof(Resources.Models.Acc))]
         [DataType(DataType.Date)]
         public DateTime? DateOfBirth { get; set; }
 
         [Display(Name = "Gender", ResourceType = typeof(Resources.Models.Acc))]
+        [EnumDataType(typeof(Gender))]
         public Gender? Gender { get; set; }
 
         // Thông tin hồ sơ nhân viên (khi chọn các vai trò làm việc tại cửa hàng)
         [Display(Name = "EmployeeID", ResourceType = typeof(Resources.Models.Employee))]
         [MaxLengthLocalized(20)]
-        public string? EmployeeCode { get; set; }
+        public string? EmployeeCode { get => _employeeCode; set => _employeeCode = value?.Trim(); }
 
         [Display(Name = "Store", ResourceType = typeof(Resources.Models.Employee))]
         public int? StoreId { get; set; }
@@ -62,6 +73,7 @@ namespace RWPM.Models.ViewModels.Acc
         public DateTime? JoinDate { get; set; } = DateTime.Today;
 
         [Display(Name = "EmploymentType", ResourceType = typeof(Resources.Models.Employee))]
+        [EnumDataType(typeof(EmploymentType))]
         public EmploymentType EmploymentType { get; set; } = EmploymentType.FullTime;
 
         [Display(Name = "HourlyRate", ResourceType = typeof(Resources.Models.Employee))]

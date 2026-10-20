@@ -1,3 +1,4 @@
+using RWPM.Common.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -297,7 +298,11 @@ namespace RWPM.Controllers
             }
 
             // Phân trang (tái sử dụng PaginationRes + _PaginationPartial như các màn hình danh sách khác)
-            var ordered = filtered.OrderByDescending(x => x.CreatedDate).ToList();
+            var ordered = filtered
+                .OrderByDescending(x => x.Status == RegistrationStatus.Pending)
+                .ThenByDescending(x => x.CreatedDate)
+                .ThenByDescending(x => x.Id)
+                .ToList();
             var paging = new RWPM.Common.Models.PagedReq { PageNumber = pageNumber };
             int totalPages = Math.Max(1, (int)Math.Ceiling(ordered.Count / (double)paging.PageSize));
             paging.PageNumber = Math.Clamp(paging.PageNumber, 1, totalPages);
@@ -377,6 +382,8 @@ namespace RWPM.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateSwap([FromBody] ShiftSwapCreateVM model)
         {
+            if (model == null || !ModelState.IsValid)
+                return Json(new { success = false, message = string.Join("; ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).DefaultIfEmpty(InputRules.Text("Dữ liệu không hợp lệ.", "Invalid input."))) });
             try
             {
                 var username = User.Identity?.Name ?? "system";
@@ -428,6 +435,8 @@ namespace RWPM.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateLeave([FromBody] LeaveRequestCreateVM model)
         {
+            if (model == null || !ModelState.IsValid)
+                return Json(new { success = false, message = string.Join("; ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).DefaultIfEmpty(InputRules.Text("Dữ liệu không hợp lệ.", "Invalid input."))) });
             try
             {
                 var username = User.Identity?.Name ?? "system";
@@ -469,6 +478,11 @@ namespace RWPM.Controllers
         {
             try
             {
+                if (requestType != "Attendance")
+                {
+                    InputRules.Require(requestType is "ShiftSwap" or "Leave" or "ShiftReg", "RequestType", "Loại yêu cầu không hợp lệ.", "Invalid request type.");
+                    InputRules.Decision((RegistrationStatus)status);
+                }
                 if (requestType == "ShiftSwap")
                 {
                     if (User.IsInRole("StoreManager") && !User.IsInRole("Admin") && !User.IsInRole("SuperAdmin") && !User.IsInRole("AreaManager") && !User.IsInRole("HR"))
@@ -657,54 +671,43 @@ namespace RWPM.Controllers
                     return Json(new { success = false, message = RequestResource.Err_NoRequestSelected });
                 }
 
-                if (model.RequestType == "ShiftSwap")
+                if (model.RequestType is "ShiftSwap" or "Leave")
                 {
-                    var currentUsername = User.Identity?.Name ?? "manager";
-                    var isStoreManagerOnly = User.IsInRole("StoreManager") && !User.IsInRole("Admin") && !User.IsInRole("SuperAdmin") && !User.IsInRole("AreaManager") && !User.IsInRole("HR");
-                    RWPM.Models.Entities.Employee? currentEmployee = null;
-                    if (isStoreManagerOnly)
+                    InputRules.Decision((RegistrationStatus)model.Status);
+                    InputRules.Require(model.Ids.All(x => x > 0) && model.Ids.Distinct().Count() == model.Ids.Count,
+                        "Ids", "Danh sách đơn không hợp lệ hoặc bị trùng.", "Invalid or duplicate request IDs.");
+                    await using var batch = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+                    var username = User.Identity?.Name ?? "";
+                    // Preflight every ID and permission before mutating any request.
+                    foreach (var id in model.Ids)
                     {
-                        currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == currentUsername);
-                    }
-
-                    foreach (var swapId in model.Ids)
-                    {
-                        var swapReq = await _shiftSwapService.GetByIdAsync(swapId);
-                        if (swapReq == null) continue;
-
-                        if (isStoreManagerOnly)
+                        if (model.RequestType == "ShiftSwap")
                         {
-                            if (currentEmployee == null || swapReq.StoreId != currentEmployee.StoreId)
-                            {
-                                return Json(new { success = false, message = RequestResource.Err_NoPermissionApproveSwapOtherStore });
-                            }
-                        }
-
-                        if (model.Status == 1)
-                        {
-                            await _shiftSwapService.ApproveSwapAsync(swapId, currentUsername);
+                            var req = await _shiftSwapService.GetByIdAsync(id) ?? throw new InvalidOperationException(InputRules.Text("Không tìm thấy đơn đổi ca.", "Swap request not found."));
+                            await WorkflowGuard.EmployeeAsync(_context, username, req.RequesterEmployeeId, true);
+                            InputRules.Require(req.Status == RegistrationStatus.Pending, "Status", "Đơn đã được xử lý.", "Request already processed.");
                         }
                         else
                         {
-                            await _shiftSwapService.RejectSwapAsync(swapId, model.Reason, currentUsername);
+                            var req = await _leaveRequestService.GetByIdAsync(id) ?? throw new InvalidOperationException(RequestResource.Leave_ErrNotFound);
+                            await WorkflowGuard.EmployeeAsync(_context, username, req.EmployeeId, true);
+                            InputRules.Require(req.Status == RegistrationStatus.Pending, "Status", "Đơn đã được xử lý.", "Request already processed.");
                         }
                     }
-                    return Json(new { success = true });
-                }
-
-                if (model.RequestType == "Leave")
-                {
-                    foreach (var leaveId in model.Ids)
+                    foreach (var id in model.Ids)
                     {
-                        if (model.Status == 1)
+                        if (model.RequestType == "ShiftSwap")
                         {
-                            await _leaveRequestService.ApproveLeaveRequestAsync(leaveId, User.Identity?.Name ?? "manager");
+                            if (model.Status == 1) await _shiftSwapService.ApproveSwapAsync(id, username);
+                            else await _shiftSwapService.RejectSwapAsync(id, model.Reason, username);
                         }
                         else
                         {
-                            await _leaveRequestService.RejectLeaveRequestAsync(leaveId, model.Reason, User.Identity?.Name ?? "manager");
+                            if (model.Status == 1) await _leaveRequestService.ApproveLeaveRequestAsync(id, username);
+                            else await _leaveRequestService.RejectLeaveRequestAsync(id, model.Reason, username);
                         }
                     }
+                    await batch.CommitAsync();
                     return Json(new { success = true });
                 }
 
@@ -771,6 +774,8 @@ namespace RWPM.Controllers
                     }
                 }
 
+                InputRules.Require(model.RequestType == "ShiftReg", "RequestType", "Loại yêu cầu không hợp lệ.", "Invalid request type.");
+                InputRules.Decision((RegistrationStatus)model.Status);
                 await _shiftRegistrationService.UpdateBulkStatusAsync(model.Ids, (RegistrationStatus)model.Status, model.Reason, User.Identity?.Name);
                 return Json(new { success = true });
             }
