@@ -75,14 +75,10 @@ namespace RWPM.Controllers
                     .ToList();
                     
                 ViewBag.ActiveShifts = allTodayShifts;
-
-                var activeReg = todayRegistrations.FirstOrDefault(sr => !completedShiftIds.Contains(sr.ShiftId)) ?? todayRegistrations.FirstOrDefault();
-                ViewBag.TargetStore = activeReg?.Store ?? currentEmployee.Store;
             }
             else
             {
                 ViewBag.ActiveShifts = new List<RWPM.Models.Entities.Shift>();
-                ViewBag.TargetStore = null;
             }
             
             ViewBag.SearchQuery = searchQuery;
