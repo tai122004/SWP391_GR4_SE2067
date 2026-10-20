@@ -1,11 +1,11 @@
 using RWPM.Common.Attributes;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Globalization;
+using RWPM.Common.Validation;
 
 namespace RWPM.Models.ViewModels.ShiftRegistration
 {
-    public class AttendanceAdjustmentCreateVM
+    public class AttendanceAdjustmentCreateVM : IValidatableObject
     {
         public int? AttendanceRecordId { get; set; }
 
@@ -32,37 +32,23 @@ namespace RWPM.Models.ViewModels.ShiftRegistration
 
         public static TimeSpan? ParseTime(string? value)
         {
-            if (string.IsNullOrWhiteSpace(value)) return null;
+            return AttendanceInputRules.ParseClockTime(value, "RequestedCheckInTime");
+        }
 
-            value = value.Trim();
-
-            // Handle standard TimeSpan format (hh:mm:ss, d.hh:mm:ss)
-            if (TimeSpan.TryParse(value, CultureInfo.InvariantCulture, out var ts))
+        public IEnumerable<ValidationResult> Validate(ValidationContext context)
+        {
+            foreach (var (value, field) in new[] {
+                (RequestedCheckInTime, nameof(RequestedCheckInTime)),
+                (RequestedCheckOutTime, nameof(RequestedCheckOutTime)) })
             {
-                return ts;
+                string? errorMessage = null;
+                try { AttendanceInputRules.ParseClockTime(value, field); }
+                catch (InputValidationException error) { errorMessage = error.Message; }
+                if (errorMessage != null) yield return new ValidationResult(errorMessage, new[] { field });
             }
-
-            // Handle formats without seconds (hh:mm, h:mm)
-            if (TimeSpan.TryParseExact(value, new[] { "hh\\:mm", "h\\:mm", "hh\\:mm\\:ss", "h\\:mm\\:ss" }, CultureInfo.InvariantCulture, out var tsExact))
-            {
-                return tsExact;
-            }
-
-            // Handle Vietnamese AM/PM (SA = Sáng/AM, CH = Chiều/PM)
-            var normalized = value.Replace("SA", "AM", StringComparison.OrdinalIgnoreCase)
-                                  .Replace("CH", "PM", StringComparison.OrdinalIgnoreCase);
-
-            if (DateTime.TryParse(normalized, CultureInfo.InvariantCulture, DateTimeStyles.NoCurrentDateDefault, out var dt))
-            {
-                return dt.TimeOfDay;
-            }
-
-            if (DateTime.TryParse(value, out var dtLocal))
-            {
-                return dtLocal.TimeOfDay;
-            }
-
-            return null;
+            if (string.IsNullOrWhiteSpace(RequestedCheckInTime) && string.IsNullOrWhiteSpace(RequestedCheckOutTime))
+                yield return new ValidationResult(InputRules.Text("Cần nhập ít nhất một giờ cần điều chỉnh.",
+                    "Enter at least one time to adjust."), new[] { nameof(RequestedCheckInTime) });
         }
     }
 }

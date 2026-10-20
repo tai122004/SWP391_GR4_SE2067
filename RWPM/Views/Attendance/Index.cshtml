@@ -144,6 +144,7 @@
                             </div>
 
                             <form id="attendanceForm" method="post" enctype="multipart/form-data" class="d-grid gap-2">
+                                @Html.AntiForgeryToken()
                                 <input type="hidden" name="userLatitude" id="userLatitude" />
                                 <input type="hidden" name="userLongitude" id="userLongitude" />
                                 <div class="mb-3 text-center">
