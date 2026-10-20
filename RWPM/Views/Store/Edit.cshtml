@@ -103,6 +103,8 @@
     <!-- Hidden inputs for store coordinates (automatically set via map picker) -->
     <input type="hidden" asp-for="Latitude" id="storeLat" />
     <input type="hidden" asp-for="Longitude" id="storeLng" />
+    <span asp-validation-for="Latitude" class="text-danger d-block"></span>
+    <span asp-validation-for="Longitude" class="text-danger d-block"></span>
 
     <!-- @SharedResource.ResourceManager.GetString("Store_LocationRadius") -->
     <div class="card mb-3 border-info">
@@ -146,7 +148,7 @@
                 <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="16.0544" data-lng="108.2022">@SharedResource.ResourceManager.GetString("Store_Loc_DN")</button>
             </div>
 
-            <small class="text-muted d-block mb-2"><i class="bi bi-info-circle me-1"></i> @StoreSharedResource.Instruction_MapHelp</small>
+            <small class="text-muted d-block mb-2"><i class="bi bi-info-circle me-1"></i> @StoreSharedResource.Instruction_MapHelp <span id="storeLocationPrompt">@((System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "vi") ? "Hãy chọn vị trí chi nhánh trên bản đồ trước khi kích hoạt." : "Select the store location on the map before activating it.")</span></small>
 
             <div id="storeMap" style="height: 400px; z-index: 1;" class="rounded border shadow-sm"></div>
         </div>
@@ -226,8 +228,9 @@
             var initialMinDist = parseInt(minDistInput.value) || 0;
             var initialRadius = parseInt(radiusInput.value) || 100;
 
-            if (latInput && !latInput.value) latInput.value = initialLat.toFixed(6);
-            if (lngInput && !lngInput.value) lngInput.value = initialLng.toFixed(6);
+            var hasSelectedLocation = !!(latInput && lngInput && latInput.value && lngInput.value);
+            var locationPrompt = document.getElementById("storeLocationPrompt");
+            if (locationPrompt) locationPrompt.classList.toggle("d-none", hasSelectedLocation);
 
             // Google Maps Tile Layers
             var googleStreets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
@@ -269,7 +272,7 @@
                 map.invalidateSize();
             });
 
-            var marker = L.marker([initialLat, initialLng], { draggable: true }).addTo(map);
+            var marker = hasSelectedLocation ? L.marker([initialLat, initialLng], { draggable: true }).addTo(map) : null;
 
             var minCircle = L.circle([initialLat, initialLng], {
                 color: '#dc3545',
@@ -277,19 +280,40 @@
                 fillColor: '#dc3545',
                 fillOpacity: 0.15,
                 radius: initialMinDist
-            }).addTo(map);
+            });
 
             var outerCircle = L.circle([initialLat, initialLng], {
                 color: '#0d6efd',
                 fillColor: '#0d6efd',
                 fillOpacity: 0.1,
                 radius: initialRadius
-            }).addTo(map);
+            });
+
+            if (hasSelectedLocation) {
+                minCircle.addTo(map);
+                outerCircle.addTo(map);
+            }
+
+            function attachMarkerDrag() {
+                marker.on('dragend', function (e) {
+                    var position = marker.getLatLng();
+                    updateMap(position.lat, position.lng);
+                    reverseGeocode(position.lat, position.lng);
+                });
+            }
+            if (marker) attachMarkerDrag();
 
             function updateMap(lat, lng) {
-                lat = parseCoord(lat, defaultLat);
-                lng = parseCoord(lng, defaultLng);
+                lat = parseCoord(lat, NaN);
+                lng = parseCoord(lng, NaN);
+                if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) return;
 
+                if (!marker) {
+                    marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+                    minCircle.addTo(map);
+                    outerCircle.addTo(map);
+                    attachMarkerDrag();
+                }
                 marker.setLatLng([lat, lng]);
                 minCircle.setLatLng([lat, lng]);
                 outerCircle.setLatLng([lat, lng]);
@@ -297,6 +321,7 @@
 
                 if (latInput) latInput.value = lat.toFixed(6);
                 if (lngInput) lngInput.value = lng.toFixed(6);
+                if (locationPrompt) locationPrompt.classList.add("d-none");
             }
 
             function reverseGeocode(lat, lng) {
@@ -319,19 +344,11 @@
                 outerCircle.setRadius(maxD);
             }
 
-            marker.on('dragend', function (e) {
-                var position = marker.getLatLng();
-                updateMap(position.lat, position.lng);
-                reverseGeocode(position.lat, position.lng);
-            });
-
             map.on('click', function (e) {
                 updateMap(e.latlng.lat, e.latlng.lng);
                 reverseGeocode(e.latlng.lat, e.latlng.lng);
             });
 
-            if (latInput) latInput.addEventListener('change', function () { updateMap(latInput.value, lngInput.value); });
-            if (lngInput) lngInput.addEventListener('change', function () { updateMap(latInput.value, lngInput.value); });
             minDistInput.addEventListener('input', updateRadius);
             radiusInput.addEventListener('input', updateRadius);
 
@@ -340,9 +357,7 @@
                 btn.addEventListener("click", function () {
                     var lat = parseFloat(this.getAttribute("data-lat"));
                     var lng = parseFloat(this.getAttribute("data-lng"));
-                    updateMap(lat, lng);
-                    map.setZoom(16);
-                    syncAddressText(this.innerText.trim());
+                    map.setView([lat, lng], 16);
                 });
             });
 
@@ -363,8 +378,8 @@
                     a.innerHTML = '<i class="bi bi-geo-alt-fill text-danger me-2"></i>' + addrText;
                     a.addEventListener("click", function (e) {
                         e.preventDefault();
-                        var lat = parseCoord(item.lat, defaultLat);
-                        var lon = parseCoord(item.lon || item.lng, defaultLng);
+                    var lat = parseCoord(item.lat, NaN);
+                    var lon = parseCoord(item.lon || item.lng, NaN);
                         updateMap(lat, lon);
                         map.setZoom(16);
                         suggestionsList.classList.add("d-none");
@@ -407,12 +422,6 @@
                         }
                         if (data && data.length > 0) {
                             renderSuggestions(data);
-                            var firstResult = data[0];
-                            var lat = parseCoord(firstResult.lat, defaultLat);
-                            var lon = parseCoord(firstResult.lon || firstResult.lng, defaultLng);
-                            updateMap(lat, lon);
-                            map.setZoom(16);
-                            syncAddressText(firstResult.display_name || query);
                         } else {
                             if (suggestionsList) suggestionsList.classList.add("d-none");
                             AppToast.warning("@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Search_NotFoundAlert))".replace('{0}', query));

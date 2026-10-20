@@ -1,10 +1,11 @@
 using RWPM.Common.Attributes;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using RWPM.Common.Validation;
 
 namespace RWPM.Models.ViewModels.Store
 {
-    public class StoreCreateVM
+    public class StoreCreateVM : IValidatableObject
     {
         private string _storeCode = string.Empty;
         private string _storeName = string.Empty;
@@ -32,10 +33,10 @@ namespace RWPM.Models.ViewModels.Store
         public string Phone { get => _phone; set => _phone = value?.Trim() ?? string.Empty; }
 
         [Display(Name = "Latitude", ResourceType = typeof(Resources.Models.Store))]
-        public string? Latitude { get; set; } = "21.025142";
+        public string? Latitude { get; set; }
 
         [Display(Name = "Longitude", ResourceType = typeof(Resources.Models.Store))]
-        public string? Longitude { get; set; } = "105.553973";
+        public string? Longitude { get; set; }
 
         [Display(Name = "MinAllowedDistanceMeters", ResourceType = typeof(Resources.Models.Store))]
         [RangeLocalized(0, 10000)]
@@ -74,10 +75,31 @@ namespace RWPM.Models.ViewModels.Store
             return null;
         }
 
+        public IEnumerable<ValidationResult> Validate(ValidationContext context)
+        {
+            foreach (var (value, field, min, max) in new[] {
+                (Latitude, nameof(Latitude), -90.0, 90.0),
+                (Longitude, nameof(Longitude), -180.0, 180.0) })
+            {
+                if (!string.IsNullOrWhiteSpace(value) && !ParseCoord(value, min, max).HasValue)
+                    yield return new ValidationResult(InputRules.Text("Tọa độ không hợp lệ hoặc ngoài phạm vi cho phép.",
+                        "Coordinate is invalid or outside the allowed range."), new[] { field });
+            }
+            if (string.IsNullOrWhiteSpace(Latitude) != string.IsNullOrWhiteSpace(Longitude))
+                yield return new ValidationResult(InputRules.Text("Cần nhập đủ vĩ độ và kinh độ.",
+                    "Provide both latitude and longitude."), new[] { nameof(Latitude), nameof(Longitude) });
+            if (IsActive && string.IsNullOrWhiteSpace(Latitude) && string.IsNullOrWhiteSpace(Longitude))
+                yield return new ValidationResult(InputRules.Text("Vui lòng chọn vị trí chi nhánh trên bản đồ trước khi kích hoạt.",
+                    "Select the store location on the map before activating it."), new[] { nameof(Latitude) });
+            if (MinAllowedDistanceMeters >= AllowedRadiusMeters)
+                yield return new ValidationResult(InputRules.Text("Khoảng cách tối thiểu phải nhỏ hơn bán kính cho phép.",
+                    "Minimum distance must be smaller than the allowed radius."), new[] { nameof(MinAllowedDistanceMeters) });
+        }
+
         public global::Store ToEntity()
         {
-            var lat = ParseCoord(Latitude, -90.0, 90.0) ?? 21.025142;
-            var lng = ParseCoord(Longitude, -180.0, 180.0) ?? 105.553973;
+            var lat = ParseCoord(Latitude, -90.0, 90.0);
+            var lng = ParseCoord(Longitude, -180.0, 180.0);
 
             return new global::Store
             {
