@@ -15,7 +15,14 @@ namespace RWPM.Infrastructure.Data
             #region Acc
             modelBuilder.Entity<Acc>()
                 .HasIndex(i => i.Email)
+                .IsUnique()
+                .HasFilter("[Email] <> N''")
                 .HasDatabaseName("IX_Acc_Email");
+            modelBuilder.Entity<Acc>()
+                .HasIndex(i => i.PhoneNumber)
+                .IsUnique()
+                .HasFilter("[PhoneNumber] IS NOT NULL AND [PhoneNumber] <> N''")
+                .HasDatabaseName("IX_Acc_PhoneNumber");
             #endregion
 
             #region Store

@@ -543,7 +543,7 @@ function submitQuickResetPassword() {
     const textSaving = modal.data('text-saving') || AppText('saving');
     const msgSuccess = modal.data('toast-success') || AppText('resetPasswordSuccess').replace('{0}', username);
 
-    if (!newPassword || newPassword.length < 6) {
+    if (!newPassword || newPassword.length < 8 || newPassword.length > 100 || !/[a-z]/.test(newPassword) || !/[A-Z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
         if (typeof AppToast !== 'undefined') {
             AppToast.warning(msgMinLen);
         } else {

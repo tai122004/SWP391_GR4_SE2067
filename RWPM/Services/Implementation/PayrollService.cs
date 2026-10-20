@@ -1,3 +1,4 @@
+using RWPM.Common.Validation;
 using ClosedXML.Excel;
 using Microsoft.EntityFrameworkCore;
 using RWPM.Common;
@@ -51,7 +52,7 @@ namespace RWPM.Services.Implementation
 
         public async Task<Payroll?> GetPayrollByIdAsync(int id)
         {
-            return await _context.Payroll
+            return await _context.Payroll.AsNoTracking()
                 .Include(p => p.Details)
                     .ThenInclude(d => d.Employee)
                 .Include(p => p.Details)
@@ -219,6 +220,8 @@ namespace RWPM.Services.Implementation
 
         public async Task<Payroll> CalculatePayrollAsync(DateTime startDate, DateTime endDate, string operatorUsername)
         {
+            await using var calculationTransaction = _context.Database.CurrentTransaction == null
+                ? await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable) : null;
             startDate = startDate.Date;
             endDate = endDate.Date;
             if (startDate == DateTime.MinValue || endDate == DateTime.MinValue)
@@ -341,6 +344,7 @@ namespace RWPM.Services.Implementation
 
                 double actualWorkHours = 0;
                 double paidLeaveHours = 0;
+                double leaveScheduledHours = 0;
                 int paidLeaveDaysCount = 0;
                 int unpaidLeaveDaysCount = 0;
                 int missingAttendanceCount = 0;
@@ -502,11 +506,44 @@ namespace RWPM.Services.Implementation
                     }
                 }
 
+                // Leave payroll evidence survives cancellation of the approved registrations.
+                foreach (var leave in empLeaves.Where(x => x.ScheduleSnapshotJson != null))
+                {
+                    var evidence = LeavePayrollRules.Evidence(leave.ScheduleSnapshotJson!);
+                    foreach (var item in evidence.Where(x => x.Date >= startDate && x.Date <= endDate))
+                    {
+                        // An approved registration handled above must not also pay from its snapshot.
+                        if (empRegistrations.Any(x => x.ShiftRegistrationId == item.RegistrationId)) continue;
+                        var worked = empAttendance.Where(x => x.Date.Date == item.Date.Date && x.ShiftId == item.ShiftId).Sum(x => x.WorkHours ?? 0);
+                        var leaveHours = leave.LeaveType == LeaveType.Paid && isEligibleForPaidLeave
+                            ? LeavePayrollRules.PayableHours(item.ScheduledHours, worked) : 0;
+                        leaveScheduledHours += item.ScheduledHours;
+                        paidLeaveHours += leaveHours;
+                        if (leaveHours > 0) paidLeaveDaysCount++;
+                        else if (leave.LeaveType != LeaveType.Paid || !isEligibleForPaidLeave) unpaidLeaveDaysCount++;
+                        itemSnapshots.Add(new PayrollItemSnapshot { Date = item.Date, ShiftId = item.ShiftId, ShiftName = item.ShiftName,
+                            StartTime = item.StartTime, EndTime = item.EndTime, ActualWorkHours = 0,
+                            PaidLeaveHours = Math.Round(leaveHours, 2), TotalPayableHours = Math.Round(leaveHours, 2),
+                            HourlyRate = hourlyRate, TotalAmount = Math.Round((decimal)leaveHours * hourlyRate, 0),
+                            SourceType = leave.LeaveType == LeaveType.Paid && isEligibleForPaidLeave ? "PaidLeave" : "UnpaidLeave",
+                            Status = leave.LeaveType == LeaveType.Paid && isEligibleForPaidLeave ? PayrollDisplayText.SnapPaidLeave : PayrollDisplayText.SnapUnpaidLeave,
+                            Note = PayrollDisplayText.StoredLeaveApprovedNote(leave.LeaveRequestId) });
+                    }
+                }
+                // Never invent hours for legacy approved paid leave whose schedule evidence was lost.
+                if (isEligibleForPaidLeave && empLeaves.Any(x => x.LeaveType == LeaveType.Paid && x.ScheduleSnapshotJson == null))
+                {
+                    missingAttendanceCount++;
+                    missingDates.Add(InputRules.Text("Đơn nghỉ có lương cũ thiếu dữ liệu ca gốc, cần rà soát.", "Legacy paid leave has no schedule evidence; review required."));
+                }
+
                 // Sắp xếp snapshot theo ngày
                 itemSnapshots = itemSnapshots.OrderBy(s => s.Date).ThenBy(s => s.StartTime).ToList();
 
                 // 3. Tính toán tổng lương & trạng thái
-                double totalStandardHours = empRegistrations.Sum(r => r.Shift != null ? r.Shift.ScheduledWorkHours : 0);
+                paidLeaveDaysCount = itemSnapshots.Where(x => x.PaidLeaveHours > 0).Select(x => x.Date.Date).Distinct().Count();
+                unpaidLeaveDaysCount = itemSnapshots.Where(x => x.SourceType == "UnpaidLeave").Select(x => x.Date.Date).Distinct().Count();
+                double totalStandardHours = leaveScheduledHours + empRegistrations.Sum(r => r.Shift != null ? r.Shift.ScheduledWorkHours : 0);
                 double totalPayableHours = actualWorkHours + paidLeaveHours;
                 decimal totalSalary = 0;
                 PayrollDetailStatus status = PayrollDetailStatus.Valid;
@@ -574,6 +611,7 @@ namespace RWPM.Services.Implementation
             });
 
             await _context.SaveChangesAsync();
+            if (calculationTransaction != null) await calculationTransaction.CommitAsync();
             return payroll;
         }
 
@@ -586,6 +624,7 @@ namespace RWPM.Services.Implementation
 
         public async Task LockPayrollAsync(int payrollId, string operatorUsername)
         {
+            await using var lockTransaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
             var payroll = await _context.Payroll
                 .Include(p => p.Details)
                 .FirstOrDefaultAsync(p => p.PayrollId == payrollId);
@@ -596,6 +635,8 @@ namespace RWPM.Services.Implementation
             if (payroll.Status == PayrollStatus.Locked)
                 return;
 
+            // Rebuild only payroll snapshots from current read-only source data before locking.
+            payroll = await CalculatePayrollAsync(payroll.StartDate, payroll.EndDate, operatorUsername);
             // Kiểm tra phía server trước khi khóa:
             // 1. Chặn nếu có nhân viên thiếu đơn giá (MissingRate)
             var missingRates = payroll.Details.Where(d => d.Status == PayrollDetailStatus.MissingRate || d.HourlyRate <= 0).ToList();
@@ -631,14 +672,19 @@ namespace RWPM.Services.Implementation
             });
 
             await _context.SaveChangesAsync();
+            await lockTransaction.CommitAsync();
         }
 
         public async Task UnlockPayrollAsync(int payrollId, string reason, string operatorUsername)
         {
+            await using var payrollTransaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+
             var payroll = await _context.Payroll.FirstOrDefaultAsync(p => p.PayrollId == payrollId);
             if (payroll == null)
                 throw new KeyNotFoundException(string.Format(PayrollResource.Err_PayrollNotFoundId, payrollId));
 
+            InputRules.Require(payroll.Status == PayrollStatus.Locked, "Status", "Chỉ được mở khóa bảng lương đã chốt.", "Only a locked payroll can be unlocked.");
+            reason = InputRules.Reason(reason, 200);
             payroll.Status = PayrollStatus.Draft;
             payroll.Note = PayrollDisplayText.StoredUnlockNote(operatorUsername, DateTime.Now, reason);
             payroll.LockedBy = null;
@@ -659,10 +705,13 @@ namespace RWPM.Services.Implementation
             });
 
             await _context.SaveChangesAsync();
+            await payrollTransaction.CommitAsync();
         }
 
         public async Task DeletePayrollAsync(int payrollId, string operatorUsername)
         {
+            await using var payrollTransaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+
             var payroll = await _context.Payroll
                 .Include(p => p.Details)
                     .ThenInclude(d => d.ItemSnapshots)
@@ -683,6 +732,7 @@ namespace RWPM.Services.Implementation
             _context.PayrollAuditLog.RemoveRange(payroll.AuditLogs);
             _context.Payroll.Remove(payroll);
             await _context.SaveChangesAsync();
+            await payrollTransaction.CommitAsync();
         }
 
         public async Task<EmployeePayslipVM?> GetEmployeePayslipAsync(string username, int? month = null, int? year = null, int? payrollId = null)

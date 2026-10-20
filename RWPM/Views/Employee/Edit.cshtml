@@ -190,6 +190,7 @@
                 <div class="col-md-4">
                     <label class="form-label fw-semibold small" asp-for="ResignDate">@EmployeeModelResource.ResignDate</label>
                     <input class="form-control" type="date" asp-for="ResignDate" value="@(Model.ResignDate.HasValue ? Model.ResignDate.Value.ToString("yyyy-MM-dd") : "")" />
+                    <span asp-validation-for="ResignDate" class="text-danger small"></span>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label fw-semibold small" asp-for="ResignReason">@EmployeeModelResource.ResignReason</label>
@@ -216,4 +217,5 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/personnel-input.js" asp-append-version="true"></script>
 }

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -230,7 +230,7 @@
     <value>Đã sao chép tài khoản &amp; mật khẩu!</value>
   </data>
   <data name="Err_MinLengthPassword" xml:space="preserve">
-    <value>Mật khẩu mới phải có ít nhất 6 ký tự!</value>
+    <value>Mật khẩu phải có 8–100 ký tự, gồm chữ hoa, chữ thường và số.</value>
   </data>
   <data name="Err_PasswordMismatch" xml:space="preserve">
     <value>Mật khẩu xác nhận không trùng khớp!</value>

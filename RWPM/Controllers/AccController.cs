@@ -1,3 +1,4 @@
+using RWPM.Common.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -28,7 +29,7 @@ namespace RWPM.Controllers
         private readonly IEmployeeService _employeeService;
         private readonly DefaultDatabaseContext _context;
 
-        public AccController( 
+        public AccController(
             IStringLocalizer<ErrorServerDefinition> localizer,
             IAccService accService,
             IStoreService storeService,
@@ -259,6 +260,15 @@ namespace RWPM.Controllers
                 }
             }
 
+            try
+            {
+                InputRules.ValidateBirthDate(viewModel.DateOfBirth);
+                InputRules.Require(viewModel.JoinDate.HasValue, "JoinDate", "Chưa chọn ngày vào làm.", "Select a join date.");
+                InputRules.ValidateEmployment(viewModel.EmployeeCode ?? "", viewModel.JoinDate ?? default, viewModel.DateOfBirth,
+                    null, viewModel.EmploymentType, EmploymentStatus.Official, viewModel.HourlyRate, null, 12, null);
+            }
+            catch (InputValidationException ex) { ModelState.AddModelError(ex.Field, ex.Message); }
+
             if (!ModelState.IsValid)
             {
                 viewModel.AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync();
@@ -268,6 +278,7 @@ namespace RWPM.Controllers
 
             try
             {
+                await using var transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
                 var createdAcc = await _accService.CreateAsync(viewModel.ToEntity());
 
                 // Nếu là vai trò nhân viên làm việc tại cửa hàng hoặc HR, tự động tạo hồ sơ Employee
@@ -286,6 +297,7 @@ namespace RWPM.Controllers
                     await _employeeService.CreateAsync(emp);
                 }
 
+                await transaction.CommitAsync();
                 AlertHelper.CreateSuccess(TempData);
                 TempData["CreatedAccountNotice"] = string.Format(AccRes.Notice_CreatedAccount, createdAcc.Username, viewModel.Password);
             }
@@ -298,7 +310,9 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                AlertHelper.AddErrorMessage(TempData, ex.Message);
+                if (ex is InputValidationException input) ModelState.AddModelError(input.Field, input.Message);
+                else if (InputRules.Duplicate(ex) is { } duplicate) ModelState.AddModelError(duplicate.Field, duplicate.Message);
+                else AlertHelper.AddErrorMessage(TempData, ex.Message);
                 viewModel.AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync();
                 viewModel.StoreSelectList = await _storeService.GetSelectListAsync();
                 return View(viewModel);
@@ -423,6 +437,15 @@ namespace RWPM.Controllers
                 }
             }
 
+            try
+            {
+                InputRules.ValidateBirthDate(viewModel.DateOfBirth);
+                InputRules.Require(viewModel.JoinDate.HasValue, "JoinDate", "Chưa chọn ngày vào làm.", "Select a join date.");
+                InputRules.ValidateEmployment(viewModel.EmployeeCode ?? "", viewModel.JoinDate ?? default, viewModel.DateOfBirth,
+                    null, viewModel.EmploymentType, EmploymentStatus.Official, viewModel.HourlyRate, null, 12, null);
+            }
+            catch (InputValidationException ex) { ModelState.AddModelError(ex.Field, ex.Message); }
+
             if (!ModelState.IsValid)
             {
                 viewModel.AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync();
@@ -432,6 +455,7 @@ namespace RWPM.Controllers
 
             try
             {
+                await using var transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
                 await _accService.UpdateAsync(viewModel.ToEntity());
 
                 // Xử lý hồ sơ nhân viên (Employee)
@@ -454,8 +478,7 @@ namespace RWPM.Controllers
                         existingEmp.UpdatedDate = DateTime.Now;
                         existingEmp.UpdatedBy = AccountHelper.GetCurrentUsername(HttpContext.User);
 
-                        _context.Employee.Update(existingEmp);
-                        await _context.SaveChangesAsync();
+                        await _employeeService.UpdateAsync(existingEmp);
                     }
                 }
                 else if (isStoreRole || isHrRole)
@@ -474,6 +497,7 @@ namespace RWPM.Controllers
                     await _employeeService.CreateAsync(newEmp);
                 }
 
+                await transaction.CommitAsync();
                 AlertHelper.EditSuccess(TempData);
             }
             catch (ModelValidationException ex)
@@ -485,7 +509,9 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                AlertHelper.AddErrorMessage(TempData, ex.Message);
+                if (ex is InputValidationException input) ModelState.AddModelError(input.Field, input.Message);
+                else if (InputRules.Duplicate(ex) is { } duplicate) ModelState.AddModelError(duplicate.Field, duplicate.Message);
+                else AlertHelper.AddErrorMessage(TempData, ex.Message);
                 viewModel.AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync();
                 viewModel.StoreSelectList = await _storeService.GetSelectListAsync();
                 return View(viewModel);
@@ -538,7 +564,7 @@ namespace RWPM.Controllers
             return View(new ChangePasswordAccVM(account));
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin,HR")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePasswordAccount(string id, ChangePasswordAccVM viewModel)
@@ -558,6 +584,13 @@ namespace RWPM.Controllers
             {
                 await _accService.ChangePasswordForAccountAsync(viewModel.ToDto());
                 AlertHelper.AddSuccessMessage(TempData, _localizer["Acc_ChangePasswordSuccess"]);
+            }
+            catch (UnauthorizedAccessException) { return Forbid(); }
+            catch (InputValidationException ex)
+            {
+                ModelState.AddModelError(ex.Field, ex.Message);
+                viewModel.ApplyEntityValue(account);
+                return View(viewModel);
             }
             catch (ModelValidationException ex)
             {
@@ -592,6 +625,12 @@ namespace RWPM.Controllers
                                                       viewModel.ConfirmPassword);
 
                 AlertHelper.AddSuccessMessage(TempData, _localizer["Acc_ChangePasswordSuccess"]);
+            }
+            catch (InputValidationException ex)
+            {
+                ModelState.AddModelError(ex.Field, ex.Message);
+
+                return View(viewModel);
             }
             catch (ModelValidationException ex)
             {

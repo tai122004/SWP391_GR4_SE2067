@@ -1,3 +1,4 @@
+using RWPM.Common.Validation;
 using Microsoft.EntityFrameworkCore;
 using RWPM.Common.Enums;
 using RWPM.Infrastructure.Data;
@@ -65,6 +66,9 @@ namespace RWPM.Services
 
         public async Task<ShiftRegistration> CreateAsync(ShiftRegistration entity)
         {
+            await using var scheduleTransaction = _context.Database.CurrentTransaction == null
+                ? await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable) : null;
+
             if (entity.WorkDate.Date < DateTime.Today)
             {
                 throw new Exception(SR.Err_PastDateRegistration);
@@ -84,11 +88,15 @@ namespace RWPM.Services
 
             _context.ShiftRegistration.Add(entity);
             await _context.SaveChangesAsync();
+            if (scheduleTransaction != null) await scheduleTransaction.CommitAsync();
             return entity;
         }
 
         public async Task<List<ShiftRegistration>> CreateBatchAsync(List<ShiftRegistration> entities)
         {
+            await using var scheduleTransaction = _context.Database.CurrentTransaction == null
+                ? await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable) : null;
+
             if (!entities.Any()) return entities;
 
             if (entities.Any(e => e.WorkDate.Date < DateTime.Today))
@@ -116,11 +124,15 @@ namespace RWPM.Services
             }
 
             await _context.SaveChangesAsync();
+            if (scheduleTransaction != null) await scheduleTransaction.CommitAsync();
             return entities;
         }
 
         public async Task<ShiftRegistration> UpdateAsync(ShiftRegistration entity)
         {
+            await using var scheduleTransaction = _context.Database.CurrentTransaction == null
+                ? await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable) : null;
+
             await ValidateScheduleConstraintsAsync(entity.EmployeeId, new List<ShiftRegistration> { entity }, new List<int> { entity.ShiftRegistrationId });
 
             var exists = await _context.ShiftRegistration.AnyAsync(x => 
@@ -136,6 +148,7 @@ namespace RWPM.Services
 
             _context.ShiftRegistration.Update(entity);
             await _context.SaveChangesAsync();
+            if (scheduleTransaction != null) await scheduleTransaction.CommitAsync();
             return entity;
         }
 
@@ -151,14 +164,22 @@ namespace RWPM.Services
 
         public async Task UpdateStatusAsync(int id, RegistrationStatus status, string? rejectionReason = null, string? approver = null)
         {
-            await using var transaction = await _context.Database.BeginTransactionAsync();
+            InputRules.Decision(status);
+            if (status == RegistrationStatus.Rejected) rejectionReason = InputRules.Reason(rejectionReason);
+            await using var transaction = _context.Database.CurrentTransaction == null
+                ? await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable) : null;
             var entity = await _context.ShiftRegistration
                 .Include(x => x.Employee)
                 .ThenInclude(e => e.Account)
                 .FirstOrDefaultAsync(x => x.ShiftRegistrationId == id);
                 
+            InputRules.Require(entity != null, "Id", "Không tìm thấy đăng ký ca.", "Registration not found.");
             if (entity != null)
             {
+                await _context.Entry(entity).ReloadAsync();
+                await WorkflowGuard.EmployeeAsync(_context, approver ?? "", entity.EmployeeId, true);
+                InputRules.Require(entity.Status == RegistrationStatus.Pending, "Status", "Đăng ký đã được xử lý.", "Registration already processed.");
+                await WorkflowGuard.UnlockedPeriodAsync(_context, entity.WorkDate.Date, entity.WorkDate.Date);
                 if (status == RegistrationStatus.Approved)
                 {
                     await ValidateScheduleConstraintsAsync(entity.EmployeeId, new List<ShiftRegistration> { entity }, new List<int> { id });
@@ -174,19 +195,29 @@ namespace RWPM.Services
                 entity.ApprovedAt = DateTime.Now;
                 await _context.SaveChangesAsync();
             }
-            await transaction.CommitAsync();
+            if (transaction != null) await transaction.CommitAsync();
         }
 
         public async Task UpdateBulkStatusAsync(List<int> ids, RegistrationStatus status, string? rejectionReason = null, string? approver = null)
         {
-            await using var transaction = await _context.Database.BeginTransactionAsync();
+            InputRules.Decision(status);
+            if (status == RegistrationStatus.Rejected) rejectionReason = InputRules.Reason(rejectionReason);
+            await using var transaction = _context.Database.CurrentTransaction == null
+                ? await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable) : null;
             var entities = await _context.ShiftRegistration
                 .Include(x => x.Employee)
                 .ThenInclude(e => e.Account)
                 .Where(x => ids.Contains(x.ShiftRegistrationId))
                 .ToListAsync();
 
-            if (!entities.Any()) return;
+            InputRules.Require(ids.Count > 0 && ids.Distinct().Count() == ids.Count && entities.Count == ids.Count, "Ids", "Không tìm thấy đầy đủ các đăng ký.", "Some registrations were not found.");
+            foreach (var item in entities)
+            {
+                await _context.Entry(item).ReloadAsync();
+                await WorkflowGuard.EmployeeAsync(_context, approver ?? "", item.EmployeeId, true);
+                InputRules.Require(item.Status == RegistrationStatus.Pending, "Status", "Đăng ký đã được xử lý.", "Registration already processed.");
+                await WorkflowGuard.UnlockedPeriodAsync(_context, item.WorkDate.Date, item.WorkDate.Date);
+            }
 
             if (status == RegistrationStatus.Approved)
             {
@@ -210,7 +241,7 @@ namespace RWPM.Services
             }
 
             await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
+            if (transaction != null) await transaction.CommitAsync();
         }
 
         private async Task AutoScheduleForEmployeeAsync(List<ShiftRegistration> approvedRegistrations)
@@ -269,6 +300,9 @@ namespace RWPM.Services
 
         public async Task SyncWeeklyRegistrationAsync(int employeeId, int storeId, DateTime startOfWeek, List<ShiftRegistration> desiredRegistrations)
         {
+            await using var scheduleTransaction = _context.Database.CurrentTransaction == null
+                ? await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable) : null;
+
             var endOfWeek = startOfWeek.AddDays(6);
             
             // 1. Get existing registrations for this week
@@ -309,11 +343,22 @@ namespace RWPM.Services
             }
 
             await _context.SaveChangesAsync();
+            if (scheduleTransaction != null) await scheduleTransaction.CommitAsync();
         }
 
-        private async Task ValidateScheduleConstraintsAsync(int employeeId, List<ShiftRegistration> pendingRegistrations, List<int> ignoreIds = null)
+        public async Task ValidateScheduleConstraintsAsync(int employeeId, List<ShiftRegistration> pendingRegistrations, List<int>? ignoreIds = null)
         {
             if (!pendingRegistrations.Any()) return;
+            var employee = await _context.Employee.AsNoTracking().Include(x => x.Account).Include(x => x.Store).SingleOrDefaultAsync(x => x.EmployeeId == employeeId);
+            InputRules.Require(employee != null && employee.IsActive && employee.Account.IsActive && employee.Store != null && employee.Store.IsActive,
+                "EmployeeId", "Nhân viên hoặc chi nhánh không hoạt động.", "Employee or store is inactive.");
+            foreach (var reg in pendingRegistrations)
+            {
+                InputRules.Require(reg.EmployeeId == employeeId && reg.StoreId == employee!.StoreId && reg.WorkDate.Date >= DateTime.Today && reg.WorkDate.Date >= employee.JoinDate.Date
+                    && (!employee.ResignDate.HasValue || reg.WorkDate.Date < employee.ResignDate.Value.Date),
+                    "WorkDate", "Ngày làm/chi nhánh không phù hợp với nhân viên.", "Work date or store is invalid for this employee.");
+                await WorkflowGuard.UnlockedPeriodAsync(_context, reg.WorkDate.Date, reg.WorkDate.Date);
+            }
 
             var minDate = pendingRegistrations.Min(x => x.WorkDate).Date.AddDays(-1);
             var maxDate = pendingRegistrations.Max(x => x.WorkDate).Date.AddDays(1);
@@ -330,13 +375,13 @@ namespace RWPM.Services
                 query = query.Where(x => !ignoreIds.Contains(x.ShiftRegistrationId));
             }
 
-            var existingRegistrations = await query.ToListAsync();
+            var existingRegistrations = await query.AsNoTracking().ToListAsync();
 
             var pendingIds = pendingRegistrations.Select(x => x.ShiftRegistrationId).Where(id => id > 0).ToList();
             var combinedSchedule = existingRegistrations.Where(x => !pendingIds.Contains(x.ShiftRegistrationId)).ToList();
             
             var shiftIds = pendingRegistrations.Select(x => x.ShiftId).Distinct().ToList();
-            var shifts = await _context.Shift.Where(s => shiftIds.Contains(s.ShiftId)).ToListAsync();
+            var shifts = await _context.Shift.AsNoTracking().Where(s => shiftIds.Contains(s.ShiftId)).ToListAsync();
             
             // Kiểm tra nhân viên có đang trong thời gian nghỉ phép đã được duyệt không
             var approvedLeaves = await _context.LeaveRequest
@@ -346,6 +391,7 @@ namespace RWPM.Services
                          && l.EndDate >= minDate)
                 .ToListAsync();
 
+            var proposedSchedule = new HashSet<ShiftRegistration>();
             foreach (var p in pendingRegistrations)
             {
                 var leave = approvedLeaves.FirstOrDefault(l => p.WorkDate.Date >= l.StartDate.Date && p.WorkDate.Date <= l.EndDate.Date);
@@ -359,8 +405,11 @@ namespace RWPM.Services
                 if (shift == null || !shift.IsAvailableOn(p.WorkDate)
                     || !await _context.StoreShift.AnyAsync(x => x.ShiftId == p.ShiftId && x.StoreId == p.StoreId && x.IsActive && x.Store.IsActive))
                     throw new Exception(SR.Err_ShiftNotAvailable);
-                p.Shift = shift;
-                combinedSchedule.Add(p);
+                // Use detached comparison rows; validation must not replace tracked navigation entities.
+                var candidate = new ShiftRegistration { EmployeeId = p.EmployeeId, StoreId = p.StoreId,
+                    ShiftId = p.ShiftId, WorkDate = p.WorkDate, Shift = shift };
+                combinedSchedule.Add(candidate);
+                proposedSchedule.Add(candidate);
             }
 
             combinedSchedule = combinedSchedule.OrderBy(x => x.WorkDate.Date).ThenBy(x => x.Shift.StartTime).ToList();
@@ -375,7 +424,7 @@ namespace RWPM.Services
                 {
                     var next = combinedSchedule[j];
                     
-                    if (!pendingRegistrations.Contains(current) && !pendingRegistrations.Contains(next))
+                    if (!proposedSchedule.Contains(current) && !proposedSchedule.Contains(next))
                     {
                         continue;
                     }

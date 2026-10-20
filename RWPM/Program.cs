@@ -16,12 +16,16 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<DefaultDatabaseContext>();
     await dbContext.Database.MigrateAsync();
+    // Maintenance/test restarts can preserve all existing data, including attendance demo data.
+    if (!builder.Configuration.GetValue<bool>("SkipStartupSeeding"))
+    {
     await new AccAdminSeeder().SeedAsync(dbContext);
     await new ShiftSeeder().SeedAsync(dbContext);
     await StoreTimeFixSeeder.FixStoreTimesAsync(dbContext);
     if (app.Environment.IsDevelopment())
     {
         await new PayrollAttendanceDemoSeeder().SeedAsync(dbContext);
+    }
     }
 }
 #endregion

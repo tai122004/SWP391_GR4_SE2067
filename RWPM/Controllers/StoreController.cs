@@ -1,3 +1,4 @@
+using RWPM.Common.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -117,7 +118,9 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                AlertHelper.AddErrorMessage(TempData, ex.Message);
+                if (ex is InputValidationException input) ModelState.AddModelError(input.Field, input.Message);
+                else if (InputRules.Duplicate(ex) is { } duplicate) ModelState.AddModelError(duplicate.Field, duplicate.Message);
+                else AlertHelper.AddErrorMessage(TempData, ex.Message);
                 await PopulateManagerSelectListAsync(viewModel.ManagerId);
                 return View(viewModel);
             }
@@ -175,7 +178,9 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                AlertHelper.AddErrorMessage(TempData, ex.Message);
+                if (ex is InputValidationException input) ModelState.AddModelError(input.Field, input.Message);
+                else if (InputRules.Duplicate(ex) is { } duplicate) ModelState.AddModelError(duplicate.Field, duplicate.Message);
+                else AlertHelper.AddErrorMessage(TempData, ex.Message);
                 await PopulateManagerSelectListAsync(viewModel.ManagerId);
                 return View(viewModel);
             }

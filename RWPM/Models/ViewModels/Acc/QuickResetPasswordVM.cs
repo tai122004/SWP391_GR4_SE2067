@@ -11,7 +11,8 @@ namespace RWPM.Models.ViewModels.Acc
 
         [Display(Name = "NewPassword", ResourceType = typeof(Resources.Models.ChangePassword))]
         [RequiredLocalization]
-        [MinLengthLocalized(6)]
+        [MinLengthLocalized(8)]
+        [PersonnelInput("Password")]
         public string NewPassword { get; set; } = string.Empty;
 
         [Display(Name = "ConfirmNewPassword", ResourceType = typeof(Resources.Models.ChangePassword))]
