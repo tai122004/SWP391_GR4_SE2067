@@ -1,5 +1,4 @@
 using System.Globalization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using RWPM.Common.Enums;
 using RWPM.Infrastructure.Data;
@@ -80,30 +79,5 @@ public static class AttendanceInputRules
             && x.StartDate <= date.Date && x.EndDate >= date.Date), "WorkDate",
             "Ngày công thuộc kỳ lương đã chốt; cần mở khóa bảng lương trước khi sửa.",
             "Attendance belongs to a locked payroll period; unlock payroll before changing it.");
-    }
-
-    public static async Task<string> ValidatePhotoAsync(IFormFile? photo)
-    {
-        InputRules.Require(photo is { Length: > 0 } && photo.Length <= MaxPhotoBytes, "Photo",
-            "Ảnh chấm công phải có dữ liệu và không vượt quá 5 MB.",
-            "Attendance photo must be nonempty and no larger than 5 MB.");
-        await using var source = photo!.OpenReadStream();
-        using var buffer = new MemoryStream();
-        await source.CopyToAsync(buffer);
-        InputRules.Require(buffer.Length == photo.Length && buffer.Length >= 12, "Photo",
-            "Ảnh chấm công bị thiếu hoặc hỏng.", "Attendance photo is incomplete or corrupt.");
-        var bytes = buffer.GetBuffer();
-        var jpeg = bytes[0] == 0xFF && bytes[1] == 0xD8
-            && bytes[buffer.Length - 2] == 0xFF && bytes[buffer.Length - 1] == 0xD9;
-        var png = bytes[0] == 0x89 && bytes[1] == 0x50 && bytes[2] == 0x4E && bytes[3] == 0x47
-            && bytes[4] == 0x0D && bytes[5] == 0x0A && bytes[6] == 0x1A && bytes[7] == 0x0A
-            && bytes[buffer.Length - 8] == 0x49 && bytes[buffer.Length - 7] == 0x45
-            && bytes[buffer.Length - 6] == 0x4E && bytes[buffer.Length - 5] == 0x44;
-        InputRules.Require(jpeg || png, "Photo", "Ảnh phải là tệp JPEG hoặc PNG hợp lệ.",
-            "Photo must be a valid JPEG or PNG file.");
-        InputRules.Require(jpeg ? photo.ContentType.Equals("image/jpeg", StringComparison.OrdinalIgnoreCase)
-            : photo.ContentType.Equals("image/png", StringComparison.OrdinalIgnoreCase), "Photo",
-            "Loại nội dung ảnh không khớp với tệp.", "Photo content type does not match the file.");
-        return jpeg ? ".jpg" : ".png";
     }
 }

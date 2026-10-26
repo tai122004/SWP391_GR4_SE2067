@@ -7,8 +7,10 @@
 @{
     ViewData["Title"] = $"{StoreSharedResource.Details_PageHeader} {Model.Store.StoreName}";
     var store = Model.Store;
-    var openStr = store.OpeningTime.HasValue ? $"{store.OpeningTime.Value.Hours:D2}h{store.OpeningTime.Value.Minutes:D2}" : "";
-    var closeStr = store.ClosingTime.HasValue ? $"{store.ClosingTime.Value.Hours:D2}h{store.ClosingTime.Value.Minutes:D2}" : "";
+    string Hm(TimeSpan t) => $"{t.Hours:D2}:{t.Minutes:D2}";
+    string L(string label) => label.Trim().TrimEnd(':').Trim();
+    var openStr = store.OpeningTime.HasValue ? Hm(store.OpeningTime.Value) : "";
+    var closeStr = store.ClosingTime.HasValue ? Hm(store.ClosingTime.Value) : "";
 }
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -24,233 +26,167 @@
 </style>
 
 <div class="container-fluid px-0">
-    <!-- Header Page -->
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div class="app-page-header">
         <div>
-            <h4 class="fw-bold text-dark d-flex align-items-center mb-1">
-                <i class="bi bi-shop text-primary me-2"></i>
-                @StoreSharedResource.Details_PageHeader <span class="text-primary ms-2">@store.StoreName (@store.StoreCode)</span>
-            </h4>
+            <h4 class="mb-1">@store.StoreName <span class="text-muted fw-normal fs-6 font-monospace">@store.StoreCode</span></h4>
             <div class="text-muted small">
                 <i class="bi bi-geo-alt me-1"></i>@(string.IsNullOrWhiteSpace(store.Address) ? StoreSharedResource.Details_UnsetAddress : store.Address)
             </div>
         </div>
-        <div class="d-flex gap-2">
-            <a asp-action="Edit" asp-route-id="@store.StoreId" class="btn btn-primary btn-sm px-3 shadow-sm">
-                <i class="bi bi-pencil-square me-1"></i> @SharedResource.Button_Edit
-            </a>
+        <div class="app-page-actions">
             <a asp-action="Index" class="btn btn-outline-secondary btn-sm px-3">
                 <i class="bi bi-arrow-left me-1"></i> @SharedResource.Button_GoBack
             </a>
+            <a asp-action="Edit" asp-route-id="@store.StoreId" class="btn btn-primary btn-sm px-3">
+                <i class="bi bi-pencil-square me-1"></i> @SharedResource.Button_Edit
+            </a>
         </div>
     </div>
 
-    <!-- Summary KPI Cards -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm rounded-3 bg-primary text-white p-3">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <div class="small text-white-50 fw-semibold text-uppercase">@StoreSharedResource.KPI_Manager</div>
-                        <div class="fs-5 fw-bold mt-1">
-                            @(store.Manager?.Account?.FullName ?? StoreSharedResource.Unassigned)
-                        </div>
-                    </div>
-                    <div class="bg-white bg-opacity-25 rounded-circle p-3 d-flex align-items-center justify-content-center">
-                        <i class="bi bi-person-badge fs-3"></i>
-                    </div>
-                </div>
+    <!-- KPI -->
+    <div class="row g-3 mb-3">
+        <div class="col-6 col-md-3">
+            <div class="card p-3 h-100">
+                <div class="text-muted" style="font-size: 13px;">@StoreSharedResource.KPI_Manager</div>
+                <div class="fs-5 fw-semibold mt-1 text-truncate">@(store.Manager?.Account?.FullName ?? StoreSharedResource.Unassigned)</div>
             </div>
         </div>
-
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm rounded-3 bg-success text-white p-3">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <div class="small text-white-50 fw-semibold text-uppercase">@StoreSharedResource.KPI_TotalEmployees</div>
-                        <div class="fs-3 fw-bold mt-1">@Model.TotalEmployees <span class="fs-6 fw-normal text-white-50">@StoreSharedResource.Unit_People</span></div>
-                    </div>
-                    <div class="bg-white bg-opacity-25 rounded-circle p-3 d-flex align-items-center justify-content-center">
-                        <i class="bi bi-people-fill fs-3"></i>
-                    </div>
-                </div>
+        <div class="col-6 col-md-3">
+            <div class="card p-3 h-100">
+                <div class="text-muted" style="font-size: 13px;">@StoreSharedResource.KPI_TotalEmployees</div>
+                <div class="fs-4 fw-semibold mt-1 tabular">@Model.TotalEmployees <span class="fs-6 fw-normal text-muted">@StoreSharedResource.Unit_People</span></div>
             </div>
         </div>
-
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm rounded-3 bg-info text-white p-3">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <div class="small text-white-50 fw-semibold text-uppercase">@StoreSharedResource.KPI_TodayAttendance</div>
-                        <div class="fs-3 fw-bold mt-1">@Model.TodayPresentCount <span class="fs-6 fw-normal text-white-50">@StoreSharedResource.Unit_Records</span></div>
-                    </div>
-                    <div class="bg-white bg-opacity-25 rounded-circle p-3 d-flex align-items-center justify-content-center">
-                        <i class="bi bi-calendar-check-fill fs-3"></i>
-                    </div>
-                </div>
+        <div class="col-6 col-md-3">
+            <div class="card p-3 h-100">
+                <div class="text-muted" style="font-size: 13px;">@StoreSharedResource.KPI_TodayAttendance</div>
+                <div class="fs-4 fw-semibold mt-1 tabular">@Model.TodayPresentCount <span class="fs-6 fw-normal text-muted">@StoreSharedResource.Unit_Records</span></div>
             </div>
         </div>
-
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm rounded-3 bg-warning text-dark p-3">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <div class="small text-dark-50 fw-semibold text-uppercase">@StoreSharedResource.KPI_OperatingHours</div>
-                        <div class="fs-5 fw-bold mt-1">
-                            @if (store.OpeningTime.HasValue && store.ClosingTime.HasValue)
-                            {
-                                <span>@openStr - @closeStr</span>
-                            }
-                            else
-                            {
-                                <span>@StoreSharedResource.AllDayOperating</span>
-                            }
-                        </div>
-                    </div>
-                    <div class="bg-dark bg-opacity-10 rounded-circle p-3 d-flex align-items-center justify-content-center">
-                        <i class="bi bi-clock-history fs-3"></i>
-                    </div>
+        <div class="col-6 col-md-3">
+            <div class="card p-3 h-100">
+                <div class="text-muted" style="font-size: 13px;">@StoreSharedResource.KPI_OperatingHours</div>
+                <div class="fs-5 fw-semibold mt-1 tabular">
+                    @if (store.OpeningTime.HasValue && store.ClosingTime.HasValue)
+                    {
+                        <span>@openStr – @closeStr</span>
+                    }
+                    else
+                    {
+                        <span>@StoreSharedResource.AllDayOperating</span>
+                    }
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Navigation Tabs -->
+    <!-- Tabs -->
     <ul class="nav nav-tabs modern-tabs mb-3" id="storeTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-item nav-link active fw-bold" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
-                <i class="bi bi-info-circle me-1"></i> @StoreSharedResource.Tab_InfoAndMap
+            <button class="nav-item nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
+                @StoreSharedResource.Tab_InfoAndMap
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-item nav-link fw-bold" id="employee-tab" data-bs-toggle="tab" data-bs-target="#employee" type="button" role="tab">
-                <i class="bi bi-people me-1"></i> @StoreSharedResource.Tab_Employees (@Model.TotalEmployees)
+            <button class="nav-item nav-link" id="employee-tab" data-bs-toggle="tab" data-bs-target="#employee" type="button" role="tab">
+                @StoreSharedResource.Tab_Employees <span class="app-badge app-badge-neutral ms-1">@Model.TotalEmployees</span>
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-item nav-link fw-bold" id="shift-tab" data-bs-toggle="tab" data-bs-target="#shift" type="button" role="tab">
-                <i class="bi bi-calendar-range me-1"></i> @StoreSharedResource.Tab_Shifts (@Model.ActiveShiftsCount)
+            <button class="nav-item nav-link" id="shift-tab" data-bs-toggle="tab" data-bs-target="#shift" type="button" role="tab">
+                @StoreSharedResource.Tab_Shifts <span class="app-badge app-badge-neutral ms-1">@Model.ActiveShiftsCount</span>
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-item nav-link fw-bold" id="attendance-tab" data-bs-toggle="tab" data-bs-target="#attendance" type="button" role="tab">
-                <i class="bi bi-journal-check me-1"></i> @StoreSharedResource.Tab_TodayAttendance (@Model.TodayPresentCount)
+            <button class="nav-item nav-link" id="attendance-tab" data-bs-toggle="tab" data-bs-target="#attendance" type="button" role="tab">
+                @StoreSharedResource.Tab_TodayAttendance <span class="app-badge app-badge-neutral ms-1">@Model.TodayPresentCount</span>
             </button>
         </li>
     </ul>
 
-    <!-- Tab Contents -->
     <div class="tab-content" id="storeTabContent">
-        <!-- TAB 1: General Info & Map -->
+        <!-- TAB 1: Thông tin & bản đồ -->
         <div class="tab-pane fade show active" id="info" role="tabpanel">
             <div class="row g-3">
                 <div class="col-lg-6">
-                    <div class="card border-0 shadow-sm rounded-3 h-100 p-3">
-                        <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
-                            <i class="bi bi-card-checklist text-primary me-2"></i> @StoreSharedResource.Details_BranchConfig
-                        </h5>
-                        <table class="table table-borderless align-middle mb-0">
-                            <tbody>
-                                <tr>
-                                    <td class="text-muted fw-semibold" style="width: 40%;">@StoreModelResource.StoreCode:</td>
-                                    <td class="fw-bold text-primary">@store.StoreCode</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-muted fw-semibold">@StoreModelResource.StoreName:</td>
-                                    <td class="fw-bold">@store.StoreName</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-muted fw-semibold">@StoreSharedResource.KPI_OperatingHours:</td>
-                                    <td>
-                                        @if (store.OpeningTime.HasValue && store.ClosingTime.HasValue)
-                                        {
-                                            <span class="badge bg-light text-dark border fs-6">
-                                                <i class="bi bi-clock me-1 text-primary"></i>@StoreSharedResource.Details_OpenTimeLabel <strong>@openStr</strong> &mdash; @StoreSharedResource.Details_CloseTimeLabel <strong>@closeStr</strong>
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-light text-dark border">@StoreSharedResource.AllDayOperating</span>
-                                        }
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="text-muted fw-semibold">@StoreModelResource.Phone:</td>
-                                    <td>@(string.IsNullOrWhiteSpace(store.Phone) ? "-" : store.Phone)</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-muted fw-semibold">@StoreSharedResource.KPI_Manager:</td>
-                                    <td>
-                                        @if (store.Manager != null && store.Manager.Account != null)
-                                        {
-                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
-                                                <i class="bi bi-person-fill me-1"></i>@store.Manager.Account.FullName (@store.Manager.EmployeeCode)
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">@StoreSharedResource.Unassigned</span>
-                                        }
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="text-muted fw-semibold">@StoreSharedResource.Details_GPSRadius:</td>
-                                    <td>
-                                        <span class="badge bg-success-subtle text-success border border-success-subtle">
-                                            <i class="bi bi-broadcast me-1"></i> @string.Format(StoreSharedResource.Details_AllowedDistance, store.AllowedRadiusMeters)
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="text-muted fw-semibold">@StoreSharedResource.Details_BranchStatus:</td>
-                                    <td>
-                                        @if (store.IsActive)
-                                        {
-                                            <span class="badge bg-success">@SharedResource.ObjectStatus_IsActive</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-secondary">@SharedResource.ObjectStatus_IsInactive</span>
-                                        }
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="text-muted fw-semibold">@StoreSharedResource.Details_CreatedDate:</td>
-                                    <td class="small text-muted">
-                                        <i class="bi bi-calendar-event me-1"></i>@store.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")
-                                    </td>
-                                </tr>
-                                @if (store.UpdatedDate.HasValue)
+                    <div class="card h-100 p-3">
+                        <h5 class="border-bottom pb-2 mb-3">@StoreSharedResource.Details_BranchConfig</h5>
+                        <dl class="row mb-0">
+                            <dt class="col-sm-5 text-muted fw-normal">@StoreModelResource.StoreCode</dt>
+                            <dd class="col-sm-7 font-monospace">@store.StoreCode</dd>
+
+                            <dt class="col-sm-5 text-muted fw-normal">@StoreModelResource.StoreName</dt>
+                            <dd class="col-sm-7 fw-medium">@store.StoreName</dd>
+
+                            <dt class="col-sm-5 text-muted fw-normal">@StoreSharedResource.KPI_OperatingHours</dt>
+                            <dd class="col-sm-7 tabular">
+                                @if (store.OpeningTime.HasValue && store.ClosingTime.HasValue)
                                 {
-                                    <tr>
-                                        <td class="text-muted fw-semibold">@StoreSharedResource.Details_UpdatedDate:</td>
-                                        <td class="small text-muted">
-                                            <i class="bi bi-pencil-clock me-1"></i>@store.UpdatedDate.Value.ToString("dd/MM/yyyy HH:mm:ss")
-                                        </td>
-                                    </tr>
+                                    <span>@L(StoreSharedResource.Details_OpenTimeLabel) <strong>@openStr</strong> — @L(StoreSharedResource.Details_CloseTimeLabel) <strong>@closeStr</strong></span>
                                 }
-                            </tbody>
-                        </table>
+                                else
+                                {
+                                    <span>@StoreSharedResource.AllDayOperating</span>
+                                }
+                            </dd>
+
+                            <dt class="col-sm-5 text-muted fw-normal">@StoreModelResource.Phone</dt>
+                            <dd class="col-sm-7">@(string.IsNullOrWhiteSpace(store.Phone) ? "-" : store.Phone)</dd>
+
+                            <dt class="col-sm-5 text-muted fw-normal">@StoreSharedResource.KPI_Manager</dt>
+                            <dd class="col-sm-7">
+                                @if (store.Manager != null && store.Manager.Account != null)
+                                {
+                                    <span>@store.Manager.Account.FullName <span class="text-muted font-monospace small">@store.Manager.EmployeeCode</span></span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">@StoreSharedResource.Unassigned</span>
+                                }
+                            </dd>
+
+                            <dt class="col-sm-5 text-muted fw-normal">@L(StoreSharedResource.Details_GPSRadius)</dt>
+                            <dd class="col-sm-7">@string.Format(StoreSharedResource.Details_AllowedDistance, store.AllowedRadiusMeters)</dd>
+
+                            <dt class="col-sm-5 text-muted fw-normal">@L(StoreSharedResource.Details_BranchStatus)</dt>
+                            <dd class="col-sm-7">
+                                @if (store.IsActive)
+                                {
+                                    <span class="app-badge app-badge-success">@SharedResource.ObjectStatus_IsActive</span>
+                                }
+                                else
+                                {
+                                    <span class="app-badge app-badge-neutral">@SharedResource.ObjectStatus_IsInactive</span>
+                                }
+                            </dd>
+
+                            <dt class="col-sm-5 text-muted fw-normal">@L(StoreSharedResource.Details_CreatedDate)</dt>
+                            <dd class="col-sm-7 small text-muted tabular">@store.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")</dd>
+
+                            @if (store.UpdatedDate.HasValue)
+                            {
+                                <dt class="col-sm-5 text-muted fw-normal">@L(StoreSharedResource.Details_UpdatedDate)</dt>
+                                <dd class="col-sm-7 small text-muted tabular mb-0">@store.UpdatedDate.Value.ToString("dd/MM/yyyy HH:mm:ss")</dd>
+                            }
+                        </dl>
                     </div>
                 </div>
 
                 <div class="col-lg-6">
-                    <div class="card border-0 shadow-sm rounded-3 h-100 p-3">
-                        <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
-                            <i class="bi bi-geo-alt-fill text-danger me-2"></i> @StoreSharedResource.Details_GPSMapHeader
-                        </h5>
+                    <div class="card h-100 p-3">
+                        <h5 class="border-bottom pb-2 mb-3">@StoreSharedResource.Details_GPSMapHeader</h5>
                         @if (store.Latitude.HasValue && store.Longitude.HasValue)
                         {
-                            <div id="detailsMap" style="height: 320px;" class="rounded border shadow-sm"></div>
+                            <div id="detailsMap" style="height: 320px;" class="rounded border"></div>
                             <div class="small text-muted mt-2 d-flex justify-content-between align-items-center">
-                                <span><i class="bi bi-pin-map-fill text-danger me-1"></i> @StoreSharedResource.Details_Coordinates @store.Latitude.Value.ToString("F6", CultureInfo.InvariantCulture), @store.Longitude.Value.ToString("F6", CultureInfo.InvariantCulture)</span>
-                                <span class="badge bg-light text-dark border">@StoreSharedResource.Range @store.AllowedRadiusMeters m</span>
+                                <span class="tabular">@StoreSharedResource.Details_Coordinates @store.Latitude.Value.ToString("F6", CultureInfo.InvariantCulture), @store.Longitude.Value.ToString("F6", CultureInfo.InvariantCulture)</span>
+                                <span class="app-badge app-badge-neutral">@StoreSharedResource.Range @store.AllowedRadiusMeters m</span>
                             </div>
                         }
                         else
                         {
                             <div class="alert alert-warning text-center my-auto">
-                                <i class="bi bi-exclamation-triangle fs-3 d-block mb-2"></i>
+                                <i class="bi bi-exclamation-triangle d-block mb-2"></i>
                                 @StoreSharedResource.Details_NoGPSAlert
                             </div>
                         }
@@ -259,9 +195,9 @@
             </div>
         </div>
 
-        <!-- TAB 2: Employees List -->
+        <!-- TAB 2: Nhân viên -->
         <div class="tab-pane fade" id="employee" role="tabpanel">
-            <div class="card border-0 shadow-sm rounded-3 p-3">
+            <div class="app-content-card">
                 <div class="table-responsive">
                     <table class="table modern-table align-middle mb-0">
                         <thead>
@@ -280,21 +216,19 @@
                                 foreach (var emp in Model.Employees)
                                 {
                                     <tr>
-                                        <td class="fw-bold text-primary">@emp.EmployeeCode</td>
-                                        <td class="fw-semibold">@(emp.Account?.FullName ?? emp.Username)</td>
+                                        <td class="font-monospace small">@emp.EmployeeCode</td>
+                                        <td class="fw-medium">@(emp.Account?.FullName ?? emp.Username)</td>
                                         <td>@(emp.Account?.Email ?? "-")</td>
                                         <td>@(emp.Account?.PhoneNumber ?? "-")</td>
-                                        <td>
-                                            <span class="badge bg-light text-dark border">@RWPM.Common.UIHelper.GetDisplayName(emp.EmploymentType)</span>
-                                        </td>
+                                        <td><span class="app-badge app-badge-neutral">@RWPM.Common.UIHelper.GetDisplayName(emp.EmploymentType)</span></td>
                                         <td>
                                             @if (emp.IsActive)
                                             {
-                                                <span class="badge bg-success-subtle text-success border border-success-subtle">@StoreSharedResource.EmpTable_Working</span>
+                                                <span class="app-status"><span class="app-dot app-dot-success"></span>@StoreSharedResource.EmpTable_Working</span>
                                             }
                                             else
                                             {
-                                                <span class="badge bg-secondary">@StoreSharedResource.EmpTable_Resigned</span>
+                                                <span class="app-status"><span class="app-dot"></span>@StoreSharedResource.EmpTable_Resigned</span>
                                             }
                                         </td>
                                     </tr>
@@ -312,16 +246,16 @@
             </div>
         </div>
 
-        <!-- TAB 3: Shifts List -->
+        <!-- TAB 3: Ca làm -->
         <div class="tab-pane fade" id="shift" role="tabpanel">
-            <div class="card border-0 shadow-sm rounded-3 p-3">
+            <div class="app-content-card">
                 <div class="table-responsive">
                     <table class="table modern-table align-middle mb-0">
                         <thead>
                             <tr>
                                 <th>@StoreSharedResource.ShiftTable_Name</th>
-                                <th>@StoreSharedResource.ShiftTable_TimeFrame</th>
-                                <th>@StoreSharedResource.ShiftTable_BreakMinutes</th>
+                                <th class="text-end">@StoreSharedResource.ShiftTable_TimeFrame</th>
+                                <th class="text-end">@StoreSharedResource.ShiftTable_BreakMinutes</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -329,14 +263,10 @@
                             {
                                 foreach (var shift in Model.Shifts)
                                 {
-                                    var sStart = $"{shift.StartTime.Hours:D2}h{shift.StartTime.Minutes:D2}";
-                                    var sEnd = $"{shift.EndTime.Hours:D2}h{shift.EndTime.Minutes:D2}";
                                     <tr>
                                         <td>@shift.ShiftName</td>
-                                        <td class="fw-semibold text-info-emphasis">
-                                            @sStart - @sEnd @(shift.EndDayOffset == 1 ? "(+1)" : "")
-                                        </td>
-                                        <td>@shift.BreakMinutes @StoreSharedResource.Unit_Minutes</td>
+                                        <td class="text-end">@Hm(shift.StartTime) – @Hm(shift.EndTime) @(shift.EndDayOffset == 1 ? "(+1)" : "")</td>
+                                        <td class="text-end">@shift.BreakMinutes @StoreSharedResource.Unit_Minutes</td>
                                     </tr>
                                 }
                             }
@@ -352,17 +282,17 @@
             </div>
         </div>
 
-        <!-- TAB 4: Today Attendance -->
+        <!-- TAB 4: Chấm công hôm nay -->
         <div class="tab-pane fade" id="attendance" role="tabpanel">
-            <div class="card border-0 shadow-sm rounded-3 p-3">
+            <div class="app-content-card">
                 <div class="table-responsive">
                     <table class="table modern-table align-middle mb-0">
                         <thead>
                             <tr>
                                 <th>@StoreSharedResource.AttTable_Account</th>
-                                <th>@StoreSharedResource.AttTable_CheckIn</th>
-                                <th>@StoreSharedResource.AttTable_CheckOut</th>
-                                <th>@StoreSharedResource.AttTable_GPSDistance</th>
+                                <th class="text-end">@StoreSharedResource.AttTable_CheckIn</th>
+                                <th class="text-end">@StoreSharedResource.AttTable_CheckOut</th>
+                                <th class="text-end">@StoreSharedResource.AttTable_GPSDistance</th>
                                 <th>@StoreSharedResource.AttTable_Status</th>
                             </tr>
                         </thead>
@@ -371,24 +301,12 @@
                             {
                                 foreach (var rec in Model.TodayAttendanceRecords)
                                 {
-                                    var cinStr = rec.CheckInTime.HasValue ? $"{rec.CheckInTime.Value.Hours:D2}h{rec.CheckInTime.Value.Minutes:D2}" : "-";
-                                    var coutStr = rec.CheckOutTime.HasValue ? $"{rec.CheckOutTime.Value.Hours:D2}h{rec.CheckOutTime.Value.Minutes:D2}" : "-";
                                     <tr>
-                                        <td class="fw-bold">@rec.Username</td>
-                                        <td class="text-success fw-bold">
-                                            @cinStr
-                                        </td>
-                                        <td class="text-danger fw-bold">
-                                            @coutStr
-                                        </td>
-                                        <td>
-                                            @(rec.DistanceMeters.HasValue ? $"{Math.Round(rec.DistanceMeters.Value, 1)}m" : "-")
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-success-subtle text-success border border-success-subtle">
-                                                <i class="bi bi-check-circle me-1"></i>@StoreSharedResource.AttStatus_Valid
-                                            </span>
-                                        </td>
+                                        <td class="fw-medium">@rec.Username</td>
+                                        <td class="text-end">@(rec.CheckInTime.HasValue ? Hm(rec.CheckInTime.Value) : "-")</td>
+                                        <td class="text-end">@(rec.CheckOutTime.HasValue ? Hm(rec.CheckOutTime.Value) : "-")</td>
+                                        <td class="text-end">@(rec.DistanceMeters.HasValue ? $"{Math.Round(rec.DistanceMeters.Value, 1)}m" : "-")</td>
+                                        <td><span class="app-status"><span class="app-dot app-dot-success"></span>@StoreSharedResource.AttStatus_Valid</span></td>
                                     </tr>
                                 }
                             }
@@ -396,7 +314,7 @@
                             {
                                 <tr>
                                     <td colspan="5" class="text-center text-muted py-4">
-                                        <i class="bi bi-calendar-x fs-3 d-block mb-2 text-warning"></i>
+                                        <i class="bi bi-calendar-x fs-3 d-block mb-2"></i>
                                         @StoreSharedResource.AttTable_Empty
                                     </td>
                                 </tr>
@@ -414,69 +332,19 @@
     {
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                var lat = @store.Latitude.Value.ToString(CultureInfo.InvariantCulture);
-                var lng = @store.Longitude.Value.ToString(CultureInfo.InvariantCulture);
-                var radius = @(store.AllowedRadiusMeters > 0 ? store.AllowedRadiusMeters : 100);
-
-                var mapContainer = document.getElementById('detailsMap');
-                if (!mapContainer) return;
-
-                var map = L.map('detailsMap', {
-                    center: [lat, lng],
-                    zoom: 16,
-                    zoomControl: true
-                });
-
-                // Google Streets Layer for high reliability
-                var googleStreets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-                    maxZoom: 20,
-                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-                    attribution: '&copy; Google Maps'
-                });
-
-                // OpenStreetMap Layer as fallback
-                var osmLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19,
-                    attribution: '&copy; OpenStreetMap'
-                });
-
-                // Default layer
-                googleStreets.addTo(map);
-
-                // Add Layer Control
-                L.control.layers({
-                    "@Html.Raw(SharedResource.ResourceManager.GetString("Store_MapGoogle"))": googleStreets,
-                    "@Html.Raw(SharedResource.ResourceManager.GetString("Store_MapOSM"))": osmLayer
-                }).addTo(map);
-
-                // Marker Pin
-                L.marker([lat, lng]).addTo(map)
-                    .bindPopup("<b>@store.StoreName</b><br>@store.Address").openPopup();
-
-                // Circle Radius
-                L.circle([lat, lng], {
-                    color: '#198754',
-                    fillColor: '#198754',
-                    fillOpacity: 0.2,
-                    radius: radius
-                }).addTo(map);
-
-                // Ensure map tiles load correctly after layout calculation
-                setTimeout(function () {
-                    map.invalidateSize();
-                }, 300);
-
-                // Recalculate tile sizes when switching to Info tab
-                var infoTabBtn = document.getElementById('info-tab');
-                if (infoTabBtn) {
-                    infoTabBtn.addEventListener('click', function () {
-                        setTimeout(function () {
-                            map.invalidateSize();
-                        }, 200);
-                    });
+            window.RWPM = window.RWPM || {};
+            RWPM.storeDetails = {
+                lat: @store.Latitude.Value.ToString(CultureInfo.InvariantCulture),
+                lng: @store.Longitude.Value.ToString(CultureInfo.InvariantCulture),
+                radius: @(store.AllowedRadiusMeters > 0 ? store.AllowedRadiusMeters : 100),
+                storeName: @Json.Serialize(store.StoreName),
+                address: @Json.Serialize(store.Address ?? ""),
+                i18n: {
+                    mapGoogle: @Json.Serialize(SharedResource.Store_MapGoogle),
+                    mapOsm: @Json.Serialize(SharedResource.Store_MapOSM)
                 }
-            });
+            };
         </script>
+        <script src="~/js/store/details.js" asp-append-version="true"></script>
     }
 }

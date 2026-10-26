@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RWPM.Common;
-using RWPM.Common.Enums;
 using RWPM.Common.Exceptions;
 using RWPM.Common.Models;
 
@@ -11,7 +10,6 @@ using RWPM.Infrastructure.Data;
 using RWPM.Models.Entities;
 using RWPM.Models.ViewModels.Auth;
 using RWPM.Services.Abstraction;
-using System.Security.Claims;
 
 namespace RWPM.Services.Implementation
 {

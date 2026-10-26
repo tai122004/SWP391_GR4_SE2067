@@ -8,48 +8,46 @@
 }
 
 <div class="login-wrapper d-flex">
-    <!-- LEFT: Login Form -->
-    <div class="login-left d-flex flex-column justify-content-center align-items-center bg-white p-4 p-md-5 w-100 w-md-50">
-        <div class="w-100" style="max-width: 400px;">
-            <div class="d-flex justify-content-end mb-3">
+    <!-- Trái: form đăng nhập -->
+    <div class="login-left d-flex flex-column justify-content-center align-items-center p-4 p-md-5 w-100 w-md-50">
+        <div class="w-100" style="max-width: 380px;">
+            <div class="d-flex justify-content-end mb-4">
                 @await Html.PartialAsync("_LanguageSelector")
             </div>
 
-            <div class="text-center mb-4">
-                @* <img src="~/public/icons/Logo_SVWS.jpg" alt="Logo" style="max-width: 120px; height: auto;" /> *@
-                <h3 class="fw-bold text-primary">@AuthResource.Welcome</h3>
-                <p class="text-muted small">@AuthResource.WelcomeDescription</p>
+            <div class="mb-4">
+                <div class="login-brand mb-3">@AuthResource.Welcome.Trim()</div>
+                <h4 class="mb-1">@AuthResource.Login</h4>
+                <p class="text-muted small mb-0">@AuthResource.WelcomeDescription</p>
             </div>
 
             <form asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" class="needs-validation" novalidate>
                 @Html.AntiForgeryToken()
 
-                <div class="form-floating mb-3">
-                    <input asp-for="Username" class="form-control" placeholder="@AuthResource.UsernamePlaceholder" />
-                    <label asp-for="Username">@AuthResource.Username</label>
+                <div class="mb-3">
+                    <label asp-for="Username" class="form-label">@AuthResource.Username</label>
+                    <input asp-for="Username" class="form-control" placeholder="@AuthResource.UsernamePlaceholder" autocomplete="username" autofocus />
                     <span asp-validation-for="Username" class="text-danger small"></span>
                 </div>
 
-                <div class="form-floating mb-4">
-                    <input asp-for="Password" type="password" class="form-control" placeholder="@AuthResource.PasswordPlaceholder" />
-                    <label asp-for="Password">@AuthResource.Password</label>
+                <div class="mb-4">
+                    <label asp-for="Password" class="form-label">@AuthResource.Password</label>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="@AuthResource.PasswordPlaceholder" autocomplete="current-password" />
                     <span asp-validation-for="Password" class="text-danger small"></span>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-lg w-100 rounded-3 shadow-sm py-2">
-                    <i class="bi bi-box-arrow-in-right me-1"></i> @AuthResource.Login
+                <button type="submit" class="btn btn-primary w-100 py-2">
+                    @AuthResource.Login
                 </button>
             </form>
-
         </div>
     </div>
 
-    <!-- RIGHT: Illustration or Branding -->
+    <!-- Phải: thương hiệu -->
     <div class="login-right d-none d-md-flex w-50 align-items-center justify-content-center text-white position-relative">
-        <div class="overlay"></div>
-        <div class="text-center position-relative px-5">
-            <h2 class="fw-bold mb-3">RWPM</h2>
-            <p class="lead">@AuthResource.RightPanel_SubDescription</p>
+        <div class="position-relative px-5" style="max-width: 520px;">
+            <div class="login-brand login-brand-light mb-3">RWPM</div>
+            <p class="mb-0 login-right-text">@AuthResource.RightPanel_SubDescription</p>
         </div>
     </div>
 </div>
@@ -59,44 +57,13 @@
 }
 
 <style>
-    .login-wrapper { background: #f6f8fb; }
-
-    .login-left {
-        min-height: 100vh;
-        background: #ffffff;
-        box-shadow: 0 0 30px rgba(0, 0, 0, 0.05);
-        z-index: 2;
-    }
-
-    .login-right {
-        background: #12263d;
-        position: relative;
-        overflow: hidden;
-    }
-
-        .login-right .overlay {
-            position: absolute;
-            inset: 0;
-            background: transparent;
-        }
-
-    .form-floating > label {
-        color: #6c757d;
-    }
-
-    .btn-primary {
-        background-color: #1554bb;
-        border: none;
-        transition: 0.2s;
-    }
-
-        .btn-primary:hover {
-            background-color: #104494;
-        }
-
-    .hover-underline:hover {
-        text-decoration: underline;
-    }
-
-    
+    .login-wrapper { background: var(--app-bg, #F6F7F9); }
+    .login-left { min-height: 100vh; background: var(--app-surface, #fff); border-right: 1px solid var(--app-border, #E3E6EA); z-index: 2; }
+    .login-left .form-label { font-weight: 500; font-size: .93rem; color: var(--app-text, #17202B); }
+    .login-left .form-control { min-height: 40px; border-color: var(--app-border-strong, #D5DAE0); }
+    .login-left .form-control:focus { border-color: var(--app-blue, #1554BB); box-shadow: 0 0 0 3px #DCE7F8; }
+    .login-brand { font-weight: 600; font-size: 1.1rem; letter-spacing: .06em; color: var(--app-navy, #12263D); }
+    .login-brand-light { color: #fff; font-size: 1.6rem; }
+    .login-right { background: var(--app-navy, #12263D); overflow: hidden; }
+    .login-right-text { color: #C9D3E0; font-size: 1.05rem; line-height: 1.6; }
 </style>

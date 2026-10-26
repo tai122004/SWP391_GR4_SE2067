@@ -21,25 +21,16 @@ namespace RWPM.Common.Helper
         public static string GetCurrentUsername(ClaimsPrincipal user)
         {
             if (user.Identity?.Name is null)
-                throw new Exception("Current authentiacted user have null name!");
+                throw new Exception("Current authenticated user has no name.");
             return user.Identity.Name;
         }
 
-        public static ClaimsPrincipal GetCurrentUser(IHttpContextAccessor httpContextAccessor)
+        private static ClaimsPrincipal GetCurrentUser(IHttpContextAccessor httpContextAccessor)
         {
             var user = httpContextAccessor.HttpContext?.User;
             if (user is null || user.Identity is null || !user.Identity.IsAuthenticated)
                 throw new Exception("Can't get current authenticated user!");
             return user;
-        }
-
-        public static bool IsAdmin(IHttpContextAccessor httpContextAccessor)
-        {
-            var user = httpContextAccessor.HttpContext?.User;
-            if (user is null || user.Identity is null || !user.Identity.IsAuthenticated)
-                throw new Exception("Can't get current authenticated user!");
-
-            return user.IsInRole("Admin") || user.IsInRole("SuperAdmin");
         }
     }
 }

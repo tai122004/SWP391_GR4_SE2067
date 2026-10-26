@@ -17,6 +17,17 @@ namespace RWPM.Services.Abstraction
         public const string ShiftRegSubmittedBatch = "ShiftRegSubmittedBatch";
         /// <summary>Args: [startDdMm, endDdMm]</summary>
         public const string PayslipAvailable = "PayslipAvailable";
+        /// <summary>Args: [employeeName, count, encodedWindows (AvailabilityRules.EncodeWindows)]</summary>
+        public const string AvailabilitySubmitted = "AvailabilitySubmitted";
+        /// <summary>Args: [count, encodedWindows]</summary>
+        public const string AvailabilityApproved = "AvailabilityApproved";
+        /// <summary>Args: [count, encodedWindows, reason]</summary>
+        public const string AvailabilityRejected = "AvailabilityRejected";
+        /// <summary>
+        /// Ca thiếu người so với nhu cầu sau khi duyệt đơn. Args: [sourceKind (NotificationRequestTypes.Leave | ShiftSwap), employeeName,
+        /// encodedItems (mỗi dòng "tên ca\tdd/MM\tsố thiếu", ngăn cách bằng \n), extraCount]
+        /// </summary>
+        public const string ShiftShortage = "ShiftShortage";
     }
 
     /// <summary>Loại đơn dùng chung với RequestController ("ShiftReg", "ShiftSwap", "Leave", "Attendance").</summary>

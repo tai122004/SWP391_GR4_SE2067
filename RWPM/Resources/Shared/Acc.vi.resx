@@ -17,16 +17,7 @@
     <resheader name="version">2.0</resheader>
     <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
     <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
+                        
     There are any number of "resheader" rows that contain simple 
     name/value pairs.
     
@@ -145,10 +136,10 @@
     <value>Nhập mật khẩu</value>
   </data>
   <data name="Update_PageHeader" xml:space="preserve">
-    <value>Cập nhật - Danh mục tài khoản</value>
+    <value>Cập nhật tài khoản</value>
   </data>
   <data name="Update_PageTitle" xml:space="preserve">
-    <value>Cập nhật - Danh mục tài khoản</value>
+    <value>Cập nhật tài khoản</value>
   </data>
   <data name="EmailInvalid" xml:space="preserve">
     <value>Email của bạn không hợp lệ.</value>
@@ -259,15 +250,6 @@
   <data name="Excel_SelectFile" xml:space="preserve">
     <value>Chọn file Excel (.xlsx)</value>
   </data>
-  <data name="Excel_UploadAndImport" xml:space="preserve">
-    <value>Bắt đầu nhập dữ liệu</value>
-  </data>
-  <data name="Excel_TemplateNote" xml:space="preserve">
-    <value>Vui lòng tải file mẫu để nhập đúng cấu trúc cột. Mật khẩu mặc định sau khi nhập là: Aa@123456</value>
-  </data>
-  <data name="Excel_Close" xml:space="preserve">
-    <value>Đóng</value>
-  </data>
   <data name="Excel_Btn_Preview" xml:space="preserve">
     <value>Kiểm tra dữ liệu</value>
   </data>
@@ -361,12 +343,6 @@
   <data name="Profile_EmploymentType" xml:space="preserve">
     <value>Hình thức nhân sự</value>
   </data>
-  <data name="Profile_FullTime" xml:space="preserve">
-    <value>Toàn thời gian (Full-time)</value>
-  </data>
-  <data name="Profile_PartTime" xml:space="preserve">
-    <value>Bán thời gian (Part-time)</value>
-  </data>
   <data name="Profile_HourlyRate" xml:space="preserve">
     <value>Lương theo giờ</value>
   </data>
@@ -379,9 +355,6 @@
   <data name="Profile_Days" xml:space="preserve">
     <value>ngày</value>
   </data>
-  <data name="Profile_Section_PersonalInfo" xml:space="preserve">
-    <value>Thông tin cá nhân &amp; Pháp lý</value>
-  </data>
   <data name="Profile_CitizenId" xml:space="preserve">
     <value>Số CCCD / CMND</value>
   </data>
@@ -393,12 +366,6 @@
   </data>
   <data name="Profile_Gender" xml:space="preserve">
     <value>Giới tính</value>
-  </data>
-  <data name="Profile_Phone" xml:space="preserve">
-    <value>Số điện thoại</value>
-  </data>
-  <data name="Profile_Email" xml:space="preserve">
-    <value>Email liên hệ</value>
   </data>
   <data name="Profile_JoinDate" xml:space="preserve">
     <value>Ngày vào làm</value>
@@ -489,5 +456,11 @@
   </data>
   <data name="Excel_AutoValidated" xml:space="preserve">
     <value>Dữ liệu được kiểm tra tự động trước khi lưu</value>
+  </data>
+  <data name="Button_TogglePassword" xml:space="preserve">
+    <value>Hiện/ẩn mật khẩu</value>
+  </data>
+  <data name="Aria_Breadcrumb" xml:space="preserve">
+    <value>Đường dẫn trang</value>
   </data>
 </root>

@@ -10,15 +10,14 @@
     <!-- Header -->
     <div class="app-page-header">
         <div>
-            <h4 class="fw-bold text-dark d-flex align-items-center mb-1">
-                <i class="bi bi-bell-fill text-primary me-2"></i>
+            <h4 class="d-flex align-items-center gap-2">
                 @NR.Index_Title
                 @if (Model.UnreadCount > 0)
                 {
-                    <span class="badge bg-danger rounded-pill ms-2 fs-6 fw-semibold">@string.Format(NR.Ui_UnreadCount, Model.UnreadCount)</span>
+                    <span class="app-badge app-badge-info">@string.Format(NR.Ui_UnreadCount, Model.UnreadCount)</span>
                 }
             </h4>
-            <div class="text-muted small">@NR.Index_Subtitle</div>
+            <p class="text-muted">@NR.Index_Subtitle</p>
         </div>
         <div class="app-page-actions">
             @if (Model.UnreadCount > 0)
@@ -26,7 +25,7 @@
                 <form asp-action="MarkAllRead" method="post" class="m-0">
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="unread" value="@(unreadOnly ? "true" : "false")" />
-                    <button type="submit" class="btn btn-outline-primary btn-sm shadow-sm d-flex align-items-center">
+                    <button type="submit" class="btn btn-outline-secondary btn-sm d-flex align-items-center">
                         <i class="bi bi-check2-all me-1"></i> @NR.Ui_MarkAllRead
                     </button>
                 </form>
@@ -34,27 +33,22 @@
         </div>
     </div>
 
-    <!-- Filter -->
-    <div class="app-filter-panel">
-        <div class="btn-group btn-group-sm" role="group" aria-label="@NR.Index_Title">
-            <a asp-action="Index" asp-route-unread="false" class="btn @(unreadOnly ? "btn-outline-primary" : "btn-primary")">
-                <i class="bi bi-list-ul me-1"></i> @NR.Filter_All
-            </a>
-            <a asp-action="Index" asp-route-unread="true" class="btn @(unreadOnly ? "btn-primary" : "btn-outline-primary")">
-                <i class="bi bi-envelope me-1"></i> @NR.Filter_Unread
-                @if (Model.UnreadCount > 0)
-                {
-                    <span class="badge bg-danger ms-1">@Model.UnreadCount</span>
-                }
-            </a>
-        </div>
-    </div>
+    <!-- Filter: underline tabs -->
+    <nav class="notif-tabs" aria-label="@NR.Index_Title">
+        <a asp-action="Index" asp-route-unread="false" class="notif-tab @(unreadOnly ? "" : "active")" aria-current="@(unreadOnly ? null : "page")">
+            @NR.Filter_All
+        </a>
+        <a asp-action="Index" asp-route-unread="true" class="notif-tab @(unreadOnly ? "active" : "")" aria-current="@(unreadOnly ? "page" : null)">
+            @NR.Filter_Unread
+            <span class="notif-tab-count">@Model.UnreadCount</span>
+        </a>
+    </nav>
 
     <!-- Table Card -->
     <div class="app-content-card management-table-card mb-3">
         <div class="table-responsive">
             <table class="table modern-table align-middle mb-0">
-                <thead class="table-light">
+                <thead>
                     <tr>
                         <th>@NR.Th_Content</th>
                         <th class="text-nowrap" style="width: 180px;">@NR.Th_Time</th>
@@ -66,38 +60,38 @@
                     {
                         <tr>
                             <td colspan="3" class="text-center text-muted py-5">
-                                <i class="bi bi-bell-slash fs-2 d-block mb-2"></i>
+                                <i class="bi bi-bell-slash fs-4 d-block mb-2"></i>
                                 @(unreadOnly ? NR.Ui_EmptyUnread : NR.Ui_Empty)
                             </td>
                         </tr>
                     }
                     @foreach (var item in Model.Items)
                     {
-                        <tr class="@(item.IsRead ? "" : "table-active")">
+                        <tr class="@(item.IsRead ? "" : "notif-unread")">
                             <td>
                                 <a href="@(item.Url ?? "#")" class="d-flex align-items-start text-decoration-none text-reset"
                                    data-notif-open="@item.Id" data-notif-url="@item.Url">
-                                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-@item.Color bg-opacity-10 text-@item.Color me-3 flex-shrink-0" style="width:38px;height:38px;">
+                                    <span class="notif-icon text-@item.Color me-3 flex-shrink-0" aria-hidden="true">
                                         <i class="bi @item.Icon"></i>
                                     </span>
                                     <span>
-                                        <span class="d-block @(item.IsRead ? "fw-semibold text-secondary" : "fw-bold text-dark")">@item.Title</span>
+                                        <span class="d-block @(item.IsRead ? "fw-medium text-secondary" : "fw-semibold text-dark")">@item.Title</span>
                                         <span class="d-block small @(item.IsRead ? "text-muted" : "text-dark")" style="white-space: pre-line;">@item.Message</span>
                                     </span>
                                 </a>
                             </td>
                             <td class="text-nowrap">
-                                <div class="small fw-semibold" data-notif-age="@item.AgeSeconds">@item.RelativeTime</div>
+                                <div class="small fw-medium" data-notif-age="@item.AgeSeconds">@item.RelativeTime</div>
                                 <div class="small text-muted">@item.CreatedDateStr</div>
                             </td>
                             <td class="text-center">
                                 @if (item.IsRead)
                                 {
-                                    <span class="badge bg-secondary-subtle text-secondary">@NR.Status_Read</span>
+                                    <span class="app-status"><span class="app-dot"></span>@NR.Status_Read</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-primary-subtle text-primary">@NR.Status_Unread</span>
+                                    <span class="app-status"><span class="app-dot app-dot-info"></span>@NR.Status_Unread</span>
                                 }
                             </td>
                         </tr>
@@ -112,3 +106,16 @@
         { "unread", unreadOnly ? "true" : null }
     }))
 </div>
+
+<style>
+    .notif-tabs { display: flex; gap: 1.5rem; border-bottom: 1px solid var(--app-border); margin-bottom: 1rem; }
+    .notif-tab { display: inline-flex; align-items: center; gap: .45rem; padding: .55rem 0; margin-bottom: -1px; border-bottom: 2px solid transparent;
+                 color: var(--app-text-2); text-decoration: none; font-weight: 500; }
+    .notif-tab:hover { color: var(--app-text); }
+    .notif-tab.active { color: var(--app-blue); border-bottom-color: var(--app-blue); }
+    .notif-tab-count { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 20px; padding: 0 6px; border-radius: var(--app-radius);
+                       background: var(--app-neutral-soft); color: var(--app-neutral-text); font-size: .78rem; font-variant-numeric: tabular-nums; }
+    .notif-tab.active .notif-tab-count { background: var(--app-blue-soft); color: var(--app-blue); }
+    .notif-icon { display: inline-flex; align-items: center; justify-content: center; width: 20px; padding-top: 2px; font-size: 1rem; }
+    .app-main .table tbody tr.notif-unread { background: var(--app-blue-soft); }
+</style>

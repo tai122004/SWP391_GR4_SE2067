@@ -22,14 +22,6 @@ namespace RWPM.Common.Helper
             }
             return minutes / 60;
         }
-        public static TimeSpan GetDuration(TimeSpan startTime, TimeSpan endTime)
-        {
-            if (startTime == endTime)
-                return TimeSpan.Zero;
-
-            var duration = endTime - startTime;
-            return duration < TimeSpan.Zero ? duration.Add(TimeSpan.FromDays(1)) : duration;
-        }
 
         public static (DateTime StartAt, DateTime EndAt) GetDateTimeRange(DateTime workDate, TimeSpan startTime, TimeSpan endTime)
         {
@@ -40,7 +32,5 @@ namespace RWPM.Common.Helper
 
             return (startAt, endAt);
         }
-
-        public static bool IsOvernight(TimeSpan startTime, TimeSpan endTime) => endTime < startTime;
     }
 }

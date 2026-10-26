@@ -555,7 +555,7 @@ namespace RWPM.Services.Implementation
                 ws.Cell(rowIdx, 1).Value = no++;
                 ws.Cell(rowIdx, 2).Value = r.EmployeeCode;
                 ws.Cell(rowIdx, 3).Value = r.FullName;
-                ws.Cell(rowIdx, 4).Value = r.StoreName ?? "-";
+                ws.Cell(rowIdx, 4).Value = r.StoreName ?? R.Unassigned;
                 ws.Cell(rowIdx, 5).Value = m.ApprovedShifts;
                 ws.Cell(rowIdx, 6).Value = m.AttendedShifts;
                 if (m.AttendanceRate.HasValue)

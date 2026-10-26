@@ -7,13 +7,13 @@
 @if (Model is RWPM.Models.ViewModels.Shift.ShiftEditVM) { <p class="text-muted small">@T("UsedShiftHint")</p> }
 <div class="card mb-3"><div class="card-body">
     <div class="row g-3">
-        <div class="col-md-6"><label asp-for="ShiftName" class="form-label">@M.ShiftName *</label><input asp-for="ShiftName" class="form-control" maxlength="100" /><span asp-validation-for="ShiftName" class="text-danger small"></span></div>
-        <div class="col-md-6"><label for="shift-store-toggle" class="form-label">@T("ApplicableStores") *</label>
+        <div class="col-md-6"><label asp-for="ShiftName" class="form-label required">@M.ShiftName</label><input asp-for="ShiftName" class="form-control" maxlength="100" /><span asp-validation-for="ShiftName" class="text-danger small"></span></div>
+        <div class="col-md-6"><label for="shift-store-toggle" class="form-label required">@T("ApplicableStores")</label>
             @if (ViewBag.ManagedStoreId != null)
             {
                 var managedStoreId = (int)ViewBag.ManagedStoreId;
                 <input type="hidden" name="StoreIds" value="@managedStoreId" />
-                <div class="form-control bg-light">@(((IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.StoreList).FirstOrDefault(x => x.Value == managedStoreId.ToString())?.Text)</div>
+                <div class="form-control bg-light" aria-readonly="true">@(((IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.StoreList).FirstOrDefault(x => x.Value == managedStoreId.ToString())?.Text)</div>
             }
             else
             {
@@ -38,18 +38,18 @@
             }
             <span asp-validation-for="StoreIds" class="text-danger"></span>
         </div>
-        <div class="col-md-4"><label asp-for="StartTime" class="form-label">@M.StartTime *</label><input asp-for="StartTime" data-time-suggestions="06:00,07:00,08:00,09:00,13:00,14:00,17:00,18:00,22:00" asp-format="{0:hh\:mm}" type="text" class="form-control shift-time" data-time-picker pattern="([01][0-9]|2[0-3]):[0-5][0-9]" autocomplete="off" required /><span asp-validation-for="StartTime" class="text-danger small"></span></div>
-        <div class="col-md-4"><label asp-for="EndTime" class="form-label">@M.EndTime *</label><input asp-for="EndTime" data-time-suggestions="12:00,13:00,14:00,17:00,18:00,21:00,22:00,23:00,06:00" asp-format="{0:hh\:mm}" type="text" class="form-control shift-time" data-time-picker pattern="([01][0-9]|2[0-3]):[0-5][0-9]" autocomplete="off" required /><span asp-validation-for="EndTime" class="text-danger small"></span></div>
+        <div class="col-md-4"><label asp-for="StartTime" class="form-label required">@M.StartTime</label><input asp-for="StartTime" data-time-suggestions="06:00,07:00,08:00,09:00,13:00,14:00,17:00,18:00,22:00" asp-format="{0:hh\:mm}" type="text" class="form-control shift-time" data-time-picker pattern="([01][0-9]|2[0-3]):[0-5][0-9]" autocomplete="off" required /><span asp-validation-for="StartTime" class="text-danger small"></span></div>
+        <div class="col-md-4"><label asp-for="EndTime" class="form-label required">@M.EndTime</label><input asp-for="EndTime" data-time-suggestions="12:00,13:00,14:00,17:00,18:00,21:00,22:00,23:00,06:00" asp-format="{0:hh\:mm}" type="text" class="form-control shift-time" data-time-picker pattern="([01][0-9]|2[0-3]):[0-5][0-9]" autocomplete="off" required /><span asp-validation-for="EndTime" class="text-danger small"></span></div>
         <div class="col-md-4 d-flex align-items-end"><div class="form-check mb-2"><input asp-for="EndsNextDay" class="form-check-input" /><label asp-for="EndsNextDay" class="form-check-label">@T("EndsNextDay")</label></div></div>
         <div class="col-12">
             @* Khung giờ gợi ý: bấm để điền nhanh giờ bắt đầu/kết thúc, qua ngày và giờ nghỉ *@
             <div class="shift-presets d-flex flex-wrap align-items-center gap-2">
-                <span class="small text-muted me-1"><i class="bi bi-lightbulb me-1"></i>@R.Preset_Title:</span>
-                <button type="button" class="btn btn-sm btn-outline-primary shift-preset" data-start="06:00" data-end="14:00" data-label="@R.Preset_Morning"></button>
-                <button type="button" class="btn btn-sm btn-outline-primary shift-preset" data-start="14:00" data-end="22:00" data-label="@R.Preset_Afternoon"></button>
-                <button type="button" class="btn btn-sm btn-outline-primary shift-preset" data-start="18:00" data-end="22:00" data-label="@R.Preset_Evening"></button>
-                <button type="button" class="btn btn-sm btn-outline-primary shift-preset" data-start="22:00" data-end="06:00" data-next-day="true" data-label="@R.Preset_Night"></button>
-                <button type="button" class="btn btn-sm btn-outline-primary shift-preset" data-start="08:00" data-end="17:00" data-break-start="12:00" data-break-end="13:00" data-label="@R.Preset_Office"></button>
+                <span class="small text-muted me-1">@R.Preset_Title:</span>
+                <button type="button" class="btn btn-sm btn-outline-secondary shift-preset" data-start="06:00" data-end="14:00" data-label="@R.Preset_Morning"></button>
+                <button type="button" class="btn btn-sm btn-outline-secondary shift-preset" data-start="14:00" data-end="22:00" data-label="@R.Preset_Afternoon"></button>
+                <button type="button" class="btn btn-sm btn-outline-secondary shift-preset" data-start="18:00" data-end="22:00" data-label="@R.Preset_Evening"></button>
+                <button type="button" class="btn btn-sm btn-outline-secondary shift-preset" data-start="22:00" data-end="06:00" data-next-day="true" data-label="@R.Preset_Night"></button>
+                <button type="button" class="btn btn-sm btn-outline-secondary shift-preset" data-start="08:00" data-end="17:00" data-break-start="12:00" data-break-end="13:00" data-label="@R.Preset_Office"></button>
             </div>
             <div class="form-text">@R.Preset_Hint</div>
         </div>
@@ -60,8 +60,8 @@
     <div class="col-md-6"><label asp-for="BreakEndTime" class="form-label">@T("BreakEnd")</label><input asp-for="BreakEndTime" data-time-suggestions="12:30,13:00,13:30,18:00,18:30,03:00" asp-format="{0:hh\:mm}" type="text" class="form-control shift-time" data-time-picker pattern="([01][0-9]|2[0-3]):[0-5][0-9]" autocomplete="off" /><span asp-validation-for="BreakEndTime" class="text-danger small"></span><div class="form-check mt-2"><input asp-for="BreakEndsNextDay" class="form-check-input" /><label asp-for="BreakEndsNextDay" class="form-check-label">@T("NextDay")</label></div></div>
 </div></div>
 <div class="card mb-3"><div class="card-header">@R.AttendancePolicy_Title</div><div class="card-body row g-3">
-    <div class="col-md-6"><label asp-for="GracePeriodMinutes" class="form-label">@T("LatenessTolerance") *</label><input asp-for="GracePeriodMinutes" type="number" min="0" max="60" step="1" required class="form-control" /><span asp-validation-for="GracePeriodMinutes" class="text-danger small"></span></div>
-    <div class="col-md-6"><label asp-for="EarlyCheckOutMinutes" class="form-label">@T("EarlyDepartureTolerance") *</label><input asp-for="EarlyCheckOutMinutes" type="number" min="0" max="60" step="1" required class="form-control" /><span asp-validation-for="EarlyCheckOutMinutes" class="text-danger small"></span></div>
+    <div class="col-md-6"><label asp-for="GracePeriodMinutes" class="form-label required">@T("LatenessTolerance")</label><input asp-for="GracePeriodMinutes" type="number" min="0" max="60" step="1" required class="form-control" /><span asp-validation-for="GracePeriodMinutes" class="text-danger small"></span></div>
+    <div class="col-md-6"><label asp-for="EarlyCheckOutMinutes" class="form-label required">@T("EarlyDepartureTolerance")</label><input asp-for="EarlyCheckOutMinutes" type="number" min="0" max="60" step="1" required class="form-control" /><span asp-validation-for="EarlyCheckOutMinutes" class="text-danger small"></span></div>
 </div></div>
 <div class="card mb-3"><div class="card-body row g-3">
     <div class="col-md-6"><label asp-for="EffectiveFrom" class="form-label">@T("EffectiveFrom")</label><input asp-for="EffectiveFrom" type="date" class="form-control" /><span asp-validation-for="EffectiveFrom" class="text-danger small"></span></div>
@@ -71,24 +71,3 @@
 </div></div>
 <div class="d-flex justify-content-end gap-2"><a asp-action="Index" class="btn btn-outline-secondary">@T("CancelAction")</a><button type="submit" class="btn btn-primary">@T("SaveAction")</button></div>
 
-<script>
-    // Khung giờ gợi ý cho ca làm việc (hiển thị theo định dạng 12h dùng chung)
-    document.addEventListener('DOMContentLoaded', function () {
-        var fmt = (window.AppTimePicker && AppTimePicker.format12) || function (v) { return v; };
-        function setVal(id, v) { var el = document.getElementById(id); if (el) { el.value = v; el.dispatchEvent(new Event('change', { bubbles: true })); } }
-        function setChecked(id, on) { var el = document.getElementById(id); if (el) el.checked = !!on; }
-        document.querySelectorAll('.shift-preset').forEach(function (btn) {
-            var d = btn.dataset;
-            btn.textContent = d.label + ' · ' + fmt(d.start) + ' – ' + fmt(d.end);
-            btn.addEventListener('click', function () {
-                setVal('StartTime', d.start);
-                setVal('EndTime', d.end);
-                setChecked('EndsNextDay', d.nextDay === 'true');
-                setVal('BreakStartTime', d.breakStart || '');
-                setVal('BreakEndTime', d.breakEnd || '');
-                setChecked('BreakStartsNextDay', false);
-                setChecked('BreakEndsNextDay', false);
-            });
-        });
-    });
-</script>

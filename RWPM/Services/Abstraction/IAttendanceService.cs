@@ -1,6 +1,4 @@
 using RWPM.Models.Entities;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace RWPM.Services.Abstraction
 {
@@ -10,7 +8,6 @@ namespace RWPM.Services.Abstraction
         Task<(AttendanceRecord Record, string? WarningMessage)> CheckInAsync(string username, double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null);
         Task<(AttendanceRecord Record, string? WarningMessage)> CheckOutAsync(string username, double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null);
         Task<List<AttendanceRecord>> GetHistoryAsync(string username);
-        Task<List<AttendanceRecord>> GetAllHistoryAsync(string? searchQuery = null);
         Task AdjustAttendanceAsync(int recordId, TimeSpan? newCheckIn, TimeSpan? newCheckOut, string reason, string modifierUsername);
         Task DeleteRecordAsync(int attendanceId);
     }

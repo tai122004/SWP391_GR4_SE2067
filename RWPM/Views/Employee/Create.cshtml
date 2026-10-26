@@ -13,13 +13,11 @@
     <!-- Header with Breadcrumb -->
     <div class="app-page-header">
         <div>
-            <h4 class="fw-bold text-dark d-flex align-items-center mb-1">
-                <i class="bi bi-person-plus text-primary me-2"></i> @EmployeeSharedResource.Create_PageTitle
-            </h4>
+            <h4 class="mb-1">@EmployeeSharedResource.Create_PageTitle</h4>
             <div class="text-muted small">@EmployeeSharedResource.Create_SubTitle</div>
         </div>
 
-        <nav aria-label="breadcrumb" class="d-none d-md-block">
+        <nav aria-label="@RWPM.Resources.Shared.Employee.Aria_Breadcrumb" class="d-none d-md-block">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a asp-action="Index">@EmployeeSharedResource.Index_PageTitle</a></li>
                 <li class="breadcrumb-item active" aria-current="page">@EmployeeSharedResource.Create_PageTitle</li>
@@ -28,31 +26,29 @@
     </div>
 
     <!-- Main Card -->
-    <div class="app-content-card p-4 shadow-sm">
+    <div class="app-content-card p-4">
         <form asp-action="Create" method="post">
             @Html.AntiForgeryToken()
 
             <!-- PHẦN 1: THÔNG TIN CÔNG VIỆC -->
-            <div class="form-section-title pb-2 border-bottom mb-3 fw-bold text-primary d-flex align-items-center">
-                <i class="bi bi-briefcase me-2"></i> @EmployeeSharedResource.Section_JobInfo
-            </div>
+            <div class="form-section-title">@EmployeeSharedResource.Section_JobInfo</div>
 
             <div class="row g-3 mb-3">
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small required" asp-for="EmployeeCode">@EmployeeSharedResource.Column_EmployeeCode</label>
+                    <label class="form-label required" asp-for="EmployeeCode">@EmployeeSharedResource.Column_EmployeeCode</label>
                     <input class="form-control font-monospace" asp-for="EmployeeCode" placeholder="@EmployeeSharedResource.PlaceHolder_EmployeeCode" autocomplete="off" />
                     <span asp-validation-for="EmployeeCode" class="text-danger small"></span>
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small required" asp-for="Username">@EmployeeModelResource.EmployeeAcc</label>
+                    <label class="form-label required" asp-for="Username">@EmployeeModelResource.EmployeeAcc</label>
                     <select class="form-select" asp-for="Username" asp-items="@(ViewBag.AccountList as SelectList)">
                     </select>
                     <span asp-validation-for="Username" class="text-danger small"></span>
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small required" asp-for="StoreId">@EmployeeSharedResource.Column_Store</label>
+                    <label class="form-label required" asp-for="StoreId">@EmployeeSharedResource.Column_Store</label>
                     <select class="form-select" asp-for="StoreId" asp-items="@(ViewBag.StoreList as SelectList)">
                     </select>
                     <span asp-validation-for="StoreId" class="text-danger small"></span>
@@ -61,46 +57,44 @@
 
             <div class="row g-3 mb-3">
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small" asp-for="EmploymentType">@EmployeeModelResource.EmploymentType</label>
+                    <label class="form-label" asp-for="EmploymentType">@EmployeeModelResource.EmploymentType</label>
                     <select class="form-select" asp-for="EmploymentType" asp-items="Html.GetEnumSelectList<EmploymentType>()">
                     </select>
                     <span asp-validation-for="EmploymentType" class="text-danger small"></span>
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small" asp-for="Status">@EmployeeModelResource.EmploymentStatus</label>
+                    <label class="form-label" asp-for="Status">@EmployeeModelResource.EmploymentStatus</label>
                     <select class="form-select" asp-for="Status" asp-items="Html.GetEnumSelectList<EmploymentStatus>()">
                     </select>
                     <span asp-validation-for="Status" class="text-danger small"></span>
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small required" asp-for="JoinDate">@EmployeeSharedResource.Column_JoinDate</label>
+                    <label class="form-label required" asp-for="JoinDate">@EmployeeSharedResource.Column_JoinDate</label>
                     <input class="form-control" type="date" asp-for="JoinDate" value="@Model.JoinDate.ToString("yyyy-MM-dd")" />
                     <span asp-validation-for="JoinDate" class="text-danger small"></span>
                 </div>
             </div>
 
             <!-- PHẦN 2: CHẾ ĐỘ LƯƠNG & NGÀY PHÉP -->
-            <div class="form-section-title pb-2 border-bottom mb-3 mt-4 fw-bold text-primary d-flex align-items-center">
-                <i class="bi bi-cash-coin me-2"></i> @EmployeeSharedResource.Section_Compensation
-            </div>
+            <div class="form-section-title mt-4">@EmployeeSharedResource.Section_Compensation</div>
 
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold small" asp-for="HourlyRate">@EmployeeModelResource.HourlyRate</label>
+                    <label class="form-label" asp-for="HourlyRate">@EmployeeModelResource.HourlyRate</label>
                     <div class="input-group">
                         <input class="form-control" asp-for="HourlyRate" asp-format="{0:0}" type="number" min="0" step="1000" placeholder="25000" />
-                        <span class="input-group-text small">@SharedResource.Unit_VndPerHour</span>
+                        <span class="input-group-text">@SharedResource.Unit_VndPerHour</span>
                     </div>
                     <span asp-validation-for="HourlyRate" class="text-danger small"></span>
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold small" asp-for="AnnualLeaveBalance">@EmployeeModelResource.AnnualLeaveBalance</label>
+                    <label class="form-label" asp-for="AnnualLeaveBalance">@EmployeeModelResource.AnnualLeaveBalance</label>
                     <div class="input-group">
                         <input class="form-control" asp-for="AnnualLeaveBalance" type="number" min="0" max="365" />
-                        <span class="input-group-text small">@SharedResource.Unit_Days</span>
+                        <span class="input-group-text">@SharedResource.Unit_Days</span>
                     </div>
                     <span asp-validation-for="AnnualLeaveBalance" class="text-danger small"></span>
                 </div>
@@ -108,13 +102,11 @@
             <input type="hidden" asp-for="BaseSalary" />
 
             <!-- PHẦN 3: THÔNG TIN CÁ NHÂN & LIÊN HỆ -->
-            <div class="form-section-title pb-2 border-bottom mb-3 mt-4 fw-bold text-primary d-flex align-items-center">
-                <i class="bi bi-person-lines-fill me-2"></i> @EmployeeSharedResource.Section_PersonalInfo
-            </div>
+            <div class="form-section-title mt-4">@EmployeeSharedResource.Section_PersonalInfo</div>
 
             <div class="row g-3 mb-3">
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small" asp-for="PhoneNumber">@AccModelResource.PhoneNumber</label>
+                    <label class="form-label" asp-for="PhoneNumber">@AccModelResource.PhoneNumber</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-telephone"></i></span>
                         <input class="form-control" asp-for="PhoneNumber" type="tel" inputmode="numeric" maxlength="10" data-phone-input autocomplete="off" placeholder="0901234567" />
@@ -123,7 +115,7 @@
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small required" asp-for="CitizenId">@EmployeeModelResource.CitizenId</label>
+                    <label class="form-label required" asp-for="CitizenId">@EmployeeModelResource.CitizenId</label>
                     <input class="form-control font-monospace" asp-for="CitizenId" type="text" inputmode="numeric" maxlength="12" autocomplete="off"
                            data-citizen-id-input placeholder="@EmployeeModelResource.CitizenId"
                            data-val-regex="@RWPM.Common.Validation.InputRules.Text("Số CCCD/CMND phải gồm 12 chữ số (CCCD) hoặc 9 chữ số (CMND).", "Citizen ID must contain 12 digits (CCCD) or 9 digits (old ID card).")"
@@ -132,7 +124,7 @@
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small required" asp-for="DateOfBirth">@AccModelResource.DateOfBirth</label>
+                    <label class="form-label required" asp-for="DateOfBirth">@AccModelResource.DateOfBirth</label>
                     <input class="form-control" type="date" asp-for="DateOfBirth" value="@(Model.DateOfBirth.HasValue ? Model.DateOfBirth.Value.ToString("yyyy-MM-dd") : "")" />
                     <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
                 </div>
@@ -140,7 +132,7 @@
 
             <div class="row g-3 mb-3">
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small" asp-for="Gender">@AccModelResource.Gender</label>
+                    <label class="form-label" asp-for="Gender">@AccModelResource.Gender</label>
                     <select class="form-select" asp-for="Gender" asp-items="Html.GetEnumSelectList<Gender>()">
                         <option value="">@SharedResource.Dropdown_SelectGender</option>
                     </select>
@@ -152,12 +144,10 @@
                 <label class="form-check-label ms-2" for="createEmpActiveSwitch">@EmployeeSharedResource.Edit_ActiveLabel</label>
             </div>
 
-            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-                <a asp-action="Index" class="btn btn-outline-secondary px-3">
-                    <i class="bi bi-arrow-left me-1"></i> @SharedResource.Button_GoBack
-                </a>
-                <button type="submit" class="btn btn-primary px-4 shadow-sm">
-                    <i class="bi bi-floppy me-1"></i> @SharedResource.Button_Create
+            <div class="d-flex justify-content-end align-items-center gap-2 mt-4 pt-3 border-top">
+                <a asp-action="Index" class="btn btn-outline-secondary px-3">@SharedResource.Button_Cancel</a>
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="bi bi-check2 me-1"></i> @SharedResource.Button_Create
                 </button>
             </div>
         </form>

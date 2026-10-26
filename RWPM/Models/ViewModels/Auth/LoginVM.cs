@@ -1,6 +1,5 @@
 ﻿using RWPM.Common.Attributes;
 using System.ComponentModel.DataAnnotations;
-using System.Resources;
 
 namespace RWPM.Models.ViewModels.Auth
 {

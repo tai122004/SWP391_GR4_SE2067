@@ -11,10 +11,10 @@
     double totalPayableHours = Model.Detail.TotalWorkHours + Model.Detail.PaidLeaveHours;
 }
 
-<div class="container-fluid py-4">
+<div class="container-fluid px-0">
     <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb">
+    <nav aria-label="@RWPM.Resources.Shared.Acc.Aria_Breadcrumb" class="mb-2">
+        <ol class="breadcrumb small mb-0">
             <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none">@PayrollResource.Payroll_Title</a></li>
             <li class="breadcrumb-item"><a asp-action="Detail" asp-route-id="@Model.Payroll.PayrollId" class="text-decoration-none">@payrollTitle</a></li>
             <li class="breadcrumb-item active" aria-current="page">@Model.Detail.EmployeeName</li>
@@ -22,128 +22,110 @@
     </nav>
 
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="app-page-header">
         <div>
-            <h2 class="h3 font-weight-bold mb-1 text-dark">
-                @string.Format(PayrollResource.Emp_Heading, Model.Detail.EmployeeName)
-            </h2>
-            <p class="text-muted mb-0">
-                @PayrollResource.Label_EmployeeCode <strong>@Model.Detail.EmployeeCode</strong> | 
-                @PayrollResource.Label_Store <strong>@PayrollDisplayText.StoreName(Model.Detail.StoreName)</strong> | 
-                @PayrollResource.Label_EmploymentType <span class="badge bg-light text-secondary border">@UIHelper.GetDisplayName(Model.Detail.EmploymentType)</span> | 
-                @PayrollResource.Label_Period <strong>@payrollTitle</strong>
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                <h4 class="mb-0">@string.Format(PayrollResource.Emp_Heading, Model.Detail.EmployeeName)</h4>
                 @if (Model.Payroll.Status == PayrollStatus.Locked)
                 {
-                    <span class="badge bg-success-subtle text-success border border-success-subtle ms-2">
-                        <i class="bi bi-shield-check me-1"></i>@PayrollResource.Emp_LockedBadge
-                    </span>
+                    <span class="app-badge app-badge-success"><i class="bi bi-shield-check"></i>@PayrollResource.Emp_LockedBadge</span>
                 }
+            </div>
+            <p class="text-muted mb-0">
+                @PayrollResource.Label_EmployeeCode <strong>@Model.Detail.EmployeeCode</strong> ·
+                @PayrollResource.Label_Store <strong>@PayrollDisplayText.StoreName(Model.Detail.StoreName)</strong> ·
+                @PayrollResource.Label_EmploymentType <strong>@UIHelper.GetDisplayName(Model.Detail.EmploymentType)</strong> ·
+                @PayrollResource.Label_Period <strong>@payrollTitle</strong>
             </p>
         </div>
-        <div>
+        <div class="app-page-actions">
             <a asp-action="Detail" asp-route-id="@Model.Payroll.PayrollId" class="btn btn-outline-secondary btn-sm">
                 <i class="bi bi-arrow-left me-1"></i>@PayrollResource.Emp_BackToPayroll
             </a>
         </div>
     </div>
 
-    <!-- Summary Cards -->
-    <div class="row g-3 mb-4">
+    <!-- KPI -->
+    <div class="row g-3 mb-3">
         <div class="col-12 col-sm-6 col-xl">
-            <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card h-100">
                 <div class="card-body">
-                    <span class="text-muted text-uppercase fw-semibold small">@PayrollResource.Emp_CardRate</span>
-                    <h4 class="fw-bold mb-0 mt-1 text-primary">
+                    <div class="text-muted small">@PayrollResource.Emp_CardRate</div>
+                    <div class="fs-5 fw-semibold mt-1 tabular @(Model.Detail.HourlyRate > 0 ? "" : "text-danger")">
                         @(Model.Detail.HourlyRate > 0 ? Model.Detail.HourlyRate.ToString("#,##0") + " " + PayrollResource.Unit_Dong : PayrollResource.Emp_NoRate)
-                    </h4>
-                    <small class="text-muted">@PayrollResource.Emp_FixedRate</small>
+                    </div>
+                    <div class="small text-muted">@PayrollResource.Emp_FixedRate</div>
                 </div>
             </div>
         </div>
         <div class="col-12 col-sm-6 col-xl">
-            <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card h-100">
                 <div class="card-body">
-                    <span class="text-muted text-uppercase fw-semibold small">@PayrollResource.Card_ActualHours</span>
-                    <h4 class="fw-bold mb-0 mt-1 text-dark">
-                        @Model.Detail.TotalWorkHours.ToString("#,##0.00") <small class="fs-6">@PayrollResource.Unit_Hours</small>
-                    </h4>
-                    <small class="text-muted">@string.Format(PayrollResource.Card_ScheduledHours, Model.Detail.TotalStandardHours.ToString("#,##0.00"))</small>
+                    <div class="text-muted small">@PayrollResource.Card_ActualHours</div>
+                    <div class="fs-5 fw-semibold mt-1 tabular">@Model.Detail.TotalWorkHours.ToString("#,##0.00") <small class="fs-6 fw-normal text-muted">@PayrollResource.Unit_Hours</small></div>
+                    <div class="small text-muted">@string.Format(PayrollResource.Card_ScheduledHours, Model.Detail.TotalStandardHours.ToString("#,##0.00"))</div>
                 </div>
             </div>
         </div>
         <div class="col-12 col-sm-6 col-xl">
-            <div class="card border-0 shadow-sm rounded-3 h-100 border-start border-4 border-info">
+            <div class="card h-100">
                 <div class="card-body">
-                    <span class="text-muted text-uppercase fw-semibold small">@PayrollResource.Card_PaidLeave</span>
-                    <h4 class="fw-bold mb-0 mt-1 text-info">
-                        @Model.Detail.PaidLeaveHours.ToString("#,##0.00") <small class="fs-6">@PayrollResource.Unit_Hours</small>
-                    </h4>
-                    <small class="text-muted">@string.Format(PayrollResource.Emp_ApprovedLeave, Model.Detail.ApprovedLeaveDays, Model.Detail.UnpaidLeaveDays)</small>
+                    <div class="text-muted small">@PayrollResource.Card_PaidLeave</div>
+                    <div class="fs-5 fw-semibold mt-1 tabular">@Model.Detail.PaidLeaveHours.ToString("#,##0.00") <small class="fs-6 fw-normal text-muted">@PayrollResource.Unit_Hours</small></div>
+                    <div class="small text-muted">@string.Format(PayrollResource.Emp_ApprovedLeave, Model.Detail.ApprovedLeaveDays, Model.Detail.UnpaidLeaveDays)</div>
                 </div>
             </div>
         </div>
         <div class="col-12 col-sm-6 col-xl">
-            <div class="card border-0 shadow-sm rounded-3 h-100 border-start border-4 border-success">
+            <div class="card h-100">
                 <div class="card-body">
-                    <span class="text-muted text-uppercase fw-semibold small">@PayrollResource.Emp_CardTotalSalaryPeriod</span>
-                    <h4 class="fw-bold mb-0 mt-1 text-success">
-                        @Model.Detail.TotalSalary.ToString("#,##0") <small class="fs-6">@PayrollResource.Unit_Vnd</small>
-                    </h4>
-                    <small class="text-muted">@string.Format(PayrollResource.Emp_SalaryFormula, totalPayableHours.ToString("#,##0.00"), Model.Detail.HourlyRate.ToString("#,##0"))</small>
+                    <div class="text-muted small">@PayrollResource.Emp_CardTotalSalaryPeriod</div>
+                    <div class="fs-5 fw-semibold mt-1 tabular">@Model.Detail.TotalSalary.ToString("#,##0") <small class="fs-6 fw-normal text-muted">@PayrollResource.Unit_Vnd</small></div>
+                    <div class="small text-muted">@string.Format(PayrollResource.Emp_SalaryFormula, totalPayableHours.ToString("#,##0.00"), Model.Detail.HourlyRate.ToString("#,##0"))</div>
                 </div>
             </div>
         </div>
         <div class="col-12 col-sm-6 col-xl">
-            <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card h-100">
                 <div class="card-body">
-                    <span class="text-muted text-uppercase fw-semibold small">@PayrollResource.Emp_CardDataStatus</span>
+                    <div class="text-muted small">@PayrollResource.Emp_CardDataStatus</div>
                     <div class="mt-2">
                         @switch (Model.Detail.Status)
                         {
                             case PayrollDetailStatus.Valid:
-                                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
-                                    <i class="bi bi-check-circle me-1"></i>@PayrollResource.DetailStatus_Valid
-                                </span>
+                                <span class="app-badge app-badge-success">@PayrollResource.DetailStatus_Valid</span>
                                 break;
                             case PayrollDetailStatus.MissingRate:
-                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
-                                    <i class="bi bi-exclamation-circle me-1"></i>@PayrollResource.DetailStatus_NoHourlyRate
-                                </span>
+                                <span class="app-badge app-badge-danger">@PayrollResource.DetailStatus_NoHourlyRate</span>
                                 break;
                             case PayrollDetailStatus.HasWarnings:
-                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1">
-                                    <i class="bi bi-exclamation-triangle me-1"></i>@PayrollResource.DetailStatus_HasMissingData
-                                </span>
+                                <span class="app-badge app-badge-warning">@PayrollResource.DetailStatus_HasMissingData</span>
                                 break;
                         }
                     </div>
                     @if (!string.IsNullOrEmpty(Model.Detail.WarningNotes))
                     {
-                        <small class="text-danger d-block mt-1">@PayrollDisplayText.WarningNotes(Model.Detail.WarningNotes)</small>
+                        <div class="small text-danger mt-1">@PayrollDisplayText.WarningNotes(Model.Detail.WarningNotes)</div>
                     }
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Daily Details Table (From Snapshot or Fallback) -->
-    <div class="card border-0 shadow-sm rounded-3 mb-4">
-        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
-            <h5 class="card-title mb-0 fw-bold text-dark">
-                <i class="bi bi-clock-history me-2 text-primary"></i>@string.Format(PayrollResource.Emp_DailyTitle, hasSnapshots ? Model.ItemSnapshots.Count : Model.AttendanceRecords.Count)
-            </h5>
+    <!-- Daily details (snapshot or fallback) -->
+    <div class="app-content-card management-table-card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span>@string.Format(PayrollResource.Emp_DailyTitle, hasSnapshots ? Model.ItemSnapshots!.Count : Model.AttendanceRecords.Count)</span>
             @if (hasSnapshots)
             {
-                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
-                    <i class="bi bi-camera me-1"></i>@PayrollResource.Emp_SnapshotBadge
-                </span>
+                <span class="app-badge app-badge-info"><i class="bi bi-camera"></i>@PayrollResource.Emp_SnapshotBadge</span>
             }
         </div>
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
+                <thead>
                     <tr>
-                        <th class="ps-4">@PayrollResource.Col_WorkDate</th>
+                        <th>@PayrollResource.Col_WorkDate</th>
                         <th>@PayrollResource.Col_Shift</th>
                         <th>@PayrollResource.Col_ShiftTime</th>
                         <th>@PayrollResource.Col_CheckIn</th>
@@ -151,19 +133,19 @@
                         <th class="text-end">@PayrollResource.Card_ActualHours</th>
                         <th class="text-end">@PayrollResource.Col_PaidLeaveHours</th>
                         <th class="text-end">@PayrollResource.Col_PayableHoursShort</th>
-                        <th class="text-center">@PayrollResource.Col_SourceType</th>
-                        <th class="text-center pe-4">@PayrollResource.Col_Status</th>
+                        <th>@PayrollResource.Col_SourceType</th>
+                        <th>@PayrollResource.Col_Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if (hasSnapshots)
                     {
-                        @foreach (var item in Model.ItemSnapshots)
+                        @foreach (var item in Model.ItemSnapshots!)
                         {
                             <tr>
-                                <td class="ps-4 fw-semibold">@item.Date.ToString("dd/MM/yyyy") (@item.Date.ToString("ddd"))</td>
+                                <td class="text-nowrap">@item.Date.ToString("dd/MM/yyyy") <span class="text-muted">(@item.Date.ToString("ddd"))</span></td>
                                 <td>@(item.ShiftName != null ? PayrollDisplayText.ShiftName(item.ShiftName) : PayrollResource.Shift_Unknown)</td>
-                                <td class="text-muted small">
+                                <td class="text-muted small text-nowrap">
                                     @if (item.StartTime.HasValue && item.EndTime.HasValue)
                                     {
                                         <span>@item.StartTime.Value.ToString(@"hh\:mm") - @item.EndTime.Value.ToString(@"hh\:mm")</span>
@@ -180,7 +162,7 @@
                                     }
                                     else if (item.SourceType == "PaidLeave")
                                     {
-                                        <span class="text-info small">@PayrollResource.Cell_PaidLeave</span>
+                                        <span class="text-muted small">@PayrollResource.Cell_PaidLeave</span>
                                     }
                                     else if (item.SourceType == "UnpaidLeave")
                                     {
@@ -188,7 +170,7 @@
                                     }
                                     else
                                     {
-                                        <span class="text-danger fw-bold">@PayrollResource.Cell_Missing</span>
+                                        <span class="text-danger">@PayrollResource.Cell_Missing</span>
                                     }
                                 </td>
                                 <td>
@@ -198,7 +180,7 @@
                                     }
                                     else if (item.SourceType == "PaidLeave")
                                     {
-                                        <span class="text-info small">@PayrollResource.Cell_PaidLeave</span>
+                                        <span class="text-muted small">@PayrollResource.Cell_PaidLeave</span>
                                     }
                                     else if (item.SourceType == "UnpaidLeave")
                                     {
@@ -206,71 +188,71 @@
                                     }
                                     else
                                     {
-                                        <span class="text-danger fw-bold">@PayrollResource.Cell_Missing</span>
+                                        <span class="text-danger">@PayrollResource.Cell_Missing</span>
                                     }
                                 </td>
-                                <td class="text-end">
+                                <td class="text-end text-nowrap">
                                     @if (item.ActualWorkHours > 0)
                                     {
-                                        <span class="text-dark fw-semibold">@item.ActualWorkHours.ToString("#,##0.00") h</span>
+                                        <span>@item.ActualWorkHours.ToString("#,##0.00") h</span>
                                     }
                                     else
                                     {
                                         <span class="text-muted">-</span>
                                     }
                                 </td>
-                                <td class="text-end">
+                                <td class="text-end text-nowrap">
                                     @if (item.PaidLeaveHours > 0)
                                     {
-                                        <span class="text-info fw-semibold">@item.PaidLeaveHours.ToString("#,##0.00") h</span>
+                                        <span>@item.PaidLeaveHours.ToString("#,##0.00") h</span>
                                     }
                                     else
                                     {
                                         <span class="text-muted">-</span>
                                     }
                                 </td>
-                                <td class="text-end fw-bold">
+                                <td class="text-end fw-semibold text-nowrap">
                                     @if (item.TotalPayableHours > 0)
                                     {
-                                        <span class="text-success">@item.TotalPayableHours.ToString("#,##0.00") h</span>
+                                        <span>@item.TotalPayableHours.ToString("#,##0.00") h</span>
                                     }
                                     else
                                     {
                                         <span class="text-danger">0.00 h</span>
                                     }
                                 </td>
-                                <td class="text-center">
+                                <td>
                                     @switch (item.SourceType)
                                     {
                                         case "Attendance":
-                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">@PayrollResource.Source_Attendance</span>
+                                            <span class="app-badge app-badge-neutral">@PayrollResource.Source_Attendance</span>
                                             break;
                                         case "PaidLeave":
-                                            <span class="badge bg-info-subtle text-info border border-info-subtle">@PayrollResource.Source_PaidLeave</span>
+                                            <span class="app-badge app-badge-info">@PayrollResource.Source_PaidLeave</span>
                                             break;
                                         case "UnpaidLeave":
-                                            <span class="badge bg-secondary-subtle text-secondary border">@PayrollResource.Source_UnpaidLeave</span>
+                                            <span class="app-badge app-badge-neutral">@PayrollResource.Source_UnpaidLeave</span>
                                             break;
                                         case "MissingAttendance":
-                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">@PayrollResource.Source_MissingAttendance</span>
+                                            <span class="app-badge app-badge-danger">@PayrollResource.Source_MissingAttendance</span>
                                             break;
                                         default:
-                                            <span class="badge bg-light text-dark">@item.SourceType</span>
+                                            <span class="app-badge app-badge-neutral">@item.SourceType</span>
                                             break;
                                     }
                                 </td>
-                                <td class="text-center pe-4">
+                                <td>
                                     @if (item.Status == PayrollDisplayText.SnapValid || item.Status == PayrollDisplayText.SnapPaidLeave)
                                     {
-                                        <span class="badge bg-success-subtle text-success">@PayrollDisplayText.SnapshotStatus(item.Status)</span>
+                                        <span class="app-status"><span class="app-dot app-dot-success"></span>@PayrollDisplayText.SnapshotStatus(item.Status)</span>
                                     }
                                     else if (item.Status == PayrollDisplayText.SnapUnpaidLeave)
                                     {
-                                        <span class="badge bg-secondary-subtle text-secondary">@PayrollDisplayText.SnapshotStatus(item.Status)</span>
+                                        <span class="app-status"><span class="app-dot"></span>@PayrollDisplayText.SnapshotStatus(item.Status)</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-danger-subtle text-danger" title="@PayrollDisplayText.SnapshotNote(item.Note)">@PayrollDisplayText.SnapshotStatus(item.Status)</span>
+                                        <span class="app-status" title="@PayrollDisplayText.SnapshotNote(item.Note)"><span class="app-dot app-dot-danger"></span>@PayrollDisplayText.SnapshotStatus(item.Status)</span>
                                     }
                                 </td>
                             </tr>
@@ -281,9 +263,9 @@
                         @foreach (var ar in Model.AttendanceRecords)
                         {
                             <tr>
-                                <td class="ps-4 fw-semibold">@ar.Date.ToString("dd/MM/yyyy") (@ar.Date.ToString("ddd"))</td>
+                                <td class="text-nowrap">@ar.Date.ToString("dd/MM/yyyy") <span class="text-muted">(@ar.Date.ToString("ddd"))</span></td>
                                 <td>@(ar.Shift?.ShiftName ?? PayrollResource.Shift_Unknown)</td>
-                                <td class="text-muted small">
+                                <td class="text-muted small text-nowrap">
                                     @if (ar.Shift != null)
                                     {
                                         <span>@ar.Shift.StartTime.ToString(@"hh\:mm") - @ar.Shift.EndTime.ToString(@"hh\:mm")</span>
@@ -300,7 +282,7 @@
                                     }
                                     else
                                     {
-                                        <span class="text-danger fw-bold">@PayrollResource.Cell_Missing</span>
+                                        <span class="text-danger">@PayrollResource.Cell_Missing</span>
                                     }
                                 </td>
                                 <td>
@@ -310,34 +292,32 @@
                                     }
                                     else
                                     {
-                                        <span class="text-danger fw-bold">@PayrollResource.Cell_Missing</span>
+                                        <span class="text-danger">@PayrollResource.Cell_Missing</span>
                                     }
                                 </td>
-                                <td class="text-end fw-bold text-dark">
+                                <td class="text-end text-nowrap">
                                     @(ar.WorkHours.HasValue ? ar.WorkHours.Value.ToString("#,##0.00") + " h" : "0.00 h")
                                 </td>
                                 <td class="text-end text-muted">-</td>
-                                <td class="text-end fw-bold">
+                                <td class="text-end fw-semibold text-nowrap">
                                     @if (ar.WorkHours.HasValue)
                                     {
-                                        <span class="text-success">@ar.WorkHours.Value.ToString("#,##0.00") h</span>
+                                        <span>@ar.WorkHours.Value.ToString("#,##0.00") h</span>
                                     }
                                     else
                                     {
                                         <span class="text-danger">0.00 h</span>
                                     }
                                 </td>
-                                <td class="text-center">
-                                    <span class="badge bg-primary-subtle text-primary">@PayrollResource.Source_Attendance</span>
-                                </td>
-                                <td class="text-center pe-4">
+                                <td><span class="app-badge app-badge-neutral">@PayrollResource.Source_Attendance</span></td>
+                                <td>
                                     @if (ar.WorkHours.HasValue)
                                     {
-                                        <span class="badge bg-success-subtle text-success">@PayrollResource.DetailStatus_Valid</span>
+                                        <span class="app-status"><span class="app-dot app-dot-success"></span>@PayrollResource.DetailStatus_Valid</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-danger-subtle text-danger">@PayrollResource.Status_Abnormal</span>
+                                        <span class="app-status"><span class="app-dot app-dot-danger"></span>@PayrollResource.Status_Abnormal</span>
                                     }
                                 </td>
                             </tr>
@@ -356,46 +336,40 @@
         </div>
     </div>
 
-    <!-- Leave Requests Table -->
+    <!-- Leave requests -->
     @if (Model.LeaveRequests.Count > 0)
     {
-        <div class="card border-0 shadow-sm rounded-3">
-            <div class="card-header bg-white py-3 border-bottom">
-                <h5 class="card-title mb-0 fw-bold text-dark">
-                    <i class="bi bi-calendar-check me-2 text-info"></i>@string.Format(PayrollResource.Emp_LeaveTitle, Model.LeaveRequests.Count)
-                </h5>
-            </div>
+        <div class="app-content-card mb-3">
+            <div class="card-header">@string.Format(PayrollResource.Emp_LeaveTitle, Model.LeaveRequests.Count)</div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
+                    <thead>
                         <tr>
-                            <th class="ps-4">@PayrollResource.Calc_FromDate</th>
+                            <th>@PayrollResource.Calc_FromDate</th>
                             <th>@PayrollResource.Calc_ToDate</th>
                             <th>@PayrollResource.Col_LeaveType</th>
                             <th>@PayrollResource.Col_Reason</th>
-                            <th class="text-center">@PayrollResource.Col_Status</th>
+                            <th>@PayrollResource.Col_Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var l in Model.LeaveRequests)
                         {
                             <tr>
-                                <td class="ps-4 fw-semibold">@l.StartDate.ToString("dd/MM/yyyy")</td>
-                                <td class="fw-semibold">@l.EndDate.ToString("dd/MM/yyyy")</td>
+                                <td class="text-nowrap">@l.StartDate.ToString("dd/MM/yyyy")</td>
+                                <td class="text-nowrap">@l.EndDate.ToString("dd/MM/yyyy")</td>
                                 <td>
                                     @if (l.LeaveType == LeaveType.Paid)
                                     {
-                                        <span class="badge bg-info-subtle text-info border border-info-subtle">@PayrollResource.Card_PaidLeave</span>
+                                        <span class="app-badge app-badge-info">@PayrollResource.Card_PaidLeave</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-secondary-subtle text-secondary border">@PayrollResource.Snap_UnpaidLeave</span>
+                                        <span class="app-badge app-badge-neutral">@PayrollResource.Snap_UnpaidLeave</span>
                                     }
                                 </td>
                                 <td>@l.Reason</td>
-                                <td class="text-center">
-                                    <span class="badge bg-success-subtle text-success">@PayrollResource.Leave_Approved</span>
-                                </td>
+                                <td><span class="app-status"><span class="app-dot app-dot-success"></span>@PayrollResource.Leave_Approved</span></td>
                             </tr>
                         }
                     </tbody>

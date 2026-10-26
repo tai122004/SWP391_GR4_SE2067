@@ -25,13 +25,12 @@
 </style>
 
 <div class="app-page-header">
-    <h4 class="mb-0">
-        <i class="bi bi-shop me-2"></i> @StoreSharedResource.Create_PageHeader
-    </h4>
+    <div>
+        <h4 class="mb-1">@StoreSharedResource.Create_PageHeader</h4>
+        <div class="text-muted small">@StoreSharedResource.Create_SubTitle</div>
+    </div>
 
-    <nav class="d-none d-md-block ms-auto"
-         style="--bs-breadcrumb-divider: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%278%27 height=%278%27%3E%3Cpath d=%27M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z%27 fill=%276c757d%27/%3E%3C/svg%3E');"
-         aria-label="breadcrumb">
+    <nav class="d-none d-md-block" aria-label="@RWPM.Resources.Shared.Store.Aria_Breadcrumb">
         <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item">
                 <a asp-action="Index">@StoreSharedResource.Index_PageHeader</a>
@@ -45,34 +44,32 @@
 <form asp-action="Create" method="post">
     @Html.AntiForgeryToken()
 
-    <div class="form-group mb-3">
-        <label class="form-label required" asp-for="StoreCode">@StoreModelResource.StoreCode</label>
-        <input class="form-control" asp-for="StoreCode" placeholder="@StoreSharedResource.Placeholder_StoreCode" autocomplete="off" />
-        <span asp-validation-for="StoreCode" class="text-danger"></span>
-    </div>
-
-    <div class="form-group mb-3">
-        <label class="form-label required" asp-for="StoreName">@StoreModelResource.StoreName</label>
-        <input class="form-control" asp-for="StoreName" placeholder="@StoreSharedResource.Placeholder_StoreName" autocomplete="off" />
-        <span asp-validation-for="StoreName" class="text-danger"></span>
-    </div>
-
-    <div class="form-group mb-3">
-        <label class="form-label" asp-for="Address">@StoreModelResource.Address</label>
-        <input class="form-control" asp-for="Address" id="storeAddress" placeholder="@StoreSharedResource.Placeholder_Address" autocomplete="off" />
-        <span asp-validation-for="Address" class="text-danger"></span>
-    </div>
-
-    <div class="form-group mb-3">
-        <label class="form-label" asp-for="Phone">@StoreModelResource.Phone</label>
-        <input class="form-control" asp-for="Phone" type="tel" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="@StoreSharedResource.Placeholder_Phone" autocomplete="off" />
-        <span asp-validation-for="Phone" class="text-danger"></span>
-    </div>
-
-    <div class="card mb-3 border-primary">
-        <div class="card-header bg-primary bg-opacity-10 fw-semibold text-primary">
-            <i class="bi bi-shield-check me-1"></i> @StoreSharedResource.ConfigHeader_Management
+    <div class="form-section-title">@StoreSharedResource.Section_General</div>
+    <div class="row g-3 mb-3">
+        <div class="col-md-4">
+            <label class="form-label required" asp-for="StoreCode">@StoreModelResource.StoreCode</label>
+            <input class="form-control" asp-for="StoreCode" placeholder="@StoreSharedResource.Placeholder_StoreCode" autocomplete="off" />
+            <span asp-validation-for="StoreCode" class="text-danger small"></span>
         </div>
+        <div class="col-md-8">
+            <label class="form-label required" asp-for="StoreName">@StoreModelResource.StoreName</label>
+            <input class="form-control" asp-for="StoreName" placeholder="@StoreSharedResource.Placeholder_StoreName" autocomplete="off" />
+            <span asp-validation-for="StoreName" class="text-danger small"></span>
+        </div>
+        <div class="col-md-8">
+            <label class="form-label" asp-for="Address">@StoreModelResource.Address</label>
+            <input class="form-control" asp-for="Address" id="storeAddress" placeholder="@StoreSharedResource.Placeholder_Address" autocomplete="off" />
+            <span asp-validation-for="Address" class="text-danger small"></span>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label" asp-for="Phone">@StoreModelResource.Phone</label>
+            <input class="form-control" asp-for="Phone" type="tel" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="@StoreSharedResource.Placeholder_Phone" autocomplete="off" />
+            <span asp-validation-for="Phone" class="text-danger small"></span>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">@StoreSharedResource.ConfigHeader_Management</div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6 mb-3">
@@ -80,20 +77,20 @@
                     <select class="form-select" asp-for="ManagerId" asp-items="ViewBag.ManagerSelectList">
                         <option value="">@StoreSharedResource.Dropdown_SelectManager</option>
                     </select>
-                    <span asp-validation-for="ManagerId" class="text-danger"></span>
+                    <span asp-validation-for="ManagerId" class="text-danger small"></span>
                 </div>
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label" asp-for="OpeningTime">@StoreModelResource.OpeningTime @StoreSharedResource.Label_OpeningTimeExample</label>
                     <input class="form-control" asp-for="OpeningTime" type="time" data-time-suggestions="06:00,06:30,07:00,07:30,08:00,08:30,09:00" />
-                    <small class="text-muted">@StoreSharedResource.Help_OpeningTime</small>
-                    <span asp-validation-for="OpeningTime" class="text-danger"></span>
+                    <div class="form-text">@StoreSharedResource.Help_OpeningTime</div>
+                    <span asp-validation-for="OpeningTime" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label" asp-for="ClosingTime">@StoreModelResource.ClosingTime @StoreSharedResource.Label_ClosingTimeExample</label>
                     <input class="form-control" asp-for="ClosingTime" type="time" data-time-suggestions="20:00,21:00,21:30,22:00,22:30,23:00" />
-                    <small class="text-muted">@StoreSharedResource.Help_ClosingTime</small>
-                    <span asp-validation-for="ClosingTime" class="text-danger"></span>
+                    <div class="form-text">@StoreSharedResource.Help_ClosingTime</div>
+                    <span asp-validation-for="ClosingTime" class="text-danger small"></span>
                 </div>
             </div>
         </div>
@@ -102,36 +99,33 @@
     <!-- Hidden inputs for store coordinates (automatically set via map picker) -->
     <input type="hidden" asp-for="Latitude" id="storeLat" />
     <input type="hidden" asp-for="Longitude" id="storeLng" />
-    <span asp-validation-for="Latitude" class="text-danger d-block"></span>
-    <span asp-validation-for="Longitude" class="text-danger d-block"></span>
+    <span asp-validation-for="Latitude" class="text-danger small d-block"></span>
+    <span asp-validation-for="Longitude" class="text-danger small d-block"></span>
 
-    <!-- @SharedResource.ResourceManager.GetString("Store_LocationRadius") -->
-    <div class="card mb-3 border-info">
-        <div class="card-header bg-info bg-opacity-10 fw-semibold text-info-emphasis">
-            <i class="bi bi-geo-alt-fill me-1"></i> @StoreSharedResource.GeoHeader
-        </div>
+    <div class="card mb-3">
+        <div class="card-header">@StoreSharedResource.GeoHeader</div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label" asp-for="MinAllowedDistanceMeters">@StoreModelResource.MinAllowedDistanceMeters</label>
                     <input class="form-control" asp-for="MinAllowedDistanceMeters" id="storeMinDistance" placeholder="0" type="number" min="0" max="10000" />
-                    <small class="text-muted">@StoreModelResource.MinDistanceHelp</small>
-                    <span asp-validation-for="MinAllowedDistanceMeters" class="text-danger"></span>
+                    <div class="form-text">@StoreModelResource.MinDistanceHelp</div>
+                    <span asp-validation-for="MinAllowedDistanceMeters" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label required" asp-for="AllowedRadiusMeters">@StoreModelResource.AllowedRadiusMeters</label>
                     <input class="form-control" asp-for="AllowedRadiusMeters" id="storeRadius" placeholder="100" type="number" min="10" max="10000" />
-                    <span asp-validation-for="AllowedRadiusMeters" class="text-danger"></span>
+                    <span asp-validation-for="AllowedRadiusMeters" class="text-danger small"></span>
                 </div>
             </div>
 
-            <div class="row bg-body-tertiary p-2 rounded mb-2 border align-items-center position-relative">
+            <div class="row mb-2 align-items-center position-relative">
                 <div class="col-12 position-relative">
                     <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-primary text-white"><i class="bi bi-search"></i></span>
-                        <input type="text" id="txtAddressSearch" class="form-control" placeholder="@StoreSharedResource.Placeholder_MapSearch" autocomplete="off" />
-                        <button type="button" id="btnSearchAddress" class="btn btn-primary">
-                            <i class="bi bi-geo-alt-fill me-1"></i> @StoreSharedResource.Btn_SearchAddress
+                        <span class="input-group-text text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" id="txtAddressSearch" class="form-control" placeholder="@StoreSharedResource.Placeholder_MapSearch" aria-label="@StoreSharedResource.Btn_SearchAddress" autocomplete="off" />
+                        <button type="button" id="btnSearchAddress" class="btn btn-outline-secondary">
+                            <i class="bi bi-geo-alt me-1"></i> @StoreSharedResource.Btn_SearchAddress
                         </button>
                     </div>
                     <div id="searchSuggestionsList" class="list-group search-suggestions-dropdown d-none"></div>
@@ -139,17 +133,17 @@
             </div>
 
             <div class="d-flex flex-wrap align-items-center gap-1 mb-2">
-                <span class="badge bg-secondary-subtle text-secondary border me-1"><i class="bi bi-lightning-fill text-warning me-1"></i>@StoreSharedResource.Label_SuggestedLocations</span>
-                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="21.0285" data-lng="105.8542">@SharedResource.ResourceManager.GetString("Store_Loc_HN")</button>
-                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="21.0465" data-lng="105.7942">@SharedResource.ResourceManager.GetString("Store_Loc_HQV")</button>
-                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="21.0130" data-lng="105.5268">@SharedResource.ResourceManager.GetString("Store_Loc_HL")</button>
-                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="10.7769" data-lng="106.7009">@SharedResource.ResourceManager.GetString("Store_Loc_HCM")</button>
-                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="16.0544" data-lng="108.2022">@SharedResource.ResourceManager.GetString("Store_Loc_DN")</button>
+                <span class="small text-muted me-1">@StoreSharedResource.Label_SuggestedLocations</span>
+                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="21.0285" data-lng="105.8542">@SharedResource.Store_Loc_HN</button>
+                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="21.0465" data-lng="105.7942">@SharedResource.Store_Loc_HQV</button>
+                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="21.0130" data-lng="105.5268">@SharedResource.Store_Loc_HL</button>
+                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="10.7769" data-lng="106.7009">@SharedResource.Store_Loc_HCM</button>
+                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 btn-quick-loc" data-lat="16.0544" data-lng="108.2022">@SharedResource.Store_Loc_DN</button>
             </div>
 
-            <small class="text-muted d-block mb-2"><i class="bi bi-info-circle me-1"></i> @StoreSharedResource.Instruction_MapHelp <span id="storeLocationPrompt">@((System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "vi") ? "Hãy chọn vị trí chi nhánh trên bản đồ trước khi kích hoạt." : "Select the store location on the map before activating it.")</span></small>
+            <div class="form-text mb-2">@StoreSharedResource.Instruction_MapHelp <span id="storeLocationPrompt" class="text-warning-emphasis">@StoreSharedResource.Map_SelectLocationPrompt</span></div>
 
-            <div id="storeMap" style="height: 400px; z-index: 1;" class="rounded border shadow-sm"></div>
+            <div id="storeMap" style="height: 400px; z-index: 1;" class="rounded border"></div>
         </div>
     </div>
 
@@ -158,12 +152,10 @@
         <label class="form-check-label" asp-for="IsActive">@StoreModelResource.IsActive</label>
     </div>
 
-    <div class="form-group mt-3 text-end">
-        <a asp-action="Index" class="btn btn-secondary me-2">
-            <i class="bi bi-arrow-return-left me-2"></i>@SharedResource.Button_GoBack
-        </a>
-        <button type="submit" class="btn btn-primary">
-            <i class="bi bi-floppy me-2"></i>@SharedResource.Button_Create
+    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+        <a asp-action="Index" class="btn btn-outline-secondary px-3">@SharedResource.Button_Cancel</a>
+        <button type="submit" class="btn btn-primary px-4">
+            <i class="bi bi-check2 me-1"></i>@SharedResource.Button_Create
         </button>
     </div>
 </form>
@@ -175,277 +167,25 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var defaultLat = 21.025142;
-            var defaultLng = 105.553973;
-
-            var latInput = document.getElementById("storeLat");
-            var lngInput = document.getElementById("storeLng");
-            var mainAddressInput = document.getElementById("storeAddress");
-            var minDistInput = document.getElementById("storeMinDistance");
-            var radiusInput = document.getElementById("storeRadius");
-            var searchInput = document.getElementById("txtAddressSearch");
-            var btnSearch = document.getElementById("btnSearchAddress");
-            var suggestionsList = document.getElementById("searchSuggestionsList");
-
-            function parseCoord(val, defaultVal) {
-                if (val === null || val === undefined || val === '') return defaultVal;
-                if (typeof val === 'number') return val;
-                var str = String(val).replace(',', '.').trim();
-                var num = parseFloat(str);
-                return isNaN(num) ? defaultVal : num;
+        window.RWPM = window.RWPM || {};
+        RWPM.storeForm = {
+            urls: {
+                reverseGeocode: '@Url.Action("ReverseGeocode", "Store")',
+                searchAddress: '@Url.Action("SearchAddress", "Store")'
+            },
+            i18n: {
+                mapStreets: @Json.Serialize(StoreSharedResource.Map_GoogleStreets),
+                mapSatellite: @Json.Serialize(StoreSharedResource.Map_GoogleSatellite),
+                mapOsm: @Json.Serialize(StoreSharedResource.Map_OSM),
+                location: @Json.Serialize(SharedResource.Store_Location),
+                emptySearch: @Json.Serialize(StoreSharedResource.Search_EmptyAlert),
+                searching: @Json.Serialize(StoreSharedResource.Search_Searching),
+                searchBtn: @Json.Serialize(StoreSharedResource.Btn_SearchAddress),
+                serverError: @Json.Serialize(SharedResource.Store_ErrServerResponse),
+                notFound: @Json.Serialize(StoreSharedResource.Search_NotFoundAlert),
+                searchError: @Json.Serialize(StoreSharedResource.Search_ErrorAlert)
             }
-
-            function syncAddressText(text) {
-                if (!text) return;
-                var cleanText = text.trim();
-                if (cleanText.length > 250) cleanText = cleanText.substring(0, 250);
-                if (mainAddressInput) {
-                    mainAddressInput.value = cleanText;
-                }
-                if (searchInput && searchInput.value !== cleanText) {
-                    searchInput.value = cleanText;
-                }
-            }
-
-            // Real-time 2-way typing sync between Address input and Search input
-            if (searchInput) {
-                searchInput.addEventListener("input", function () {
-                    if (mainAddressInput) mainAddressInput.value = this.value;
-                });
-            }
-            if (mainAddressInput) {
-                mainAddressInput.addEventListener("input", function () {
-                    if (searchInput) searchInput.value = this.value;
-                });
-                if (mainAddressInput.value && searchInput) {
-                    searchInput.value = mainAddressInput.value;
-                }
-            }
-
-            var initialLat = parseCoord(latInput ? latInput.value : null, defaultLat);
-            var initialLng = parseCoord(lngInput ? lngInput.value : null, defaultLng);
-            var initialMinDist = parseInt(minDistInput.value) || 0;
-            var initialRadius = parseInt(radiusInput.value) || 100;
-
-            var hasSelectedLocation = !!(latInput && lngInput && latInput.value && lngInput.value);
-            var locationPrompt = document.getElementById("storeLocationPrompt");
-            if (locationPrompt) locationPrompt.classList.toggle("d-none", hasSelectedLocation);
-
-            // Google Maps Tile Layers
-            var googleStreets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-                maxZoom: 20,
-                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-                attribution: '&copy; Google Maps'
-            });
-
-            var googleSat = L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
-                maxZoom: 20,
-                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-                attribution: '&copy; Google Maps Satellite'
-            });
-
-            var osmLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; OpenStreetMap'
-            });
-
-            var map = L.map('storeMap', {
-                center: [initialLat, initialLng],
-                zoom: 15,
-                layers: [googleStreets]
-            });
-
-            var baseMaps = {
-                "@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Map_GoogleStreets))": googleStreets,
-                "@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Map_GoogleSatellite))": googleSat,
-                "@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Map_OSM))": osmLayer
-            };
-
-            L.control.layers(baseMaps).addTo(map);
-
-            setTimeout(function () {
-                map.invalidateSize();
-            }, 300);
-
-            window.addEventListener('resize', function () {
-                map.invalidateSize();
-            });
-
-            var marker = hasSelectedLocation ? L.marker([initialLat, initialLng], { draggable: true }).addTo(map) : null;
-
-            var minCircle = L.circle([initialLat, initialLng], {
-                color: '#dc3545',
-                dashArray: '6, 6',
-                fillColor: '#dc3545',
-                fillOpacity: 0.15,
-                radius: initialMinDist
-            });
-
-            var outerCircle = L.circle([initialLat, initialLng], {
-                color: '#0d6efd',
-                fillColor: '#0d6efd',
-                fillOpacity: 0.1,
-                radius: initialRadius
-            });
-
-            if (hasSelectedLocation) {
-                minCircle.addTo(map);
-                outerCircle.addTo(map);
-            }
-
-            function attachMarkerDrag() {
-                marker.on('dragend', function (e) {
-                    var position = marker.getLatLng();
-                    updateMap(position.lat, position.lng);
-                    reverseGeocode(position.lat, position.lng);
-                });
-            }
-            if (marker) attachMarkerDrag();
-
-            function updateMap(lat, lng) {
-                lat = parseCoord(lat, NaN);
-                lng = parseCoord(lng, NaN);
-                if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) return;
-
-                if (!marker) {
-                    marker = L.marker([lat, lng], { draggable: true }).addTo(map);
-                    minCircle.addTo(map);
-                    outerCircle.addTo(map);
-                    attachMarkerDrag();
-                }
-                marker.setLatLng([lat, lng]);
-                minCircle.setLatLng([lat, lng]);
-                outerCircle.setLatLng([lat, lng]);
-                map.panTo([lat, lng]);
-
-                if (latInput) latInput.value = lat.toFixed(6);
-                if (lngInput) lngInput.value = lng.toFixed(6);
-                if (locationPrompt) locationPrompt.classList.add("d-none");
-            }
-
-            function reverseGeocode(lat, lng) {
-                var url = "/Store/ReverseGeocode?lat=" + lat + "&lng=" + lng;
-                fetch(url)
-                    .then(function (res) { return res.json(); })
-                    .then(function (data) {
-                        if (data && data.address) {
-                            syncAddressText(data.address);
-                        }
-                    })
-                    .catch(function () {});
-            }
-
-            function updateRadius() {
-                var minD = parseInt(minDistInput.value) || 0;
-                var maxD = parseInt(radiusInput.value) || 100;
-
-                minCircle.setRadius(minD);
-                outerCircle.setRadius(maxD);
-            }
-
-            map.on('click', function (e) {
-                updateMap(e.latlng.lat, e.latlng.lng);
-                reverseGeocode(e.latlng.lat, e.latlng.lng);
-            });
-
-            minDistInput.addEventListener('input', updateRadius);
-            radiusInput.addEventListener('input', updateRadius);
-
-            // Quick location buttons
-            document.querySelectorAll(".btn-quick-loc").forEach(function (btn) {
-                btn.addEventListener("click", function () {
-                    var lat = parseFloat(this.getAttribute("data-lat"));
-                    var lng = parseFloat(this.getAttribute("data-lng"));
-                    map.setView([lat, lng], 16);
-                });
-            });
-
-            function renderSuggestions(data) {
-                if (!suggestionsList) return;
-                suggestionsList.innerHTML = "";
-
-                if (!data || data.length === 0) {
-                    suggestionsList.classList.add("d-none");
-                    return;
-                }
-
-                data.forEach(function (item) {
-                    var a = document.createElement("a");
-                    a.href = "#";
-                    a.className = "list-group-item list-group-item-action py-2 px-3 small";
-                    var addrText = item.display_name || item.address || "@Html.Raw(SharedResource.ResourceManager.GetString("Store_Location"))";
-                    a.innerHTML = '<i class="bi bi-geo-alt-fill text-danger me-2"></i>' + addrText;
-                    a.addEventListener("click", function (e) {
-                        e.preventDefault();
-                    var lat = parseCoord(item.lat, NaN);
-                    var lon = parseCoord(item.lon || item.lng, NaN);
-                        updateMap(lat, lon);
-                        map.setZoom(16);
-                        suggestionsList.classList.add("d-none");
-                        syncAddressText(addrText);
-                    });
-                    suggestionsList.appendChild(a);
-                });
-
-                suggestionsList.classList.remove("d-none");
-            }
-
-            document.addEventListener("click", function (e) {
-                if (suggestionsList && !e.target.closest("#txtAddressSearch") && !e.target.closest("#searchSuggestionsList")) {
-                    suggestionsList.classList.add("d-none");
-                }
-            });
-
-            function executeAddressSearch(queryText) {
-                var query = queryText || (searchInput ? searchInput.value.trim() : '');
-                if (!query) {
-                    AppToast.warning("@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Search_EmptyAlert))");
-                    return;
-                }
-
-                if (btnSearch) {
-                    btnSearch.disabled = true;
-                    btnSearch.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> @Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Search_Searching))';
-                }
-
-                var url = "/Store/SearchAddress?query=" + encodeURIComponent(query);
-                fetch(url)
-                    .then(function (res) {
-                        if (!res.ok) throw new Error("@Html.Raw(SharedResource.ResourceManager.GetString("Store_ErrServerResponse"))" + res.status + ")");
-                        return res.json();
-                    })
-                    .then(function (data) {
-                        if (btnSearch) {
-                            btnSearch.disabled = false;
-                            btnSearch.innerHTML = '<i class="bi bi-geo-alt-fill me-1"></i> @Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Btn_SearchAddress))';
-                        }
-                        if (data && data.length > 0) {
-                            renderSuggestions(data);
-                        } else {
-                            if (suggestionsList) suggestionsList.classList.add("d-none");
-                            AppToast.warning("@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Search_NotFoundAlert))".replace('{0}', query));
-                        }
-                    })
-                    .catch(function (err) {
-                        if (btnSearch) {
-                            btnSearch.disabled = false;
-                            btnSearch.innerHTML = '<i class="bi bi-geo-alt-fill me-1"></i> @Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Btn_SearchAddress))';
-                        }
-                        if (suggestionsList) suggestionsList.classList.add("d-none");
-                        AppToast.error("@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(StoreSharedResource.Search_ErrorAlert))".replace('{0}', err.message));
-                    });
-            }
-
-            if (btnSearch && searchInput) {
-                btnSearch.addEventListener("click", function () { executeAddressSearch(); });
-                searchInput.addEventListener("keypress", function (e) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        executeAddressSearch();
-                    }
-                });
-            }
-        });
+        };
     </script>
+    <script src="~/js/store/form.js" asp-append-version="true"></script>
 }

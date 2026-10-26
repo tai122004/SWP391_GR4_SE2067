@@ -11,7 +11,6 @@ using RWPM.Infrastructure.Data;
 using RWPM.Models.Entities;
 using RWPM.Models.ViewModels.Employee;
 using RWPM.Services.Abstraction;
-using System.IO;
 using Microsoft.Extensions.Caching.Memory;
 using EmpRes = RWPM.Resources.Shared.Employee;
 
@@ -489,6 +488,29 @@ namespace RWPM.Services.Implementation
 
         private sealed record ImportSession(string Owner, List<EmployeeImportValidItemDto> Items);
 
+        // Tên trường hiển thị (theo ngôn ngữ hiện tại) cho lỗi xem trước import; trường "ColumnN" đã có số cột trong nội dung lỗi.
+        private static string? ImportFieldLabel(string field) => field switch
+        {
+            "Username" => RWPM.Resources.Models.Acc.Username,
+            "FullName" => RWPM.Resources.Models.Acc.Fullname,
+            "Email" => RWPM.Resources.Models.Acc.Email,
+            "PhoneNumber" => RWPM.Resources.Models.Acc.PhoneNumber,
+            "DateOfBirth" => RWPM.Resources.Models.Acc.DateOfBirth,
+            "Gender" => RWPM.Resources.Models.Acc.Gender,
+            "Role" => RWPM.Resources.Models.Acc.Role,
+            "EmployeeCode" => RWPM.Resources.Models.Employee.EmployeeID,
+            "JoinDate" => RWPM.Resources.Models.Employee.StartDate,
+            "ResignDate" => RWPM.Resources.Models.Employee.ResignDate,
+            "EmploymentType" => RWPM.Resources.Models.Employee.EmploymentType,
+            "Status" => RWPM.Resources.Models.Employee.EmploymentStatus,
+            "HourlyRate" => RWPM.Resources.Models.Employee.HourlyRate,
+            "BaseSalary" => RWPM.Resources.Models.Employee.BaseSalary,
+            "AnnualLeaveBalance" => RWPM.Resources.Models.Employee.AnnualLeaveBalance,
+            "CitizenId" => RWPM.Resources.Models.Employee.CitizenId,
+            "StoreId" => RWPM.Resources.Models.Employee.Store,
+            _ => null
+        };
+
         public async Task<EmployeeImportPreviewResultDto> PreviewImportFromExcelAsync(Stream fileStream)
         {
             var username = AccountHelper.GetCurrentUsername(_httpContextAccessor);
@@ -571,7 +593,7 @@ namespace RWPM.Services.Implementation
                         EmploymentType = empType, JoinDate = joinDate, HourlyRate = hourly, BaseSalary = salary, CitizenId = citizenId });
                     result.ValidCount++;
                 }
-                catch (InputValidationException ex) { preview.IsValid = false; preview.ErrorMessage = $"{ex.Field}: {ex.Message}"; result.InvalidCount++; }
+                catch (InputValidationException ex) { preview.IsValid = false; preview.ErrorMessage = ImportFieldLabel(ex.Field) is { } label ? $"{label}: {ex.Message}" : ex.Message; result.InvalidCount++; }
             }
             if (result.ValidItems.Count > 0) _cache.Set($"ImportPreview_{result.ImportToken}", new ImportSession(username, result.ValidItems), TimeSpan.FromMinutes(20));
             return result;

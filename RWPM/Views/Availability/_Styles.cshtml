@@ -1,0 +1,18 @@
+<style>
+    .avail-grid-row { display: flex; align-items: center; gap: .75rem; margin-bottom: .35rem; }
+    .avail-grid-day { flex: 0 0 92px; }
+    .avail-grid-track { position: relative; flex: 1 1 auto; height: 26px; background: #f4f7fa; border: 1px solid var(--app-border, #e3e8ee); border-radius: var(--app-radius, 6px); overflow: hidden; }
+    .avail-grid-scale .avail-grid-track { height: 16px; overflow: visible; }
+    .avail-grid-tick { position: absolute; top: 0; transform: translateX(-50%); font-size: .7rem; color: #8a96a3; white-space: nowrap; }
+    .avail-grid-tick:first-child { transform: none; }
+    .avail-grid-tick:last-child { transform: translateX(-100%); }
+    .avail-seg { position: absolute; top: 2px; bottom: 2px; border-radius: .3rem; display: flex; align-items: center; padding: 0 .35rem; overflow: hidden; }
+    .avail-seg-label { font-size: .7rem; font-weight: 600; white-space: nowrap; }
+    .avail-seg-approved { background: rgba(61, 141, 115, .18); border: 1px solid rgba(61, 141, 115, .55); color: #2a6b56; }
+    .avail-seg-pending { background: repeating-linear-gradient(45deg, rgba(192, 139, 45, .14), rgba(192, 139, 45, .14) 6px, rgba(192, 139, 45, .26) 6px, rgba(192, 139, 45, .26) 12px); border: 1px dashed rgba(192, 139, 45, .7); color: #8a611b; }
+    .avail-legend { display: inline-block; width: 14px; height: 10px; border-radius: 2px; margin-right: .35rem; vertical-align: middle; position: static; }
+    .avail-day-picker .btn { min-width: 52px; }
+    .avail-kpi-label { font-size: 13px; }
+    .avail-day-head td { background: #f8fafc; }
+    @@media (max-width: 575.98px) { .avail-grid-day { flex-basis: 64px; } .avail-seg-label { display: none; } }
+</style>

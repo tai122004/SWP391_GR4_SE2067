@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace RWPM.Infrastructure.Storage
+﻿namespace RWPM.Infrastructure.Storage
 {
     public interface IFileStorageService
     {

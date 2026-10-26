@@ -1,5 +1,4 @@
 using RWPM.Common.Enums;
-using RWPM.Models.Entities;
 
 namespace RWPM.Models.ViewModels.Payroll
 {
@@ -9,7 +8,7 @@ namespace RWPM.Models.ViewModels.Payroll
         public int SelectedYear { get; set; }
         public List<int> AvailableYears { get; set; } = new();
 
-        /// <summary>Gợi ý kỳ lương tiếp theo & các khoảng ngày chưa được tính lương.</summary>
+        /// <summary>Gợi ý kỳ lương tiếp theo và các khoảng ngày chưa được tính lương.</summary>
         public PayrollPeriodSuggestionVM NextPeriod { get; set; } = new();
 
         // Metrics

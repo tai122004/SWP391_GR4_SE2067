@@ -6,10 +6,6 @@ using RWPM.Models.Entities;
 using RWPM.Models.ViewModels.ShiftRegistration;
 using RWPM.Resources.Shared;
 using RWPM.Services.Abstraction;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace RWPM.Services.Implementation
 {
@@ -51,7 +47,7 @@ namespace RWPM.Services.Implementation
 
             if (employee == null)
             {
-                throw new Exception(RequestResource.Adj_ErrEmployeeNotFound);
+                throw new InvalidOperationException(RequestResource.Adj_ErrEmployeeNotFound);
             }
             await WorkflowGuard.EmployeeAsync(_context, username, employee.EmployeeId);
             var reason = InputRules.Reason(model.Reason, 500);
@@ -132,7 +128,7 @@ namespace RWPM.Services.Implementation
 
                 if (hasPending)
                 {
-                    throw new Exception(RequestResource.Adj_ErrPendingForShift);
+                    throw new InvalidOperationException(RequestResource.Adj_ErrPendingForShift);
                 }
             }
             else
@@ -142,7 +138,7 @@ namespace RWPM.Services.Implementation
 
                 if (hasPending)
                 {
-                    throw new Exception(RequestResource.Adj_ErrPendingForShiftDate);
+                    throw new InvalidOperationException(RequestResource.Adj_ErrPendingForShiftDate);
                 }
             }
 
@@ -252,12 +248,12 @@ namespace RWPM.Services.Implementation
 
             if (request == null)
             {
-                throw new Exception(RequestResource.Adj_ErrNotFound);
+                throw new InvalidOperationException(RequestResource.Adj_ErrNotFound);
             }
 
             if (request.Status != RegistrationStatus.Pending)
             {
-                throw new Exception(RequestResource.Adj_ErrAlreadyProcessed);
+                throw new InvalidOperationException(RequestResource.Adj_ErrAlreadyProcessed);
             }
             TimeSpan? approvedIn = finalCheckInTime ?? request.RequestedCheckInTime ?? request.AttendanceRecord?.CheckInTime;
             TimeSpan? approvedOut = finalCheckOutTime ?? request.RequestedCheckOutTime ?? request.AttendanceRecord?.CheckOutTime;
@@ -401,12 +397,12 @@ namespace RWPM.Services.Implementation
 
             if (request == null)
             {
-                throw new Exception(RequestResource.Adj_ErrNotFound);
+                throw new InvalidOperationException(RequestResource.Adj_ErrNotFound);
             }
 
             if (request.Status != RegistrationStatus.Pending)
             {
-                throw new Exception(RequestResource.Adj_ErrAlreadyProcessed);
+                throw new InvalidOperationException(RequestResource.Adj_ErrAlreadyProcessed);
             }
 
             request.Status = RegistrationStatus.Rejected;
@@ -427,17 +423,17 @@ namespace RWPM.Services.Implementation
 
             if (request == null)
             {
-                throw new Exception(RequestResource.Adj_ErrNotFound);
+                throw new InvalidOperationException(RequestResource.Adj_ErrNotFound);
             }
 
             if (request.Status != RegistrationStatus.Pending)
             {
-                throw new Exception(RequestResource.Adj_ErrDeleteOnlyPending);
+                throw new InvalidOperationException(RequestResource.Adj_ErrDeleteOnlyPending);
             }
 
             if (request.Employee.Username != username && request.CreatedBy != username)
             {
-                throw new Exception(RequestResource.Adj_ErrNoPermissionDelete);
+                throw new InvalidOperationException(RequestResource.Adj_ErrNoPermissionDelete);
             }
 
             _context.AttendanceAdjustmentRequest.Remove(request);

@@ -52,6 +52,7 @@ namespace RWPM.Models.ViewModels.Payroll
         private static readonly Regex AbnormalRx = new(@"^Có (\d+) ca bất thường/thiếu chấm công \((.*)\)\.$", RegexOptions.Compiled | RegexOptions.Singleline);
         private static readonly Regex AuditCalcRx = new(@"^(Tính lại|Khởi tạo) bảng lương: (\d+) nhân viên, tổng giờ công: (.+)h, tổng tiền: (.+) VNĐ$", RegexOptions.Compiled | RegexOptions.Singleline);
         private static readonly Regex AuditLockRx = new(@"^Chốt bảng lương thành công với (\d+) nhân viên, tổng quỹ lương: (.+) VNĐ$", RegexOptions.Compiled | RegexOptions.Singleline);
+        private static readonly Regex UnlockNoteRx = new(@"^\[Mở khóa bởi (.*?) lúc (\d{2}/\d{2}/\d{4} \d{2}:\d{2})\]: (.*)$", RegexOptions.Compiled | RegexOptions.Singleline);
         private static readonly Regex AuditUnlockRx = new(@"^Mở khóa bảng lương về trạng thái Nháp\. Lý do: (.*)$", RegexOptions.Compiled | RegexOptions.Singleline);
 
         /// <summary>Payroll title (auto-generated "Bảng lương dd/MM/yyyy - dd/MM/yyyy").</summary>
@@ -127,8 +128,7 @@ namespace RWPM.Models.ViewModels.Payroll
             return string.Format(R.Warn_Abnormal, m.Groups[1].Value, dates);
         }
 
-        private static string LegacyLeaveNoEvidenceText =>
-            RWPM.Common.Validation.InputRules.Text(StoredLegacyLeaveNoEvidence, LegacyLeaveNoEvidenceEn);
+        private static string LegacyLeaveNoEvidenceText => R.Warn_LegacyLeaveNoEvidence;
 
         public static string AuditAction(string? action) => action switch
         {
@@ -140,6 +140,14 @@ namespace RWPM.Models.ViewModels.Payroll
         };
 
         public static string AuditReason(string? reason) => reason == DefaultUnlockReason ? R.Unlock_DefaultReason : reason ?? string.Empty;
+
+        /// <summary>Payroll.Note written at unlock time ("[Mở khóa bởi {user} lúc {time}]: {reason}").</summary>
+        public static string PayrollNote(string? note)
+        {
+            if (string.IsNullOrEmpty(note)) return note ?? string.Empty;
+            var m = UnlockNoteRx.Match(note);
+            return m.Success ? string.Format(R.Note_UnlockedBy, m.Groups[1].Value, m.Groups[2].Value, AuditReason(m.Groups[3].Value)) : note;
+        }
 
         public static string AuditDetails(string? details)
         {

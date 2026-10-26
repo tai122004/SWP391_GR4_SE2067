@@ -55,12 +55,6 @@ namespace RWPM.Resources.Models {
             }
         }
         
-        public static string EmployeeFullName {
-            get {
-                return ResourceManager.GetString("EmployeeFullName", resourceCulture);
-            }
-        }
-        
         public static string EmployeeID {
             get {
                 return ResourceManager.GetString("EmployeeID", resourceCulture);

@@ -1,6 +1,15 @@
 @using NavigationBarResource = RWPM.Resources.Shared.NavigationBarResource
 @using RWPM.Resources.Shared
 @using System.Globalization
+@{
+    // Nhóm quyền dùng chung cho menu
+    bool isAdmin = User.IsAdmin();
+    bool isHr = User.IsHR();
+    bool isStoreManager = User.IsStoreManager();
+    bool isManager = User.IsManager();                         // Admin, HR, StoreManager
+    bool isChainManager = User.IsChainManager();               // quản lý toàn chuỗi (tài khoản, chi nhánh)
+    bool hasEmployeeProfile = !isAdmin || isHr || isStoreManager; // người có hồ sơ nhân viên: đăng ký ca, chấm công, phiếu lương
+}
 
 <aside class="app-sidebar" id="appSidebar" aria-label="@NavigationBarResource.MainNavigation">
     <a class="app-brand" asp-controller="Home" asp-action="Index">
@@ -9,39 +18,63 @@
     </a>
     <nav class="app-nav">
         <a class="app-nav-link" asp-controller="Home" asp-action="Index" data-nav-controller="Home"><i class="bi bi-grid-1x2"></i><span>@NavigationBarResource.Dashboard</span></a>
-        @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("AreaManager") || User.IsInRole("SuperAdmin") || User.IsInRole("StoreManager"))
+
+        @if (isManager)
         {
-            @if (!User.IsInRole("StoreManager") || User.IsInRole("Admin") || User.IsInRole("HR"))
+            <div class="app-nav-group">@NavigationBarResource.Group_People</div>
+            @if (isChainManager)
             {
                 <a class="app-nav-link" asp-controller="Acc" asp-action="Index" data-nav-controller="Acc"><i class="bi bi-person-vcard"></i><span>@NavigationBarResource.AccountManagement</span></a>
             }
             <a class="app-nav-link" asp-controller="Employee" asp-action="Index" data-nav-controller="Employee"><i class="bi bi-people"></i><span>@NavigationBarResource.EmployeeManagement</span></a>
-            @if (!User.IsInRole("StoreManager") || User.IsInRole("Admin") || User.IsInRole("HR"))
+            @if (isChainManager)
             {
                 <a class="app-nav-link" asp-controller="Store" asp-action="Index" data-nav-controller="Store"><i class="bi bi-shop"></i><span>@NavigationBarResource.StoreList</span></a>
             }
-            <a class="app-nav-link" asp-controller="Shift" asp-action="Index" data-nav-controller="Shift"><i class="bi bi-clock-history"></i><span>@NavigationBarResource.ShiftManagement</span></a>
         }
-        @if ((!User.IsInRole("Admin") && !User.IsInRole("SuperAdmin")) || User.IsInRole("HR") || User.IsInRole("StoreManager"))
+
+        @if (isManager || hasEmployeeProfile)
         {
-            <a class="app-nav-link" asp-controller="ShiftRegistration" asp-action="Index" data-nav-controller="ShiftRegistration"><i class="bi bi-calendar-week"></i><span>@ShiftRegistrationResource.ShiftRegistration</span></a>
+            <div class="app-nav-group">@NavigationBarResource.Group_Scheduling</div>
+            @if (isManager)
+            {
+                <a class="app-nav-link" asp-controller="Shift" asp-action="Index" data-nav-controller="Shift"><i class="bi bi-clock-history"></i><span>@NavigationBarResource.ShiftManagement</span></a>
+                <a class="app-nav-link" asp-controller="ShiftDemand" asp-action="Index" data-nav-controller="ShiftDemand" data-nav-exclude-actions="Coverage"><i class="bi bi-people-fill"></i><span>@ShiftDemandResource.Nav_ShiftDemand</span></a>
+                <a class="app-nav-link" asp-controller="ShiftDemand" asp-action="Coverage" data-nav-controller="ShiftDemand" data-nav-actions="Coverage"><i class="bi bi-grid-3x3-gap"></i><span>@ShiftDemandResource.Nav_Coverage</span></a>
+            }
+            @if (hasEmployeeProfile)
+            {
+                <a class="app-nav-link" asp-controller="ShiftRegistration" asp-action="Index" data-nav-controller="ShiftRegistration"><i class="bi bi-calendar-week"></i><span>@ShiftRegistrationResource.ShiftRegistration</span></a>
+                <a class="app-nav-link" asp-controller="Availability" asp-action="My" data-nav-controller="Availability" data-nav-actions="My"><i class="bi bi-calendar2-heart"></i><span>@AvailabilityResource.Menu_MyAvailability</span></a>
+            }
+            @if (isManager)
+            {
+                <a class="app-nav-link" asp-controller="Availability" asp-action="Review" data-nav-controller="Availability" data-nav-exclude-actions="My"><i class="bi bi-calendar2-check"></i><span>@AvailabilityResource.Menu_ReviewAvailability</span></a>
+            }
+        }
+
+        <div class="app-nav-group">@NavigationBarResource.Group_AttendanceRequests</div>
+        @if (hasEmployeeProfile)
+        {
             <a class="app-nav-link" asp-controller="Attendance" asp-action="Index" data-nav-controller="Attendance"><i class="bi bi-calendar-check"></i><span>@NavigationBarResource.Attendance</span></a>
         }
         <a class="app-nav-link" asp-controller="Request" asp-action="Index" data-nav-controller="Request"><i class="bi bi-inbox"></i><span>@RequestResource.RequestsAndApprovals</span></a>
-        @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("AreaManager") || User.IsInRole("SuperAdmin") || User.IsInRole("StoreManager"))
+
+        <div class="app-nav-group">@NavigationBarResource.Group_PayPerformance</div>
+        @if (isManager)
         {
             <a class="app-nav-link" asp-controller="Payroll" asp-action="Index" data-nav-controller="Payroll" data-nav-exclude-actions="MyPayslips,MyPayslipDetail"><i class="bi bi-cash-stack"></i><span>@NavigationBarResource.Payroll</span></a>
         }
         @* HR và Quản lý cửa hàng cũng có hồ sơ nhân viên và được tính lương -> cũng cần xem phiếu lương của chính mình *@
-        @if ((!User.IsInRole("Admin") && !User.IsInRole("SuperAdmin")) || User.IsInRole("HR") || User.IsInRole("StoreManager"))
+        @if (hasEmployeeProfile)
         {
             <a class="app-nav-link" asp-controller="Payroll" asp-action="MyPayslips" data-nav-controller="Payroll" data-nav-actions="MyPayslips,MyPayslipDetail"><i class="bi bi-receipt"></i><span>@NavigationBarResource.MyPayslips</span></a>
         }
-        @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin") || User.IsInRole("StoreManager"))
+        @if (isManager)
         {
             <a class="app-nav-link" asp-controller="Performance" asp-action="Index" data-nav-controller="Performance" data-nav-exclude-actions="My,MyDetail"><i class="bi bi-graph-up-arrow"></i><span>@PerformanceResource.Nav_Performance</span></a>
         }
-        @if ((!User.IsInRole("Admin") && !User.IsInRole("SuperAdmin")) || User.IsInRole("HR") || User.IsInRole("StoreManager"))
+        @if (hasEmployeeProfile)
         {
             <a class="app-nav-link" asp-controller="Performance" asp-action="My" data-nav-controller="Performance" data-nav-actions="My,MyDetail"><i class="bi bi-person-check"></i><span>@PerformanceResource.Nav_MyPerformance</span></a>
         }

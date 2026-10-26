@@ -1,27 +1,32 @@
 using System.ComponentModel.DataAnnotations;
+using RWPM.Common.Attributes;
 using RWPM.Common.Enums;
-using RWPM.Models.Entities;
 
 namespace RWPM.Models.ViewModels.ShiftRegistration
 {
     public class ShiftRegistrationEditVM
     {
-        [Required]
+        [RequiredLocalization]
         public int ShiftRegistrationId { get; set; }
 
-        [Required]
+        [Display(Name = "Employee", ResourceType = typeof(RWPM.Resources.Shared.ShiftRegistrationResource))]
+        [RequiredLocalization]
         public int EmployeeId { get; set; }
 
-        [Required]
+        [Display(Name = "Shift", ResourceType = typeof(RWPM.Resources.Shared.ShiftRegistrationResource))]
+        [RequiredLocalization]
         public int ShiftId { get; set; }
 
-        [Required]
+        [Display(Name = "WorkDate", ResourceType = typeof(RWPM.Resources.Shared.ShiftRegistrationResource))]
+        [RequiredLocalization]
         [DataType(DataType.Date)]
         public DateTime WorkDate { get; set; }
 
+        [Display(Name = "Status", ResourceType = typeof(RWPM.Resources.Shared.ShiftRegistrationResource))]
         public RegistrationStatus Status { get; set; }
 
-        [MaxLength(255)]
+        [Display(Name = "Note", ResourceType = typeof(RWPM.Resources.Shared.ShiftRegistrationResource))]
+        [MaxLengthLocalized(255)]
         public string Note { get; set; } = string.Empty;
 
         public ShiftRegistrationEditVM() { }

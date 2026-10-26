@@ -60,14 +60,6 @@ namespace RWPM.Resources.Models {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to Department.
-        /// </summary>
-        public static string DeptCatId {
-            get {
-                return ResourceManager.GetString("DeptCatId", resourceCulture);
-            }
-        }
         
         /// <summary>
         ///   Looks up a localized string similar to Fullname.
@@ -97,14 +89,6 @@ namespace RWPM.Resources.Models {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number..
-        /// </summary>
-        public static string PasswordRegularExpression {
-            get {
-                return ResourceManager.GetString("PasswordRegularExpression", resourceCulture);
-            }
-        }
-        /// <summary>
         ///   Looks up a localized string similar to Admin.
         /// </summary>
         public static string Role_Admin {
@@ -123,24 +107,6 @@ namespace RWPM.Resources.Models {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to Super Admin / HR.
-        /// </summary>
-        public static string Role_SuperAdmin {
-            get {
-                return ResourceManager.GetString("Role_SuperAdmin", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Area Manager.
-        /// </summary>
-        public static string Role_AreaManager {
-            get {
-                return ResourceManager.GetString("Role_AreaManager", resourceCulture);
-            }
-        }
-
-        /// <summary>
         ///   Looks up a localized string similar to Store Manager.
         /// </summary>
         public static string Role_StoreManager {
@@ -150,29 +116,11 @@ namespace RWPM.Resources.Models {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to Shift Leader.
-        /// </summary>
-        public static string Role_ShiftLeader {
-            get {
-                return ResourceManager.GetString("Role_ShiftLeader", resourceCulture);
-            }
-        }
-
-        /// <summary>
         ///   Looks up a localized string similar to Employee.
         /// </summary>
         public static string Role_Employee {
             get {
                 return ResourceManager.GetString("Role_Employee", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Part-time Staff.
-        /// </summary>
-        public static string Role_PartTimeStaff {
-            get {
-                return ResourceManager.GetString("Role_PartTimeStaff", resourceCulture);
             }
         }
 
@@ -221,10 +169,6 @@ namespace RWPM.Resources.Models {
         public static string Gender_Other {
             get { return ResourceManager.GetString("Gender_Other", resourceCulture); }
         }
-        public static string Avatar {
-            get { return ResourceManager.GetString("Avatar", resourceCulture); }
-        }
-    
 
         public static string Email {
             get {

@@ -227,12 +227,6 @@ namespace RWPM.Resources.Shared {
             }
         }
         
-        public static string NotLocated {
-            get {
-                return ResourceManager.GetString("NotLocated", resourceCulture);
-            }
-        }
-
         public static string ConfigHeader_Management {
             get {
                 return ResourceManager.GetString("ConfigHeader_Management", resourceCulture);
@@ -497,12 +491,6 @@ namespace RWPM.Resources.Shared {
             }
         }
 
-        public static string ShiftTable_Code {
-            get {
-                return ResourceManager.GetString("ShiftTable_Code", resourceCulture);
-            }
-        }
-
         public static string ShiftTable_Name {
             get {
                 return ResourceManager.GetString("ShiftTable_Name", resourceCulture);
@@ -521,27 +509,9 @@ namespace RWPM.Resources.Shared {
             }
         }
 
-        public static string ShiftTable_Scope {
-            get {
-                return ResourceManager.GetString("ShiftTable_Scope", resourceCulture);
-            }
-        }
-
         public static string Unit_Minutes {
             get {
                 return ResourceManager.GetString("Unit_Minutes", resourceCulture);
-            }
-        }
-
-        public static string ShiftScope_SystemTemplate {
-            get {
-                return ResourceManager.GetString("ShiftScope_SystemTemplate", resourceCulture);
-            }
-        }
-
-        public static string ShiftScope_BranchSpecific {
-            get {
-                return ResourceManager.GetString("ShiftScope_BranchSpecific", resourceCulture);
             }
         }
 
@@ -606,15 +576,39 @@ namespace RWPM.Resources.Shared {
             }
         }
 
-        public static string Search_DefaultFallbackName {
-            get {
-                return ResourceManager.GetString("Search_DefaultFallbackName", resourceCulture);
-            }
-        }
-
         public static string Delete_WarningLabel {
             get {
                 return ResourceManager.GetString("Delete_WarningLabel", resourceCulture);
+            }
+        }
+
+        public static string Create_SubTitle {
+            get {
+                return ResourceManager.GetString("Create_SubTitle", resourceCulture);
+            }
+        }
+
+        public static string Edit_SubTitle {
+            get {
+                return ResourceManager.GetString("Edit_SubTitle", resourceCulture);
+            }
+        }
+
+        public static string Section_General {
+            get {
+                return ResourceManager.GetString("Section_General", resourceCulture);
+            }
+        }
+
+        public static string Map_SelectLocationPrompt {
+            get {
+                return ResourceManager.GetString("Map_SelectLocationPrompt", resourceCulture);
+            }
+        }
+
+        public static string Aria_Breadcrumb {
+            get {
+                return ResourceManager.GetString("Aria_Breadcrumb", resourceCulture);
             }
         }
     }

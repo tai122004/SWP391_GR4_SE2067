@@ -7,13 +7,13 @@ using RWPM.Common;
 using RWPM.Common.Attributes;
 using RWPM.Common.Enums;
 using RWPM.Common.Exceptions;
-using RWPM.Common.Helper;
+using RWPM.Common.Security;
 using RWPM.Models.ViewModels.Store;
 using RWPM.Services.Abstraction;
 
 namespace RWPM.Controllers
 {
-    [Authorize(Roles = "Admin,HR,AreaManager")]
+    [Authorize(Roles = AppRoles.ChainManagers)]
     public class StoreController : Controller
     {
         private readonly IStringLocalizer _localizer;
@@ -32,12 +32,7 @@ namespace RWPM.Controllers
 
         private async Task PopulateManagerSelectListAsync(int? selectedId = null, int? storeId = null)
         {
-            var managerRoles = new[]
-            {
-                RWPM.Common.Enums.AccountRole.StoreManager,
-                RWPM.Common.Enums.AccountRole.Admin,
-                RWPM.Common.Enums.AccountRole.HR
-            };
+            var managerRoles = new[] { AccountRole.StoreManager, AccountRole.Admin, AccountRole.HR };
 
             var employees = await _ctx.Employee
                 .AsNoTracking()
@@ -60,6 +55,52 @@ namespace RWPM.Controllers
 
             ViewBag.ManagerSelectList = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(employees, "Id", "Name", selectedId);
         }
+
+        /// <summary>
+        /// Lỗi theo từng trường đã hiển thị ngay dưới ô nhập; toast chỉ dùng cho lỗi chung (không gắn với trường nào).
+        /// </summary>
+        private void AlertGeneralModelErrors()
+        {
+            var generalErrors = ModelState
+                .Where(kv => string.IsNullOrEmpty(kv.Key))
+                .SelectMany(kv => kv.Value!.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
+            if (generalErrors.Count > 0)
+            {
+                AlertHelper.AddErrorMessage(TempData, string.Format(RWPM.Resources.Shared.Store.Err_CheckInput, string.Join(" | ", generalErrors)));
+            }
+        }
+
+        /// <summary>Thêm ", Việt Nam" để geocoder ưu tiên kết quả trong nước nếu người dùng chưa ghi quốc gia.</summary>
+        private static string WithVietnamSuffix(string query)
+        {
+            var lower = query.ToLower();
+            return lower.Contains("vietnam") || lower.Contains("việt nam") ? query : query + ", Việt Nam";
+        }
+
+        // Tọa độ dự phòng khi các API geocoding trực tuyến đều lỗi
+        private static readonly Dictionary<string, (double lat, double lon)> FallbackLocations = new()
+        {
+            { "ha noi", (21.0285, 105.8542) },
+            { "hà nội", (21.0285, 105.8542) },
+            { "hoang quoc viet", (21.0465, 105.7942) },
+            { "hoàng quốc việt", (21.0465, 105.7942) },
+            { "ho chi minh", (10.7769, 106.7009) },
+            { "hồ chí minh", (10.7769, 106.7009) },
+            { "tphcm", (10.7769, 106.7009) },
+            { "sai gon", (10.7769, 106.7009) },
+            { "sài gòn", (10.7769, 106.7009) },
+            { "da nang", (16.0544, 108.2022) },
+            { "đà nẵng", (16.0544, 108.2022) },
+            { "can tho", (10.0452, 105.7469) },
+            { "cần thơ", (10.0452, 105.7469) },
+            { "hai phong", (20.8449, 106.6881) },
+            { "hải phòng", (20.8449, 106.6881) },
+            { "hoa lac", (21.0130, 105.5268) },
+            { "hòa lạc", (21.0130, 105.5268) },
+            { "fpt", (21.0130, 105.5268) }
+        };
 
         // GET: Store
         [RemoveEmptyQueryString]
@@ -93,16 +134,7 @@ namespace RWPM.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Lỗi theo từng trường đã hiển thị ngay dưới ô nhập; toast chỉ dùng cho lỗi chung (không gắn với trường nào)
-                var generalErrors = ModelState
-                    .Where(kv => string.IsNullOrEmpty(kv.Key))
-                    .SelectMany(kv => kv.Value!.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
-                if (generalErrors.Count > 0)
-                {
-                    AlertHelper.AddErrorMessage(TempData, string.Format(RWPM.Resources.Shared.Store.Err_CheckInput, string.Join(" | ", generalErrors)));
-                }
+                AlertGeneralModelErrors();
                 await PopulateManagerSelectListAsync(viewModel.ManagerId);
                 return View(viewModel);
             }
@@ -122,7 +154,7 @@ namespace RWPM.Controllers
             {
                 if (ex is InputValidationException input) ModelState.AddModelError(input.Field, input.Message);
                 else if (InputRules.Duplicate(ex) is { } duplicate) ModelState.AddModelError(duplicate.Field, duplicate.Message);
-                else AlertHelper.AddErrorMessage(TempData, ex.Message);
+                else AlertHelper.AddErrorMessage(TempData, InputRules.UserMessage(ex));
                 await PopulateManagerSelectListAsync(viewModel.ManagerId);
                 return View(viewModel);
             }
@@ -151,16 +183,7 @@ namespace RWPM.Controllers
 
             if (!ModelState.IsValid)
             {
-                // Lỗi theo từng trường đã hiển thị ngay dưới ô nhập; toast chỉ dùng cho lỗi chung (không gắn với trường nào)
-                var generalErrors = ModelState
-                    .Where(kv => string.IsNullOrEmpty(kv.Key))
-                    .SelectMany(kv => kv.Value!.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
-                if (generalErrors.Count > 0)
-                {
-                    AlertHelper.AddErrorMessage(TempData, string.Format(RWPM.Resources.Shared.Store.Err_CheckInput, string.Join(" | ", generalErrors)));
-                }
+                AlertGeneralModelErrors();
                 await PopulateManagerSelectListAsync(viewModel.ManagerId, id);
                 return View(viewModel);
             }
@@ -182,7 +205,7 @@ namespace RWPM.Controllers
             {
                 if (ex is InputValidationException input) ModelState.AddModelError(input.Field, input.Message);
                 else if (InputRules.Duplicate(ex) is { } duplicate) ModelState.AddModelError(duplicate.Field, duplicate.Message);
-                else AlertHelper.AddErrorMessage(TempData, ex.Message);
+                else AlertHelper.AddErrorMessage(TempData, InputRules.UserMessage(ex));
                 await PopulateManagerSelectListAsync(viewModel.ManagerId, id);
                 return View(viewModel);
             }
@@ -218,7 +241,7 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                AlertHelper.AddErrorMessage(TempData, ex.Message);
+                AlertHelper.AddErrorMessage(TempData, InputRules.UserMessage(ex));
             }
 
             return RedirectToAction(nameof(Index));
@@ -251,7 +274,7 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(InputRules.UserMessage(ex));
             }
         }
 
@@ -270,11 +293,7 @@ namespace RWPM.Controllers
                 using var client = new HttpClient();
                 client.Timeout = TimeSpan.FromSeconds(5);
                 
-                var searchQ = cleanedQuery;
-                if (!searchQ.ToLower().Contains("vietnam") && !searchQ.ToLower().Contains("việt nam"))
-                {
-                    searchQ += ", Việt Nam";
-                }
+                var searchQ = WithVietnamSuffix(cleanedQuery);
 
                 var esriUrl = $"https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?f=json&singleLine={Uri.EscapeDataString(searchQ)}&outFields=Match_addr&maxLocations=5";
                 var jsonStr = await client.GetStringAsync(esriUrl);
@@ -315,11 +334,7 @@ namespace RWPM.Controllers
                 client.Timeout = TimeSpan.FromSeconds(4);
                 client.DefaultRequestHeaders.Add("User-Agent", "RWPM-StoreApp/1.0 (contact@rwpm.internal)");
 
-                var fullQuery = cleanedQuery;
-                if (!fullQuery.ToLower().Contains("vietnam") && !fullQuery.ToLower().Contains("việt nam"))
-                {
-                    fullQuery += ", Việt Nam";
-                }
+                var fullQuery = WithVietnamSuffix(cleanedQuery);
 
                 var url = $"https://nominatim.openstreetmap.org/search?format=json&q={Uri.EscapeDataString(fullQuery)}&limit=5";
                 var response = await client.GetStringAsync(url);
@@ -335,30 +350,8 @@ namespace RWPM.Controllers
             }
 
             // 3. Fallback match from preset dictionary if online APIs fail
-            var fallbackDict = new Dictionary<string, (double lat, double lon)>
-            {
-                { "ha noi", (21.0285, 105.8542) },
-                { "hà nội", (21.0285, 105.8542) },
-                { "hoang quoc viet", (21.0465, 105.7942) },
-                { "hoàng quốc việt", (21.0465, 105.7942) },
-                { "ho chi minh", (10.7769, 106.7009) },
-                { "hồ chí minh", (10.7769, 106.7009) },
-                { "tphcm", (10.7769, 106.7009) },
-                { "sai gon", (10.7769, 106.7009) },
-                { "sài gòn", (10.7769, 106.7009) },
-                { "da nang", (16.0544, 108.2022) },
-                { "đà nẵng", (16.0544, 108.2022) },
-                { "can tho", (10.0452, 105.7469) },
-                { "cần thơ", (10.0452, 105.7469) },
-                { "hai phong", (20.8449, 106.6881) },
-                { "hải phòng", (20.8449, 106.6881) },
-                { "hoa lac", (21.0130, 105.5268) },
-                { "hòa lạc", (21.0130, 105.5268) },
-                { "fpt", (21.0130, 105.5268) }
-            };
-
             var lowerQ = cleanedQuery.ToLower();
-            foreach (var kvp in fallbackDict)
+            foreach (var kvp in FallbackLocations)
             {
                 if (lowerQ.Contains(kvp.Key))
                 {

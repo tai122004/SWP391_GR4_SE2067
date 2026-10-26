@@ -366,7 +366,7 @@
     <value>Xuất Excel thất bại: {0}</value>
   </data>
   <data name="Excel_SheetName" xml:space="preserve">
-    <value>Hieu suat</value>
+    <value>Hiệu suất</value>
   </data>
   <data name="Excel_Title" xml:space="preserve">
     <value>BẢNG ĐÁNH GIÁ HIỆU SUẤT THÁNG {0}/{1}</value>

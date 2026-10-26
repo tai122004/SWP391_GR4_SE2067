@@ -1,2 +1,17 @@
-﻿<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+@* Thông báo mặc định của jQuery Validation (required, email, number, min/max...) theo ngôn ngữ đang chọn:
+   chuỗi lấy từ SharedResource (Js_*) qua _AppClientConfig -> window.AppI18n; áp dụng trước khi unobtrusive đọc form. *@
+<script>
+    (function ($) {
+        if (window.AppValidationI18n && window.AppValidationI18n.apply()) return;
+        // site.js chưa được nạp (trang tự nạp script theo thứ tự khác): áp dụng trực tiếp từ AppI18n
+        var d = window.AppI18n || {};
+        if (!$ || !$.validator) return;
+        var fmt = $.validator.format, m = {};
+        ['required', 'remote', 'email', 'url', 'date', 'number', 'digits', 'creditcard', 'equalTo'].forEach(function (k) { if (d[k]) m[k] = d[k]; });
+        if (d.date) m.dateISO = d.date;
+        ['maxlength', 'minlength', 'rangelength', 'range', 'max', 'min', 'step'].forEach(function (k) { if (d[k]) m[k] = fmt(d[k]); });
+        $.extend($.validator.messages, m);
+    })(window.jQuery);
+</script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>

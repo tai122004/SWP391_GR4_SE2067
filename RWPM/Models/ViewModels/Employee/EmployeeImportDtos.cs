@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using RWPM.Common.Enums;
 
 namespace RWPM.Models.ViewModels.Employee

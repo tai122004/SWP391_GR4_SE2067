@@ -1,0 +1,291 @@
+@model RWPM.Models.ViewModels.Availability.AvailabilityMyVM
+@using RWPM.Common.Validation
+@using RWPM.Models.ViewModels.Availability
+@using R = RWPM.Resources.Shared.AvailabilityResource
+
+@{
+    ViewData["Title"] = R.My_Title;
+    var windowInput = ViewBag.WindowInput as AvailabilityWindowInput;
+    var dateInput = ViewBag.DateInput as UnavailabilityInput;
+    var formError = ViewBag.FormError as string;
+    var formErrorTarget = ViewBag.FormErrorTarget as string;
+    var selectedDays = windowInput?.Days ?? new List<int>();
+}
+
+@await Html.PartialAsync("_Styles")
+
+<div class="container-fluid px-0">
+    <div class="app-page-header">
+        <div>
+            <h4 class="mb-1">@R.My_Title</h4>
+            <div class="text-muted small">
+                @if (Model.Employee != null)
+                {
+                    @Model.Employee.FullName <span>·</span> @Model.Employee.EmployeeCode <span>·</span> <i class="bi bi-shop me-1"></i>@(Model.Employee.StoreName ?? R.Unassigned)
+                }
+                else
+                {
+                    @R.My_Subtitle
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.HasProfile)
+    {
+        <div class="app-content-card">
+            <div class="card-body text-center text-muted py-5">
+                <i class="bi bi-person-x fs-3 d-block mb-2 text-muted"></i>
+                @R.My_NoProfile
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info small d-flex gap-2 mb-3" role="note">
+            <i class="bi bi-info-circle-fill mt-1"></i>
+            <div>
+                <div class="fw-semibold mb-1">@R.Hint_Title</div>
+                <ul class="mb-0 ps-3">
+                    <li>@R.Hint_Windows</li>
+                    <li>@R.Hint_NoWindows</li>
+                    <li>@string.Format(R.Hint_Dates, AvailabilityRules.UnavailabilityLeadDays, AvailabilityRules.UnavailabilityMaxAheadDays)</li>
+                    <li>@R.Hint_NotLeave</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <!-- Khung giờ hằng tuần -->
+            <div class="col-xl-7">
+                <div class="app-content-card management-table-card h-100">
+                    <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <span class="fw-semibold">@R.Card_Windows</span>
+                        <span class="d-flex gap-2 small">
+                            <span class="app-badge app-badge-success">@R.Status_Approved: <span class="num">@Model.ApprovedCount</span></span>
+                            <span class="app-badge app-badge-warning">@R.Status_Pending: <span class="num">@Model.PendingCount</span></span>
+                        </span>
+                    </div>
+
+                    <div class="card-body border-bottom">
+                        @if (Model.Windows.Any(w => w.Status != RegistrationStatus.Rejected))
+                        {
+                            @await Html.PartialAsync("_WeekGrid", Model.Windows)
+                        }
+                        else
+                        {
+                            <div class="text-muted small"><i class="bi bi-infinity me-1"></i>@R.My_AnyTime</div>
+                        }
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table modern-table align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:130px">@R.Col_Day</th>
+                                    <th>@R.Col_TimeRange</th>
+                                    <th>@R.Col_Note</th>
+                                    <th>@R.Col_Status</th>
+                                    <th class="text-end" style="width:70px">@SharedResource.Button_Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var day in AvailabilityRules.WeekOrder)
+                                {
+                                    var items = Model.Windows.Where(w => w.DayOfWeek == day).ToList();
+                                    if (items.Count == 0)
+                                    {
+                                        <tr>
+                                            <td class="fw-semibold text-dark">@AvailabilityRules.DayName(day)</td>
+                                            <td colspan="4" class="text-muted small">—</td>
+                                        </tr>
+                                        continue;
+                                    }
+                                    for (var i = 0; i < items.Count; i++)
+                                    {
+                                        var w = items[i];
+                                        <tr>
+                                            @if (i == 0)
+                                            {
+                                                <td class="fw-semibold text-dark" rowspan="@items.Count">@AvailabilityRules.DayName(day)</td>
+                                            }
+                                            <td class="text-nowrap">
+                                                <i class="bi bi-clock me-1 text-muted"></i>@w.TimeRange
+                                                @if (w.CrossesMidnight)
+                                                {
+                                                    <i class="bi bi-moon-stars text-muted ms-1" title="@R.Hint_CrossesMidnight" aria-label="@R.Hint_CrossesMidnight"></i>
+                                                }
+                                            </td>
+                                            <td class="small text-muted">@(string.IsNullOrWhiteSpace(w.Note) ? "—" : w.Note)</td>
+                                            <td>@await Html.PartialAsync("_StatusBadge", w)</td>
+                                            <td class="text-end">
+                                                <form asp-action="DeleteWindow" method="post" class="d-inline"
+                                                      data-confirm="@string.Format(R.Confirm_DeleteWindow, AvailabilityRules.DayName(w.DayOfWeek), w.TimeRange)"
+                                                      data-confirm-type="danger" data-confirm-ok="@R.Action_Delete">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="id" value="@w.Id" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="@R.Action_Delete" aria-label="@R.Action_Delete"><i class="bi bi-trash"></i></button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="card-body border-top">
+                        <h6 class="fw-semibold mb-3">@R.Form_AddWindow</h6>
+                        @if (formErrorTarget == "window" && !string.IsNullOrEmpty(formError))
+                        {
+                            <div class="alert alert-danger small py-2">@formError</div>
+                        }
+                        <form asp-action="AddWindows" method="post" id="addWindowForm" novalidate>
+                            @Html.AntiForgeryToken()
+                            <div class="mb-3">
+                                <label class="form-label required small d-block">@R.Form_Days</label>
+                                <div class="d-flex flex-wrap gap-1 avail-day-picker" role="group" aria-label="@R.Form_Days">
+                                    @foreach (var day in AvailabilityRules.WeekOrder)
+                                    {
+                                        var v = (int)day;
+                                        <input type="checkbox" class="btn-check avail-day" name="Days" id="day@(v)" value="@v" autocomplete="off" checked="@selectedDays.Contains(v)" />
+                                        <label class="btn btn-sm btn-outline-primary" for="day@(v)" title="@AvailabilityRules.DayName(day)">@AvailabilityRules.DayShortName(day)</label>
+                                    }
+                                </div>
+                                <div class="mt-2 d-flex flex-wrap gap-2 small">
+                                    <a href="#" class="text-decoration-none" data-days="1,2,3,4,5">@R.Form_PickWeekdays</a>
+                                    <span class="text-muted">·</span>
+                                    <a href="#" class="text-decoration-none" data-days="6,0">@R.Form_PickWeekend</a>
+                                    <span class="text-muted">·</span>
+                                    <a href="#" class="text-decoration-none" data-days="0,1,2,3,4,5,6">@R.Form_PickAll</a>
+                                    <span class="text-muted">·</span>
+                                    <a href="#" class="text-decoration-none text-secondary" data-days="">@R.Form_PickNone</a>
+                                </div>
+                                <div class="text-danger small mt-1 d-none" id="daysError">@R.Err_DaysRequired</div>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-sm-6 col-md-3">
+                                    <label class="form-label required small" for="StartTime">@R.Form_From</label>
+                                    <input id="StartTime" name="StartTime" value="@windowInput?.StartTime" type="text" class="form-control form-control-sm"
+                                           data-time-picker data-time-suggestions="06:00,07:00,08:00,09:00,12:00,13:00,14:00,17:00,18:00,22:00"
+                                           pattern="([01][0-9]|2[0-3]):[0-5][0-9]" autocomplete="off" required />
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <label class="form-label required small" for="EndTime">@R.Form_To</label>
+                                    <input id="EndTime" name="EndTime" value="@windowInput?.EndTime" type="text" class="form-control form-control-sm"
+                                           data-time-picker data-time-suggestions="12:00,13:00,14:00,17:00,18:00,21:00,22:00,23:00,06:00"
+                                           pattern="([01][0-9]|2[0-3]):[0-5][0-9]" autocomplete="off" required />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small" for="Note">@R.Form_Note</label>
+                                    <input id="Note" name="Note" value="@windowInput?.Note" type="text" maxlength="255" class="form-control form-control-sm" placeholder="@R.Form_NotePlaceholder" />
+                                </div>
+                            </div>
+                            <div class="form-text small" id="overnightHint" style="display:none"><i class="bi bi-moon-stars me-1"></i>@R.Hint_CrossesMidnight</div>
+                            <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+                                <span class="text-muted small"><i class="bi bi-shield-check me-1"></i>@string.Format(R.Form_LimitHint, AvailabilityRules.MaxWindowsPerDay)</span>
+                                <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-send me-1"></i>@R.Action_SubmitWindows</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ngày không thể làm -->
+            <div class="col-xl-5">
+                <div class="app-content-card management-table-card h-100">
+                    <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <span class="fw-semibold">@R.Card_Dates</span>
+                        <span class="app-badge app-badge-neutral">@string.Format(R.Dates_Count, Model.Unavailable.Count)</span>
+                    </div>
+
+                    <div class="card-body border-bottom">
+                        @if (formErrorTarget == "date" && !string.IsNullOrEmpty(formError))
+                        {
+                            <div class="alert alert-danger small py-2">@formError</div>
+                        }
+                        <form asp-action="AddUnavailable" method="post" class="row g-2 align-items-end">
+                            @Html.AntiForgeryToken()
+                            <div class="col-sm-5">
+                                <label class="form-label required small" for="Date">@R.Form_Date</label>
+                                <input id="Date" name="Date" type="date" class="form-control form-control-sm" required
+                                       min="@Model.MinUnavailableDate.ToString("yyyy-MM-dd")" max="@Model.MaxUnavailableDate.ToString("yyyy-MM-dd")"
+                                       value="@(dateInput?.Date?.ToString("yyyy-MM-dd"))" />
+                            </div>
+                            <div class="col-sm-7">
+                                <label class="form-label small" for="Reason">@R.Form_Reason</label>
+                                <input id="Reason" name="Reason" type="text" maxlength="255" class="form-control form-control-sm" value="@dateInput?.Reason" placeholder="@R.Form_ReasonPlaceholder" />
+                            </div>
+                            <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <span class="text-muted small">@string.Format(R.Form_DateRangeHint, Model.MinUnavailableDate.ToString("dd/MM/yyyy"), Model.MaxUnavailableDate.ToString("dd/MM/yyyy"))</span>
+                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-calendar-x me-1"></i>@R.Action_AddDate</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table modern-table align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>@R.Col_Date</th>
+                                    <th>@R.Col_Reason</th>
+                                    <th class="text-end" style="width:70px">@SharedResource.Button_Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Unavailable.Any())
+                                {
+                                    foreach (var d in Model.Unavailable)
+                                    {
+                                        <tr>
+                                            <td class="text-nowrap">
+                                                <div class="fw-semibold text-dark">@d.Date.ToString("dd/MM/yyyy")</div>
+                                                <div class="small text-muted">@d.DayName</div>
+                                            </td>
+                                            <td class="small">@(string.IsNullOrWhiteSpace(d.Reason) ? "—" : d.Reason)</td>
+                                            <td class="text-end">
+                                                @if (d.CanDelete)
+                                                {
+                                                    <form asp-action="DeleteUnavailable" method="post" class="d-inline"
+                                                          data-confirm="@string.Format(R.Confirm_DeleteDate, d.Date.ToString("dd/MM/yyyy"))"
+                                                          data-confirm-type="danger" data-confirm-ok="@R.Action_Delete">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="id" value="@d.Id" />
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="@R.Action_Delete" aria-label="@R.Action_Delete"><i class="bi bi-trash"></i></button>
+                                                    </form>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-4">
+                                            <i class="bi bi-calendar-check fs-3 d-block mb-2 text-muted"></i>
+                                            @R.Dates_Empty
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        window.RWPM = window.RWPM || {};
+        RWPM.availabilityMy = {
+            i18n: {
+                daysRequired: @Json.Serialize(R.Err_DaysRequired),
+                timeInvalid: @Json.Serialize(R.Err_TimeInvalid),
+                timeSame: @Json.Serialize(R.Err_TimeSame)
+            }
+        };
+    </script>
+    <script src="~/js/availability/my.js" asp-append-version="true"></script>
+}

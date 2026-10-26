@@ -1,60 +1,32 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using RWPM.Common.Helper;
 
 namespace RWPM.Common.Enums
 {
+    /// <summary>
+    /// Vai trò tài khoản. Tên enum chính là tên role trong claim (xem AppRoles).
+    /// Giá trị 3, 5 trước đây dành cho AreaManager / ShiftLeader, đã bỏ — không dùng lại để tránh lẫn dữ liệu cũ.
+    /// </summary>
     public enum AccountRole : byte
     {
-        /// <summary>
-        /// Quản trị viên hệ thống (Admin)
-        /// </summary>
+        /// <summary>Quản trị viên hệ thống</summary>
         [Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_Admin")]
         Admin = 1,
 
-        /// <summary>
-        /// Nhân sự (HR) - Quản lý nhân sự, hợp đồng, tài khoản...
-        /// </summary>
+        /// <summary>Nhân sự (HR) - quản lý nhân sự, hợp đồng, tài khoản</summary>
         [Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_HR")]
         HR = 2,
 
-
-        /// <summary>
-        /// Area Manager - Quản lý khu vực
-        /// </summary>
-        //[Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_AreaManager")]
-        //AreaManager = 3,
-
-        /// <summary>
-        /// Store Manager - Quản lý cửa hàng
-        /// </summary>
+        /// <summary>Quản lý cửa hàng</summary>
         [Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_StoreManager")]
         StoreManager = 4,
 
-        /// <summary>
-        /// Shift Leader - Trưởng ca
-        /// </summary>
-        //[Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_ShiftLeader")]
-        //ShiftLeader = 5,
-
-        /// <summary>
-        /// Employee - Nhân viên
-        /// </summary>
+        /// <summary>Nhân viên</summary>
         [Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_Employee")]
         Employee = 6,
-
-        ///// <summary>
-        ///// Part-time Staff - Nhân viên bán thời gian
-        ///// </summary>
-        //[Display(ResourceType = typeof(Resources.Models.Acc), Name = "Role_PartTimeStaff")]
-        //PartTimeStaff = 7,
-
     }
 
     public static class AccountRoleExtensions
     {
-        public static string GetDisplayName(this AccountRole role)
-        {
-            return UIHelper.GetDisplayName(role);
-        }
+        public static string GetDisplayName(this AccountRole role) => UIHelper.GetDisplayName(role);
     }
 }

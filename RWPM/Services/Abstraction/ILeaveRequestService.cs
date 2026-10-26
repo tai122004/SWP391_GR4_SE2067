@@ -12,6 +12,5 @@ namespace RWPM.Services.Abstraction
         Task ApproveLeaveRequestAsync(int id, string approverUsername);
         Task RejectLeaveRequestAsync(int id, string? reason, string approverUsername);
         Task DeleteLeaveRequestAsync(int id, string username);
-        Task<int> GetRemainingLeaveBalanceAsync(int employeeId);
     }
 }

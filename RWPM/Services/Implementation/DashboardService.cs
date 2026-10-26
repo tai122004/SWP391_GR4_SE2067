@@ -18,11 +18,17 @@ namespace RWPM.Services.Implementation
     {
         private const int ListLimit = 20;
 
-        private readonly DefaultDatabaseContext _ctx;
+        private const int ShortageDays = 7;
 
-        public DashboardService(DefaultDatabaseContext ctx)
+        private readonly DefaultDatabaseContext _ctx;
+        private readonly IShiftDemandService _demandService;
+        private readonly IAvailabilityService _availabilityService;
+
+        public DashboardService(DefaultDatabaseContext ctx, IShiftDemandService demandService, IAvailabilityService availabilityService)
         {
             _ctx = ctx;
+            _demandService = demandService;
+            _availabilityService = availabilityService;
         }
 
         public async Task<DashboardVM> GetDashboardAsync(string username, bool isChainManager, bool isStoreManager, bool canUseAttendance)
@@ -57,11 +63,13 @@ namespace RWPM.Services.Implementation
             {
                 vm.Mode = DashboardMode.Chain;
                 vm.Chain = await BuildChainAsync(now);
+                vm.Chain.PendingAvailability = await _availabilityService.GetPendingReviewCountAsync(username);
             }
             else if (isStoreManager && me?.StoreId != null)
             {
                 vm.Mode = DashboardMode.Store;
                 vm.Store = await BuildStoreAsync(now, me.StoreId.Value, me.StoreName);
+                vm.Store.PendingAvailability = await _availabilityService.GetPendingReviewCountAsync(username);
             }
             else
             {
@@ -130,6 +138,7 @@ namespace RWPM.Services.Implementation
             result.Pending = ToSummary(pending, today);
 
             result.OnLeave = await LeaveTodayQuery(today, storeId).ToListAsync();
+            result.Shortage = BuildShortage(await _demandService.GetCoverageAsync(storeId, today, today.AddDays(ShortageDays - 1)), today);
             return result;
         }
 
@@ -180,6 +189,18 @@ namespace RWPM.Services.Implementation
                 PendingCount = pendingByStore.GetValueOrDefault(s.StoreId)
             }).ToList();
             result.Pending = ToSummary(pending, today);
+
+            // Ca thiếu người 7 ngày tới: một lần GetCoverageAsync cho mọi chi nhánh
+            var coverage = await _demandService.GetCoverageAsync(null, today, today.AddDays(ShortageDays - 1));
+            result.Shortage = BuildShortage(coverage, today);
+            var shortByStore = coverage.Where(r => r.Shortage > 0).GroupBy(r => r.StoreId)
+                .ToDictionary(g => g.Key, g => (Shifts: g.Count(), People: g.Sum(r => r.Shortage)));
+            foreach (var row in result.Stores)
+            {
+                if (!shortByStore.TryGetValue(row.StoreId, out var sh)) continue;
+                row.ShortShifts = sh.Shifts;
+                row.MissingPeople = sh.People;
+            }
 
             // Payroll: latest period + check that the previous calendar month has been covered.
             result.Payroll = await _ctx.Payroll.AsNoTracking()
@@ -302,6 +323,34 @@ namespace RWPM.Services.Implementation
         }
 
         // ------------------------------------------------------------------ Shared loaders
+
+        private static ShortageSummaryVM BuildShortage(List<ShiftCoverageRow> rows, DateTime today)
+        {
+            var shortRows = rows.Where(r => r.Shortage > 0)
+                .OrderBy(r => r.Date).ThenBy(r => r.StartTime).ThenBy(r => r.StoreName).ThenBy(r => r.ShiftName)
+                .ToList();
+            return new ShortageSummaryVM
+            {
+                From = today,
+                To = today.AddDays(ShortageDays - 1),
+                HasDemand = rows.Any(r => r.Required.HasValue),
+                ShortShiftCount = shortRows.Count,
+                MissingPeople = shortRows.Sum(r => r.Shortage),
+                Items = shortRows.Take(ListLimit).Select(r => new ShortageItemVM
+                {
+                    StoreId = r.StoreId,
+                    StoreName = r.StoreName,
+                    ShiftId = r.ShiftId,
+                    ShiftName = r.ShiftName,
+                    StartTime = r.StartTime,
+                    EndTime = r.EndTime,
+                    Date = r.Date,
+                    Approved = r.Approved,
+                    Required = r.Required ?? 0,
+                    Pending = r.Pending
+                }).ToList()
+            };
+        }
 
         /// <summary>
         /// Approved assignments of today plus overnight shifts started yesterday that are still running,

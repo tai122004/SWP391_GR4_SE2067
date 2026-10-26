@@ -77,9 +77,6 @@
   <data name="Card_NewHires" xml:space="preserve">
     <value>Nhân sự mới tháng này</value>
   </data>
-  <data name="Card_TodayAssignments" xml:space="preserve">
-    <value>Lượt ca hôm nay</value>
-  </data>
   <data name="Card_CheckedInNow" xml:space="preserve">
     <value>{0} đang trong ca</value>
   </data>
@@ -188,9 +185,6 @@
   <data name="Empty_TodayShifts" xml:space="preserve">
     <value>Hôm nay chưa có ca nào được duyệt.</value>
   </data>
-  <data name="Empty_ShiftEmployees" xml:space="preserve">
-    <value>Ca này chưa có nhân viên.</value>
-  </data>
   <data name="Section_OnLeave" xml:space="preserve">
     <value>Nghỉ phép (đã duyệt) hôm nay</value>
   </data>
@@ -211,9 +205,6 @@
   </data>
   <data name="NoStore" xml:space="preserve">
     <value>Chưa có chi nhánh</value>
-  </data>
-  <data name="Section_Payroll" xml:space="preserve">
-    <value>Kỳ lương</value>
   </data>
   <data name="Payroll_Latest" xml:space="preserve">
     <value>Kỳ lương gần nhất</value>
@@ -278,9 +269,6 @@
   <data name="My_ViewPayslip" xml:space="preserve">
     <value>Xem phiếu lương</value>
   </data>
-  <data name="My_AllPayslips" xml:space="preserve">
-    <value>Tất cả phiếu lương</value>
-  </data>
   <data name="My_NoProfile" xml:space="preserve">
     <value>Tài khoản của bạn chưa được gắn hồ sơ nhân viên. Vui lòng liên hệ bộ phận Nhân sự.</value>
   </data>
@@ -289,5 +277,38 @@
   </data>
   <data name="Today" xml:space="preserve">
     <value>Hôm nay</value>
+  </data>
+  <data name="Card_ShortShifts" xml:space="preserve">
+    <value>Ca thiếu người (7 ngày tới)</value>
+  </data>
+  <data name="Card_ShortPeople" xml:space="preserve">
+    <value>Thiếu {0} người</value>
+  </data>
+  <data name="Card_ShortNone" xml:space="preserve">
+    <value>Đủ người theo nhu cầu</value>
+  </data>
+  <data name="Card_ShortNoDemand" xml:space="preserve">
+    <value>Chưa cấu hình nhu cầu nhân sự</value>
+  </data>
+  <data name="Section_ShortShifts" xml:space="preserve">
+    <value>Ca thiếu người – 7 ngày tới</value>
+  </data>
+  <data name="Col_Coverage" xml:space="preserve">
+    <value>Đã duyệt/Cần</value>
+  </data>
+  <data name="Col_Short7Days" xml:space="preserve">
+    <value>Thiếu người 7 ngày</value>
+  </data>
+  <data name="Empty_ShortShifts" xml:space="preserve">
+    <value>Không có ca nào thiếu người trong 7 ngày tới.</value>
+  </data>
+  <data name="Short_ViewCoverage" xml:space="preserve">
+    <value>Xem độ phủ</value>
+  </data>
+  <data name="Short_ShiftsPeople" xml:space="preserve">
+    <value>{0} ca · {1} người</value>
+  </data>
+  <data name="Card_PendingAvailability" xml:space="preserve">
+    <value>Thời gian rảnh chờ duyệt</value>
   </data>
 </root>

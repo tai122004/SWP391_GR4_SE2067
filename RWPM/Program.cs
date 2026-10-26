@@ -25,7 +25,6 @@ using (var scope = app.Services.CreateScope())
     {
     await new AccAdminSeeder().SeedAsync(dbContext);
     await new ShiftSeeder().SeedAsync(dbContext);
-    await StoreTimeFixSeeder.FixStoreTimesAsync(dbContext);
     if (app.Environment.IsDevelopment())
     {
         await new PayrollAttendanceDemoSeeder().SeedAsync(dbContext);

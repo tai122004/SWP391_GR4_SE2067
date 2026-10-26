@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Nav_ShiftDemand" xml:space="preserve">
+    <value>Nhu cầu nhân sự</value>
+  </data>
+  <data name="Nav_Coverage" xml:space="preserve">
+    <value>Độ phủ ca</value>
+  </data>
+  <data name="Index_Title" xml:space="preserve">
+    <value>Nhu cầu nhân sự theo ca</value>
+  </data>
+  <data name="Index_Subtitle" xml:space="preserve">
+    <value>Cấu hình số người cần cho từng ca theo thứ trong tuần và theo ngày cụ thể</value>
+  </data>
+  <data name="Coverage_Title" xml:space="preserve">
+    <value>Độ phủ ca</value>
+  </data>
+  <data name="Coverage_Subtitle" xml:space="preserve">
+    <value>So sánh số người đã duyệt với nhu cầu của từng ca trong tuần</value>
+  </data>
+  <data name="Coverage_Hint" xml:space="preserve">
+    <value>Bấm vào một ô để xem nhân viên, duyệt đăng ký hoặc phân công.</value>
+  </data>
+  <data name="Coverage_Empty" xml:space="preserve">
+    <value>Không có ca nào áp dụng tại chi nhánh trong tuần này.</value>
+  </data>
+  <data name="Coverage_Today" xml:space="preserve">
+    <value>Hôm nay</value>
+  </data>
+  <data name="Scope_Label" xml:space="preserve">
+    <value>Phạm vi:</value>
+  </data>
+  <data name="Label_Store" xml:space="preserve">
+    <value>Chi nhánh</value>
+  </data>
+  <data name="Label_Week" xml:space="preserve">
+    <value>Tuần</value>
+  </data>
+  <data name="Store_None" xml:space="preserve">
+    <value>Không có chi nhánh đang hoạt động trong phạm vi của bạn.</value>
+  </data>
+  <data name="Template_Title" xml:space="preserve">
+    <value>Mẫu theo tuần</value>
+  </data>
+  <data name="Template_Hint" xml:space="preserve">
+    <value>Để trống = chưa cấu hình; 0 = ca không cần người vào ngày đó. Ghi đè theo ngày được ưu tiên hơn mẫu tuần.</value>
+  </data>
+  <data name="Template_CellTitle" xml:space="preserve">
+    <value>Số người cần (0–100), để trống nếu chưa cấu hình</value>
+  </data>
+  <data name="Template_Empty" xml:space="preserve">
+    <value>Chi nhánh chưa có ca nào đang áp dụng. Hãy gắn ca cho chi nhánh trước.</value>
+  </data>
+  <data name="Template_Saved" xml:space="preserve">
+    <value>Đã lưu mẫu nhu cầu theo tuần.</value>
+  </data>
+  <data name="Template_Unsaved" xml:space="preserve">
+    <value>Có thay đổi chưa lưu</value>
+  </data>
+  <data name="Shift_EffectiveTo" xml:space="preserve">
+    <value>Hiệu lực đến {0}</value>
+  </data>
+  <data name="Col_Shift" xml:space="preserve">
+    <value>Ca</value>
+  </data>
+  <data name="Col_Date" xml:space="preserve">
+    <value>Ngày</value>
+  </data>
+  <data name="Col_Required" xml:space="preserve">
+    <value>Số người cần</value>
+  </data>
+  <data name="Col_TemplateValue" xml:space="preserve">
+    <value>Theo mẫu tuần</value>
+  </data>
+  <data name="Col_Note" xml:space="preserve">
+    <value>Ghi chú</value>
+  </data>
+  <data name="Col_UpdatedBy" xml:space="preserve">
+    <value>Cập nhật bởi</value>
+  </data>
+  <data name="Day_Mon" xml:space="preserve">
+    <value>Thứ 2</value>
+  </data>
+  <data name="Day_Tue" xml:space="preserve">
+    <value>Thứ 3</value>
+  </data>
+  <data name="Day_Wed" xml:space="preserve">
+    <value>Thứ 4</value>
+  </data>
+  <data name="Day_Thu" xml:space="preserve">
+    <value>Thứ 5</value>
+  </data>
+  <data name="Day_Fri" xml:space="preserve">
+    <value>Thứ 6</value>
+  </data>
+  <data name="Day_Sat" xml:space="preserve">
+    <value>Thứ 7</value>
+  </data>
+  <data name="Day_Sun" xml:space="preserve">
+    <value>Chủ nhật</value>
+  </data>
+  <data name="Btn_SaveTemplate" xml:space="preserve">
+    <value>Lưu mẫu tuần</value>
+  </data>
+  <data name="Btn_CopyFromStore" xml:space="preserve">
+    <value>Sao chép từ chi nhánh khác</value>
+  </data>
+  <data name="Btn_ViewCoverage" xml:space="preserve">
+    <value>Xem độ phủ ca</value>
+  </data>
+  <data name="Btn_ConfigureDemand" xml:space="preserve">
+    <value>Cấu hình nhu cầu</value>
+  </data>
+  <data name="Btn_AddOverride" xml:space="preserve">
+    <value>Thêm ghi đè</value>
+  </data>
+  <data name="Btn_Copy" xml:space="preserve">
+    <value>Sao chép</value>
+  </data>
+  <data name="Btn_Approve" xml:space="preserve">
+    <value>Duyệt</value>
+  </data>
+  <data name="Btn_Assign" xml:space="preserve">
+    <value>Phân công</value>
+  </data>
+  <data name="Override_Title" xml:space="preserve">
+    <value>Ghi đè theo ngày</value>
+  </data>
+  <data name="Override_Hint" xml:space="preserve">
+    <value>Dùng cho ngày lễ, khuyến mãi... Số người cần theo ngày sẽ thay thế mẫu tuần.</value>
+  </data>
+  <data name="Override_Empty" xml:space="preserve">
+    <value>Chưa có ghi đè nào.</value>
+  </data>
+  <data name="Override_Past" xml:space="preserve">
+    <value>Đã qua</value>
+  </data>
+  <data name="Override_Saved" xml:space="preserve">
+    <value>Đã lưu ghi đè theo ngày.</value>
+  </data>
+  <data name="Override_Deleted" xml:space="preserve">
+    <value>Đã xóa ghi đè theo ngày.</value>
+  </data>
+  <data name="Override_ConfirmDelete" xml:space="preserve">
+    <value>Xóa ghi đè {0}?</value>
+  </data>
+  <data name="Modal_AddOverride" xml:space="preserve">
+    <value>Thêm ghi đè theo ngày</value>
+  </data>
+  <data name="Modal_EditOverride" xml:space="preserve">
+    <value>Sửa ghi đè theo ngày</value>
+  </data>
+  <data name="Field_Date" xml:space="preserve">
+    <value>Ngày</value>
+  </data>
+  <data name="Field_Shift" xml:space="preserve">
+    <value>Ca</value>
+  </data>
+  <data name="Field_Required" xml:space="preserve">
+    <value>Số người cần</value>
+  </data>
+  <data name="Field_RequiredHint" xml:space="preserve">
+    <value>0–100; 0 = không cần người.</value>
+  </data>
+  <data name="Field_Note" xml:space="preserve">
+    <value>Ghi chú</value>
+  </data>
+  <data name="Field_NotePlaceholder" xml:space="preserve">
+    <value>Ví dụ: Lễ 2/9, khuyến mãi cuối tuần...</value>
+  </data>
+  <data name="Copy_Title" xml:space="preserve">
+    <value>Sao chép mẫu tuần từ chi nhánh khác</value>
+  </data>
+  <data name="Copy_Hint" xml:space="preserve">
+    <value>Mẫu tuần của các ca áp dụng ở cả hai chi nhánh sẽ bị thay thế bằng mẫu của chi nhánh nguồn. Ghi đè theo ngày không được sao chép.</value>
+  </data>
+  <data name="Copy_Source" xml:space="preserve">
+    <value>Chi nhánh nguồn</value>
+  </data>
+  <data name="Copy_Target" xml:space="preserve">
+    <value>Chi nhánh đích: {0}</value>
+  </data>
+  <data name="Copy_Confirm" xml:space="preserve">
+    <value>Thay thế mẫu tuần hiện tại bằng mẫu của {0}?</value>
+  </data>
+  <data name="Copy_Done" xml:space="preserve">
+    <value>Đã sao chép {0} ô nhu cầu.</value>
+  </data>
+  <data name="Card_ShortShifts" xml:space="preserve">
+    <value>Ca thiếu người</value>
+  </data>
+  <data name="Card_MissingPeople" xml:space="preserve">
+    <value>Số người còn thiếu</value>
+  </data>
+  <data name="Card_OverShifts" xml:space="preserve">
+    <value>Ca vượt nhu cầu</value>
+  </data>
+  <data name="Card_NotConfigured" xml:space="preserve">
+    <value>Ca chưa cấu hình</value>
+  </data>
+  <data name="Legend_Short" xml:space="preserve">
+    <value>Thiếu</value>
+  </data>
+  <data name="Legend_Enough" xml:space="preserve">
+    <value>Đủ</value>
+  </data>
+  <data name="Legend_Over" xml:space="preserve">
+    <value>Vượt</value>
+  </data>
+  <data name="Legend_NotConfigured" xml:space="preserve">
+    <value>Chưa cấu hình</value>
+  </data>
+  <data name="Legend_NotNeeded" xml:space="preserve">
+    <value>Không cần</value>
+  </data>
+  <data name="Cell_Pending" xml:space="preserve">
+    <value>{0} chờ duyệt</value>
+  </data>
+  <data name="Cell_NotApplicable" xml:space="preserve">
+    <value>Không áp dụng</value>
+  </data>
+  <data name="Cell_Override" xml:space="preserve">
+    <value>Ghi đè theo ngày</value>
+  </data>
+  <data name="Cell_Short" xml:space="preserve">
+    <value>Thiếu {0}</value>
+  </data>
+  <data name="Cell_Over" xml:space="preserve">
+    <value>Vượt {0}</value>
+  </data>
+  <data name="Nav_PrevWeek" xml:space="preserve">
+    <value>Tuần trước</value>
+  </data>
+  <data name="Nav_ThisWeek" xml:space="preserve">
+    <value>Tuần này</value>
+  </data>
+  <data name="Nav_NextWeek" xml:space="preserve">
+    <value>Tuần sau</value>
+  </data>
+  <data name="Nav_PickWeek" xml:space="preserve">
+    <value>Chọn ngày để đến tuần chứa ngày đó</value>
+  </data>
+  <data name="Week_Label" xml:space="preserve">
+    <value>Tuần {0} – {1}</value>
+  </data>
+  <data name="Detail_Title" xml:space="preserve">
+    <value>Chi tiết ca</value>
+  </data>
+  <data name="Detail_Required" xml:space="preserve">
+    <value>Cần</value>
+  </data>
+  <data name="Detail_Approved" xml:space="preserve">
+    <value>Đã duyệt</value>
+  </data>
+  <data name="Detail_PendingCount" xml:space="preserve">
+    <value>Chờ duyệt</value>
+  </data>
+  <data name="Detail_Shortage" xml:space="preserve">
+    <value>Thiếu / vượt</value>
+  </data>
+  <data name="Detail_AssignedList" xml:space="preserve">
+    <value>Đã phân công (đã duyệt)</value>
+  </data>
+  <data name="Detail_PendingList" xml:space="preserve">
+    <value>Đăng ký chờ duyệt</value>
+  </data>
+  <data name="Detail_Suggestions" xml:space="preserve">
+    <value>Gợi ý nhân viên</value>
+  </data>
+  <data name="Detail_SuggestionsHint" xml:space="preserve">
+    <value>Nhân viên đang làm việc tại chi nhánh, chưa đăng ký ca này. Người phù hợp được xếp trước.</value>
+  </data>
+  <data name="Detail_NoAssigned" xml:space="preserve">
+    <value>Chưa có ai được duyệt.</value>
+  </data>
+  <data name="Detail_NoPending" xml:space="preserve">
+    <value>Không có đăng ký chờ duyệt.</value>
+  </data>
+  <data name="Detail_NoSuggestions" xml:space="preserve">
+    <value>Không có nhân viên phù hợp.</value>
+  </data>
+  <data name="Detail_PastNote" xml:space="preserve">
+    <value>Ngày đã qua — chỉ xem.</value>
+  </data>
+  <data name="Detail_NotConfiguredNote" xml:space="preserve">
+    <value>Ca này chưa cấu hình nhu cầu nên không tính thiếu/vượt.</value>
+  </data>
+  <data name="Detail_ApprovedBy" xml:space="preserve">
+    <value>Duyệt bởi</value>
+  </data>
+  <data name="Detail_RegisteredAt" xml:space="preserve">
+    <value>Đăng ký lúc</value>
+  </data>
+  <data name="Suggest_Available" xml:space="preserve">
+    <value>Có thể làm</value>
+  </data>
+  <data name="Suggest_NoDeclared" xml:space="preserve">
+    <value>Chưa khai báo khung giờ</value>
+  </data>
+  <data name="Approve_Confirm" xml:space="preserve">
+    <value>Duyệt đăng ký ca của {0}?</value>
+  </data>
+  <data name="Approve_Success" xml:space="preserve">
+    <value>Đã duyệt đăng ký.</value>
+  </data>
+  <data name="Assign_Confirm" xml:space="preserve">
+    <value>Phân công {0} vào ca này (duyệt ngay)?</value>
+  </data>
+  <data name="Assign_Success" xml:space="preserve">
+    <value>Đã phân công {0}.</value>
+  </data>
+  <data name="Assign_Note" xml:space="preserve">
+    <value>Phân công từ màn hình Độ phủ ca</value>
+  </data>
+  <data name="Reason_Overlap" xml:space="preserve">
+    <value>Trùng giờ với ca {0} ({1})</value>
+  </data>
+  <data name="Reason_OnLeave" xml:space="preserve">
+    <value>Đang nghỉ phép đã duyệt</value>
+  </data>
+  <data name="Reason_Self" xml:space="preserve">
+    <value>Không thể tự phân công/duyệt cho chính mình</value>
+  </data>
+  <data name="Reason_Rejected" xml:space="preserve">
+    <value>Đăng ký ca này đã bị từ chối trước đó</value>
+  </data>
+  <data name="Reason_Unavailable" xml:space="preserve">
+    <value>Không làm được ca này</value>
+  </data>
+  <data name="Warn_OverDemand" xml:space="preserve">
+    <value>{0} {1} tại {2}: cần {3}, sẽ duyệt {4} (vượt {5})</value>
+  </data>
+  <data name="Warn_ShiftLabel" xml:space="preserve">
+    <value>Ca {0}</value>
+  </data>
+  <data name="Warn_ShiftPrefixCheck" xml:space="preserve">
+    <value>Ca </value>
+  </data>
+  <data name="Warn_OverDemandTitle" xml:space="preserve">
+    <value>Vượt nhu cầu</value>
+  </data>
+  <data name="Warn_ConfirmContinue" xml:space="preserve">
+    <value>Vẫn tiếp tục?</value>
+  </data>
+  <data name="Common_Error" xml:space="preserve">
+    <value>Có lỗi xảy ra, vui lòng thử lại.</value>
+  </data>
+  <data name="Common_Loading" xml:space="preserve">
+    <value>Đang tải...</value>
+  </data>
+  <data name="Err_StoreNotFound" xml:space="preserve">
+    <value>Không tìm thấy chi nhánh hoặc chi nhánh không hoạt động.</value>
+  </data>
+  <data name="Err_NoStoreAccess" xml:space="preserve">
+    <value>Bạn không có quyền quản lý nhu cầu nhân sự của chi nhánh này.</value>
+  </data>
+  <data name="Err_ShiftNotApplicable" xml:space="preserve">
+    <value>Ca không áp dụng tại chi nhánh vào ngày đã chọn.</value>
+  </data>
+  <data name="Err_ShiftNotInStore" xml:space="preserve">
+    <value>Ca không áp dụng tại chi nhánh.</value>
+  </data>
+  <data name="Err_RequiredRange" xml:space="preserve">
+    <value>Số người cần phải là số nguyên từ {0} đến {1}.</value>
+  </data>
+  <data name="Err_DayOfWeek" xml:space="preserve">
+    <value>Thứ trong tuần không hợp lệ.</value>
+  </data>
+  <data name="Err_DuplicateCell" xml:space="preserve">
+    <value>Dữ liệu bị trùng, vui lòng tải lại trang.</value>
+  </data>
+  <data name="Err_DateRequired" xml:space="preserve">
+    <value>Vui lòng chọn ngày.</value>
+  </data>
+  <data name="Err_DatePast" xml:space="preserve">
+    <value>Ngày ghi đè phải từ hôm nay trở đi.</value>
+  </data>
+  <data name="Err_DateTooFar" xml:space="preserve">
+    <value>Ngày ghi đè không được quá 1 năm kể từ hôm nay.</value>
+  </data>
+  <data name="Err_OverrideExists" xml:space="preserve">
+    <value>Ca này đã có ghi đè cho ngày {0}.</value>
+  </data>
+  <data name="Err_OverrideNotFound" xml:space="preserve">
+    <value>Không tìm thấy ghi đè.</value>
+  </data>
+  <data name="Err_OverridePastLocked" xml:space="preserve">
+    <value>Không thể sửa/xóa ghi đè của ngày đã qua.</value>
+  </data>
+  <data name="Err_NoteTooLong" xml:space="preserve">
+    <value>Ghi chú tối đa {0} ký tự.</value>
+  </data>
+  <data name="Err_DateRange" xml:space="preserve">
+    <value>Khoảng ngày không hợp lệ (tối đa {0} ngày).</value>
+  </data>
+  <data name="Err_CopySameStore" xml:space="preserve">
+    <value>Chi nhánh nguồn phải khác chi nhánh hiện tại.</value>
+  </data>
+  <data name="Err_CopyForbidden" xml:space="preserve">
+    <value>Chỉ HR/Admin được sao chép mẫu giữa các chi nhánh.</value>
+  </data>
+  <data name="Err_EmployeeNotInStore" xml:space="preserve">
+    <value>Nhân viên không thuộc chi nhánh này hoặc không hoạt động.</value>
+  </data>
+  <data name="Err_PastDateAssign" xml:space="preserve">
+    <value>Không thể phân công cho ngày đã qua.</value>
+  </data>
+  <data name="Err_InvalidInput" xml:space="preserve">
+    <value>Dữ liệu không hợp lệ.</value>
+  </data>
+</root>

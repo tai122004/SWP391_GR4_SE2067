@@ -13,31 +13,31 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Create_PageHeader" xml:space="preserve">
-    <value>Create New Store</value>
+    <value>New store</value>
   </data>
   <data name="Create_PageTitle" xml:space="preserve">
-    <value>Create Store</value>
+    <value>New store</value>
   </data>
   <data name="Delete_PageHeader" xml:space="preserve">
-    <value>Confirm Store Deletion</value>
+    <value>Delete store</value>
   </data>
   <data name="Delete_PageTitle" xml:space="preserve">
-    <value>Confirm Store Deletion</value>
+    <value>Delete store</value>
   </data>
   <data name="Delete_Warning" xml:space="preserve">
     <value>Are you sure you want to delete this store? This action cannot be undone.</value>
   </data>
   <data name="Edit_PageHeader" xml:space="preserve">
-    <value>Edit Store</value>
+    <value>Edit store</value>
   </data>
   <data name="Edit_PageTitle" xml:space="preserve">
-    <value>Edit Store</value>
+    <value>Edit store</value>
   </data>
   <data name="Index_PageHeader" xml:space="preserve">
-    <value>Store List</value>
+    <value>Stores</value>
   </data>
   <data name="Index_PageTitle" xml:space="preserve">
-    <value>Store List</value>
+    <value>Stores</value>
   </data>
   <data name="Placeholder_Address" xml:space="preserve">
     <value>Enter address</value>
@@ -64,10 +64,10 @@
     <value>--- Select store ---</value>
   </data>
   <data name="GeoHeader" xml:space="preserve">
-    <value>Branch Geolocation &amp; Attendance Distance</value>
+    <value>Location &amp; attendance distance</value>
   </data>
   <data name="Placeholder_MapSearch" xml:space="preserve">
-    <value>🔍 Enter city / district / street name (e.g. Hanoi, 50 Hoang Quoc Viet...)</value>
+    <value>Enter city / district / street (e.g. Hanoi, 50 Hoang Quoc Viet)</value>
   </data>
   <data name="Btn_SearchAddress" xml:space="preserve">
     <value>Search address</value>
@@ -105,11 +105,8 @@
   <data name="Range" xml:space="preserve">
     <value>Range:</value>
   </data>
-  <data name="NotLocated" xml:space="preserve">
-    <value>Not located</value>
-  </data>
   <data name="ConfigHeader_Management" xml:space="preserve">
-    <value>Management &amp; Store Operating Hours Configuration</value>
+    <value>Manager &amp; opening hours</value>
   </data>
   <data name="Dropdown_SelectManager" xml:space="preserve">
     <value>-- Select Store Manager --</value>
@@ -193,7 +190,7 @@
     <value>GPS Attendance Radius:</value>
   </data>
   <data name="Details_AllowedDistance" xml:space="preserve">
-    <value>Allowed &amp;le; {0} meters</value>
+    <value>Allowed ≤ {0} meters</value>
   </data>
   <data name="Details_BranchStatus" xml:space="preserve">
     <value>Branch Status:</value>
@@ -240,9 +237,6 @@
   <data name="EmpTable_Empty" xml:space="preserve">
     <value>No employees belong to this branch.</value>
   </data>
-  <data name="ShiftTable_Code" xml:space="preserve">
-    <value>Shift Code</value>
-  </data>
   <data name="ShiftTable_Name" xml:space="preserve">
     <value>Shift Name</value>
   </data>
@@ -252,17 +246,8 @@
   <data name="ShiftTable_BreakMinutes" xml:space="preserve">
     <value>Break Time</value>
   </data>
-  <data name="ShiftTable_Scope" xml:space="preserve">
-    <value>Scope</value>
-  </data>
   <data name="Unit_Minutes" xml:space="preserve">
     <value>minutes</value>
-  </data>
-  <data name="ShiftScope_SystemTemplate" xml:space="preserve">
-    <value>System-wide Template Shift</value>
-  </data>
-  <data name="ShiftScope_BranchSpecific" xml:space="preserve">
-    <value>Branch-specific Shift</value>
   </data>
   <data name="ShiftTable_Empty" xml:space="preserve">
     <value>No work shifts have been set up.</value>
@@ -294,10 +279,22 @@
   <data name="Search_DefaultLocationSuffix" xml:space="preserve">
     <value>{0} (Default location)</value>
   </data>
-  <data name="Search_DefaultFallbackName" xml:space="preserve">
-    <value>Hanoi, Vietnam</value>
-  </data>
   <data name="Delete_WarningLabel" xml:space="preserve">
     <value>Warning:</value>
+  </data>
+  <data name="Create_SubTitle" xml:space="preserve">
+    <value>Add a store with its manager, opening hours and GPS location for attendance.</value>
+  </data>
+  <data name="Edit_SubTitle" xml:space="preserve">
+    <value>Update store information, opening hours and GPS location.</value>
+  </data>
+  <data name="Section_General" xml:space="preserve">
+    <value>General information</value>
+  </data>
+  <data name="Map_SelectLocationPrompt" xml:space="preserve">
+    <value>Select the store location on the map before activating it.</value>
+  </data>
+  <data name="Aria_Breadcrumb" xml:space="preserve">
+    <value>Breadcrumb</value>
   </data>
 </root>

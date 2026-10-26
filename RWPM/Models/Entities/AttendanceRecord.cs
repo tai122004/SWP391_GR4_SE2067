@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -12,7 +11,7 @@ namespace RWPM.Models.Entities
 
         [Required]
         [Column(TypeName = "nvarchar(30)")]
-        public string Username { get; set; } // Link to Acc table directly as Acc acts as the user. (Wait, let's check Employee vs Acc)
+        public string Username { get; set; } = null!; // FK tới Acc (tài khoản của nhân viên)
 
         [Required]
         [Column(TypeName = "date")]
@@ -37,7 +36,7 @@ namespace RWPM.Models.Entities
         public string? CheckOutPhotoPath { get; set; }
 
         [ForeignKey("Username")]
-        public virtual Acc Account { get; set; }
+        public virtual Acc Account { get; set; } = null!;
 
         public int? ShiftId { get; set; }
 

@@ -1,4 +1,4 @@
-﻿@using System.Globalization
+@using System.Globalization
 @{
     var currentCulture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
     var currentFlagClass = currentCulture switch
@@ -7,32 +7,44 @@
         "en" => "fi fi-gb",
         _ => "fi fi-gb" // default English
     };
+    var currentLanguageName = currentCulture == "vi" ? SharedResource.Language_Vietnamese : SharedResource.Language_English;
     string returnUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
 }
 
-<ul class="navbar-nav ms-3 bg-light border border-dark">
+<ul class="navbar-nav ms-3">
     <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle text-black p-1 m-0 d-flex align-items-center" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <span class="@currentFlagClass" style="width: 1.5em; height: 1.5em;"></span>
+        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 px-2 py-1 m-0 border" style="border-radius: var(--app-radius, 6px); border-color: var(--app-border-strong, #D5DAE0) !important; background: var(--app-surface, #fff); color: var(--app-text, #17202B);"
+           href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+           aria-label="@SharedResource.Language_Select: @currentLanguageName" title="@SharedResource.Language_Select">
+            <span class="@currentFlagClass" style="width: 1.25em; height: 1.25em;" aria-hidden="true"></span>
+            <span class="small text-uppercase fw-medium">@currentCulture</span>
         </a>
-        <ul class="dropdown-menu dropdown-menu-end small" aria-labelledby="languageDropdown" style="min-width: 120px;">
+        <ul class="dropdown-menu dropdown-menu-end small" aria-labelledby="languageDropdown" style="min-width: 150px;">
             <li>
-                <form method="post" asp-controller="Home" asp-action="SetLanguage" class="dropdown-item p-0">
+                <form method="post" asp-controller="Home" asp-action="SetLanguage" class="m-0 p-0">
                     <input type="hidden" name="culture" value="vi" />
                     <input type="hidden" name="returnUrl" value="@returnUrl" />
-                    <button type="submit" class="btn btn-link text-start w-100 px-3 py-1">
-                        <span class="fi fi-vn m-1" style="width: 1.2em; height: 1.2em;"></span>
+                    <button type="submit" class="dropdown-item d-flex align-items-center gap-2" lang="vi" aria-current="@(currentCulture == "vi" ? "true" : "false")">
+                        <span class="fi fi-vn" style="width: 1.2em; height: 1.2em;" aria-hidden="true"></span>
                         @SharedResource.Language_Vietnamese
+                        @if (currentCulture == "vi")
+                        {
+                            <i class="bi bi-check2 ms-auto" aria-hidden="true"></i>
+                        }
                     </button>
                 </form>
             </li>
             <li>
-                <form method="post" asp-controller="Home" asp-action="SetLanguage" class="dropdown-item p-0">
+                <form method="post" asp-controller="Home" asp-action="SetLanguage" class="m-0 p-0">
                     <input type="hidden" name="culture" value="en" />
                     <input type="hidden" name="returnUrl" value="@returnUrl" />
-                    <button type="submit" class="btn btn-link text-start w-100 px-3 py-1">
-                        <span class="fi fi-gb m-1" style="width: 1.2em; height: 1.2em;"></span>
+                    <button type="submit" class="dropdown-item d-flex align-items-center gap-2" lang="en" aria-current="@(currentCulture == "en" ? "true" : "false")">
+                        <span class="fi fi-gb" style="width: 1.2em; height: 1.2em;" aria-hidden="true"></span>
                         @SharedResource.Language_English
+                        @if (currentCulture == "en")
+                        {
+                            <i class="bi bi-check2 ms-auto" aria-hidden="true"></i>
+                        }
                     </button>
                 </form>
             </li>

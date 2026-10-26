@@ -61,29 +61,17 @@
   <data name="ShiftRegistration" xml:space="preserve">
     <value>Shift Registration</value>
   </data>
-  <data name="FilterByEmployeeId" xml:space="preserve">
-    <value>Filter by Employee ID...</value>
-  </data>
   <data name="Filter" xml:space="preserve">
     <value>Filter</value>
   </data>
-  <data name="RegisterShift" xml:space="preserve">
-    <value>Register shift</value>
-  </data>
   <data name="Employee" xml:space="preserve">
     <value>Employee</value>
-  </data>
-  <data name="SelectEmployee" xml:space="preserve">
-    <value>-- Select employee --</value>
   </data>
   <data name="WorkDate" xml:space="preserve">
     <value>Work Date</value>
   </data>
   <data name="Shift" xml:space="preserve">
     <value>Shift</value>
-  </data>
-  <data name="SelectShift" xml:space="preserve">
-    <value>-- Select shift --</value>
   </data>
   <data name="Note" xml:space="preserve">
     <value>Note</value>
@@ -118,38 +106,14 @@
   <data name="ConfirmCancel" xml:space="preserve">
     <value>Are you sure you want to cancel this registration?</value>
   </data>
-  <data name="SuccessStatus" xml:space="preserve">
-    <value>Status updated successfully!</value>
-  </data>
-  <data name="ErrorPrefix" xml:space="preserve">
-    <value>Error: </value>
-  </data>
-  <data name="UpdateFailed" xml:space="preserve">
-    <value>Update failed: </value>
-  </data>
   <data name="FilterByEmployee" xml:space="preserve">
     <value>By employee</value>
-  </data>
-  <data name="AttendanceFilter" xml:space="preserve">
-    <value>Attendance</value>
   </data>
   <data name="ActiveEmployees" xml:space="preserve">
     <value>Active employees</value>
   </data>
   <data name="SearchBtn" xml:space="preserve">
     <value>Search</value>
-  </data>
-  <data name="NotYetShifted" xml:space="preserve">
-    <value>Not yet arrived</value>
-  </data>
-  <data name="OnTimeAttendance" xml:space="preserve">
-    <value>On-time attendance</value>
-  </data>
-  <data name="LateEarly" xml:space="preserve">
-    <value>Late/Early</value>
-  </data>
-  <data name="NotCheckedInOut" xml:space="preserve">
-    <value>Not checked in/out</value>
   </data>
   <data name="OnLeave" xml:space="preserve">
     <value>On leave</value>
@@ -159,9 +123,6 @@
   </data>
   <data name="CreateNewShift" xml:space="preserve">
     <value>Create new shift</value>
-  </data>
-  <data name="Subtitle" xml:space="preserve">
-    <value>Track, register, and manage weekly work schedules.</value>
   </data>
   <data name="Header_Branch" xml:space="preserve">
     <value>Branch:</value>
@@ -540,5 +501,42 @@
   </data>
   <data name="Swap_DeleteNoPermission" xml:space="preserve">
     <value>You do not have permission to delete this shift swap request.</value>
+  </data>
+  <data name="Err_AvailabilityBlocked" xml:space="preserve">
+    <value>Cannot register: these shifts do not match your availability:
+{0}</value>
+  </data>
+  <data name="Avail_IssueLine" xml:space="preserve">
+    <value>• {0} – {1}: {2}</value>
+  </data>
+  <data name="Warn_AvailabilityLine" xml:space="preserve">
+    <value>• {0} – {1} {2}: {3}</value>
+  </data>
+  <data name="Warn_ConfirmTitle" xml:space="preserve">
+    <value>Scheduling warnings</value>
+  </data>
+  <data name="Warn_ConfirmContinue" xml:space="preserve">
+    <value>Do you still want to continue?</value>
+  </data>
+  <data name="Slot_BlockedBadge" xml:space="preserve">
+    <value>Unavailable</value>
+  </data>
+  <data name="Slot_BlockedPendingHint" xml:space="preserve">
+    <value>This pending shift no longer matches your availability: {0}</value>
+  </data>
+  <data name="Coverage_Title" xml:space="preserve">
+    <value>Coverage (approved/required)</value>
+  </data>
+  <data name="Coverage_Link" xml:space="preserve">
+    <value>View week coverage</value>
+  </data>
+  <data name="Coverage_Tooltip" xml:space="preserve">
+    <value>Approved {0} / required {1} · pending {2}</value>
+  </data>
+  <data name="Coverage_NotConfigured" xml:space="preserve">
+    <value>No demand configured · approved {0} · pending {1}</value>
+  </data>
+  <data name="Coverage_NotApplicable" xml:space="preserve">
+    <value>Shift not applicable on this day</value>
   </data>
 </root>

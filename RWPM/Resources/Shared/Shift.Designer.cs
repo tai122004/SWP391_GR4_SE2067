@@ -83,30 +83,6 @@ namespace RWPM.Resources.Shared {
             }
         }
         
-        public static string Placeholder_ShiftCode {
-            get {
-                return ResourceManager.GetString("Placeholder_ShiftCode", resourceCulture);
-            }
-        }
-        
-        public static string Placeholder_ShiftName {
-            get {
-                return ResourceManager.GetString("Placeholder_ShiftName", resourceCulture);
-            }
-        }
-        
-        public static string Placeholder_Description {
-            get {
-                return ResourceManager.GetString("Placeholder_Description", resourceCulture);
-            }
-        }
-        
-        public static string SplitShiftSection {
-            get {
-                return ResourceManager.GetString("SplitShiftSection", resourceCulture);
-            }
-        }
-        
         public static string Delete_PageTitle {
             get {
                 return ResourceManager.GetString("Delete_PageTitle", resourceCulture);
@@ -128,66 +104,6 @@ namespace RWPM.Resources.Shared {
         public static string AttendancePolicy_Title {
             get {
                 return ResourceManager.GetString("AttendancePolicy_Title", resourceCulture);
-            }
-        }
-        
-        public static string AttendancePolicy_Description {
-            get {
-                return ResourceManager.GetString("AttendancePolicy_Description", resourceCulture);
-            }
-        }
-        
-        public static string Placeholder_DefaultMinutes {
-            get {
-                return ResourceManager.GetString("Placeholder_DefaultMinutes", resourceCulture);
-            }
-        }
-        
-        public static string Badge_Template {
-            get {
-                return ResourceManager.GetString("Badge_Template", resourceCulture);
-            }
-        }
-        
-        public static string Badge_Custom {
-            get {
-                return ResourceManager.GetString("Badge_Custom", resourceCulture);
-            }
-        }
-        
-        public static string Filter_AllClassifications {
-            get {
-                return ResourceManager.GetString("Filter_AllClassifications", resourceCulture);
-            }
-        }
-        
-        public static string Shift_IsTemplate_Hint {
-            get {
-                return ResourceManager.GetString("Shift_IsTemplate_Hint", resourceCulture);
-            }
-        }
-        
-        public static string AttendancePolicy_UseDefault {
-            get {
-                return ResourceManager.GetString("AttendancePolicy_UseDefault", resourceCulture);
-            }
-        }
-        
-        public static string AttendancePolicy_InheritNotice {
-            get {
-                return ResourceManager.GetString("AttendancePolicy_InheritNotice", resourceCulture);
-            }
-        }
-        
-        public static string Scope_Title {
-            get {
-                return ResourceManager.GetString("Scope_Title", resourceCulture);
-            }
-        }
-        
-        public static string Scope_AllStores {
-            get {
-                return ResourceManager.GetString("Scope_AllStores", resourceCulture);
             }
         }
         
@@ -341,6 +257,318 @@ namespace RWPM.Resources.Shared {
         public static string Preset_Hint {
             get {
                 return ResourceManager.GetString("Preset_Hint", resourceCulture);
+            }
+        }
+
+        public static string Minutes {
+            get {
+                return ResourceManager.GetString("Minutes", resourceCulture);
+            }
+        }
+
+        public static string EffectiveFrom {
+            get {
+                return ResourceManager.GetString("EffectiveFrom", resourceCulture);
+            }
+        }
+
+        public static string EffectiveTo {
+            get {
+                return ResourceManager.GetString("EffectiveTo", resourceCulture);
+            }
+        }
+
+        public static string UsedShiftHint {
+            get {
+                return ResourceManager.GetString("UsedShiftHint", resourceCulture);
+            }
+        }
+
+        public static string BreakTime {
+            get {
+                return ResourceManager.GetString("BreakTime", resourceCulture);
+            }
+        }
+
+        public static string Validity {
+            get {
+                return ResourceManager.GetString("Validity", resourceCulture);
+            }
+        }
+
+        public static string CreatedBy {
+            get {
+                return ResourceManager.GetString("CreatedBy", resourceCulture);
+            }
+        }
+
+        public static string No {
+            get {
+                return ResourceManager.GetString("No", resourceCulture);
+            }
+        }
+
+        public static string NoBreak {
+            get {
+                return ResourceManager.GetString("NoBreak", resourceCulture);
+            }
+        }
+
+        public static string NoLimit {
+            get {
+                return ResourceManager.GetString("NoLimit", resourceCulture);
+            }
+        }
+
+        public static string HoursWorked {
+            get {
+                return ResourceManager.GetString("HoursWorked", resourceCulture);
+            }
+        }
+
+        public static string Close {
+            get {
+                return ResourceManager.GetString("Close", resourceCulture);
+            }
+        }
+
+        public static string Index_PageSubtitle {
+            get {
+                return ResourceManager.GetString("Index_PageSubtitle", resourceCulture);
+            }
+        }
+
+        public static string EffectiveOnFilter {
+            get {
+                return ResourceManager.GetString("EffectiveOnFilter", resourceCulture);
+            }
+        }
+
+        public static string ApplicableStores {
+            get {
+                return ResourceManager.GetString("ApplicableStores", resourceCulture);
+            }
+        }
+
+        public static string EndsNextDay {
+            get {
+                return ResourceManager.GetString("EndsNextDay", resourceCulture);
+            }
+        }
+
+        public static string NextDay {
+            get {
+                return ResourceManager.GetString("NextDay", resourceCulture);
+            }
+        }
+
+        public static string UnpaidBreak {
+            get {
+                return ResourceManager.GetString("UnpaidBreak", resourceCulture);
+            }
+        }
+
+        public static string BreakStart {
+            get {
+                return ResourceManager.GetString("BreakStart", resourceCulture);
+            }
+        }
+
+        public static string BreakEnd {
+            get {
+                return ResourceManager.GetString("BreakEnd", resourceCulture);
+            }
+        }
+
+        public static string CancelAction {
+            get {
+                return ResourceManager.GetString("CancelAction", resourceCulture);
+            }
+        }
+
+        public static string SaveAction {
+            get {
+                return ResourceManager.GetString("SaveAction", resourceCulture);
+            }
+        }
+
+        public static string CreateAction {
+            get {
+                return ResourceManager.GetString("CreateAction", resourceCulture);
+            }
+        }
+
+        public static string AllStoresFilter {
+            get {
+                return ResourceManager.GetString("AllStoresFilter", resourceCulture);
+            }
+        }
+
+        public static string AllStatuses {
+            get {
+                return ResourceManager.GetString("AllStatuses", resourceCulture);
+            }
+        }
+
+        public static string FilterAction {
+            get {
+                return ResourceManager.GetString("FilterAction", resourceCulture);
+            }
+        }
+
+        public static string WorkTime {
+            get {
+                return ResourceManager.GetString("WorkTime", resourceCulture);
+            }
+        }
+
+        public static string HoursEffective {
+            get {
+                return ResourceManager.GetString("HoursEffective", resourceCulture);
+            }
+        }
+
+        public static string Actions {
+            get {
+                return ResourceManager.GetString("Actions", resourceCulture);
+            }
+        }
+
+        public static string ViewAction {
+            get {
+                return ResourceManager.GetString("ViewAction", resourceCulture);
+            }
+        }
+
+        public static string EditAction {
+            get {
+                return ResourceManager.GetString("EditAction", resourceCulture);
+            }
+        }
+
+        public static string CloseAction {
+            get {
+                return ResourceManager.GetString("CloseAction", resourceCulture);
+            }
+        }
+
+        public static string NoResults {
+            get {
+                return ResourceManager.GetString("NoResults", resourceCulture);
+            }
+        }
+
+        public static string CreatedInfo {
+            get {
+                return ResourceManager.GetString("CreatedInfo", resourceCulture);
+            }
+        }
+
+        public static string ValidationName {
+            get {
+                return ResourceManager.GetString("ValidationName", resourceCulture);
+            }
+        }
+
+        public static string ValidationDescription {
+            get {
+                return ResourceManager.GetString("ValidationDescription", resourceCulture);
+            }
+        }
+
+        public static string ValidationTime {
+            get {
+                return ResourceManager.GetString("ValidationTime", resourceCulture);
+            }
+        }
+
+        public static string ValidationDuration {
+            get {
+                return ResourceManager.GetString("ValidationDuration", resourceCulture);
+            }
+        }
+
+        public static string ValidationBreakFields {
+            get {
+                return ResourceManager.GetString("ValidationBreakFields", resourceCulture);
+            }
+        }
+
+        public static string ValidationBreakRange {
+            get {
+                return ResourceManager.GetString("ValidationBreakRange", resourceCulture);
+            }
+        }
+
+        public static string ValidationWorkDuration {
+            get {
+                return ResourceManager.GetString("ValidationWorkDuration", resourceCulture);
+            }
+        }
+
+        public static string ValidationDates {
+            get {
+                return ResourceManager.GetString("ValidationDates", resourceCulture);
+            }
+        }
+
+        public static string ValidationTolerance {
+            get {
+                return ResourceManager.GetString("ValidationTolerance", resourceCulture);
+            }
+        }
+
+        public static string ValidationGraceThreshold {
+            get {
+                return ResourceManager.GetString("ValidationGraceThreshold", resourceCulture);
+            }
+        }
+
+        public static string SelectStores {
+            get {
+                return ResourceManager.GetString("SelectStores", resourceCulture);
+            }
+        }
+
+        public static string SelectedStoresCount {
+            get {
+                return ResourceManager.GetString("SelectedStoresCount", resourceCulture);
+            }
+        }
+
+        public static string SearchStores {
+            get {
+                return ResourceManager.GetString("SearchStores", resourceCulture);
+            }
+        }
+
+        public static string SelectAllStores {
+            get {
+                return ResourceManager.GetString("SelectAllStores", resourceCulture);
+            }
+        }
+
+        public static string ClearAllStores {
+            get {
+                return ResourceManager.GetString("ClearAllStores", resourceCulture);
+            }
+        }
+
+        public static string ViewSelectedStores {
+            get {
+                return ResourceManager.GetString("ViewSelectedStores", resourceCulture);
+            }
+        }
+
+        public static string LatenessTolerance {
+            get {
+                return ResourceManager.GetString("LatenessTolerance", resourceCulture);
+            }
+        }
+
+        public static string EarlyDepartureTolerance {
+            get {
+                return ResourceManager.GetString("EarlyDepartureTolerance", resourceCulture);
             }
         }
     }

@@ -2,7 +2,6 @@
 using RWPM.Common;
 using RWPM.Common.Helper;
 using RWPM.Common.Models;
-using RWPM.Common.Enums;
 
 using RWPM.Infrastructure.Data;
 using RWPM.Models.Entities;
@@ -63,6 +62,5 @@ namespace RWPM.Services.Implementation
 
             await _ctx.SaveChangesAsync();
         }
-
     }
 }

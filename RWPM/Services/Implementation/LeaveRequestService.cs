@@ -13,12 +13,9 @@ namespace RWPM.Services.Implementation
     public class LeaveRequestService : ILeaveRequestService
     {
         private readonly DefaultDatabaseContext _context;
-        private readonly IHttpContextAccessor _accessor;
-
-        public LeaveRequestService(DefaultDatabaseContext context, IHttpContextAccessor accessor)
+        public LeaveRequestService(DefaultDatabaseContext context)
         {
             _context = context;
-            _accessor = accessor;
         }
 
         public async Task<List<LeaveRequest>> GetLeaveRequestsAsync(DateTime start, DateTime end, int? storeId = null, RegistrationStatus? status = null)
@@ -260,12 +257,6 @@ namespace RWPM.Services.Implementation
 
             _context.LeaveRequest.Remove(leaveReq);
             await _context.SaveChangesAsync();
-        }
-
-        public async Task<int> GetRemainingLeaveBalanceAsync(int employeeId)
-        {
-            var emp = await _context.Employee.FindAsync(employeeId);
-            return emp?.AnnualLeaveBalance ?? 0;
         }
     }
 }

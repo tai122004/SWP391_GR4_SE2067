@@ -1425,5 +1425,17 @@ namespace RWPM.Resources.Shared {
                 return ResourceManager.GetString("Excel_Total", resourceCulture);
             }
         }
+
+        public static string Warn_LegacyLeaveNoEvidence {
+            get {
+                return ResourceManager.GetString("Warn_LegacyLeaveNoEvidence", resourceCulture);
+            }
+        }
+
+        public static string Note_UnlockedBy {
+            get {
+                return ResourceManager.GetString("Note_UnlockedBy", resourceCulture);
+            }
+        }
     }
 }

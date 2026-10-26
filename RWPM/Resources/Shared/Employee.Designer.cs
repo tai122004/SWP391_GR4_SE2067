@@ -205,15 +205,6 @@ namespace RWPM.Resources.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to --- Select store ---.
-        /// </summary>
-        public static string Placeholder_Store {
-            get {
-                return ResourceManager.GetString("Placeholder_Store", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Search.
         /// </summary>
         public static string Search {
@@ -358,15 +349,6 @@ namespace RWPM.Resources.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Job Information &amp; Store.
-        /// </summary>
-        public static string Edit_SectionTitle {
-            get {
-                return ResourceManager.GetString("Edit_SectionTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Currently working (Active).
         /// </summary>
         public static string Edit_ActiveLabel {
@@ -411,15 +393,6 @@ namespace RWPM.Resources.Shared {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to No email.
-        /// </summary>
-        public static string NoEmail {
-            get {
-                return ResourceManager.GetString("NoEmail", resourceCulture);
-            }
-        }
-
         public static string Create_SubTitle {
             get { return ResourceManager.GetString("Create_SubTitle", resourceCulture); }
         }
@@ -474,17 +447,11 @@ namespace RWPM.Resources.Shared {
         public static string Badge_Resigned {
             get { return ResourceManager.GetString("Badge_Resigned", resourceCulture); }
         }
-        public static string Badge_Probation {
-            get { return ResourceManager.GetString("Badge_Probation", resourceCulture); }
-        }
         public static string Excel_Action => ResourceManager.GetString("Excel_Action", resourceCulture);
         public static string Excel_DownloadTemplate => ResourceManager.GetString("Excel_DownloadTemplate", resourceCulture);
         public static string Excel_Import => ResourceManager.GetString("Excel_Import", resourceCulture);
         public static string Excel_ImportTitle => ResourceManager.GetString("Excel_ImportTitle", resourceCulture);
         public static string Excel_SelectFile => ResourceManager.GetString("Excel_SelectFile", resourceCulture);
-        public static string Excel_UploadAndImport => ResourceManager.GetString("Excel_UploadAndImport", resourceCulture);
-        public static string Excel_TemplateNote => ResourceManager.GetString("Excel_TemplateNote", resourceCulture);
-        public static string Excel_Close => ResourceManager.GetString("Excel_Close", resourceCulture);
         public static string Excel_Btn_Preview => ResourceManager.GetString("Excel_Btn_Preview", resourceCulture);
         public static string Excel_Btn_Back => ResourceManager.GetString("Excel_Btn_Back", resourceCulture);
         public static string Excel_Btn_Confirm => ResourceManager.GetString("Excel_Btn_Confirm", resourceCulture);
@@ -563,93 +530,15 @@ namespace RWPM.Resources.Shared {
             }
         }
 
-        public static string Import_NoSheet {
-            get {
-                return ResourceManager.GetString("Import_NoSheet", resourceCulture);
-            }
-        }
-
         public static string Import_NoWorksheet {
             get {
                 return ResourceManager.GetString("Import_NoWorksheet", resourceCulture);
             }
         }
 
-        public static string Import_NoRows {
-            get {
-                return ResourceManager.GetString("Import_NoRows", resourceCulture);
-            }
-        }
-
         public static string Import_NoRowsPreview {
             get {
                 return ResourceManager.GetString("Import_NoRowsPreview", resourceCulture);
-            }
-        }
-
-        public static string Import_RowError {
-            get {
-                return ResourceManager.GetString("Import_RowError", resourceCulture);
-            }
-        }
-
-        public static string Import_FullNameRequired {
-            get {
-                return ResourceManager.GetString("Import_FullNameRequired", resourceCulture);
-            }
-        }
-
-        public static string Import_UsernameRequired {
-            get {
-                return ResourceManager.GetString("Import_UsernameRequired", resourceCulture);
-            }
-        }
-
-        public static string Import_EmailRequired {
-            get {
-                return ResourceManager.GetString("Import_EmailRequired", resourceCulture);
-            }
-        }
-
-        public static string Import_UsernameExistsInSystem {
-            get {
-                return ResourceManager.GetString("Import_UsernameExistsInSystem", resourceCulture);
-            }
-        }
-
-        public static string Import_UsernameExists {
-            get {
-                return ResourceManager.GetString("Import_UsernameExists", resourceCulture);
-            }
-        }
-
-        public static string Import_StoreInvalid {
-            get {
-                return ResourceManager.GetString("Import_StoreInvalid", resourceCulture);
-            }
-        }
-
-        public static string Import_StoreNotFound {
-            get {
-                return ResourceManager.GetString("Import_StoreNotFound", resourceCulture);
-            }
-        }
-
-        public static string Import_EmpCodeExistsInSystem {
-            get {
-                return ResourceManager.GetString("Import_EmpCodeExistsInSystem", resourceCulture);
-            }
-        }
-
-        public static string Import_EmpCodeExists {
-            get {
-                return ResourceManager.GetString("Import_EmpCodeExists", resourceCulture);
-            }
-        }
-
-        public static string Import_StoreNotRequired {
-            get {
-                return ResourceManager.GetString("Import_StoreNotRequired", resourceCulture);
             }
         }
 
@@ -960,9 +849,9 @@ namespace RWPM.Resources.Shared {
         }
     
 
-        public static string Import_PhoneInvalid {
+        public static string Aria_Breadcrumb {
             get {
-                return ResourceManager.GetString("Import_PhoneInvalid", resourceCulture);
+                return ResourceManager.GetString("Aria_Breadcrumb", resourceCulture);
             }
         }
     }

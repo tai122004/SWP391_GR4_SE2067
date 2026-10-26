@@ -17,16 +17,7 @@
     <resheader name="version">2.0</resheader>
     <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
     <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
+                        
     There are any number of "resheader" rows that contain simple 
     name/value pairs.
     
@@ -126,35 +117,20 @@
   <data name="Password" xml:space="preserve">
     <value>Mật khẩu</value>
   </data>
-  <data name="PasswordRegularExpression" xml:space="preserve">
-    <value>Mật khẩu phải dài ít nhất 8 ký tự và chứa ít nhất một chữ cái viết hoa, một chữ cái viết thường và một chữ số.</value>
-  </data>
   <data name="Role" xml:space="preserve">
     <value>Vai trò</value>
   </data>
   <data name="Search" xml:space="preserve">
-    <value>Tìm kiếm</value>
+    <value>Nhập tài khoản hoặc email để tìm kiếm</value>
   </data>
   <data name="Username" xml:space="preserve">
     <value>Tài khoản</value>
   </data>
-  <data name="Role_SuperAdmin" xml:space="preserve">
-    <value>Super Admin / HR</value>
-  </data>
-  <data name="Role_AreaManager" xml:space="preserve">
-    <value>Quản lý khu vực</value>
-  </data>
   <data name="Role_StoreManager" xml:space="preserve">
     <value>Quản lý cửa hàng</value>
   </data>
-  <data name="Role_ShiftLeader" xml:space="preserve">
-    <value>Trưởng ca</value>
-  </data>
   <data name="Role_Employee" xml:space="preserve">
     <value>Nhân viên</value>
-  </data>
-  <data name="Role_PartTimeStaff" xml:space="preserve">
-    <value>Nhân viên bán thời gian</value>
   </data>
   <data name="Role_Admin" xml:space="preserve">
     <value>Quản trị viên (Admin)</value>
@@ -179,9 +155,6 @@
   </data>
   <data name="Gender_Other" xml:space="preserve">
     <value>Khác</value>
-  </data>
-  <data name="Avatar" xml:space="preserve">
-    <value>Ảnh đại diện</value>
   </data>
   <data name="Email" xml:space="preserve">
     <value>Email</value>

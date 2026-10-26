@@ -1,0 +1,135 @@
+@model RWPM.Models.ViewModels.Availability.AvailabilityEmployeeVM
+@using RWPM.Common.Validation
+@using R = RWPM.Resources.Shared.AvailabilityResource
+
+@{
+    ViewData["Title"] = R.Employee_Title;
+    var approved = Model.Windows.Where(w => w.Status == RegistrationStatus.Approved).ToList();
+    var pending = Model.Windows.Where(w => w.Status == RegistrationStatus.Pending).ToList();
+}
+
+@await Html.PartialAsync("_Styles")
+
+<div class="container-fluid px-0">
+    <div class="app-page-header">
+        <div>
+            <h4 class="mb-1">@R.Employee_Title</h4>
+            <div class="text-muted small">
+                @Model.Employee.FullName <span>·</span> @Model.Employee.EmployeeCode <span>·</span> <i class="bi bi-shop me-1"></i>@(Model.Employee.StoreName ?? R.Unassigned)
+            </div>
+        </div>
+        <div class="app-page-actions d-flex gap-2">
+            @if (Model.CanReview && pending.Count > 0)
+            {
+                <a asp-action="Review" asp-route-Status="Pending" asp-route-Search="@Model.Employee.EmployeeCode" class="btn btn-primary d-flex align-items-center">
+                    <i class="bi bi-hourglass-split me-1"></i> @string.Format(R.Employee_ReviewPending, pending.Count)
+                </a>
+            }
+            @if (Model.CanReview)
+            {
+                <a asp-action="Review" class="btn btn-outline-secondary d-flex align-items-center">
+                    <i class="bi bi-arrow-left me-1"></i> @R.Action_BackToReview
+                </a>
+            }
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-xl-8">
+            <div class="app-content-card mb-3">
+                <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <span class="fw-semibold">@R.Employee_WeekTitle</span>
+                    @if (!Model.HasApproved)
+                    {
+                        <span class="app-badge app-badge-neutral"><i class="bi bi-infinity"></i>@R.Employee_AnyTime</span>
+                    }
+                </div>
+                <div class="card-body">
+                    @if (Model.Windows.Any())
+                    {
+                        @await Html.PartialAsync("_WeekGrid", Model.Windows)
+                        @if (!Model.HasApproved)
+                        {
+                            <div class="small text-muted mt-2"><i class="bi bi-info-circle me-1"></i>@R.Employee_OnlyPendingHint</div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-infinity fs-3 d-block mb-2 text-muted"></i>
+                            @R.Employee_NoWindows
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="app-content-card management-table-card mb-3">
+                <div class="card-header bg-white"><span class="fw-semibold">@R.Employee_WindowList</span></div>
+                <div class="table-responsive">
+                    <table class="table modern-table align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>@R.Col_Day</th>
+                                <th>@R.Col_TimeRange</th>
+                                <th>@R.Col_Note</th>
+                                <th>@R.Col_Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (approved.Any() || pending.Any())
+                            {
+                                foreach (var w in approved.Concat(pending))
+                                {
+                                    <tr>
+                                        <td class="text-nowrap fw-semibold text-dark">@w.DayName</td>
+                                        <td class="text-nowrap"><i class="bi bi-clock me-1 text-muted"></i>@w.TimeRange</td>
+                                        <td class="small text-muted">@(string.IsNullOrWhiteSpace(w.Note) ? "—" : w.Note)</td>
+                                        <td>@await Html.PartialAsync("_StatusBadge", w)</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="4" class="text-center text-muted py-3">@R.Employee_ListEmpty</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4">
+            <div class="app-content-card management-table-card">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <span class="fw-semibold">@R.Card_Dates</span>
+                    <span class="app-badge app-badge-neutral num">@Model.Upcoming.Count</span>
+                </div>
+                <ul class="list-group list-group-flush">
+                    @if (Model.Upcoming.Any())
+                    {
+                        foreach (var d in Model.Upcoming)
+                        {
+                            <li class="list-group-item d-flex gap-3 align-items-start">
+                                <div class="text-center border px-2 py-1 bg-light rounded" style="min-width:58px">
+                                    <div class="small text-muted">@AvailabilityRules.DayShortName(d.Date.DayOfWeek)</div>
+                                    <div class="fw-bold text-dark">@d.Date.ToString("dd/MM")</div>
+                                </div>
+                                <div class="small">
+                                    <div class="text-dark">@d.Date.ToString("dd/MM/yyyy")</div>
+                                    <div class="text-muted">@(string.IsNullOrWhiteSpace(d.Reason) ? R.Dates_NoReason : d.Reason)</div>
+                                </div>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li class="list-group-item text-center text-muted py-4">
+                            <i class="bi bi-calendar-check fs-3 d-block mb-2 text-muted"></i>
+                            @R.Dates_EmptyEmployee
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

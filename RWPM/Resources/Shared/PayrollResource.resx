@@ -734,4 +734,10 @@
   <data name="Excel_Total" xml:space="preserve">
     <value>TOTAL</value>
   </data>
+  <data name="Warn_LegacyLeaveNoEvidence" xml:space="preserve">
+    <value>Legacy paid leave has no schedule evidence; review required.</value>
+  </data>
+  <data name="Note_UnlockedBy" xml:space="preserve">
+    <value>[Unlocked by {0} at {1}]: {2}</value>
+  </data>
 </root>

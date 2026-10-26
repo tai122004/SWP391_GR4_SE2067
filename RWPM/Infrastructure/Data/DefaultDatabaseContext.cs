@@ -277,6 +277,37 @@ namespace RWPM.Infrastructure.Data
             });
             #endregion
 
+            #region ShiftDemand
+            modelBuilder.Entity<ShiftDemand>(e =>
+            {
+                e.HasIndex(x => new { x.StoreId, x.ShiftId, x.DayOfWeek }).IsUnique().HasFilter("[DayOfWeek] IS NOT NULL");
+                e.HasIndex(x => new { x.StoreId, x.ShiftId, x.Date }).IsUnique().HasFilter("[Date] IS NOT NULL");
+                e.HasOne(x => x.Store).WithMany().HasForeignKey(x => x.StoreId).OnDelete(DeleteBehavior.Cascade);
+                e.HasOne(x => x.Shift).WithMany().HasForeignKey(x => x.ShiftId).OnDelete(DeleteBehavior.Cascade);
+                e.HasCheckConstraint("CK_ShiftDemand_Kind", "([DayOfWeek] IS NULL AND [Date] IS NOT NULL) OR ([DayOfWeek] IS NOT NULL AND [Date] IS NULL)");
+                e.HasCheckConstraint("CK_ShiftDemand_DayOfWeek", "[DayOfWeek] IS NULL OR [DayOfWeek] BETWEEN 0 AND 6");
+                e.HasCheckConstraint("CK_ShiftDemand_RequiredCount", "[RequiredCount] BETWEEN 0 AND 100");
+            });
+            #endregion
+
+            #region EmployeeAvailability
+            modelBuilder.Entity<EmployeeAvailability>(e =>
+            {
+                e.HasIndex(x => new { x.EmployeeId, x.DayOfWeek, x.Status });
+                e.HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Cascade);
+                e.HasCheckConstraint("CK_EmployeeAvailability_DayOfWeek", "[DayOfWeek] BETWEEN 0 AND 6");
+                e.HasCheckConstraint("CK_EmployeeAvailability_Times", "[StartTime] <> [EndTime]");
+            });
+            #endregion
+
+            #region EmployeeUnavailability
+            modelBuilder.Entity<EmployeeUnavailability>(e =>
+            {
+                e.HasIndex(x => new { x.EmployeeId, x.Date }).IsUnique();
+                e.HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Cascade);
+            });
+            #endregion
+
             #region Notification
             modelBuilder.Entity<Notification>(e =>
             {
@@ -308,8 +339,9 @@ namespace RWPM.Infrastructure.Data
         public DbSet<PayrollAuditLog> PayrollAuditLog { get; set; } = default!;
         public DbSet<PerformanceReview> PerformanceReview { get; set; } = default!;
         public DbSet<Notification> Notification { get; set; } = default!;
-
-        //public DbSet<IdCounter> IdCounter { get; set; } = default!;
+        public DbSet<ShiftDemand> ShiftDemand { get; set; } = default!;
+        public DbSet<EmployeeAvailability> EmployeeAvailability { get; set; } = default!;
+        public DbSet<EmployeeUnavailability> EmployeeUnavailability { get; set; } = default!;
 
     }
 }

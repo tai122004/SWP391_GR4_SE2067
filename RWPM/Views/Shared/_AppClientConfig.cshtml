@@ -1,6 +1,7 @@
 @using System.Text.Json
 @{
-    // Chuỗi dùng trong JavaScript (site.js) lấy từ SharedResource -> đổi ngôn ngữ là JS đổi theo
+    // Chuỗi dùng trong JavaScript (site.js) lấy từ SharedResource -> đổi ngôn ngữ là JS đổi theo.
+    // Dùng trong JS: AppText('key', 'fallback'). Có cả ngôn ngữ hiện tại: window.AppLang ("vi" | "en").
     var i18n = new Dictionary<string, string?>
     {
         ["required"] = SharedResource.Js_Required,
@@ -17,6 +18,9 @@
         ["pattern"] = SharedResource.Js_Pattern,
         ["equalTo"] = SharedResource.Js_EqualTo,
         ["remote"] = SharedResource.Js_Remote,
+        ["range"] = SharedResource.Js_Range,
+        ["rangelength"] = SharedResource.Js_RangeLength,
+        ["creditcard"] = SharedResource.Js_CreditCard,
         ["confirmTitle"] = SharedResource.Js_ConfirmTitle,
         ["confirmOk"] = SharedResource.Js_ConfirmOk,
         ["cancel"] = SharedResource.Button_Cancel,
@@ -30,6 +34,14 @@
         ["timeInvalid"] = SharedResource.Js_TimeInvalid,
         ["timeClear"] = SharedResource.Js_TimeClear,
         ["close"] = SharedResource.Js_Close,
+        ["toastSuccess"] = SharedResource.Toast_Success,
+        ["toastError"] = SharedResource.Toast_Error,
+        ["toastWarning"] = SharedResource.Toast_Warning,
+        ["toastInfo"] = SharedResource.Toast_Info,
+        ["loading"] = SharedResource.Loading,
+        ["processing"] = SharedResource.Processing,
+        ["noData"] = SharedResource.NoDataFound,
+        ["errorOccurred"] = SharedResource.Shift_ErrOccurred,
         ["account"] = SharedResource.Js_Account,
         ["password"] = SharedResource.Js_Password,
         ["passwordMinLength"] = SharedResource.Js_PasswordMinLength,
@@ -46,5 +58,6 @@
 }
 <script>
     window.AppI18n = @Html.Raw(JsonSerializer.Serialize(i18n));
+    window.AppLang = @Html.Raw(JsonSerializer.Serialize(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName));
     window.AppServerErrors = @Html.Raw(JsonSerializer.Serialize(serverErrors));
 </script>

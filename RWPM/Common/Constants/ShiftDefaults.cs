@@ -1,7 +1,7 @@
 namespace RWPM.Common.Constants
 {
     /// <summary>
-    /// Cấu hình mặc định toàn hệ thống cho Ca làm việc & Chấm công (Attendance Policy Defaults).
+    /// Cấu hình mặc định toàn hệ thống cho Ca làm việc và Chấm công (Attendance Policy Defaults).
     /// Khi ban giám đốc hoặc phòng nhân sự thay đổi chính sách chung, bạn chỉ cần sửa đổi các con số tại đây.
     /// Toàn bộ giao diện hiển thị và logic tính công sẽ tự động áp dụng giá trị mới.
     /// </summary>

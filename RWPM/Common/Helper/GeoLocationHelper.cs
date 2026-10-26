@@ -1,5 +1,3 @@
-using System;
-
 namespace RWPM.Common.Helper
 {
     public static class GeoLocationHelper

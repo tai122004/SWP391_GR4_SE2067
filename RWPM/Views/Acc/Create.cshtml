@@ -16,13 +16,11 @@
     <!-- Header with Breadcrumb -->
     <div class="app-page-header">
         <div>
-            <h4 class="fw-bold text-dark d-flex align-items-center mb-1">
-                <i class="bi bi-person-fill-add text-primary me-2"></i> @AccountSharedResource.Create_PageHeader
-            </h4>
+            <h4 class="mb-1">@AccountSharedResource.Create_PageHeader</h4>
             <div class="text-muted small">@AccountSharedResource.Create_SubTitle</div>
         </div>
 
-        <nav aria-label="breadcrumb" class="d-none d-md-block">
+        <nav aria-label="@RWPM.Resources.Shared.Acc.Aria_Breadcrumb" class="d-none d-md-block">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a asp-action="Index">@RWPM.Resources.Shared.Acc.Index_PageHeader</a></li>
                 <li class="breadcrumb-item active" aria-current="page">@AccountSharedResource.Create_PageHeader</li>
@@ -35,19 +33,17 @@
         <form asp-action="Create" method="post" id="accCreateForm">
             @Html.AntiForgeryToken()
 
-            <div class="form-section-title">
-                <i class="bi bi-person-badge text-primary"></i> @AccountSharedResource.Create_Section_AccountInfo
-            </div>
+            <div class="form-section-title">@AccountSharedResource.Create_Section_AccountInfo</div>
 
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold small required" asp-for="FullName">@AccountModelResource.Fullname</label>
+                    <label class="form-label required" asp-for="FullName">@AccountModelResource.Fullname</label>
                     <input class="form-control" asp-for="FullName" id="accFullName" placeholder="@AccountSharedResource.Placeholder_FullName" autocomplete="off" />
                     <span asp-validation-for="FullName" class="text-danger small"></span>
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold small required" asp-for="Email">@AccountSharedResource.Email</label>
+                    <label class="form-label required" asp-for="Email">@AccountSharedResource.Email</label>
                     <input class="form-control" asp-for="Email" placeholder="@AccountSharedResource.Placeholder_Email" autocomplete="off" />
                     <span asp-validation-for="Email" class="text-danger small"></span>
                 </div>
@@ -55,17 +51,17 @@
 
             <div class="row g-3 mb-3">
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small" asp-for="PhoneNumber">@AccountModelResource.PhoneNumber</label>
+                    <label class="form-label" asp-for="PhoneNumber">@AccountModelResource.PhoneNumber</label>
                     <input class="form-control" asp-for="PhoneNumber" type="tel" inputmode="numeric" maxlength="10" data-phone-input autocomplete="off" placeholder="0901234567" />
                     <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small required" asp-for="DateOfBirth">@AccountModelResource.DateOfBirth</label>
+                    <label class="form-label required" asp-for="DateOfBirth">@AccountModelResource.DateOfBirth</label>
                     <input class="form-control" type="date" asp-for="DateOfBirth" />
                     <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small" asp-for="Gender">@AccountModelResource.Gender</label>
+                    <label class="form-label" asp-for="Gender">@AccountModelResource.Gender</label>
                     <select class="form-select" asp-for="Gender" asp-items="Html.GetEnumSelectList<RWPM.Common.Enums.Gender>()">
                         <option value="">@AccountSharedResource.Dropdown_SelectGender</option>
                     </select>
@@ -74,17 +70,17 @@
 
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold small required" asp-for="Username">@AccountModelResource.Username</label>
+                    <label class="form-label required" asp-for="Username">@AccountModelResource.Username</label>
                     <div class="input-group">
-                        <span class="input-group-text bg-light text-muted"><i class="bi bi-at"></i></span>
+                        <span class="input-group-text text-muted"><i class="bi bi-at"></i></span>
                         <input class="form-control font-monospace" asp-for="Username" id="accUsername" placeholder="@AccountSharedResource.Placeholder_Username" autocomplete="off" />
                     </div>
                     <span asp-validation-for="Username" class="text-danger small"></span>
-                    <small class="text-muted d-block mt-1">@AccountSharedResource.Create_UsernameHint</small>
+                    <div class="form-text">@AccountSharedResource.Create_UsernameHint</div>
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold small required" asp-for="Role">@AccountModelResource.Role</label>
+                    <label class="form-label required" asp-for="Role">@AccountModelResource.Role</label>
                     <select asp-for="Role" asp-items="Model.AccountRoleSelectList" id="accRoleSelect" class="form-select">
                     </select>
                     <span asp-validation-for="Role" class="text-danger small"></span>
@@ -93,22 +89,22 @@
 
             <div class="row g-3 mb-3">
                 <div class="col-12">
-                    <label class="form-label fw-semibold small required" asp-for="Password">@AccountModelResource.Password</label>
+                    <label class="form-label required" asp-for="Password">@AccountModelResource.Password</label>
                     <div class="input-group">
                         @* Ô mật khẩu mặc định không render lại giá trị khi form báo lỗi -> gán value tường minh để giữ nguyên mật khẩu đã tạo *@
                         <input type="password" class="form-control font-monospace" asp-for="Password" value="@Model?.Password" id="accPassword" placeholder="@AccountSharedResource.Placeholder_Password" autocomplete="new-password" />
-                        <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('accPassword', 'toggleIcon')" title="@AccountModelResource.Password">
+                        <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('accPassword', 'toggleIcon')" title="@AccountSharedResource.Button_TogglePassword" aria-label="@AccountSharedResource.Button_TogglePassword">
                             <i class="bi bi-eye" id="toggleIcon"></i>
                         </button>
-                        <button type="button" class="btn btn-outline-primary" onclick="generateAndSetPassword()" title="@AccountSharedResource.Create_GeneratePassHint">
+                        <button type="button" class="btn btn-outline-secondary" onclick="generateAndSetPassword()" title="@AccountSharedResource.Create_GeneratePassHint">
                             <i class="bi bi-dice-5 me-1"></i> @AccountSharedResource.Button_GenerateRandom
                         </button>
                     </div>
                     <span asp-validation-for="Password" class="text-danger small"></span>
 
-                    <div id="passwordCopyAlert" class="alert alert-light border mt-2 py-2 px-3 small d-none justify-content-between align-items-center">
-                        <span class="text-secondary"><i class="bi bi-key me-1"></i> @AccountModelResource.Password: <strong id="generatedPassText" class="font-monospace text-dark"></strong></span>
-                        <button type="button" class="btn btn-sm btn-outline-dark" onclick="copyToClipboard($('#generatedPassText').text(), '@Html.Raw(AccountSharedResource.Toast_CopiedPassword)')">
+                    <div id="passwordCopyAlert" class="border rounded mt-2 py-2 px-3 small d-none justify-content-between align-items-center" style="background: var(--app-surface-2);">
+                        <span class="text-muted">@AccountModelResource.Password: <strong id="generatedPassText" class="font-monospace text-body"></strong></span>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard($('#generatedPassText').text(), RWPM.accForm.i18n.copiedPassword)">
                             <i class="bi bi-copy me-1"></i> @AccountSharedResource.Button_Copy
                         </button>
                     </div>
@@ -117,31 +113,31 @@
 
             <!-- KHỐI THÔNG TIN HỒ SƠ NHÂN VIÊN & CỬA HÀNG (TỰ ĐỘNG HIỂN THỊ KHI CHỌN VAI TRÒ CỬA HÀNG HOẶC HR) -->
             <div id="storeAssignmentSection">
-                <div class="form-section-title mt-4 text-primary">
-                    <i class="bi bi-person-badge"></i> <span id="employeeSectionTitleText">@AccountSharedResource.Create_Section_StoreInfo</span>
+                <div class="form-section-title mt-4">
+                    <span id="employeeSectionTitleText">@AccountSharedResource.Create_Section_StoreInfo</span>
                 </div>
 
-                <div class="alert alert-primary bg-primary bg-opacity-10 border-0 py-2 px-3 small mb-3 text-dark">
-                    <i class="bi bi-info-circle-fill text-primary me-2"></i>
+                <div class="alert alert-info py-2 px-3 small mb-3">
+                    <i class="bi bi-info-circle me-2"></i>
                     <span id="storeInfoHintText">@AccountSharedResource.Create_StoreInfoHint</span>
                 </div>
 
                 <div class="row g-3 mb-3">
                     <div class="col-md-4" id="empCodeCol">
-                        <label class="form-label fw-semibold small required" asp-for="EmployeeCode">@EmployeeSharedResource.Column_EmployeeCode</label>
+                        <label class="form-label required" asp-for="EmployeeCode">@EmployeeSharedResource.Column_EmployeeCode</label>
                         <input class="form-control font-monospace" asp-for="EmployeeCode" id="empCodeInput" placeholder="NV..." autocomplete="off" />
                         <span asp-validation-for="EmployeeCode" class="text-danger small"></span>
                     </div>
 
                     <div class="col-md-4" id="storeSelectCol">
-                        <label class="form-label fw-semibold small required" asp-for="StoreId">@EmployeeSharedResource.Column_Store</label>
+                        <label class="form-label required" asp-for="StoreId">@EmployeeSharedResource.Column_Store</label>
                         <select class="form-select" asp-for="StoreId" asp-items="Model.StoreSelectList" id="storeSelectInput">
                         </select>
                         <span asp-validation-for="StoreId" class="text-danger small"></span>
                     </div>
 
                     <div class="col-md-4" id="joinDateCol">
-                        <label class="form-label fw-semibold small required" asp-for="JoinDate">@EmployeeSharedResource.Column_JoinDate</label>
+                        <label class="form-label required" asp-for="JoinDate">@EmployeeSharedResource.Column_JoinDate</label>
                         <input class="form-control" type="date" asp-for="JoinDate" />
                         <span asp-validation-for="JoinDate" class="text-danger small"></span>
                     </div>
@@ -149,7 +145,7 @@
 
                 <div class="row g-3 mb-3">
                     <div class="col-md-4" id="citizenIdCol">
-                        <label class="form-label fw-semibold small required" asp-for="CitizenId">@EmployeeModelResource.CitizenId</label>
+                        <label class="form-label required" asp-for="CitizenId">@EmployeeModelResource.CitizenId</label>
                         <input class="form-control font-monospace" asp-for="CitizenId" type="text" inputmode="numeric" maxlength="12" autocomplete="off"
                                data-citizen-id-input placeholder="@EmployeeModelResource.CitizenId"
                                data-val-regex="@RWPM.Common.Validation.InputRules.Text("Số CCCD/CMND phải gồm 12 chữ số (CCCD) hoặc 9 chữ số (CMND).", "Citizen ID must contain 12 digits (CCCD) or 9 digits (old ID card).")"
@@ -157,27 +153,25 @@
                         <span asp-validation-for="CitizenId" class="text-danger small"></span>
                     </div>
                     <div class="col-md-4" id="employmentTypeCol">
-                        <label class="form-label fw-semibold small" asp-for="EmploymentType">@EmployeeModelResource.EmploymentType</label>
+                        <label class="form-label" asp-for="EmploymentType">@EmployeeModelResource.EmploymentType</label>
                         <select class="form-select" asp-for="EmploymentType" asp-items="Html.GetEnumSelectList<RWPM.Common.Enums.EmploymentType>()">
                         </select>
                     </div>
                     <div class="col-md-4" id="hourlyRateCol">
-                        <label class="form-label fw-semibold small required" asp-for="HourlyRate">@EmployeeModelResource.HourlyRate</label>
+                        <label class="form-label required" asp-for="HourlyRate">@EmployeeModelResource.HourlyRate</label>
                         <div class="input-group">
                             <input class="form-control" asp-for="HourlyRate" asp-format="{0:0}" type="number" min="0" step="1000" placeholder="25000" />
-                            <span class="input-group-text small">@SharedResource.Unit_VndPerHour</span>
+                            <span class="input-group-text">@SharedResource.Unit_VndPerHour</span>
                         </div>
                         <span asp-validation-for="HourlyRate" class="text-danger small"></span>
                     </div>
                 </div>
             </div>
 
-            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-                <a asp-action="Index" class="btn btn-outline-secondary px-3">
-                    <i class="bi bi-arrow-left me-1"></i> @SharedResource.Button_GoBack
-                </a>
-                <button type="submit" class="btn btn-primary px-4 shadow-sm">
-                    <i class="bi bi-check2-circle me-1"></i> @SharedResource.Button_Create
+            <div class="d-flex justify-content-end align-items-center gap-2 mt-4 pt-3 border-top">
+                <a asp-action="Index" class="btn btn-outline-secondary px-3">@SharedResource.Button_Cancel</a>
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="bi bi-check2 me-1"></i> @SharedResource.Button_Create
                 </button>
             </div>
         </form>
@@ -188,97 +182,17 @@
     <partial name="_ValidationScriptsPartial" />
     <script src="~/js/personnel-input.js" asp-append-version="true"></script>
     <script>
-        let usernameManuallyChanged = false;
-
-        $('#accUsername').on('input', function () {
-            usernameManuallyChanged = $(this).val().trim() !== '';
-        });
-
-        $('#accFullName').on('input', function () {
-            if (!usernameManuallyChanged) {
-                const suggested = generateUsernameFromFullName($(this).val());
-                $('#accUsername').val(suggested);
+        window.RWPM = window.RWPM || {};
+        RWPM.accForm = {
+            isCreate: true,
+            i18n: {
+                copiedPassword: @Json.Serialize(AccountSharedResource.Toast_CopiedPassword),
+                storeSectionTitle: @Json.Serialize(AccountSharedResource.Create_Section_StoreInfo),
+                storeSectionHint: @Json.Serialize(AccountSharedResource.Create_StoreInfoHint),
+                hrSectionTitle: @Json.Serialize(AccountSharedResource.Create_Section_HrInfo),
+                hrSectionHint: @Json.Serialize(AccountSharedResource.Create_HrInfoHint)
             }
-        });
-
-        function togglePasswordVisibility(inputId, iconId) {
-            const input = document.getElementById(inputId);
-            const icon = document.getElementById(iconId);
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.className = 'bi bi-eye-slash';
-            } else {
-                input.type = 'password';
-                icon.className = 'bi bi-eye';
-            }
-        }
-
-        function showPasswordForCopy(pass) {
-            const input = document.getElementById('accPassword');
-            input.type = 'text';
-            document.getElementById('toggleIcon').className = 'bi bi-eye-slash';
-            $('#generatedPassText').text(pass);
-            $('#passwordCopyAlert').removeClass('d-none').addClass('d-flex');
-        }
-
-        function generateAndSetPassword() {
-            const pass = generateRandomPassword(8);
-            $('#accPassword').val(pass);
-            showPasswordForCopy(pass);
-        }
-
-        // Tự động ẩn/hiện và cấu hình trường thông tin hồ sơ theo Role
-        function updateStoreSectionVisibility() {
-            const roleVal = $('#accRoleSelect').val();
-            // StoreManager = 4, Employee = 6
-            const isStoreRole = (roleVal == '4' || roleVal == '6' || roleVal == 'StoreManager' || roleVal == 'Employee');
-            const isHrRole = (roleVal == '2' || roleVal == 'HR');
-
-            if (isStoreRole) {
-                $('#storeAssignmentSection').slideDown(200);
-                $('#storeSelectCol').show();
-                $('#employmentTypeCol').show();
-
-                $('#empCodeCol').removeClass('col-md-6').addClass('col-md-4');
-                $('#joinDateCol').removeClass('col-md-6').addClass('col-md-4');
-                $('#hourlyRateCol').removeClass('col-md-6 col-md-8').addClass('col-md-4');
-
-                $('#storeSelectInput').prop('disabled', false);
-                $('#employeeSectionTitleText').text('@Html.Raw(AccountSharedResource.Create_Section_StoreInfo)');
-                $('#storeInfoHintText').text('@Html.Raw(AccountSharedResource.Create_StoreInfoHint)');
-            } else if (isHrRole) {
-                $('#storeAssignmentSection').slideDown(200);
-                // HR có thể chọn chi nhánh làm việc để chấm công và đăng ký ca
-                $('#storeSelectCol').show();
-                $('#employmentTypeCol').hide();
-
-                $('#empCodeCol').removeClass('col-md-6').addClass('col-md-4');
-                $('#joinDateCol').removeClass('col-md-6').addClass('col-md-4');
-                // HR không có hình thức làm việc -> ô lương theo giờ chiếm phần còn lại của hàng
-                $('#hourlyRateCol').removeClass('col-md-4 col-md-6').addClass('col-md-8');
-
-                $('#storeSelectInput').prop('disabled', false);
-                $('#employeeSectionTitleText').text(@Json.Serialize(AccountSharedResource.Create_Section_HrInfo));
-                $('#storeInfoHintText').text(@Json.Serialize(AccountSharedResource.Create_HrInfoHint));
-            } else {
-                $('#storeAssignmentSection').slideUp(200);
-                $('#storeSelectInput').prop('disabled', true);
-            }
-        }
-
-        $('#accRoleSelect').on('change', updateStoreSectionVisibility);
-
-        $(document).ready(function () {
-            const currentPass = $('#accPassword').val();
-            if (!currentPass) {
-                generateAndSetPassword();
-            } else {
-                // Form vừa báo lỗi (VD: trùng email/SĐT): giữ nguyên mật khẩu đã tạo, không sinh mật khẩu mới
-                showPasswordForCopy(currentPass);
-            }
-            // Người dùng tự sửa mật khẩu -> cập nhật dòng "Mật khẩu: ..." để sao chép đúng
-            $('#accPassword').on('input', function () { $('#generatedPassText').text(this.value); });
-            updateStoreSectionVisibility();
-        });
+        };
     </script>
+    <script src="~/js/acc/form.js" asp-append-version="true"></script>
 }

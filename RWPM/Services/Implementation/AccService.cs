@@ -48,7 +48,7 @@ namespace RWPM.Services.Implementation
 
             //II. Validation
             if (entity.Role == AccountRole.Admin)
-                throw new Exception(Resources.Shared.Acc.Err_CannotCreateAdmin);
+                throw new InvalidOperationException(Resources.Shared.Acc.Err_CannotCreateAdmin);
 
             if (await ExistsAsync(entity.Username))
                 throw new InputValidationException("Username", InputRules.Text("Tài khoản đã tồn tại.", "Username already exists."));
@@ -73,7 +73,6 @@ namespace RWPM.Services.Implementation
 
             var actor = await WorkflowGuard.ActorAsync(_ctx, AccountHelper.GetCurrentUsername(_httpContextAccessor));
             InputRules.Require(actor.Role is AccountRole.Admin or AccountRole.HR, "Role", "Không có quyền quản lý tài khoản.", "Not authorized to manage accounts.");
-            await NavigationValidationAsync(entity);
 
             //III. Insert
             var createEntity = new Acc()
@@ -122,11 +121,6 @@ namespace RWPM.Services.Implementation
                 throw new UnauthorizedAccessException(InputRules.Text($"Không được {action} tài khoản Admin.", $"Cannot {action} an Admin account."));
             if (string.Equals(target.Username, caller, StringComparison.OrdinalIgnoreCase))
                 throw new UnauthorizedAccessException(InputRules.Text($"Không được {action} tài khoản của chính mình.", $"You cannot {action} your own account."));
-        }
-
-        private Task NavigationValidationAsync(Acc entity)
-        {
-            return Task.CompletedTask;
         }
 
         public Task<List<Acc>> GetAllAsync(QueryOptions<Acc>? options = null)
@@ -184,11 +178,6 @@ namespace RWPM.Services.Implementation
                                          c.Email.StartsWith(searchObject.Search));
             }
 
-            //if(searchObject.DeptCatId.HasValue && searchObject.DeptCatId > 0)
-            //{
-            //    query = query.Where(c => c.DeptCatId == searchObject.DeptCatId.Value);
-            //}
-
             if (searchObject.IsActiveBool.HasValue)
             {
                 query = query.Where(c => c.IsActive == searchObject.IsActiveBool.Value);
@@ -233,7 +222,7 @@ namespace RWPM.Services.Implementation
 
             // II. Validation
             if (entity.Role == AccountRole.Admin)
-                throw new Exception(Resources.Shared.Acc.Err_CannotChangeRoleToAdmin);
+                throw new InvalidOperationException(Resources.Shared.Acc.Err_CannotChangeRoleToAdmin);
 
             var updateEntity = await GetRequiredByIdAsync(entity.Username, new QueryOptions<Acc>()
             {
@@ -260,7 +249,6 @@ namespace RWPM.Services.Implementation
 
             var actor = await WorkflowGuard.ActorAsync(_ctx, AccountHelper.GetCurrentUsername(_httpContextAccessor));
             InputRules.Require(actor.Role is AccountRole.Admin or AccountRole.HR, "Role", "Không có quyền quản lý tài khoản.", "Not authorized to manage accounts.");
-            await NavigationValidationAsync(entity);
 
             if (updateEntity.Role == AccountRole.Admin && actor.Role != AccountRole.Admin)
                 throw new UnauthorizedAccessException(InputRules.Text("Không được sửa tài khoản Admin.", "Cannot edit an Admin account."));
@@ -413,38 +401,6 @@ namespace RWPM.Services.Implementation
 
             // IV. Save
             await _ctx.SaveChangesAsync();
-        }
-
-
-        public async Task EnsureExistsAsync(string username)
-        {
-            var exists = await ExistsAsync(username);
-            if (!exists)
-                throw new ModelValidationException("Acc_UsernameNotExists", username);
-        }
-
-        public async Task<SelectList> GetSelectListWithExceptsAsync(string[] exceptUsernames)
-        {
-            var data = new List<object>()
-            {
-                new
-                {
-                    Id = string.Empty,
-                    Display = Resources.Shared.SharedResource.Dropdown_SelectAccount
-                }
-            };
-
-            var accountData = _ctx.Acc.AsNoTracking().Where(x => x.IsActive).AsQueryable();
-            accountData = RemoveDefaultAccount(accountData);
-
-            accountData = accountData.Where(x => !exceptUsernames.Contains(x.Username));
-
-            data.AddRange(await accountData.Select(f => new {
-                Id = f.Username,
-                Display = f.FullName + $" ({f.Username})"
-            }).ToListAsync());
-
-            return new SelectList(data, "Id", "Display");
         }
 
         public SelectList GetAccountRoleSelectListAsync()

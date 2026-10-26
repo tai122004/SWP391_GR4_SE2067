@@ -1,5 +1,4 @@
 using RWPM.Models.Entities;
-using System.Collections.Generic;
 
 namespace RWPM.Models.ViewModels.Store
 {

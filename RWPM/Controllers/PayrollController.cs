@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RWPM.Common.Enums;
+using RWPM.Common.Security;
 using RWPM.Infrastructure.Data;
 using RWPM.Models.ViewModels.Payroll;
 using RWPM.Services.Abstraction;
@@ -26,14 +27,25 @@ namespace RWPM.Controllers
 
         private string CurrentUsername => User.FindFirstValue(ClaimTypes.Name) ?? User.Identity?.Name ?? string.Empty;
 
-        private bool IsAdminOrHR => User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin");
-        private bool IsStoreManager => User.IsInRole("StoreManager");
+        private bool IsAdminOrHR => User.IsChainManager();
+        private bool IsStoreManager => User.IsStoreManager();
 
         private async Task<int?> GetCurrentStoreIdAsync()
         {
             if (IsAdminOrHR) return null;
             var emp = await _context.Employee.FirstOrDefaultAsync(e => e.Username == CurrentUsername);
             return emp?.StoreId;
+        }
+
+        /// <summary>
+        /// Phạm vi chi nhánh áp dụng cho truy vấn: Store Manager luôn bị ép về chi nhánh của mình
+        /// (Allowed = false nếu chưa được gán chi nhánh); vai trò khác giữ nguyên storeId yêu cầu.
+        /// </summary>
+        private async Task<(bool Allowed, int? StoreId)> ResolveStoreScopeAsync(int? requestedStoreId)
+        {
+            if (!IsStoreManager) return (true, requestedStoreId);
+            var mgrStoreId = await GetCurrentStoreIdAsync();
+            return mgrStoreId is > 0 ? (true, mgrStoreId) : (false, null);
         }
 
         // GET: /Payroll/Index
@@ -44,14 +56,10 @@ namespace RWPM.Controllers
                 return RedirectToAction(nameof(MyPayslips));
             }
 
-            int? effectiveStoreId = null;
-            if (IsStoreManager)
+            var (allowed, effectiveStoreId) = await ResolveStoreScopeAsync(null);
+            if (!allowed)
             {
-                effectiveStoreId = await GetCurrentStoreIdAsync();
-                if (!effectiveStoreId.HasValue || effectiveStoreId.Value <= 0)
-                {
-                    return Forbid();
-                }
+                return Forbid();
             }
 
             var currentYear = year ?? DateTime.Now.Year;
@@ -78,7 +86,6 @@ namespace RWPM.Controllers
 
             ViewBag.IsAdminOrHR = IsAdminOrHR;
             ViewBag.IsStoreManager = IsStoreManager;
-            ViewBag.CurrentStoreId = effectiveStoreId;
             return View(vm);
         }
 
@@ -90,15 +97,11 @@ namespace RWPM.Controllers
                 return Forbid();
             }
 
-            int? effectiveStoreId = storeId;
-            if (IsStoreManager)
+            // Luôn áp dụng store của Store Manager
+            var (allowed, effectiveStoreId) = await ResolveStoreScopeAsync(storeId);
+            if (!allowed)
             {
-                var mgrStoreId = await GetCurrentStoreIdAsync();
-                if (!mgrStoreId.HasValue || mgrStoreId.Value <= 0)
-                {
-                    return Forbid();
-                }
-                effectiveStoreId = mgrStoreId.Value; // Luôn áp dụng store của Store Manager
+                return Forbid();
             }
 
             try
@@ -106,7 +109,6 @@ namespace RWPM.Controllers
                 var vm = await _payrollService.GetPayrollDetailAsync(id, effectiveStoreId, search, status);
                 ViewBag.IsAdminOrHR = IsAdminOrHR;
                 ViewBag.IsStoreManager = IsStoreManager;
-                ViewBag.CurrentStoreId = effectiveStoreId;
                 // Lịch sử thao tác chứa tổng quỹ lương toàn công ty -> chỉ Admin/HR được xem
                 ViewBag.AuditLogs = IsAdminOrHR
                     ? await _payrollService.GetPayrollAuditLogsAsync(id)
@@ -276,8 +278,8 @@ namespace RWPM.Controllers
 
             if (IsStoreManager)
             {
-                var mgrStoreId = await GetCurrentStoreIdAsync();
-                if (!mgrStoreId.HasValue || mgrStoreId.Value <= 0 || vm.Detail.StoreId != mgrStoreId.Value)
+                var (allowed, mgrStoreId) = await ResolveStoreScopeAsync(null);
+                if (!allowed || vm.Detail.StoreId != mgrStoreId)
                 {
                     return Forbid();
                 }
@@ -295,15 +297,11 @@ namespace RWPM.Controllers
                 return Forbid();
             }
 
-            int? effectiveStoreId = storeId;
-            if (IsStoreManager)
+            // Luôn áp dụng store của Store Manager
+            var (allowed, effectiveStoreId) = await ResolveStoreScopeAsync(storeId);
+            if (!allowed)
             {
-                var mgrStoreId = await GetCurrentStoreIdAsync();
-                if (!mgrStoreId.HasValue || mgrStoreId.Value <= 0)
-                {
-                    return Forbid();
-                }
-                effectiveStoreId = mgrStoreId.Value; // Luôn áp dụng store của Store Manager
+                return Forbid();
             }
 
             try

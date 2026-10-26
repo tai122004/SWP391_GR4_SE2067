@@ -1,63 +1,63 @@
-﻿@using RWPM.Common.Models
+@using RWPM.Common.Models
 @model PaginationRes
 
-<!-- Total Records Info -->
-<div class="d-flex justify-content-between align-items-center mt-3 mb-2">
-    <div class="text-muted small">
+@* Thanh phân trang dùng chung: tổng số dòng bên trái, các trang bên phải (đặt ngay dưới bảng) *@
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3 mb-4">
+    <div class="text-muted small tabular">
         @string.Format(SharedResource.TotalRecordBar,
-        Model.StartItem,
+                Model.StartItem,
                 Model.EndItem,
                 Model.TotalRecords)
     </div>
-</div>
 
-<!-- Pagination -->
-@if (Model.TotalPages > 1)
-{
-    <nav class="mb-5">
-        <ul class="pagination justify-content-center">
-            <!-- Previous button (đặt trước dãy số trang) -->
-            @{ var previousLabel = SharedResource.ResourceManager.GetString("Pagination_Previous") ?? "Previous"; }
-            <li class="page-item @(Model.PageNumber <= 1 ? "disabled" : "")">
-                <a class="page-link" asp-all-route-data="Model.RouteData" asp-route-PageNumber="@(Model.PageNumber - 1)">@previousLabel</a>
-            </li>
-            @{
-                var currentPage = Model.PageNumber;
-                var totalPages = Model.TotalPages;
+    @if (Model.TotalPages > 1)
+    {
+        var currentPage = Model.PageNumber;
+        var totalPages = Model.TotalPages;
 
-                var maxDisplayPages = 10;
-                var startPage = Math.Max(1, currentPage - 4);
-                var endPage = Math.Min(totalPages, startPage + maxDisplayPages - 1);
+        var maxDisplayPages = 10;
+        var startPage = Math.Max(1, currentPage - 4);
+        var endPage = Math.Min(totalPages, startPage + maxDisplayPages - 1);
 
-                if (startPage > 1)
+        <nav aria-label="@SharedResource.Pagination_Label">
+            <ul class="pagination pagination-sm mb-0">
+                <!-- Previous button (đặt trước dãy số trang) -->
+                <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+                    <a class="page-link" asp-all-route-data="Model.RouteData" asp-route-PageNumber="@(currentPage - 1)" aria-label="@SharedResource.Pagination_Previous">
+                        <i class="bi bi-chevron-left" aria-hidden="true"></i><span class="ms-1 d-none d-sm-inline">@SharedResource.Pagination_Previous</span>
+                    </a>
+                </li>
+
+                @if (startPage > 1)
                 {
                     <li class="page-item">
                         <a class="page-link" asp-all-route-data="Model.RouteData" asp-route-PageNumber="1">1</a>
                     </li>
-                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
                 }
 
-                for (int i = startPage; i <= endPage; i++)
+                @for (int i = startPage; i <= endPage; i++)
                 {
-                    <li class="page-item @(i == currentPage ? "active" : "")">
+                    <li class="page-item @(i == currentPage ? "active" : "")" aria-current="@(i == currentPage ? "page" : null)">
                         <a class="page-link" asp-all-route-data="Model.RouteData" asp-route-PageNumber="@i">@i</a>
                     </li>
                 }
 
-                if (endPage < totalPages)
+                @if (endPage < totalPages)
                 {
-                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
                     <li class="page-item">
                         <a class="page-link" asp-all-route-data="Model.RouteData" asp-route-PageNumber="@totalPages">@totalPages</a>
                     </li>
                 }
-            }
 
-            <!-- Next button -->
-            @{ var nextLabel = SharedResource.ResourceManager.GetString("Pagination_Next") ?? "Next"; }
-            <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
-                <a class="page-link" asp-all-route-data="Model.RouteData" asp-route-PageNumber="@(currentPage + 1)">@nextLabel</a>
-            </li>
-        </ul>
-    </nav>
-}
+                <!-- Next button -->
+                <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+                    <a class="page-link" asp-all-route-data="Model.RouteData" asp-route-PageNumber="@(currentPage + 1)" aria-label="@SharedResource.Pagination_Next">
+                        <span class="me-1 d-none d-sm-inline">@SharedResource.Pagination_Next</span><i class="bi bi-chevron-right" aria-hidden="true"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+</div>
