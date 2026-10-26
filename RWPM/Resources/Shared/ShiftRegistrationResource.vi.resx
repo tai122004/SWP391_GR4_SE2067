@@ -395,7 +395,7 @@
     <value>Đăng ký ca làm việc thành công!</value>
   </data>
   <data name="Toast_CopiedFormat" xml:space="preserve">
-    <value>Đã sao chép {0} ca hợp lệ. Vui lòng bấm 'Lưu đăng ký ca tuần' để gửi.</value>
+    <value>Đã sao chép {0} ca hợp lệ. Vui lòng bấm 'Đăng ký tuần' để gửi.</value>
   </data>
   <data name="Toast_CancelSuccess" xml:space="preserve">
     <value>Hủy đăng ký ca thành công!</value>
@@ -437,7 +437,7 @@
     <value>nghỉ có phép</value>
   </data>
   <data name="Leave_Unpaid" xml:space="preserve">
-    <value>nghỉ không phép</value>
+    <value>nghỉ không lương</value>
   </data>
   <data name="Err_OnApprovedLeave" xml:space="preserve">
     <value>Nhân viên đã được phê duyệt {0} vào ngày {1} (Đơn nghỉ #{2}). Không thể xếp ca vào ngày này.</value>

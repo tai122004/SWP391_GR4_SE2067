@@ -51,8 +51,7 @@ namespace RWPM.Services.Implementation
             {
                 throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_NoPhotoIn"));
             }
-            var photoExtension = await AttendanceInputRules.ValidatePhotoAsync(photo);
-            AttendanceInputRules.ValidateCoordinates(userLatitude, userLongitude);
+            ValidatePhoto(photo);
 
             var today = DateTime.Today;
 
@@ -86,7 +85,51 @@ namespace RWPM.Services.Implementation
                 .OrderBy(r => Math.Abs((nowAt - r.WorkDate.Date.Add(r.Shift.StartTime)).TotalMinutes))
                 .FirstOrDefault();
             if (matchedRegistration == null)
-                throw new Exception(SharedResource.Attendance_Err_NotInAllowedTime);
+            {
+                // Chỉ xét các ca chưa kết thúc và chưa có bản ghi chấm công
+                var checkedShifts = await _context.AttendanceRecord
+                    .Where(r => r.Username == username && r.Date >= today.AddDays(-1) && r.Date <= today.AddDays(1))
+                    .Select(r => new { r.Date, r.ShiftId })
+                    .ToListAsync();
+                var candidates = registrations
+                    .Where(r => ShiftTimeHelper.GetDateTimeRange(r.WorkDate, r.Shift).EndAt >= nowAt)
+                    .Where(r => !checkedShifts.Any(c => c.Date.Date == r.WorkDate.Date && c.ShiftId == r.ShiftId))
+                    .ToList();
+                if (!candidates.Any())
+                {
+                    throw new Exception(errorMessage);
+                }
+
+                matchedRegistration = candidates.OrderBy(r => Math.Abs((nowAt - r.WorkDate.Date.Add(r.Shift.StartTime)).TotalMinutes)).First();
+                var shift = matchedRegistration.Shift;
+
+                int eCheckIn = ShiftDefaults.EarlyCheckInMinutes;
+                int lThreshold = ShiftDefaults.LateThresholdMinutes;
+                if (nowAt > ShiftTimeHelper.GetDateTimeRange(matchedRegistration.WorkDate, shift).EndAt)
+                {
+                    isValid = false;
+                }
+                else if (nowAt < matchedRegistration.WorkDate.Date.Add(shift.StartTime).AddMinutes(-eCheckIn))
+                {
+                    if (!_env.IsDevelopment())
+                    {
+                        errorMessage = string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_TooEarlyIn"), shift.ShiftName, eCheckIn);
+                    }
+                    else
+                    {
+                        isValid = true;
+                    }
+                }
+                else
+                {
+                    isValid = true;
+                }
+            }
+
+            if (!isValid)
+            {
+                throw new Exception(errorMessage);
+            }
 
             var matchedShift = matchedRegistration.Shift;
             var targetStore = matchedRegistration.Store ?? employee.Store; // Fallback to employee store if null
@@ -178,8 +221,7 @@ namespace RWPM.Services.Implementation
             {
                 throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_NoPhotoOut"));
             }
-            var photoExtension = await AttendanceInputRules.ValidatePhotoAsync(photo);
-            AttendanceInputRules.ValidateCoordinates(userLatitude, userLongitude);
+            ValidatePhoto(photo);
 
             var record = await GetTodayRecordAsync(username);
             
@@ -318,16 +360,7 @@ namespace RWPM.Services.Implementation
                 throw new Exception(SharedResource.Attendance_Err_RecordNotFound);
             }
 
-            await AttendanceInputRules.EnsureUnlockedAsync(_context, record.Date);
-            InputRules.Require(!string.IsNullOrWhiteSpace(reason) && reason.Trim().Length <= 500, "Reason",
-                "Lý do điều chỉnh phải có từ 1 đến 500 ký tự.", "Adjustment reason must contain 1–500 characters.");
-            InputRules.Require(newCheckIn.HasValue || newCheckOut.HasValue, "Time",
-                "Cần nhập ít nhất một giờ muốn điều chỉnh.", "Enter at least one time to adjust.");
-            var effectiveIn = newCheckIn ?? record.CheckInTime;
-            var effectiveOut = newCheckOut ?? record.CheckOutTime;
-            AttendanceInputRules.ValidateTimeOrder(record.Date, effectiveIn, effectiveOut, record.Shift?.EndDayOffset ?? 0);
-            InputRules.Require(effectiveIn != record.CheckInTime || effectiveOut != record.CheckOutTime, "Time",
-                "Giờ điều chỉnh phải khác giờ hiện tại.", "Adjusted time must differ from the current time.");
+            await AttendanceAdjustmentService.EnsurePeriodUnlockedAsync(_context, record.Date);
 
             // Ghi lại lịch sử
             var history = new AttendanceAdjustmentHistory
@@ -357,21 +390,51 @@ namespace RWPM.Services.Implementation
             var record = await _context.AttendanceRecord.FindAsync(attendanceId);
             if (record != null)
             {
-                await AttendanceInputRules.EnsureUnlockedAsync(_context, record.Date);
+                await AttendanceAdjustmentService.EnsurePeriodUnlockedAsync(_context, record.Date);
                 _context.AttendanceRecord.Remove(record);
                 await _context.SaveChangesAsync();
             }
         }
 
-        private async Task<string> SavePhotoAsync(Microsoft.AspNetCore.Http.IFormFile photo, string username, string type, string extension)
+        private const long MaxPhotoBytes = 5 * 1024 * 1024;
+
+        // Chỉ chấp nhận ảnh JPEG/PNG (kiểm tra content-type và chữ ký file), tối đa 5MB; trả về phần mở rộng cố định
+        private static string ValidatePhoto(Microsoft.AspNetCore.Http.IFormFile photo)
         {
+            if (photo.Length > MaxPhotoBytes)
+            {
+                throw new Exception(RWPM.Common.Validation.InputRules.Text("Ảnh chấm công vượt quá dung lượng cho phép (5MB).", "Attendance photo exceeds the 5MB limit."));
+            }
+
+            var contentType = (photo.ContentType ?? string.Empty).ToLowerInvariant();
+            var header = new byte[8];
+            int read;
+            using (var stream = photo.OpenReadStream())
+            {
+                read = stream.Read(header, 0, header.Length);
+            }
+
+            bool isJpeg = read >= 3 && header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF;
+            bool isPng = read >= 8 && header[0] == 0x89 && header[1] == 0x50 && header[2] == 0x4E && header[3] == 0x47
+                && header[4] == 0x0D && header[5] == 0x0A && header[6] == 0x1A && header[7] == 0x0A;
+
+            if ((contentType == "image/jpeg" || contentType == "image/jpg" || contentType == "image/pjpeg") && isJpeg) return ".jpg";
+            if (contentType == "image/png" && isPng) return ".png";
+
+            throw new Exception(RWPM.Common.Validation.InputRules.Text("Ảnh chấm công phải là file JPEG hoặc PNG.", "Attendance photo must be a JPEG or PNG image."));
+        }
+
+        private async Task<string> SavePhotoAsync(Microsoft.AspNetCore.Http.IFormFile photo, string username, string type)
+        {
+            var extension = ValidatePhoto(photo);
+
             var uploadsFolder = System.IO.Path.Combine(_env.WebRootPath, "images", "attendance");
             if (!System.IO.Directory.Exists(uploadsFolder))
             {
                 System.IO.Directory.CreateDirectory(uploadsFolder);
             }
 
-            var uniqueFileName = $"{username}_{DateTime.Now:yyyyMMdd_HHmmss}_{type}_{Guid.NewGuid().ToString().Substring(0, 4)}{extension}";
+            var uniqueFileName = $"{type}_{Guid.NewGuid():N}{extension}";
             var filePath = System.IO.Path.Combine(uploadsFolder, uniqueFileName);
 
             using (var fileStream = new System.IO.FileStream(filePath, System.IO.FileMode.Create))

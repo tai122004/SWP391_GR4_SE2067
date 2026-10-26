@@ -13,6 +13,7 @@ namespace RWPM.Models.ViewModels.Acc
         private string _email = string.Empty;
         private string? _phoneNumber = null;
         private string? _employeeCode = null;
+        private string? _citizenId = null;
 
         [Display(Name = "Username", ResourceType = typeof(Resources.Models.Acc))]
         [RequiredLocalization]
@@ -53,6 +54,7 @@ namespace RWPM.Models.ViewModels.Acc
         public string? PhoneNumber { get => _phoneNumber; set => _phoneNumber = value?.Trim(); }
 
         [Display(Name = "DateOfBirth", ResourceType = typeof(Resources.Models.Acc))]
+        [RequiredLocalization]
         [DataType(DataType.Date)]
         public DateTime? DateOfBirth { get; set; }
 
@@ -64,6 +66,12 @@ namespace RWPM.Models.ViewModels.Acc
         [Display(Name = "EmployeeID", ResourceType = typeof(Resources.Models.Employee))]
         [MaxLengthLocalized(20)]
         public string? EmployeeCode { get => _employeeCode; set => _employeeCode = value?.Trim(); }
+
+        // Số CCCD/CMND bắt buộc với mọi hồ sơ nhân viên (mọi vai trò được phép tạo đều sinh hồ sơ nhân viên)
+        [Display(Name = "CitizenId", ResourceType = typeof(Resources.Models.Employee))]
+        [RequiredLocalization]
+        [MaxLengthLocalized(12)]
+        public string? CitizenId { get => _citizenId; set => _citizenId = RWPM.Common.Validation.InputRules.NormalizeCitizenId(value); }
 
         [Display(Name = "Store", ResourceType = typeof(Resources.Models.Employee))]
         public int? StoreId { get; set; }

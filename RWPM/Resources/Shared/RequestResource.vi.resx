@@ -257,7 +257,7 @@
     <value>Loại nghỉ phép</value>
   </data>
   <data name="Leave_Unpaid" xml:space="preserve">
-    <value>Nghỉ không phép (Không lương)</value>
+    <value>Nghỉ không lương</value>
   </data>
   <data name="Leave_AnnualLeaveBalance" xml:space="preserve">
     <value>Số ngày phép năm còn lại</value>
@@ -395,7 +395,7 @@
     <value>Bạn đã có đơn xin nghỉ phép đang chờ duyệt hoặc đã duyệt trong khoảng thời gian này.</value>
   </data>
   <data name="Leave_ErrInsufficientCreate" xml:space="preserve">
-    <value>Số ngày phép năm còn lại ({0} ngày) không đủ để xin nghỉ {1} ngày có phép. Vui lòng chọn loại 'Nghỉ không phép' hoặc điều chỉnh thời gian.</value>
+    <value>Số ngày phép năm còn lại ({0} ngày) không đủ để xin nghỉ {1} ngày có phép. Vui lòng chọn loại 'Nghỉ không lương' hoặc điều chỉnh thời gian.</value>
   </data>
   <data name="Leave_ErrNotFound" xml:space="preserve">
     <value>Đơn xin nghỉ phép không tồn tại.</value>
@@ -416,7 +416,7 @@
     <value>Có phép (Hưởng lương - Trừ phép năm)</value>
   </data>
   <data name="LeaveType_Unpaid" xml:space="preserve">
-    <value>Không phép (Không lương)</value>
+    <value>Không lương</value>
   </data>
   <data name="Adj_Info" xml:space="preserve">
     <value>Chọn bản ghi ca làm gần đây cần sửa chấm công và nhập lý do giải trình.</value>

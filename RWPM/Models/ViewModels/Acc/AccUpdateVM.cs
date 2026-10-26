@@ -13,6 +13,7 @@ namespace RWPM.Models.ViewModels.Acc
         private string _email = string.Empty;
         private string? _phoneNumber = null;
         private string? _employeeCode = null;
+        private string? _citizenId = null;
 
         [Display(Name = "Username", ResourceType = typeof(Resources.Models.Acc))]
         public string Username { get => _username; set => _username = value?.Trim() ?? string.Empty; }
@@ -54,6 +55,11 @@ namespace RWPM.Models.ViewModels.Acc
         [Display(Name = "EmployeeID", ResourceType = typeof(Resources.Models.Employee))]
         [MaxLengthLocalized(20)]
         public string? EmployeeCode { get => _employeeCode; set => _employeeCode = value?.Trim(); }
+
+        // Bắt buộc khi tài khoản có hồ sơ nhân viên (kiểm tra phía server theo vai trò)
+        [Display(Name = "CitizenId", ResourceType = typeof(Resources.Models.Employee))]
+        [MaxLengthLocalized(12)]
+        public string? CitizenId { get => _citizenId; set => _citizenId = RWPM.Common.Validation.InputRules.NormalizeCitizenId(value); }
 
         [Display(Name = "Store", ResourceType = typeof(Resources.Models.Employee))]
         public int? StoreId { get; set; }

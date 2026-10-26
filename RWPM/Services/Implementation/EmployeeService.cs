@@ -149,6 +149,18 @@ namespace RWPM.Services.Implementation
             var existing = await _ctx.Employee.Include(e => e.Account).FirstOrDefaultAsync(e => e.EmployeeId == entity.EmployeeId);
             if (existing == null) throw new KeyNotFoundException(string.Format(EmpRes.Err_EmployeeNotFound, entity.EmployeeId));
 
+            // Thông tin cá nhân (SĐT, ngày sinh, giới tính) nằm ở tài khoản liên kết; entity truyền vào có thể là bản no-tracking
+            if (entity.Account != null && !ReferenceEquals(entity.Account, existing.Account) && entity.Account.Username == entity.Username)
+            {
+                var linkedAccount = await _ctx.Acc.FirstOrDefaultAsync(a => a.Username == entity.Username);
+                if (linkedAccount != null)
+                {
+                    linkedAccount.PhoneNumber = string.IsNullOrWhiteSpace(entity.Account.PhoneNumber) ? null : entity.Account.PhoneNumber.Trim();
+                    linkedAccount.DateOfBirth = entity.Account.DateOfBirth;
+                    linkedAccount.Gender = entity.Account.Gender;
+                }
+            }
+
             await ValidateAsync(entity, entity.EmployeeId);
 
             existing.EmployeeCode = entity.EmployeeCode;
@@ -175,6 +187,11 @@ namespace RWPM.Services.Implementation
                 {
                     existing.Account.IsActive = false;
                 }
+            }
+            else if (existing.Account != null)
+            {
+                // Hồ sơ không còn ở trạng thái thôi việc: trạng thái tài khoản theo trạng thái hoạt động của hồ sơ
+                existing.Account.IsActive = existing.IsActive;
             }
 
             await _ctx.SaveChangesAsync();
@@ -216,6 +233,9 @@ namespace RWPM.Services.Implementation
         {
             var employee = await _ctx.Employee.Include(e => e.Account).FirstOrDefaultAsync(e => e.EmployeeId == employeeId);
             if (employee == null) throw new ModelValidationException($"Employee_IdNotExists", employeeId.ToString());
+            InputRules.Require(!active || employee.Status != EmploymentStatus.Resigned, "IsActive",
+                "Nhân viên đã thôi việc. Hãy sửa trạng thái làm việc của hồ sơ trước khi kích hoạt lại.",
+                "The employee has resigned. Change the employment status before reactivating.");
 
             employee.IsActive = active;
             employee.UpdatedDate = DateTime.Now;
@@ -237,6 +257,7 @@ namespace RWPM.Services.Implementation
             if (employee == null) throw new KeyNotFoundException(string.Format(EmpRes.Err_EmployeeNotFound, employeeId));
 
             InputRules.Require(resignDate != default && resignDate.Date >= employee.JoinDate.Date, "ResignDate", "Ngày nghỉ việc không được trước ngày vào làm.", "Resignation date cannot precede join date.");
+            InputRules.Require((reason?.Trim().Length ?? 0) <= 255, "ResignReason", "Lý do thôi việc không được vượt quá 255 ký tự.", "Resignation reason cannot exceed 255 characters.");
             employee.Status = EmploymentStatus.Resigned;
             employee.IsActive = false;
             employee.ResignDate = resignDate.Date;
@@ -329,8 +350,9 @@ namespace RWPM.Services.Implementation
             worksheet.Cell(1, 11).Value = EmpRes.Export_Col_HourlyRate;
             worksheet.Cell(1, 12).Value = EmpRes.Export_Col_BaseSalary;
             worksheet.Cell(1, 13).Value = EmpRes.Export_Col_LeaveBalance;
+            worksheet.Cell(1, 14).Value = RWPM.Resources.Models.Employee.CitizenId;
 
-            var headerRange = worksheet.Range(1, 1, 1, 13);
+            var headerRange = worksheet.Range(1, 1, 1, 14);
             headerRange.Style.Font.Bold = true;
             headerRange.Style.Fill.BackgroundColor = ClosedXML.Excel.XLColor.FromHtml("#0d6efd");
             headerRange.Style.Font.FontColor = ClosedXML.Excel.XLColor.White;
@@ -352,6 +374,8 @@ namespace RWPM.Services.Implementation
                 worksheet.Cell(row, 11).Value = emp.HourlyRate.HasValue ? emp.HourlyRate.Value.ToString("N0") : "-";
                 worksheet.Cell(row, 12).Value = emp.BaseSalary.HasValue ? emp.BaseSalary.Value.ToString("N0") : "-";
                 worksheet.Cell(row, 13).Value = emp.AnnualLeaveBalance;
+                worksheet.Cell(row, 14).Style.NumberFormat.Format = "@";
+                worksheet.Cell(row, 14).Value = emp.CitizenId ?? "-";
                 row++;
             }
 
@@ -381,8 +405,11 @@ namespace RWPM.Services.Implementation
             ws.Cell(1, 11).Value = EmpRes.Template_Col_JoinDate;
             ws.Cell(1, 12).Value = EmpRes.Template_Col_HourlyRate;
             ws.Cell(1, 13).Value = EmpRes.Template_Col_BaseSalary;
+            ws.Cell(1, 14).Value = RWPM.Resources.Models.Employee.CitizenId + " (*)";
+            // Cột CCCD định dạng Text để Excel không làm mất số 0 ở đầu
+            ws.Column(14).Style.NumberFormat.Format = "@";
 
-            var header = ws.Range(1, 1, 1, 13);
+            var header = ws.Range(1, 1, 1, 14);
             header.Style.Font.Bold = true;
             header.Style.Fill.BackgroundColor = ClosedXML.Excel.XLColor.FromHtml("#0d6efd");
             header.Style.Font.FontColor = ClosedXML.Excel.XLColor.White;
@@ -404,6 +431,7 @@ namespace RWPM.Services.Implementation
             ws.Cell(2, 11).Value = DateTime.Today.ToString("dd/MM/yyyy");
             ws.Cell(2, 12).Value = 25000;
             ws.Cell(2, 13).Value = "";
+            ws.Cell(2, 14).Value = "001098012345";
 
             // Dòng mẫu 2: Quản lý cửa hàng
             ws.Cell(3, 1).Value = "Trần Thị Bích";
@@ -419,6 +447,7 @@ namespace RWPM.Services.Implementation
             ws.Cell(3, 11).Value = DateTime.Today.ToString("dd/MM/yyyy");
             ws.Cell(3, 12).Value = "";
             ws.Cell(3, 13).Value = 12000000;
+            ws.Cell(3, 14).Value = "079195001234";
 
             ws.Columns().AdjustToContents();
 
@@ -476,11 +505,12 @@ namespace RWPM.Services.Implementation
             var emails = accounts.Select(x => x.Email.Trim()).ToHashSet(StringComparer.OrdinalIgnoreCase);
             var phones = accounts.Where(x => !string.IsNullOrWhiteSpace(x.PhoneNumber)).Select(x => x.PhoneNumber!.Trim()).ToHashSet(StringComparer.OrdinalIgnoreCase);
             var codes = (await _ctx.Employee.AsNoTracking().Select(x => x.EmployeeCode).ToListAsync()).Select(x => x.Trim()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var citizenIds = (await _ctx.Employee.AsNoTracking().Where(x => x.CitizenId != null).Select(x => x.CitizenId!).ToListAsync()).Select(x => x.Trim()).ToHashSet();
             var result = new EmployeeImportPreviewResultDto { ImportToken = Guid.NewGuid().ToString("N") };
             foreach (var row in rows)
             {
                 string Cell(int col) => row.Cell(col).GetString().Trim();
-                if (Enumerable.Range(1, 13).All(i => string.IsNullOrWhiteSpace(Cell(i)))) continue;
+                if (Enumerable.Range(1, 14).All(i => string.IsNullOrWhiteSpace(Cell(i)))) continue;
                 var preview = new EmployeeImportPreviewRowDto { RowNum = row.RowNumber(), FullName = Cell(1), Username = Cell(2), Email = Cell(3), Phone = Cell(4), EmpCode = Cell(9) };
                 result.TotalRows++;
                 result.Rows.Add(preview);
@@ -520,20 +550,25 @@ namespace RWPM.Services.Implementation
                     var storeId = int.TryParse(Cell(8), out var id) ? id : 0;
                     if (storeId == 0 && role == AccountRole.HR && Cell(8).Length == 0) storeId = stores.Keys.FirstOrDefault();
                     var hourly = Money(12); var salary = Money(13);
+                    // CCCD: nếu Excel lưu dạng số thì số 0 ở đầu bị mất -> bổ sung lại cho đủ 9/12 chữ số
+                    var citizenId = InputRules.NormalizeCitizenId(Cell(14));
+                    if (citizenId != null && row.Cell(14).DataType == ClosedXML.Excel.XLDataType.Number && citizenId.All(char.IsDigit))
+                        citizenId = citizenId.Length is 10 or 11 ? citizenId.PadLeft(12, '0') : citizenId.Length == 8 ? citizenId.PadLeft(9, '0') : citizenId;
                     InputRules.ValidateAccount(Cell(2), Cell(1), Cell(3), phone, dob, gender, role);
-                    InputRules.ValidateEmployment(code, joinDate, dob, null, empType, EmploymentStatus.Official, hourly, salary, 12, null);
+                    InputRules.ValidateEmployment(code, joinDate, dob, null, empType, EmploymentStatus.Official, hourly, salary, 12, citizenId);
+                    InputRules.Require(!citizenIds.Contains(citizenId!), "CitizenId", "Số CCCD/CMND đã tồn tại hoặc trùng trong file.", "Citizen ID already exists or is duplicated in the file.");
                     InputRules.Require(role != AccountRole.HR || hourly > 0, "HourlyRate", "HR phải có đơn giá dương.", "HR requires a positive hourly rate.");
                     InputRules.Require(stores.ContainsKey(storeId), "StoreId", "Chi nhánh không tồn tại hoặc đã ngừng hoạt động.", "Store does not exist or is inactive.");
                     InputRules.Require(!usernames.Contains(Cell(2)), "Username", "Tài khoản đã tồn tại hoặc trùng trong file.", "Username already exists or is duplicated in the file.");
                     InputRules.Require(!emails.Contains(Cell(3)), "Email", "Email đã tồn tại hoặc trùng trong file.", "Email already exists or is duplicated in the file.");
                     InputRules.Require(phone.Length == 0 || !phones.Contains(phone), "PhoneNumber", "SĐT đã tồn tại hoặc trùng trong file.", "Phone already exists or is duplicated in the file.");
                     InputRules.Require(!codes.Contains(code), "EmployeeCode", "Mã nhân viên đã tồn tại hoặc trùng trong file.", "Employee code already exists or is duplicated in the file.");
-                    usernames.Add(Cell(2)); emails.Add(Cell(3)); codes.Add(code); if (phone.Length > 0) phones.Add(phone);
+                    usernames.Add(Cell(2)); emails.Add(Cell(3)); codes.Add(code); citizenIds.Add(citizenId!); if (phone.Length > 0) phones.Add(phone);
                     preview.IsValid = true; preview.Phone = phone; preview.EmpCode = code;
                     preview.RoleDisplay = UIHelper.GetDisplayName(role); preview.StoreDisplay = stores[storeId]; preview.EmploymentTypeDisplay = UIHelper.GetDisplayName(empType);
                     result.ValidItems.Add(new EmployeeImportValidItemDto { FullName = Cell(1), Username = Cell(2), Email = Cell(3), Phone = phone.Length == 0 ? null : phone,
                         Gender = gender, DateOfBirth = dob, Role = role, IsStoreRole = true, StoreId = storeId, EmployeeCode = code,
-                        EmploymentType = empType, JoinDate = joinDate, HourlyRate = hourly, BaseSalary = salary });
+                        EmploymentType = empType, JoinDate = joinDate, HourlyRate = hourly, BaseSalary = salary, CitizenId = citizenId });
                     result.ValidCount++;
                 }
                 catch (InputValidationException ex) { preview.IsValid = false; preview.ErrorMessage = $"{ex.Field}: {ex.Message}"; result.InvalidCount++; }
@@ -553,7 +588,8 @@ namespace RWPM.Services.Implementation
             foreach (var item in session.Items)
             {
                 InputRules.ValidateAccount(item.Username, item.FullName, item.Email, item.Phone, item.DateOfBirth, item.Gender, item.Role);
-                InputRules.ValidateEmployment(item.EmployeeCode, item.JoinDate, item.DateOfBirth, null, item.EmploymentType, EmploymentStatus.Official, item.HourlyRate, item.BaseSalary, 12, null);
+                InputRules.ValidateEmployment(item.EmployeeCode, item.JoinDate, item.DateOfBirth, null, item.EmploymentType, EmploymentStatus.Official, item.HourlyRate, item.BaseSalary, 12, item.CitizenId);
+                InputRules.Require(!await _ctx.Employee.AnyAsync(x => x.CitizenId == item.CitizenId), "CitizenId", "Số CCCD/CMND đã tồn tại; hãy xem trước file lại.", "Citizen ID now exists; preview again.");
                 InputRules.Require(await _ctx.Store.AnyAsync(x => x.StoreId == item.StoreId && x.IsActive), "StoreId", "Chi nhánh đã thay đổi; hãy xem trước file lại.", "Store changed; preview the file again.");
                 InputRules.Require(!await _ctx.Acc.AnyAsync(x => x.Username == item.Username || x.Email.Trim().ToLower() == item.Email.ToLower()
                     || (item.Phone != null && x.PhoneNumber != null && x.PhoneNumber.Trim() == item.Phone)), "Email", "Tài khoản/email/SĐT đã tồn tại; hãy xem trước file lại.", "Account/email/phone now exists; preview again.");
@@ -564,7 +600,7 @@ namespace RWPM.Services.Implementation
                 _ctx.Acc.Add(acc);
                 _ctx.Employee.Add(new Employee { EmployeeCode = item.EmployeeCode, Username = item.Username, Account = acc, StoreId = item.StoreId,
                     EmploymentType = item.EmploymentType, Status = EmploymentStatus.Official, JoinDate = item.JoinDate, HourlyRate = item.HourlyRate,
-                    BaseSalary = item.BaseSalary, AnnualLeaveBalance = 12, IsActive = true, CreatedDate = DateTime.Now, CreatedBy = currentUsername });
+                    BaseSalary = item.BaseSalary, CitizenId = item.CitizenId, AnnualLeaveBalance = 12, IsActive = true, CreatedDate = DateTime.Now, CreatedBy = currentUsername });
             }
             await _ctx.SaveChangesAsync();
             await transaction.CommitAsync();
@@ -584,6 +620,8 @@ namespace RWPM.Services.Implementation
             InputRules.Require(string.IsNullOrEmpty(account.PhoneNumber) || System.Text.RegularExpressions.Regex.IsMatch(account.PhoneNumber, @"^0[0-9]{9}$"), "PhoneNumber", "SĐT phải có 10 chữ số bắt đầu bằng 0.", "Phone must contain 10 digits starting with 0.");
             InputRules.ValidateEmployment(entity.EmployeeCode, entity.JoinDate, account.DateOfBirth, entity.ResignDate,
                 entity.EmploymentType, entity.Status, entity.HourlyRate, entity.BaseSalary, entity.AnnualLeaveBalance, entity.CitizenId);
+            InputRules.Require(!await _ctx.Employee.AnyAsync(x => x.CitizenId == entity.CitizenId && (!excludeId.HasValue || x.EmployeeId != excludeId.Value)),
+                "CitizenId", "Số CCCD/CMND đã được dùng cho nhân viên khác.", "This citizen ID is already used by another employee.");
             InputRules.Require(entity.StoreId.HasValue && await _ctx.Store.AnyAsync(x => x.StoreId == entity.StoreId && x.IsActive),
                 "StoreId", "Chi nhánh không tồn tại hoặc đã ngừng hoạt động.", "Store does not exist or is inactive.");
             if (await ExistsByCodeAsync(entity.EmployeeCode, excludeId))

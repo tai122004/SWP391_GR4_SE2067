@@ -97,7 +97,7 @@
     <value>Could not find location '{0}'. Please select one of the suggested location buttons below!</value>
   </data>
   <data name="Search_ErrorAlert" xml:space="preserve">
-    <value>Unable to search address: {0}\nYou can click directly on the map or select 'Suggested location'.</value>
+    <value>Unable to search address: {0}. You can click directly on the map or select 'Suggested location'.</value>
   </data>
   <data name="Table_GeoLocation" xml:space="preserve">
     <value>Location (Lat/Long - Radius)</value>

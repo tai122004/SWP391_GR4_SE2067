@@ -99,8 +99,26 @@ namespace RWPM.Services.Implementation
 
         public async Task DeleteAsync(Acc entity)
         {
+            await EnsureCanChangeStatusAsync(entity, InputRules.Text("xóa", "delete"));
+            if (await _ctx.Employee.AnyAsync(e => e.Username == entity.Username))
+                throw new InputValidationException("Username", InputRules.Text(
+                    $"Không thể xóa tài khoản {entity.Username} vì đã có hồ sơ nhân viên. Hãy xóa hoặc cho thôi việc hồ sơ nhân viên, hoặc khóa tài khoản thay vì xóa.",
+                    $"Cannot delete account {entity.Username} because it has an employee profile. Delete or resign the employee profile, or deactivate the account instead."));
             _ctx.Acc.Remove(entity);
             await _ctx.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Chặn HR khóa/xóa tài khoản Admin và chặn người dùng tự khóa/xóa chính mình.
+        /// </summary>
+        private async Task EnsureCanChangeStatusAsync(Acc target, string action)
+        {
+            var caller = AccountHelper.GetCurrentUsername(_httpContextAccessor);
+            var actor = await WorkflowGuard.ActorAsync(_ctx, caller);
+            if (target.Role == AccountRole.Admin && actor.Role != AccountRole.Admin)
+                throw new UnauthorizedAccessException(InputRules.Text($"Không được {action} tài khoản Admin.", $"Cannot {action} an Admin account."));
+            if (string.Equals(target.Username, caller, StringComparison.OrdinalIgnoreCase))
+                throw new UnauthorizedAccessException(InputRules.Text($"Không được {action} tài khoản của chính mình.", $"You cannot {action} your own account."));
         }
 
         private Task NavigationValidationAsync(Acc entity)
@@ -360,6 +378,11 @@ namespace RWPM.Services.Implementation
             {
                 NoTracking = false,
             });
+            await EnsureCanChangeStatusAsync(updateEntity, InputRules.Text("khóa/mở khóa", "lock/unlock"));
+            if (active && await _ctx.Employee.AnyAsync(e => e.Username == username && e.Status == EmploymentStatus.Resigned))
+                throw new InputValidationException("IsActive", InputRules.Text(
+                    "Nhân viên của tài khoản này đã thôi việc. Hãy sửa trạng thái làm việc trong hồ sơ nhân viên trước khi kích hoạt lại.",
+                    "This account's employee has resigned. Change the employment status in the employee profile before reactivating."));
 
             // III. Update
             updateEntity.IsActive = active;

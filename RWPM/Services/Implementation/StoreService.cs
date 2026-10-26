@@ -137,7 +137,7 @@ namespace RWPM.Services.Implementation
             {
                 var manager = await _ctx.Employee.AsNoTracking().Include(x => x.Account).SingleOrDefaultAsync(x => x.EmployeeId == entity.ManagerId);
                 InputRules.Require(manager != null && manager.IsActive && manager.Account.IsActive && (manager.Account.Role is RWPM.Common.Enums.AccountRole.StoreManager or RWPM.Common.Enums.AccountRole.Admin or RWPM.Common.Enums.AccountRole.HR)
-                    && (entity.StoreId == 0 || manager.StoreId == entity.StoreId), "ManagerId", "Người quản lý không hoạt động, sai vai trò hoặc sai chi nhánh.", "Manager is inactive or has an invalid role/store.");
+                    , "ManagerId", "Người quản lý không hoạt động hoặc sai vai trò.", "Manager is inactive or has an invalid role.");
                 InputRules.Require(!await _ctx.Store.AnyAsync(x => x.ManagerId == entity.ManagerId && x.StoreId != entity.StoreId), "ManagerId", "Người quản lý đã được phân công chi nhánh khác.", "Manager is already assigned to another store.");
             }
         }
@@ -157,6 +157,12 @@ namespace RWPM.Services.Implementation
             entity.CreatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor);
 
             await _ctx.Store.AddAsync(entity);
+            if (entity.ManagerId.HasValue)
+            {
+                // Quản lý cửa hàng được chuyển về chi nhánh mình quản lý; HR/Admin (hoặc người chưa có chi nhánh) chỉ gán khi chưa thuộc chi nhánh nào.
+                var manager = await _ctx.Employee.Include(x => x.Account).SingleAsync(x => x.EmployeeId == entity.ManagerId);
+                if (manager.StoreId == null || manager.Account.Role == RWPM.Common.Enums.AccountRole.StoreManager) manager.Store = entity;
+            }
             await _ctx.SaveChangesAsync();
             return entity;
         }
@@ -190,7 +196,14 @@ namespace RWPM.Services.Implementation
             existingStore.UpdatedDate = DateTime.Now;
             existingStore.UpdatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor);
 
+            // Bỏ navigation Manager cũ để EF không fix-up ManagerId về giá trị cũ khi attach graph.
+            existingStore.Manager = null;
             _ctx.Store.Update(existingStore);
+            if (existingStore.ManagerId.HasValue)
+            {
+                var manager = await _ctx.Employee.Include(x => x.Account).SingleAsync(x => x.EmployeeId == existingStore.ManagerId);
+                if (manager.StoreId == null || manager.Account.Role == RWPM.Common.Enums.AccountRole.StoreManager) manager.StoreId = existingStore.StoreId;
+            }
             await _ctx.SaveChangesAsync();
         }
 
@@ -209,6 +222,19 @@ namespace RWPM.Services.Implementation
             {
                 throw new ModelValidationException("Store_Delete_HaveShiftRegUse", store.StoreName);
             }
+
+            var storeId = entity.StoreId;
+            var hasRelatedData = await _ctx.StoreShift.AnyAsync(x => x.StoreId == storeId)
+                || await _ctx.AttendanceAdjustmentRequest.AnyAsync(x => x.StoreId == storeId)
+                || await _ctx.LeaveRequest.AnyAsync(x => x.StoreId == storeId)
+                || await _ctx.ShiftSwapRequest.AnyAsync(x => x.StoreId == storeId)
+                || await _ctx.PayrollDetail.AnyAsync(x => x.StoreId == storeId);
+            if (hasRelatedData)
+            {
+                throw new InputValidationException("StoreId", InputRules.Text(
+                    $"Không thể xóa chi nhánh {store.StoreName} vì đã có ca làm, đơn từ, chấm công hoặc dữ liệu lương liên quan. Hãy ngừng hoạt động chi nhánh thay vì xóa.",
+                    $"Cannot delete store {store.StoreName} because it has shifts, requests, attendance or payroll data. Deactivate the store instead."));
+            }
             _ctx.Store.Remove(store);
             await _ctx.SaveChangesAsync();
         }
@@ -225,7 +251,7 @@ namespace RWPM.Services.Implementation
 
         public async Task UpdateActiveStatusAsync(int storeId, bool active)
         {
-            var store = await GetRequiredByIdAsync(storeId);
+            var store = await GetRequiredByIdAsync(storeId, new QueryOptions<global::Store> { NoTracking = false });
             store.IsActive = active;
             store.UpdatedDate = DateTime.Now;
             store.UpdatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor);

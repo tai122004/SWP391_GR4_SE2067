@@ -69,8 +69,18 @@ public static class InputRules
         Require(!baseSalary.HasValue || baseSalary.Value is >= 0 and <= 1000000000, "BaseSalary",
             "Lương cơ bản phải từ 0 đến 1.000.000.000.", "Base salary must be between 0 and 1,000,000,000.");
         Require(leaveBalance is >= 0 and <= 365, "AnnualLeaveBalance", "Quỹ phép phải từ 0 đến 365.", "Leave balance must be between 0 and 365.");
-        Require(string.IsNullOrEmpty(citizenId) || (citizenId.Length <= 20 && Regex.IsMatch(citizenId, @"^[A-Za-z0-9]+$")), "CitizenId",
-            "Số giấy tờ chỉ chứa chữ và số, tối đa 20 ký tự.", "Document number must contain only letters and digits, up to 20 characters.");
+        ValidateCitizenId(citizenId);
+    }
+    // CCCD (12 số) hoặc CMND cũ (9 số) — bắt buộc với mọi hồ sơ nhân viên
+    public const string CitizenIdPattern = @"^(\d{9}|\d{12})$";
+    public static string? NormalizeCitizenId(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : Regex.Replace(value, @"\s+", "");
+    public static void ValidateCitizenId(string? citizenId)
+    {
+        Require(!string.IsNullOrWhiteSpace(citizenId), "CitizenId",
+            "Vui lòng nhập số CCCD/CMND.", "Citizen ID (CCCD) is required.");
+        Require(Regex.IsMatch(citizenId!, CitizenIdPattern), "CitizenId",
+            "Số CCCD/CMND phải gồm 12 chữ số (CCCD) hoặc 9 chữ số (CMND).", "Citizen ID must contain 12 digits (CCCD) or 9 digits (old ID card).");
     }
     public static string Reason(string? reason, int max = 255)
     {

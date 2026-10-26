@@ -30,7 +30,7 @@ namespace RWPM.Controllers
             _ctx = ctx;
         }
 
-        private async Task PopulateManagerSelectListAsync(int? selectedId = null)
+        private async Task PopulateManagerSelectListAsync(int? selectedId = null, int? storeId = null)
         {
             var managerRoles = new[]
             {
@@ -43,7 +43,9 @@ namespace RWPM.Controllers
                 .AsNoTracking()
                 .Include(e => e.Account)
                 .Where(e => e.IsActive && (
-                    (e.Account != null && managerRoles.Contains(e.Account.Role)) ||
+                    // Được chọn: người quản lý chưa quản lý chi nhánh nào khác (QLCH sẽ được chuyển về chi nhánh này khi lưu)
+                    (e.Account != null && managerRoles.Contains(e.Account.Role)
+                        && !_ctx.Store.Any(s => s.ManagerId == e.EmployeeId && (!storeId.HasValue || s.StoreId != storeId.Value))) ||
                     (selectedId.HasValue && e.EmployeeId == selectedId.Value)
                 ))
                 .OrderBy(e => e.Account.FullName)
@@ -135,7 +137,7 @@ namespace RWPM.Controllers
             if (store == null)
                 return NotFound();
 
-            await PopulateManagerSelectListAsync(store.ManagerId);
+            await PopulateManagerSelectListAsync(store.ManagerId, store.StoreId);
             return View(new StoreEditVM(store));
         }
 
@@ -159,7 +161,7 @@ namespace RWPM.Controllers
                 {
                     AlertHelper.AddErrorMessage(TempData, string.Format(RWPM.Resources.Shared.Store.Err_CheckInput, string.Join(" | ", generalErrors)));
                 }
-                await PopulateManagerSelectListAsync(viewModel.ManagerId);
+                await PopulateManagerSelectListAsync(viewModel.ManagerId, id);
                 return View(viewModel);
             }
 
@@ -173,7 +175,7 @@ namespace RWPM.Controllers
             catch (ModelValidationException ex)
             {
                 AlertHelper.AddErrorMessage(TempData, ex.GetErrorString(_localizer));
-                await PopulateManagerSelectListAsync(viewModel.ManagerId);
+                await PopulateManagerSelectListAsync(viewModel.ManagerId, id);
                 return View(viewModel);
             }
             catch (Exception ex)
@@ -181,7 +183,7 @@ namespace RWPM.Controllers
                 if (ex is InputValidationException input) ModelState.AddModelError(input.Field, input.Message);
                 else if (InputRules.Duplicate(ex) is { } duplicate) ModelState.AddModelError(duplicate.Field, duplicate.Message);
                 else AlertHelper.AddErrorMessage(TempData, ex.Message);
-                await PopulateManagerSelectListAsync(viewModel.ManagerId);
+                await PopulateManagerSelectListAsync(viewModel.ManagerId, id);
                 return View(viewModel);
             }
 
@@ -371,15 +373,8 @@ namespace RWPM.Controllers
                 }
             }
 
-            // Default fallback
-            return Json(new[]
-            {
-                new {
-                    lat = "21.0285",
-                    lon = "105.8542",
-                    display_name = RWPM.Resources.Shared.Store.Search_DefaultFallbackName
-                }
-            });
+            // Không tìm thấy: trả mảng rỗng để client hiển thị cảnh báo "không tìm thấy" thay vì tự dời marker về vị trí mặc định
+            return Json(Array.Empty<object>());
         }
 
         // GET: Store/ReverseGeocode?lat=...&lng=...

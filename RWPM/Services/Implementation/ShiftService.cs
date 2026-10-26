@@ -50,9 +50,11 @@ public class ShiftService : IShiftService
     public async Task<PaginationRes<Shift>> SearchAsync(ShiftSearch search, QueryOptions<Shift>? options = null)
     {
         var query = Query();
+        int? managerStoreId = null;
         if (IsStoreManager)
         {
             var managedStoreId = await RequireManagerStoreAsync();
+            managerStoreId = managedStoreId;
             query = query.Where(s => s.StoreShifts.Any(x => x.StoreId == managedStoreId));
             search.StoreId = managedStoreId;
         }
@@ -61,8 +63,20 @@ public class ShiftService : IShiftService
             var term = search.Search.Trim();
             query = query.Where(s => s.ShiftName.Contains(term) || (s.Description != null && s.Description.Contains(term)));
         }
-        if (search.IsActive.HasValue) query = query.Where(s => s.IsActive == search.IsActive);
-        if (search.StoreId.HasValue) query = query.Where(s => s.StoreShifts.Any(x => x.StoreId == search.StoreId && x.IsActive));
+        if (managerStoreId.HasValue)
+        {
+            // StoreManager: giữ cả ca đã tắt ở chi nhánh mình để có thể bật lại; trạng thái = ca active && link chi nhánh active
+            if (search.IsActive.HasValue)
+            {
+                var wantActive = search.IsActive.Value;
+                query = query.Where(s => (s.IsActive && s.StoreShifts.Any(x => x.StoreId == managerStoreId && x.IsActive)) == wantActive);
+            }
+        }
+        else
+        {
+            if (search.IsActive.HasValue) query = query.Where(s => s.IsActive == search.IsActive);
+            if (search.StoreId.HasValue) query = query.Where(s => s.StoreShifts.Any(x => x.StoreId == search.StoreId && x.IsActive));
+        }
         if (search.EffectiveOn.HasValue)
         {
             var day = search.EffectiveOn.Value.Date;

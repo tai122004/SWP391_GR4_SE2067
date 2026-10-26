@@ -16,6 +16,11 @@
 {
     <nav class="mb-5">
         <ul class="pagination justify-content-center">
+            <!-- Previous button (đặt trước dãy số trang) -->
+            @{ var previousLabel = SharedResource.ResourceManager.GetString("Pagination_Previous") ?? "Previous"; }
+            <li class="page-item @(Model.PageNumber <= 1 ? "disabled" : "")">
+                <a class="page-link" asp-all-route-data="Model.RouteData" asp-route-PageNumber="@(Model.PageNumber - 1)">@previousLabel</a>
+            </li>
             @{
                 var currentPage = Model.PageNumber;
                 var totalPages = Model.TotalPages;
@@ -48,12 +53,8 @@
                 }
             }
 
-            <!-- Optional: Previous/Next buttons -->
-            @{ var previousLabel = SharedResource.ResourceManager.GetString("Pagination_Previous") ?? "Previous";
-               var nextLabel = SharedResource.ResourceManager.GetString("Pagination_Next") ?? "Next"; }
-            <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
-                <a class="page-link" asp-all-route-data="Model.RouteData" asp-route-PageNumber="@(currentPage - 1)">@previousLabel</a>
-            </li>
+            <!-- Next button -->
+            @{ var nextLabel = SharedResource.ResourceManager.GetString("Pagination_Next") ?? "Next"; }
             <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
                 <a class="page-link" asp-all-route-data="Model.RouteData" asp-route-PageNumber="@(currentPage + 1)">@nextLabel</a>
             </li>

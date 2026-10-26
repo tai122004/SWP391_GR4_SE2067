@@ -219,6 +219,9 @@
   <data name="Employee_NotExists" xml:space="preserve">
     <value>Nhân viên này không tồn tại.</value>
   </data>
+  <data name="Employee_IdNotExists" xml:space="preserve">
+    <value>Không tìm thấy nhân viên có ID</value>
+  </data>
   <data name="DeptCat_CodeNotExists" xml:space="preserve">
     <value>Mã bộ phận không tồn tại.</value>
   </data>

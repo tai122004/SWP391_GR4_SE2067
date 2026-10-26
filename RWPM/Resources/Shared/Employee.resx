@@ -478,7 +478,7 @@
     <value>Gender (Male/Female/Other)</value>
   </data>
   <data name="Template_Col_DateOfBirth" xml:space="preserve">
-    <value>Date of birth (dd/MM/yyyy)</value>
+    <value>Date of birth (dd/MM/yyyy) (*)</value>
   </data>
   <data name="Template_Col_Role" xml:space="preserve">
     <value>Role (*)</value>
@@ -493,7 +493,7 @@
     <value>Employment type (FullTime/PartTime)</value>
   </data>
   <data name="Template_Col_JoinDate" xml:space="preserve">
-    <value>Join date (dd/MM/yyyy)</value>
+    <value>Join date (dd/MM/yyyy) (*)</value>
   </data>
   <data name="Template_Col_HourlyRate" xml:space="preserve">
     <value>Hourly rate (VND)</value>

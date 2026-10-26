@@ -39,8 +39,9 @@ namespace RWPM.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginVM viewModel)
+        public async Task<IActionResult> Login(LoginVM viewModel, string? returnUrl = null)
         {
+            ViewData["ReturnUrl"] = returnUrl;
             if (!ModelState.IsValid)
                 return View(viewModel);
 
@@ -53,6 +54,9 @@ namespace RWPM.Controllers
                 AlertHelper.AddErrorMessage(TempData, ex.GetErrorString(_localizer));
                 return View(viewModel);
             }
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return LocalRedirect(returnUrl);
 
             return RedirectToAction("Index", "Home");
         }

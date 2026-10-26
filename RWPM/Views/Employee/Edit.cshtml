@@ -82,8 +82,17 @@
 
                 <div class="col-md-4">
                     <label class="form-label fw-semibold small required" asp-for="Username">@EmployeeModelResource.EmployeeAcc</label>
-                    <select class="form-select" asp-for="Username" asp-items="@(ViewBag.AccountList as SelectList)">
-                    </select>
+                    @if (isStoreManager)
+                    {
+                        <select class="form-select" asp-for="Username" asp-items="@(ViewBag.AccountList as SelectList)" disabled>
+                        </select>
+                        <input type="hidden" asp-for="Username" />
+                    }
+                    else
+                    {
+                        <select class="form-select" asp-for="Username" asp-items="@(ViewBag.AccountList as SelectList)">
+                        </select>
+                    }
                     <span asp-validation-for="Username" class="text-danger small"></span>
                 </div>
 
@@ -135,7 +144,14 @@
                 <div class="col-md-6">
                     <label class="form-label fw-semibold small" asp-for="HourlyRate">@EmployeeModelResource.HourlyRate</label>
                     <div class="input-group">
-                        <input class="form-control" asp-for="HourlyRate" asp-format="{0:0}" type="number" min="0" step="1000" placeholder="25000" />
+                        @if (isStoreManager)
+                        {
+                            <input class="form-control" asp-for="HourlyRate" asp-format="{0:0}" type="number" min="0" step="1000" placeholder="25000" readonly />
+                        }
+                        else
+                        {
+                            <input class="form-control" asp-for="HourlyRate" asp-format="{0:0}" type="number" min="0" step="1000" placeholder="25000" />
+                        }
                         <span class="input-group-text small">@SharedResource.Unit_VndPerHour</span>
                     </div>
                     <span asp-validation-for="HourlyRate" class="text-danger small"></span>
@@ -168,13 +184,16 @@
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small" asp-for="CitizenId">@EmployeeModelResource.CitizenId</label>
-                    <input class="form-control" asp-for="CitizenId" placeholder="@EmployeeModelResource.CitizenId" />
+                    <label class="form-label fw-semibold small required" asp-for="CitizenId">@EmployeeModelResource.CitizenId</label>
+                    <input class="form-control font-monospace" asp-for="CitizenId" type="text" inputmode="numeric" maxlength="12" autocomplete="off"
+                           data-citizen-id-input placeholder="@EmployeeModelResource.CitizenId"
+                           data-val-regex="@RWPM.Common.Validation.InputRules.Text("Số CCCD/CMND phải gồm 12 chữ số (CCCD) hoặc 9 chữ số (CMND).", "Citizen ID must contain 12 digits (CCCD) or 9 digits (old ID card).")"
+                           data-val-regex-pattern="^([0-9]{9}|[0-9]{12})$" />
                     <span asp-validation-for="CitizenId" class="text-danger small"></span>
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small" asp-for="DateOfBirth">@AccModelResource.DateOfBirth</label>
+                    <label class="form-label fw-semibold small required" asp-for="DateOfBirth">@AccModelResource.DateOfBirth</label>
                     <input class="form-control" type="date" asp-for="DateOfBirth" value="@(Model.DateOfBirth.HasValue ? Model.DateOfBirth.Value.ToString("yyyy-MM-dd") : "")" />
                     <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
                 </div>

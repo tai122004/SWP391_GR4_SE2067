@@ -31,6 +31,8 @@ namespace RWPM.Models.ViewModels.Payroll
         public const string WarnMissingRate = "Chưa thiết lập đơn giá theo giờ (HourlyRate).";
         public const string StoreOfficeHR = "Văn phòng / HR";
         public const string DefaultUnlockReason = "HR mở khóa bảng lương";
+        public const string StoredLegacyLeaveNoEvidence = "Đơn nghỉ có lương cũ thiếu dữ liệu ca gốc, cần rà soát.";
+        private const string LegacyLeaveNoEvidenceEn = "Legacy paid leave has no schedule evidence; review required.";
 
         public static string StoredTitle(DateTime start, DateTime end) => $"{StoredTitlePrefix}{start:dd/MM/yyyy} - {end:dd/MM/yyyy}";
         public static string StoredLeaveApprovedNote(int leaveRequestId) => $"Đơn nghỉ phép #{leaveRequestId} đã duyệt";
@@ -119,9 +121,14 @@ namespace RWPM.Models.ViewModels.Payroll
             if (!m.Success) return notes;
             var dates = m.Groups[2].Value
                 .Replace(MissingInOutTag, "(" + R.Warn_MissingInOutTag + ")")
-                .Replace("(" + ShiftFallback + ")", "(" + R.Warn_ShiftFallback + ")");
+                .Replace("(" + ShiftFallback + ")", "(" + R.Warn_ShiftFallback + ")")
+                .Replace(StoredLegacyLeaveNoEvidence, LegacyLeaveNoEvidenceText)
+                .Replace(LegacyLeaveNoEvidenceEn, LegacyLeaveNoEvidenceText);
             return string.Format(R.Warn_Abnormal, m.Groups[1].Value, dates);
         }
+
+        private static string LegacyLeaveNoEvidenceText =>
+            RWPM.Common.Validation.InputRules.Text(StoredLegacyLeaveNoEvidence, LegacyLeaveNoEvidenceEn);
 
         public static string AuditAction(string? action) => action switch
         {

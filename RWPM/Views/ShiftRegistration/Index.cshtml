@@ -1183,8 +1183,9 @@
                                     : (dayEvent.statusId === 2 
                                         ? `<span class="badge-status status-rejected"><i class="bi bi-x-circle-fill"></i> ${T.rejected}</span>` 
                                         : `<span class="badge-status status-pending"><i class="bi bi-hourglass-split"></i> ${T.pending}</span>`);
+                                let slotCls = dayEvent.statusId === 1 ? 'is-approved' : (dayEvent.statusId === 2 ? 'is-rejected' : 'is-pending');
                                 tbody += `
-                                    <div class="shift-slot is-approved" onclick='event.stopPropagation(); openViewModal(${eJson})'>
+                                    <div class="shift-slot ${slotCls}" style="cursor:pointer" onclick='event.stopPropagation(); openViewModal(${eJson})'>
                                         <div class="d-flex justify-content-between align-items-center">
                                             <span class="slot-time-text">${escapeHtml(dayEvent.title)}</span>
                                             ${badgeHtml}

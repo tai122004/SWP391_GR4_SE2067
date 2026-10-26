@@ -826,7 +826,7 @@
                                         </div>
                                         <div class="small">
                                             <span class="text-muted">@SharedResource.Attendance_AdjDetail_Reason</span>
-                                            <div class="text-dark mt-1 fst-italic">@hist.Reason</div>
+                                            <div class="text-dark mt-1 fst-italic">@RWPM.Services.Implementation.AttendanceAdjustmentService.LocalizeAuditReason(hist.Reason)</div>
                                         </div>
                                     </div>
                                 }
@@ -901,7 +901,7 @@
                     errorMsg = `@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSPermissionDenied"))`;
                 } else if (error) {
                     var template = `@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSUnknownError"))`;
-                    errorMsg = template.replace("{0}", error.message || "Lỗi xác định vị trí");
+                    errorMsg = template.replace("{0}", error.message || @Json.Serialize(SharedResource.Attendance_Err_LocateFailed));
                 } else {
                     errorMsg = `@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSNotSupported"))`;
                 }

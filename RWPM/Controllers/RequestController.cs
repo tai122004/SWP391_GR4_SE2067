@@ -365,6 +365,18 @@ namespace RWPM.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCoworkerShifts(int coworkerId)
         {
+            bool isChainAdmin = User.IsInRole("Admin") || User.IsInRole("SuperAdmin") || User.IsInRole("AreaManager") || User.IsInRole("HR");
+            if (!isChainAdmin)
+            {
+                var username = User.Identity?.Name;
+                var emp = await _context.Employee.AsNoTracking().FirstOrDefaultAsync(e => e.Username == username);
+                var coworker = await _context.Employee.AsNoTracking().FirstOrDefaultAsync(e => e.EmployeeId == coworkerId);
+                if (emp == null || coworker == null || !emp.StoreId.HasValue || coworker.StoreId != emp.StoreId)
+                {
+                    return Json(new { success = false, message = InputRules.Text("Bạn không có quyền xem lịch ca của nhân viên này.", "You cannot view this employee's shifts.") });
+                }
+            }
+
             var shifts = await _shiftSwapService.GetCoworkerShiftsAsync(coworkerId);
             return Json(new
             {
@@ -411,6 +423,14 @@ namespace RWPM.Controllers
             if ((isAdmin || isStoreManager) && employeeId.HasValue && employeeId.Value > 0)
             {
                 targetEmployee = await _context.Employee.Include(e => e.Account).FirstOrDefaultAsync(e => e.EmployeeId == employeeId.Value);
+                if (targetEmployee != null && isStoreManager && !isAdmin)
+                {
+                    var currentStoreId = await _context.Employee.Where(e => e.Username == username).Select(e => e.StoreId).FirstOrDefaultAsync();
+                    if (!currentStoreId.HasValue || targetEmployee.StoreId != currentStoreId)
+                    {
+                        return NotFound(new { success = false, message = RequestResource.Err_EmployeeProfileNotFound });
+                    }
+                }
             }
             else
             {
@@ -651,6 +671,43 @@ namespace RWPM.Controllers
                 }
                 else
                 {
+                    InputRules.Require(requestType == "ShiftReg", "RequestType", "Loại yêu cầu không hợp lệ.", "Invalid request type.");
+                    var entity = await _shiftRegistrationService.GetByIdAsync(id);
+                    if (entity == null)
+                    {
+                        return Json(new { success = false, message = InputRules.Text("Không tìm thấy đăng ký ca.", "Registration not found.") });
+                    }
+
+                    var username = User.Identity?.Name;
+                    var isChainAdmin = User.IsInRole("Admin") || User.IsInRole("SuperAdmin") || User.IsInRole("AreaManager") || User.IsInRole("HR");
+                    var isStoreManager = User.IsInRole("StoreManager");
+                    var noPermission = InputRules.Text("Bạn không có quyền xóa đăng ký ca này.", "You do not have permission to delete this registration.");
+
+                    if (!isChainAdmin && !isStoreManager)
+                    {
+                        var employee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
+                        if (employee == null || entity.EmployeeId != employee.EmployeeId)
+                        {
+                            return Json(new { success = false, message = noPermission });
+                        }
+                        if (entity.Status == RegistrationStatus.Approved)
+                        {
+                            return Json(new { success = false, message = ShiftRegistrationResource.Err_ApprovedCannotCancel });
+                        }
+                        if (entity.WorkDate.Date < DateTime.Today)
+                        {
+                            return Json(new { success = false, message = ShiftRegistrationResource.Err_CannotCancelPast });
+                        }
+                    }
+                    else if (!isChainAdmin)
+                    {
+                        var currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
+                        if (currentEmployee == null || entity.StoreId != currentEmployee.StoreId)
+                        {
+                            return Json(new { success = false, message = noPermission });
+                        }
+                    }
+
                     await _shiftRegistrationService.DeleteAsync(id);
                     return Json(new { success = true, message = SharedResource.Req_DeleteSuccess });
                 }
@@ -722,16 +779,23 @@ namespace RWPM.Controllers
                     var isSuperOrAdmin = User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
                     var isHR = User.IsInRole("HR");
                     var currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == currentUsername);
+                    InputRules.Decision((RegistrationStatus)model.Status);
+                    InputRules.Require(model.Ids.All(x => x > 0) && model.Ids.Distinct().Count() == model.Ids.Count,
+                        "Ids", "Danh sách đơn không hợp lệ hoặc bị trùng.", "Invalid or duplicate request IDs.");
+                    await using var adjBatch = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
 
-                    await using var batch = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
-                    var requests = new List<AttendanceAdjustmentRequest>();
+                    // Vòng 1: kiểm tra toàn bộ đơn và quyền trước khi ghi dữ liệu
                     foreach (var adjId in model.Ids)
                     {
                         var request = await _attendanceAdjustmentService.GetByIdAsync(adjId);
-                        InputRules.Require(request != null, "Ids", "Không tìm thấy một đơn điều chỉnh công.",
-                            "An attendance adjustment request was not found.");
-                        InputRules.Require(request!.Status == RegistrationStatus.Pending, "Status", "Đơn đã được xử lý.",
-                            "Request has already been processed.");
+                        if (request == null)
+                        {
+                            return Json(new { success = false, message = RequestResource.Adj_ErrNotFound });
+                        }
+                        if (request.Status != RegistrationStatus.Pending)
+                        {
+                            return Json(new { success = false, message = RequestResource.Adj_ErrAlreadyProcessed });
+                        }
 
                         var requesterUsername = request.Employee?.Username;
                         var requesterRole = request.Employee?.Account?.Role;
@@ -759,7 +823,11 @@ namespace RWPM.Controllers
                                 return Json(new { success = false, message = RequestResource.Err_NoPermissionApproveOtherStoreEmployee });
                             }
                         }
+                    }
 
+                    // Vòng 2: duyệt/từ chối trong cùng một transaction
+                    foreach (var adjId in model.Ids)
+                    {
                         if (model.Status == 1)
                             await AttendanceInputRules.EnsureUnlockedAsync(_context, request.WorkDate);
                         requests.Add(request);
@@ -771,7 +839,7 @@ namespace RWPM.Controllers
                         else
                             await _attendanceAdjustmentService.RejectAsync(request.AttendanceAdjustmentRequestId, model.Reason ?? "", currentUsername ?? "manager");
                     }
-                    await batch.CommitAsync();
+                    await adjBatch.CommitAsync();
                     return Json(new { success = true });
                 }
 
@@ -850,8 +918,7 @@ namespace RWPM.Controllers
                 }
                 if (!ModelState.IsValid)
                 {
-                    var error = ModelState.Values.SelectMany(x => x.Errors).FirstOrDefault();
-                    return Json(new { success = false, message = error?.ErrorMessage ?? RequestResource.Err_InvalidRequestData });
+                    return Json(new { success = false, message = string.Join("; ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).DefaultIfEmpty(InputRules.Text("Dữ liệu không hợp lệ.", "Invalid input."))) });
                 }
 
                 var username = User.Identity?.Name ?? "system";

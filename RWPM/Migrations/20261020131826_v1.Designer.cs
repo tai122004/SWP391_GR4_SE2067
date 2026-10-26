@@ -12,8 +12,8 @@ using RWPM.Infrastructure.Data;
 namespace RWPM.Migrations
 {
     [DbContext(typeof(DefaultDatabaseContext))]
-    [Migration("20261011080005_UpdateDatabase")]
-    partial class UpdateDatabase
+    [Migration("20261020131826_v1")]
+    partial class v1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -88,7 +88,14 @@ namespace RWPM.Migrations
                     b.HasKey("Username");
 
                     b.HasIndex("Email")
-                        .HasDatabaseName("IX_Acc_Email");
+                        .IsUnique()
+                        .HasDatabaseName("IX_Acc_Email")
+                        .HasFilter("[Email] <> N''");
+
+                    b.HasIndex("PhoneNumber")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Acc_PhoneNumber")
+                        .HasFilter("[PhoneNumber] IS NOT NULL AND [PhoneNumber] <> N''");
 
                     b.ToTable("Acc");
                 });
@@ -134,6 +141,90 @@ namespace RWPM.Migrations
                     b.HasIndex("AttendanceRecordId");
 
                     b.ToTable("AttendanceAdjustmentHistory");
+                });
+
+            modelBuilder.Entity("RWPM.Models.Entities.AttendanceAdjustmentRequest", b =>
+                {
+                    b.Property<int>("AttendanceAdjustmentRequestId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AttendanceAdjustmentRequestId"), 1L, 1);
+
+                    b.Property<DateTime?>("ApprovedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ApprovedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("AttendanceRecordId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasPrecision(0)
+                        .HasColumnType("datetime2(0)");
+
+                    b.Property<TimeSpan?>("CurrentCheckInTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan?>("CurrentCheckOutTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("RejectionReason")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<TimeSpan?>("RequestedCheckInTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan?>("RequestedCheckOutTime")
+                        .HasColumnType("time");
+
+                    b.Property<int?>("ShiftId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StoreId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasPrecision(0)
+                        .HasColumnType("datetime2(0)");
+
+                    b.Property<DateTime>("WorkDate")
+                        .HasColumnType("date");
+
+                    b.HasKey("AttendanceAdjustmentRequestId");
+
+                    b.HasIndex("AttendanceRecordId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("ShiftId");
+
+                    b.HasIndex("StoreId");
+
+                    b.ToTable("AttendanceAdjustmentRequest");
                 });
 
             modelBuilder.Entity("RWPM.Models.Entities.AttendanceRecord", b =>
@@ -247,7 +338,7 @@ namespace RWPM.Migrations
                     b.Property<byte>("Status")
                         .HasColumnType("tinyint");
 
-                    b.Property<int>("StoreId")
+                    b.Property<int?>("StoreId")
                         .HasColumnType("int");
 
                     b.Property<string>("UpdatedBy")
@@ -321,6 +412,346 @@ namespace RWPM.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ImportLog");
+                });
+
+            modelBuilder.Entity("RWPM.Models.Entities.LeaveRequest", b =>
+                {
+                    b.Property<int>("LeaveRequestId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LeaveRequestId"), 1L, 1);
+
+                    b.Property<DateTime?>("ApprovedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ApprovedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasPrecision(0)
+                        .HasColumnType("datetime2(0)");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("LeaveType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("RejectionReason")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("ScheduleSnapshotJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StoreId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasPrecision(0)
+                        .HasColumnType("datetime2(0)");
+
+                    b.HasKey("LeaveRequestId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("StoreId");
+
+                    b.ToTable("LeaveRequest");
+                });
+
+            modelBuilder.Entity("RWPM.Models.Entities.Payroll", b =>
+                {
+                    b.Property<int>("PayrollId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PayrollId"), 1L, 1);
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasPrecision(0)
+                        .HasColumnType("datetime2(0)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("LockedBy")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime?>("LockedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("PeriodMonth")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PeriodYear")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<byte>("Status")
+                        .HasColumnType("tinyint");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("TotalEmployees")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalGrossSalary")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<double>("TotalWorkHours")
+                        .HasColumnType("float");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasPrecision(0)
+                        .HasColumnType("datetime2(0)");
+
+                    b.HasKey("PayrollId");
+
+                    b.HasIndex("StartDate", "EndDate")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Payroll_StartDate_EndDate");
+
+                    b.ToTable("Payroll");
+                });
+
+            modelBuilder.Entity("RWPM.Models.Entities.PayrollAuditLog", b =>
+                {
+                    b.Property<int>("PayrollAuditLogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PayrollAuditLogId"), 1L, 1);
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Details")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<byte?>("FromStatus")
+                        .HasColumnType("tinyint");
+
+                    b.Property<string>("OperatorUsername")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("PayrollId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<byte?>("ToStatus")
+                        .HasColumnType("tinyint");
+
+                    b.HasKey("PayrollAuditLogId");
+
+                    b.HasIndex("PayrollId");
+
+                    b.ToTable("PayrollAuditLog");
+                });
+
+            modelBuilder.Entity("RWPM.Models.Entities.PayrollDetail", b =>
+                {
+                    b.Property<int>("PayrollDetailId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PayrollDetailId"), 1L, 1);
+
+                    b.Property<int>("ApprovedLeaveDays")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EmployeeCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EmployeeName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<byte>("EmploymentType")
+                        .HasColumnType("tinyint");
+
+                    b.Property<decimal>("HourlyRate")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("MissingAttendanceCount")
+                        .HasColumnType("int");
+
+                    b.Property<double>("PaidLeaveHours")
+                        .HasColumnType("float");
+
+                    b.Property<int>("PayrollId")
+                        .HasColumnType("int");
+
+                    b.Property<byte>("Status")
+                        .HasColumnType("tinyint");
+
+                    b.Property<int?>("StoreId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StoreName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<decimal>("TotalSalary")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<double>("TotalStandardHours")
+                        .HasColumnType("float");
+
+                    b.Property<double>("TotalWorkHours")
+                        .HasColumnType("float");
+
+                    b.Property<int>("UnpaidLeaveDays")
+                        .HasColumnType("int");
+
+                    b.Property<string>("WarningNotes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("PayrollDetailId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("StoreId");
+
+                    b.HasIndex("PayrollId", "EmployeeId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_PayrollDetail_PayrollId_EmployeeId");
+
+                    b.ToTable("PayrollDetail");
+                });
+
+            modelBuilder.Entity("RWPM.Models.Entities.PayrollItemSnapshot", b =>
+                {
+                    b.Property<int>("PayrollItemSnapshotId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PayrollItemSnapshotId"), 1L, 1);
+
+                    b.Property<double>("ActualWorkHours")
+                        .HasColumnType("float");
+
+                    b.Property<TimeSpan?>("CheckInTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan?>("CheckOutTime")
+                        .HasColumnType("time");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<TimeSpan?>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<decimal>("HourlyRate")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<double>("PaidLeaveHours")
+                        .HasColumnType("float");
+
+                    b.Property<int>("PayrollDetailId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ShiftId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ShiftName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("SourceType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<TimeSpan?>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<double>("TotalPayableHours")
+                        .HasColumnType("float");
+
+                    b.HasKey("PayrollItemSnapshotId");
+
+                    b.HasIndex("PayrollDetailId");
+
+                    b.HasIndex("ShiftId");
+
+                    b.ToTable("PayrollItemSnapshot");
                 });
 
             modelBuilder.Entity("RWPM.Models.Entities.Shift", b =>
@@ -683,6 +1114,39 @@ namespace RWPM.Migrations
                     b.Navigation("AttendanceRecord");
                 });
 
+            modelBuilder.Entity("RWPM.Models.Entities.AttendanceAdjustmentRequest", b =>
+                {
+                    b.HasOne("RWPM.Models.Entities.AttendanceRecord", "AttendanceRecord")
+                        .WithMany("AdjustmentRequests")
+                        .HasForeignKey("AttendanceRecordId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("RWPM.Models.Entities.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RWPM.Models.Entities.Shift", "Shift")
+                        .WithMany()
+                        .HasForeignKey("ShiftId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AttendanceRecord");
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Shift");
+
+                    b.Navigation("Store");
+                });
+
             modelBuilder.Entity("RWPM.Models.Entities.AttendanceRecord", b =>
                 {
                     b.HasOne("RWPM.Models.Entities.Shift", "Shift")
@@ -705,8 +1169,7 @@ namespace RWPM.Migrations
                     b.HasOne("Store", "Store")
                         .WithMany()
                         .HasForeignKey("StoreId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RWPM.Models.Entities.Acc", "Account")
                         .WithOne()
@@ -728,6 +1191,80 @@ namespace RWPM.Migrations
                         .IsRequired();
 
                     b.Navigation("Creator");
+                });
+
+            modelBuilder.Entity("RWPM.Models.Entities.LeaveRequest", b =>
+                {
+                    b.HasOne("RWPM.Models.Entities.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Store");
+                });
+
+            modelBuilder.Entity("RWPM.Models.Entities.PayrollAuditLog", b =>
+                {
+                    b.HasOne("RWPM.Models.Entities.Payroll", "Payroll")
+                        .WithMany("AuditLogs")
+                        .HasForeignKey("PayrollId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Payroll");
+                });
+
+            modelBuilder.Entity("RWPM.Models.Entities.PayrollDetail", b =>
+                {
+                    b.HasOne("RWPM.Models.Entities.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RWPM.Models.Entities.Payroll", "Payroll")
+                        .WithMany("Details")
+                        .HasForeignKey("PayrollId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Payroll");
+
+                    b.Navigation("Store");
+                });
+
+            modelBuilder.Entity("RWPM.Models.Entities.PayrollItemSnapshot", b =>
+                {
+                    b.HasOne("RWPM.Models.Entities.PayrollDetail", "PayrollDetail")
+                        .WithMany("ItemSnapshots")
+                        .HasForeignKey("PayrollDetailId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RWPM.Models.Entities.Shift", "Shift")
+                        .WithMany()
+                        .HasForeignKey("ShiftId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("PayrollDetail");
+
+                    b.Navigation("Shift");
                 });
 
             modelBuilder.Entity("RWPM.Models.Entities.ShiftRegistration", b =>
@@ -837,6 +1374,20 @@ namespace RWPM.Migrations
             modelBuilder.Entity("RWPM.Models.Entities.AttendanceRecord", b =>
                 {
                     b.Navigation("AdjustmentHistories");
+
+                    b.Navigation("AdjustmentRequests");
+                });
+
+            modelBuilder.Entity("RWPM.Models.Entities.Payroll", b =>
+                {
+                    b.Navigation("AuditLogs");
+
+                    b.Navigation("Details");
+                });
+
+            modelBuilder.Entity("RWPM.Models.Entities.PayrollDetail", b =>
+                {
+                    b.Navigation("ItemSnapshots");
                 });
 
             modelBuilder.Entity("RWPM.Models.Entities.Shift", b =>

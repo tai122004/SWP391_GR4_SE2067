@@ -157,6 +157,9 @@ namespace RWPM.Services
             var entity = await _context.ShiftRegistration.FindAsync(id);
             if (entity != null)
             {
+                await WorkflowGuard.UnlockedPeriodAsync(_context, entity.WorkDate.Date, entity.WorkDate.Date);
+                InputRules.Require(!await _context.ShiftSwapRequest.AnyAsync(x => x.SourceRegistrationId == id || x.TargetRegistrationId == id),
+                    "Id", "Không thể xóa đăng ký ca này vì đã nằm trong một đơn đổi ca.", "This registration cannot be deleted because it is part of a shift swap request.");
                 _context.ShiftRegistration.Remove(entity);
                 await _context.SaveChangesAsync();
             }

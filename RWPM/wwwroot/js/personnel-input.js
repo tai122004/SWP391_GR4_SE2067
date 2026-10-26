@@ -10,6 +10,13 @@
         if (window.jQuery && jQuery.validator && jQuery(el).closest('form').data('validator'))
             jQuery(el).rules('add', { normalizer: value => value.trim() });
     });
+    // Ô CCCD/CMND: chỉ cho nhập chữ số, tối đa 12 ký tự
+    document.querySelectorAll('input[data-citizen-id-input]').forEach(el => {
+        el.addEventListener('input', () => {
+            const digits = el.value.replace(/\D/g, '').slice(0, 12);
+            if (digits !== el.value) el.value = digits;
+        });
+    });
     new Set(fields.map(el => el.form)).forEach(form => {
         if (form) form.addEventListener('submit', () => fields.filter(el => el.form === form).forEach(normalize), true);
     });
