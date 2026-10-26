@@ -228,7 +228,8 @@ namespace RWPM.Services.Implementation
                 || await _ctx.AttendanceAdjustmentRequest.AnyAsync(x => x.StoreId == storeId)
                 || await _ctx.LeaveRequest.AnyAsync(x => x.StoreId == storeId)
                 || await _ctx.ShiftSwapRequest.AnyAsync(x => x.StoreId == storeId)
-                || await _ctx.PayrollDetail.AnyAsync(x => x.StoreId == storeId);
+                || await _ctx.PayrollDetail.AnyAsync(x => x.StoreId == storeId)
+                || await _ctx.PerformanceReview.AnyAsync(x => x.StoreId == storeId);
             if (hasRelatedData)
             {
                 throw new InputValidationException("StoreId", InputRules.Text(

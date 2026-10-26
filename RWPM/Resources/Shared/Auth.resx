@@ -147,4 +147,7 @@
   <data name="Err_AccessDenied" xml:space="preserve">
     <value>You do not have permission to access this function!</value>
   </data>
+  <data name="ForcedChangePassword_Notice" xml:space="preserve">
+    <value>For security, please change the temporary password you were given before using the system.</value>
+  </data>
 </root>

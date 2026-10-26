@@ -87,6 +87,9 @@ namespace RWPM.Services.Implementation
                 DateOfBirth = entity.DateOfBirth,
                 Gender = entity.Gender,
                 AvatarUrl = entity.AvatarUrl,
+                // Mật khẩu do HR/Admin đặt -> người dùng phải đổi ở lần đăng nhập đầu tiên
+                MustChangePassword = true,
+                SecurityStamp = RWPM.Common.Security.SessionSecurity.NewStamp(),
 
                 CreatedDate = DateTime.Now,
                 CreatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor),
@@ -313,6 +316,9 @@ namespace RWPM.Services.Implementation
             });
 
             currentUser.Password = _hasher.HashPassword(null!, newPass);
+            currentUser.MustChangePassword = false;
+            // Đổi stamp -> các phiên đăng nhập khác của tài khoản này bị đăng xuất (phiên hiện tại được cấp lại ở controller)
+            currentUser.SecurityStamp = RWPM.Common.Security.SessionSecurity.NewStamp();
             currentUser.UpdatedBy = currentUsername;
             currentUser.UpdatedDate = DateTime.Now;
 
@@ -349,12 +355,19 @@ namespace RWPM.Services.Implementation
                 throw new ModelValidationException("Acc_NewPassAndConfirmNewPassAreNotSame");
 
             // II. Update password
+            // Tự đặt lại mật khẩu của chính mình phải qua màn Đổi mật khẩu (cần mật khẩu cũ), tránh tự bắt buộc đổi và bị đăng xuất
+            if (string.Equals(changePasswordDto.Username, caller, StringComparison.OrdinalIgnoreCase))
+                throw new InputValidationException("NewPassword", InputRules.Text("Hãy dùng chức năng Đổi mật khẩu để đổi mật khẩu của chính bạn.", "Use Change Password to change your own password."));
+
             var currentUser = await GetRequiredByIdAsync(changePasswordDto.Username, new QueryOptions<Acc>()
             {
                 NoTracking = false
             });
 
             currentUser.Password = _hasher.HashPassword(null!, changePasswordDto.NewPassword);
+            // Mật khẩu do người khác cấp lại -> bắt đổi ở lần đăng nhập kế tiếp, đăng xuất mọi phiên đang mở
+            currentUser.MustChangePassword = true;
+            currentUser.SecurityStamp = RWPM.Common.Security.SessionSecurity.NewStamp();
             currentUser.UpdatedBy = caller;
             currentUser.UpdatedDate = DateTime.Now;
 

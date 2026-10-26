@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Title" xml:space="preserve">
+    <value>Overview</value>
+  </data>
+  <data name="Greeting" xml:space="preserve">
+    <value>Hello, {0}</value>
+  </data>
+  <data name="Subtitle_Chain" xml:space="preserve">
+    <value>Chain-wide situation today</value>
+  </data>
+  <data name="Subtitle_Store" xml:space="preserve">
+    <value>Today at {0}</value>
+  </data>
+  <data name="Subtitle_Employee" xml:space="preserve">
+    <value>A quick summary of your work</value>
+  </data>
+  <data name="UpdatedAt" xml:space="preserve">
+    <value>Updated at {0}</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Card_ActiveHeadcount" xml:space="preserve">
+    <value>Active employees</value>
+  </data>
+  <data name="Card_Unassigned" xml:space="preserve">
+    <value>{0} without a store</value>
+  </data>
+  <data name="Card_PendingRequests" xml:space="preserve">
+    <value>Pending requests</value>
+  </data>
+  <data name="Card_OnLeaveToday" xml:space="preserve">
+    <value>On leave today</value>
+  </data>
+  <data name="Card_NewHires" xml:space="preserve">
+    <value>New hires this month</value>
+  </data>
+  <data name="Card_TodayAssignments" xml:space="preserve">
+    <value>Shift assignments today</value>
+  </data>
+  <data name="Card_CheckedInNow" xml:space="preserve">
+    <value>{0} on shift now</value>
+  </data>
+  <data name="Card_CheckedInRatio" xml:space="preserve">
+    <value>{0}/{1} checked in</value>
+  </data>
+  <data name="Card_ShiftsToday" xml:space="preserve">
+    <value>Shifts today</value>
+  </data>
+  <data name="Pending_Reg" xml:space="preserve">
+    <value>Shift registration</value>
+  </data>
+  <data name="Pending_Swap" xml:space="preserve">
+    <value>Shift swap</value>
+  </data>
+  <data name="Pending_Leave" xml:space="preserve">
+    <value>Leave</value>
+  </data>
+  <data name="Pending_Adjustment" xml:space="preserve">
+    <value>Attendance adjustment</value>
+  </data>
+  <data name="Pending_None" xml:space="preserve">
+    <value>No requests waiting</value>
+  </data>
+  <data name="ViewAll" xml:space="preserve">
+    <value>View all</value>
+  </data>
+  <data name="Action_Review" xml:space="preserve">
+    <value>Review</value>
+  </data>
+  <data name="Section_TodayShifts" xml:space="preserve">
+    <value>Today's shifts</value>
+  </data>
+  <data name="Shift_CarryOver" xml:space="preserve">
+    <value>Started yesterday</value>
+  </data>
+  <data name="Shift_Grace" xml:space="preserve">
+    <value>Grace {0} min</value>
+  </data>
+  <data name="Col_Employee" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="Col_Code" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="Col_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Col_CheckIn" xml:space="preserve">
+    <value>In</value>
+  </data>
+  <data name="Col_CheckOut" xml:space="preserve">
+    <value>Out</value>
+  </data>
+  <data name="Col_Store" xml:space="preserve">
+    <value>Store</value>
+  </data>
+  <data name="Col_LeaveType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Col_Period" xml:space="preserve">
+    <value>Period</value>
+  </data>
+  <data name="Col_Shift" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="Col_Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Col_Headcount" xml:space="preserve">
+    <value>Headcount</value>
+  </data>
+  <data name="Col_TodayShifts" xml:space="preserve">
+    <value>Shifts today</value>
+  </data>
+  <data name="Col_CheckedInNow" xml:space="preserve">
+    <value>On shift now</value>
+  </data>
+  <data name="Col_Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="Col_JoinDate" xml:space="preserve">
+    <value>Join date</value>
+  </data>
+  <data name="State_NotStarted" xml:space="preserve">
+    <value>Not started yet</value>
+  </data>
+  <data name="State_AwaitingCheckIn" xml:space="preserve">
+    <value>Not checked in yet</value>
+  </data>
+  <data name="State_Late" xml:space="preserve">
+    <value>Late {0} min</value>
+  </data>
+  <data name="State_CheckedIn" xml:space="preserve">
+    <value>Checked in</value>
+  </data>
+  <data name="State_CheckedOut" xml:space="preserve">
+    <value>Checked out</value>
+  </data>
+  <data name="State_Absent" xml:space="preserve">
+    <value>Absent</value>
+  </data>
+  <data name="State_CheckedInLate" xml:space="preserve">
+    <value>{0} min late</value>
+  </data>
+  <data name="Empty_TodayShifts" xml:space="preserve">
+    <value>No approved shifts today.</value>
+  </data>
+  <data name="Empty_ShiftEmployees" xml:space="preserve">
+    <value>No employees in this shift.</value>
+  </data>
+  <data name="Section_OnLeave" xml:space="preserve">
+    <value>On approved leave today</value>
+  </data>
+  <data name="Empty_OnLeave" xml:space="preserve">
+    <value>Nobody is on leave today.</value>
+  </data>
+  <data name="Quick_Title" xml:space="preserve">
+    <value>Quick links</value>
+  </data>
+  <data name="Section_Stores" xml:space="preserve">
+    <value>Stores today</value>
+  </data>
+  <data name="Empty_Stores" xml:space="preserve">
+    <value>No active stores.</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="NoStore" xml:space="preserve">
+    <value>No store</value>
+  </data>
+  <data name="Section_Payroll" xml:space="preserve">
+    <value>Payroll</value>
+  </data>
+  <data name="Payroll_Latest" xml:space="preserve">
+    <value>Latest payroll period</value>
+  </data>
+  <data name="Payroll_Empty" xml:space="preserve">
+    <value>No payroll period has been calculated yet.</value>
+  </data>
+  <data name="Payroll_TotalSalary" xml:space="preserve">
+    <value>Total salary</value>
+  </data>
+  <data name="Payroll_Employees" xml:space="preserve">
+    <value>{0} employees</value>
+  </data>
+  <data name="Payroll_MissingPrevMonth" xml:space="preserve">
+    <value>No payroll period has been created for {0} yet.</value>
+  </data>
+  <data name="Payroll_GoTo" xml:space="preserve">
+    <value>Go to payroll</value>
+  </data>
+  <data name="Section_NewHires" xml:space="preserve">
+    <value>New hires this month</value>
+  </data>
+  <data name="Empty_NewHires" xml:space="preserve">
+    <value>No new hires this month.</value>
+  </data>
+  <data name="List_Showing" xml:space="preserve">
+    <value>Showing {0} of {1}</value>
+  </data>
+  <data name="Section_My" xml:space="preserve">
+    <value>My work</value>
+  </data>
+  <data name="My_TodayShifts" xml:space="preserve">
+    <value>My shifts today</value>
+  </data>
+  <data name="My_EmptyToday" xml:space="preserve">
+    <value>You have no approved shift today.</value>
+  </data>
+  <data name="My_GoAttendance" xml:space="preserve">
+    <value>Go to attendance</value>
+  </data>
+  <data name="My_Upcoming" xml:space="preserve">
+    <value>Next 7 days</value>
+  </data>
+  <data name="My_EmptyUpcoming" xml:space="preserve">
+    <value>No approved shifts in the next 7 days.</value>
+  </data>
+  <data name="My_LeaveBalance" xml:space="preserve">
+    <value>Annual leave remaining</value>
+  </data>
+  <data name="Unit_Days" xml:space="preserve">
+    <value>days</value>
+  </data>
+  <data name="My_Pending" xml:space="preserve">
+    <value>My pending requests</value>
+  </data>
+  <data name="My_LatestPayslip" xml:space="preserve">
+    <value>Latest payslip</value>
+  </data>
+  <data name="My_NoPayslip" xml:space="preserve">
+    <value>No locked payslip yet.</value>
+  </data>
+  <data name="My_ViewPayslip" xml:space="preserve">
+    <value>View payslip</value>
+  </data>
+  <data name="My_AllPayslips" xml:space="preserve">
+    <value>All payslips</value>
+  </data>
+  <data name="My_NoProfile" xml:space="preserve">
+    <value>Your account is not linked to an employee profile yet. Please contact HR.</value>
+  </data>
+  <data name="My_ManagerNoStore" xml:space="preserve">
+    <value>You are a store manager but have not been assigned to a store, so only your personal information is shown.</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+</root>

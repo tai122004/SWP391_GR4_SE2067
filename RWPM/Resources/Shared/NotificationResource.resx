@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+    <data name="Ui_Notifications" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="Ui_MarkAllRead" xml:space="preserve">
+    <value>Mark all as read</value>
+  </data>
+  <data name="Ui_MarkRead" xml:space="preserve">
+    <value>Mark as read</value>
+  </data>
+  <data name="Ui_ViewAll" xml:space="preserve">
+    <value>View all</value>
+  </data>
+  <data name="Ui_Empty" xml:space="preserve">
+    <value>You have no notifications.</value>
+  </data>
+  <data name="Ui_EmptyUnread" xml:space="preserve">
+    <value>You have no unread notifications.</value>
+  </data>
+  <data name="Ui_Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="Ui_LoadError" xml:space="preserve">
+    <value>Could not load notifications.</value>
+  </data>
+  <data name="Ui_NewNotification" xml:space="preserve">
+    <value>New notification</value>
+  </data>
+  <data name="Ui_UnreadCount" xml:space="preserve">
+    <value>{0} unread</value>
+  </data>
+  <data name="Index_Title" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="Index_Subtitle" xml:space="preserve">
+    <value>Updates about your requests, approvals and payslips.</value>
+  </data>
+  <data name="Filter_All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Filter_Unread" xml:space="preserve">
+    <value>Unread</value>
+  </data>
+  <data name="Th_Content" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="Th_Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="Th_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Status_Read" xml:space="preserve">
+    <value>Read</value>
+  </data>
+  <data name="Status_Unread" xml:space="preserve">
+    <value>Unread</value>
+  </data>
+  <data name="Msg_AllMarkedRead" xml:space="preserve">
+    <value>All notifications have been marked as read.</value>
+  </data>
+  <data name="Err_NotFound" xml:space="preserve">
+    <value>Notification not found.</value>
+  </data>
+  <data name="Rel_JustNow" xml:space="preserve">
+    <value>just now</value>
+  </data>
+  <data name="Rel_MinutesAgo" xml:space="preserve">
+    <value>{0} min ago</value>
+  </data>
+  <data name="Rel_HoursAgo" xml:space="preserve">
+    <value>{0} h ago</value>
+  </data>
+  <data name="Rel_DaysAgo" xml:space="preserve">
+    <value>{0} days ago</value>
+  </data>
+  <data name="ReqType_ShiftReg" xml:space="preserve">
+    <value>Shift registration</value>
+  </data>
+  <data name="ReqType_ShiftSwap" xml:space="preserve">
+    <value>Shift swap request</value>
+  </data>
+  <data name="ReqType_Leave" xml:space="preserve">
+    <value>Leave request</value>
+  </data>
+  <data name="ReqType_Attendance" xml:space="preserve">
+    <value>Attendance adjustment request</value>
+  </data>
+  <data name="ReqType_Default" xml:space="preserve">
+    <value>Request</value>
+  </data>
+  <data name="Title_Default" xml:space="preserve">
+    <value>Notification</value>
+  </data>
+  <data name="Title_RequestApproved" xml:space="preserve">
+    <value>Request approved</value>
+  </data>
+  <data name="Title_RequestRejected" xml:space="preserve">
+    <value>Request rejected</value>
+  </data>
+  <data name="Title_SwapCoworkerApproved" xml:space="preserve">
+    <value>Shift swap approved</value>
+  </data>
+  <data name="Title_RequestSubmitted" xml:space="preserve">
+    <value>New request to review</value>
+  </data>
+  <data name="Title_ShiftRegSubmittedBatch" xml:space="preserve">
+    <value>New shift registrations to review</value>
+  </data>
+  <data name="Title_PayslipAvailable" xml:space="preserve">
+    <value>Payslip available</value>
+  </data>
+  <data name="Body_RequestApproved" xml:space="preserve">
+    <value>Your request has been approved: {0} {1} ({2}).</value>
+  </data>
+  <data name="Body_RequestRejected" xml:space="preserve">
+    <value>Your request has been rejected: {0} {1} ({2}). Reason: {3}</value>
+  </data>
+  <data name="Body_RequestRejectedNoReason" xml:space="preserve">
+    <value>Your request has been rejected: {0} {1} ({2}).</value>
+  </data>
+  <data name="Body_SwapCoworkerApproved" xml:space="preserve">
+    <value>The shift swap {0} requested by {1} with you has been approved ({2}). Please check your schedule.</value>
+  </data>
+  <data name="Body_RequestSubmitted" xml:space="preserve">
+    <value>{2} submitted a new request: {0} {1} ({3}).</value>
+  </data>
+  <data name="Body_ShiftRegSubmittedBatch" xml:space="preserve">
+    <value>{0} registered {1} shift(s) ({2}).</value>
+  </data>
+  <data name="Body_PayslipAvailable" xml:space="preserve">
+    <value>Your payslip for the period {0}–{1} is available.</value>
+  </data>
+</root>

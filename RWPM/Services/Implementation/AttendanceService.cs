@@ -433,21 +433,9 @@ namespace RWPM.Services.Implementation
         {
             var extension = ValidatePhoto(photo);
 
-            var uploadsFolder = System.IO.Path.Combine(_env.WebRootPath, "images", "attendance");
-            if (!System.IO.Directory.Exists(uploadsFolder))
-            {
-                System.IO.Directory.CreateDirectory(uploadsFolder);
-            }
-
+            // Lưu ngoài wwwroot; chỉ xem qua Attendance/Photo có kiểm tra quyền
             var uniqueFileName = $"{type}_{Guid.NewGuid():N}{extension}";
-            var filePath = System.IO.Path.Combine(uploadsFolder, uniqueFileName);
-
-            using (var fileStream = new System.IO.FileStream(filePath, System.IO.FileMode.Create))
-            {
-                await photo.CopyToAsync(fileStream);
-            }
-
-            return $"/images/attendance/{uniqueFileName}";
+            return await RWPM.Infrastructure.Storage.AttendancePhotoStore.SaveAsync(_env, photo, uniqueFileName);
         }
     }
 }

@@ -1,0 +1,110 @@
+@model RWPM.Models.ViewModels.Performance.PerformanceMyVM
+@using RWPM.Models.ViewModels.Performance
+@using R = RWPM.Resources.Shared.PerformanceResource
+
+@{
+    ViewData["Title"] = R.My_Title;
+}
+
+<div class="container-fluid px-0">
+    <div class="app-page-header">
+        <div>
+            <h4 class="fw-bold text-dark d-flex align-items-center mb-1">
+                <i class="bi bi-person-check text-primary me-2"></i>
+                @R.My_Title
+            </h4>
+            <div class="text-muted small">
+                @if (Model.Employee != null)
+                {
+                    @Model.Employee.FullName <span>·</span> @Model.Employee.EmployeeCode <span>·</span> <i class="bi bi-shop me-1"></i>@(Model.Employee.StoreName ?? R.Unassigned)
+                }
+                else
+                {
+                    @R.My_Subtitle
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.HasProfile)
+    {
+        <div class="app-content-card">
+            <div class="card-body text-center text-muted py-5">
+                <i class="bi bi-person-x fs-2 d-block mb-2 text-secondary"></i>
+                @R.My_NoProfile
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="app-content-card mb-3">
+            <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <span class="fw-semibold text-dark"><i class="bi bi-calendar3 me-1 text-primary"></i>@R.My_Subtitle</span>
+                <span class="text-muted small" title="@R.Formula_Description"><i class="bi bi-info-circle me-1"></i>@R.Formula_Short</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table modern-table align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>@R.Col_Month</th>
+                            <th class="text-center">@R.Col_Shifts</th>
+                            <th class="text-center">@R.Col_AttendanceRate</th>
+                            <th class="text-center">@R.Col_Absences</th>
+                            <th class="text-center">@R.Col_Late</th>
+                            <th class="text-center">@R.Col_Early</th>
+                            <th class="text-end">@R.Col_WorkedHours</th>
+                            <th class="text-center">@R.Col_SuggestedScore</th>
+                            <th>@R.Col_Review</th>
+                            <th class="text-center">@SharedResource.Button_Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Months)
+                        {
+                            var mt = item.Metrics;
+                            Model.Reviews.TryGetValue(PerformanceMyVM.Key(item.Year, item.Month), out var rv);
+                            <tr>
+                                <td class="fw-semibold text-nowrap">@string.Format(R.MonthLabel, item.Month.ToString("D2"), item.Year)</td>
+                                <td class="text-center"><span class="fw-semibold">@mt.AttendedShifts</span><span class="text-muted">/@mt.ApprovedShifts</span></td>
+                                <td class="text-center">@(mt.AttendanceRate.HasValue ? mt.AttendanceRate.Value.ToString("0.0") + "%" : "—")</td>
+                                <td class="text-center @(mt.Absences > 0 ? "text-danger fw-semibold" : "text-muted")">@mt.Absences</td>
+                                <td class="text-center">@mt.LateCount @if (mt.LateCount > 0) { <span class="small text-muted">(@string.Format(R.Minutes, mt.LateMinutes))</span> }</td>
+                                <td class="text-center">@mt.EarlyLeaveCount @if (mt.EarlyLeaveCount > 0) { <span class="small text-muted">(@string.Format(R.Minutes, mt.EarlyLeaveMinutes))</span> }</td>
+                                <td class="text-end">@mt.WorkedHours.ToString("#,##0.00")</td>
+                                <td class="text-center">
+                                    @if (mt.SuggestedScore.HasValue)
+                                    {
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">@mt.SuggestedScore.Value.ToString("0.0")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (rv != null)
+                                    {
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle"><i class="bi bi-star-fill me-1"></i>@rv.Score/5</span>
+                                        @if (!string.IsNullOrWhiteSpace(rv.Comment))
+                                        {
+                                            <div class="small text-muted text-truncate" style="max-width: 260px" title="@rv.Comment">@rv.Comment</div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-secondary border">@R.NotReviewed</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <a asp-action="MyDetail" asp-route-year="@item.Year" asp-route-month="@item.Month" class="btn btn-sm btn-outline-primary text-nowrap">
+                                        <i class="bi bi-eye me-1"></i>@R.Action_ViewDetail
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

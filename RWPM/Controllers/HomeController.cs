@@ -7,6 +7,7 @@ using RWPM.Common;
 using RWPM.Infrastructure.Data;
 using RWPM.Infrastructure.Seeder;
 using RWPM.Models;
+using RWPM.Services.Abstraction;
 
 namespace RWPM.Controllers
 {
@@ -15,21 +16,33 @@ namespace RWPM.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly DefaultDatabaseContext _defaultDatabaseContext;
+        private readonly IDashboardService _dashboardService;
 
         public HomeController(ILogger<HomeController> logger,
-            DefaultDatabaseContext databaseContext)
+            DefaultDatabaseContext databaseContext,
+            IDashboardService dashboardService)
         {
             _logger = logger;
             _defaultDatabaseContext = databaseContext;
+            _dashboardService = dashboardService;
         }
 
-        public IActionResult Index()
+        // GET: / and /Home/Index - "Tổng quan" dashboard, content depends on role
+        public async Task<IActionResult> Index()
         {
-            if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin"))
-            {
-                return RedirectToAction("Index", "Acc");
-            }
-            return RedirectToAction("Index", "Attendance");
+            var username = User.Identity?.Name;
+            if (string.IsNullOrEmpty(username)) return Challenge();
+
+            bool isSuperOrAdmin = User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
+            bool isHR = User.IsInRole("HR");
+            bool isStoreManager = User.IsInRole("StoreManager");
+            // Same chain-wide role set as RequestController.Index
+            bool isChainManager = isSuperOrAdmin || isHR || User.IsInRole("AreaManager");
+            // Attendance/Index redirects a pure system Admin away, so don't offer check-in to them
+            bool canUseAttendance = !(isSuperOrAdmin && !isHR && !isStoreManager);
+
+            var vm = await _dashboardService.GetDashboardAsync(username, isChainManager, isStoreManager, canUseAttendance);
+            return View(vm);
         }
 
         public IActionResult Privacy()

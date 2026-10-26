@@ -63,6 +63,12 @@ namespace RWPM.Resources.Shared {
         /// <summary>
         ///   Looks up a localized string similar to Forgot password?.
         /// </summary>
+        public static string ForcedChangePassword_Notice {
+            get {
+                return ResourceManager.GetString("ForcedChangePassword_Notice", resourceCulture);
+            }
+        }
+
         public static string ForgotPassword {
             get {
                 return ResourceManager.GetString("ForgotPassword", resourceCulture);

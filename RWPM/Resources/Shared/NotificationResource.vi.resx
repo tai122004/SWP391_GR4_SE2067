@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+    <data name="Ui_Notifications" xml:space="preserve">
+    <value>Thông báo</value>
+  </data>
+  <data name="Ui_MarkAllRead" xml:space="preserve">
+    <value>Đánh dấu tất cả đã đọc</value>
+  </data>
+  <data name="Ui_MarkRead" xml:space="preserve">
+    <value>Đánh dấu đã đọc</value>
+  </data>
+  <data name="Ui_ViewAll" xml:space="preserve">
+    <value>Xem tất cả</value>
+  </data>
+  <data name="Ui_Empty" xml:space="preserve">
+    <value>Bạn chưa có thông báo nào.</value>
+  </data>
+  <data name="Ui_EmptyUnread" xml:space="preserve">
+    <value>Không có thông báo chưa đọc.</value>
+  </data>
+  <data name="Ui_Loading" xml:space="preserve">
+    <value>Đang tải...</value>
+  </data>
+  <data name="Ui_LoadError" xml:space="preserve">
+    <value>Không tải được thông báo.</value>
+  </data>
+  <data name="Ui_NewNotification" xml:space="preserve">
+    <value>Thông báo mới</value>
+  </data>
+  <data name="Ui_UnreadCount" xml:space="preserve">
+    <value>{0} chưa đọc</value>
+  </data>
+  <data name="Index_Title" xml:space="preserve">
+    <value>Thông báo</value>
+  </data>
+  <data name="Index_Subtitle" xml:space="preserve">
+    <value>Cập nhật về đơn từ, phê duyệt và phiếu lương của bạn.</value>
+  </data>
+  <data name="Filter_All" xml:space="preserve">
+    <value>Tất cả</value>
+  </data>
+  <data name="Filter_Unread" xml:space="preserve">
+    <value>Chưa đọc</value>
+  </data>
+  <data name="Th_Content" xml:space="preserve">
+    <value>Nội dung</value>
+  </data>
+  <data name="Th_Time" xml:space="preserve">
+    <value>Thời gian</value>
+  </data>
+  <data name="Th_Status" xml:space="preserve">
+    <value>Trạng thái</value>
+  </data>
+  <data name="Status_Read" xml:space="preserve">
+    <value>Đã đọc</value>
+  </data>
+  <data name="Status_Unread" xml:space="preserve">
+    <value>Chưa đọc</value>
+  </data>
+  <data name="Msg_AllMarkedRead" xml:space="preserve">
+    <value>Đã đánh dấu tất cả thông báo là đã đọc.</value>
+  </data>
+  <data name="Err_NotFound" xml:space="preserve">
+    <value>Không tìm thấy thông báo.</value>
+  </data>
+  <data name="Rel_JustNow" xml:space="preserve">
+    <value>vừa xong</value>
+  </data>
+  <data name="Rel_MinutesAgo" xml:space="preserve">
+    <value>{0} phút trước</value>
+  </data>
+  <data name="Rel_HoursAgo" xml:space="preserve">
+    <value>{0} giờ trước</value>
+  </data>
+  <data name="Rel_DaysAgo" xml:space="preserve">
+    <value>{0} ngày trước</value>
+  </data>
+  <data name="ReqType_ShiftReg" xml:space="preserve">
+    <value>Đơn đăng ký ca</value>
+  </data>
+  <data name="ReqType_ShiftSwap" xml:space="preserve">
+    <value>Đơn đổi ca</value>
+  </data>
+  <data name="ReqType_Leave" xml:space="preserve">
+    <value>Đơn xin nghỉ</value>
+  </data>
+  <data name="ReqType_Attendance" xml:space="preserve">
+    <value>Đơn điều chỉnh chấm công</value>
+  </data>
+  <data name="ReqType_Default" xml:space="preserve">
+    <value>Đơn</value>
+  </data>
+  <data name="Title_Default" xml:space="preserve">
+    <value>Thông báo</value>
+  </data>
+  <data name="Title_RequestApproved" xml:space="preserve">
+    <value>Đơn đã được duyệt</value>
+  </data>
+  <data name="Title_RequestRejected" xml:space="preserve">
+    <value>Đơn bị từ chối</value>
+  </data>
+  <data name="Title_SwapCoworkerApproved" xml:space="preserve">
+    <value>Đổi ca đã được duyệt</value>
+  </data>
+  <data name="Title_RequestSubmitted" xml:space="preserve">
+    <value>Đơn mới cần duyệt</value>
+  </data>
+  <data name="Title_ShiftRegSubmittedBatch" xml:space="preserve">
+    <value>Đăng ký ca mới cần duyệt</value>
+  </data>
+  <data name="Title_PayslipAvailable" xml:space="preserve">
+    <value>Phiếu lương đã có</value>
+  </data>
+  <data name="Body_RequestApproved" xml:space="preserve">
+    <value>Yêu cầu của bạn đã được duyệt: {0} {1} ({2}).</value>
+  </data>
+  <data name="Body_RequestRejected" xml:space="preserve">
+    <value>Yêu cầu của bạn đã bị từ chối: {0} {1} ({2}). Lý do: {3}</value>
+  </data>
+  <data name="Body_RequestRejectedNoReason" xml:space="preserve">
+    <value>Yêu cầu của bạn đã bị từ chối: {0} {1} ({2}).</value>
+  </data>
+  <data name="Body_SwapCoworkerApproved" xml:space="preserve">
+    <value>Đơn đổi ca {0} của {1} với bạn đã được duyệt ({2}). Vui lòng kiểm tra lại lịch làm.</value>
+  </data>
+  <data name="Body_RequestSubmitted" xml:space="preserve">
+    <value>{2} đã gửi yêu cầu mới: {0} {1} ({3}).</value>
+  </data>
+  <data name="Body_ShiftRegSubmittedBatch" xml:space="preserve">
+    <value>{0} đã đăng ký {1} ca làm ({2}).</value>
+  </data>
+  <data name="Body_PayslipAvailable" xml:space="preserve">
+    <value>Phiếu lương kỳ {0}–{1} đã có.</value>
+  </data>
+</root>

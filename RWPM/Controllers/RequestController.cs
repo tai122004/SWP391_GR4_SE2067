@@ -19,6 +19,7 @@ namespace RWPM.Controllers
         private readonly IAttendanceAdjustmentService _attendanceAdjustmentService;
         private readonly RWPM.Infrastructure.Data.DefaultDatabaseContext _context;
         private readonly IShiftService _shiftService;
+        private readonly INotificationService _notificationService;
 
         public RequestController(
             IShiftRegistrationService shiftRegistrationService,
@@ -26,7 +27,8 @@ namespace RWPM.Controllers
             ILeaveRequestService leaveRequestService,
             IAttendanceAdjustmentService attendanceAdjustmentService,
             RWPM.Infrastructure.Data.DefaultDatabaseContext context,
-            IShiftService shiftService)
+            IShiftService shiftService,
+            INotificationService notificationService)
         {
             _shiftRegistrationService = shiftRegistrationService;
             _shiftSwapService = shiftSwapService;
@@ -34,6 +36,7 @@ namespace RWPM.Controllers
             _attendanceAdjustmentService = attendanceAdjustmentService;
             _context = context;
             _shiftService = shiftService;
+            _notificationService = notificationService;
         }
 
         public async Task<IActionResult> Index(string start, string end, int? status, string? type = null, string? q = null, int pageNumber = 1)
@@ -403,7 +406,8 @@ namespace RWPM.Controllers
                 var emp = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
                 if (emp != null) model.RequesterEmployeeId = emp.EmployeeId;
 
-                await _shiftSwapService.CreateSwapRequestAsync(model, username);
+                var createdSwap = await _shiftSwapService.CreateSwapRequestAsync(model, username);
+                await _notificationService.NotifyRequestSubmittedAsync(NotificationRequestTypes.ShiftSwap, createdSwap.ShiftSwapRequestId, username);
                 return Json(new { success = true, message = RequestResource.Swap_SubmitSuccess });
             }
             catch (Exception ex)
@@ -476,7 +480,8 @@ namespace RWPM.Controllers
                     if (emp != null) model.EmployeeId = emp.EmployeeId;
                 }
 
-                await _leaveRequestService.CreateLeaveRequestAsync(model, username);
+                var createdLeave = await _leaveRequestService.CreateLeaveRequestAsync(model, username);
+                await _notificationService.NotifyRequestSubmittedAsync(NotificationRequestTypes.Leave, createdLeave.LeaveRequestId, username);
                 return Json(new { success = true, message = RequestResource.Leave_SubmitSuccess });
             }
             catch (Exception ex)
@@ -520,11 +525,13 @@ namespace RWPM.Controllers
                     if (status == 1)
                     {
                         await _shiftSwapService.ApproveSwapAsync(id, User.Identity?.Name ?? "manager");
+                        await _notificationService.NotifyRequestDecisionAsync(NotificationRequestTypes.ShiftSwap, new[] { id }, User.Identity?.Name);
                         return Json(new { success = true, message = RequestResource.Swap_ApproveSuccess });
                     }
                     else
                     {
                         await _shiftSwapService.RejectSwapAsync(id, reason, User.Identity?.Name ?? "manager");
+                        await _notificationService.NotifyRequestDecisionAsync(NotificationRequestTypes.ShiftSwap, new[] { id }, User.Identity?.Name);
                         return Json(new { success = true, message = RequestResource.Swap_RejectSuccess });
                     }
                 }
@@ -544,11 +551,13 @@ namespace RWPM.Controllers
                     if (status == 1)
                     {
                         await _leaveRequestService.ApproveLeaveRequestAsync(id, User.Identity?.Name ?? "manager");
+                        await _notificationService.NotifyRequestDecisionAsync(NotificationRequestTypes.Leave, new[] { id }, User.Identity?.Name);
                         return Json(new { success = true, message = RequestResource.Leave_ApproveSuccess });
                     }
                     else
                     {
                         await _leaveRequestService.RejectLeaveRequestAsync(id, reason, User.Identity?.Name ?? "manager");
+                        await _notificationService.NotifyRequestDecisionAsync(NotificationRequestTypes.Leave, new[] { id }, User.Identity?.Name);
                         return Json(new { success = true, message = RequestResource.Leave_RejectSuccess });
                     }
                 }
@@ -598,11 +607,13 @@ namespace RWPM.Controllers
                         var parsedOut = AttendanceInputRules.ParseClockTime(approvedCheckOutTime, "ApprovedCheckOutTime");
 
                         await _attendanceAdjustmentService.ApproveAsync(id, currentUsername ?? "manager", parsedIn, parsedOut, approverNote);
+                        await _notificationService.NotifyRequestDecisionAsync(NotificationRequestTypes.Attendance, new[] { id }, currentUsername);
                         return Json(new { success = true, message = RequestResource.Adj_ApproveSuccess });
                     }
                     else
                     {
                         await _attendanceAdjustmentService.RejectAsync(id, reason ?? "", currentUsername ?? "manager");
+                        await _notificationService.NotifyRequestDecisionAsync(NotificationRequestTypes.Attendance, new[] { id }, currentUsername);
                         return Json(new { success = true, message = RequestResource.Adj_RejectSuccess });
                     }
                 }
@@ -620,6 +631,7 @@ namespace RWPM.Controllers
                     }
 
                     await _shiftRegistrationService.UpdateStatusAsync(id, (RegistrationStatus)status, reason, User.Identity?.Name);
+                    await _notificationService.NotifyRequestDecisionAsync(NotificationRequestTypes.ShiftReg, new[] { id }, User.Identity?.Name);
                     return Json(new { success = true });
                 }
             }
@@ -767,6 +779,8 @@ namespace RWPM.Controllers
                         }
                     }
                     await batch.CommitAsync();
+                    // Thông báo chỉ gửi sau khi commit thành công
+                    await _notificationService.NotifyRequestDecisionAsync(model.RequestType, model.Ids, username);
                     return Json(new { success = true });
                 }
 
@@ -841,6 +855,7 @@ namespace RWPM.Controllers
                             await _attendanceAdjustmentService.RejectAsync(request.AttendanceAdjustmentRequestId, model.Reason ?? "", currentUsername ?? "manager");
                     }
                     await adjBatch.CommitAsync();
+                    await _notificationService.NotifyRequestDecisionAsync(NotificationRequestTypes.Attendance, model.Ids, currentUsername);
                     return Json(new { success = true });
                 }
 
@@ -859,6 +874,7 @@ namespace RWPM.Controllers
                 InputRules.Require(model.RequestType == "ShiftReg", "RequestType", "Loại yêu cầu không hợp lệ.", "Invalid request type.");
                 InputRules.Decision((RegistrationStatus)model.Status);
                 await _shiftRegistrationService.UpdateBulkStatusAsync(model.Ids, (RegistrationStatus)model.Status, model.Reason, User.Identity?.Name);
+                await _notificationService.NotifyRequestDecisionAsync(NotificationRequestTypes.ShiftReg, model.Ids, User.Identity?.Name);
                 return Json(new { success = true });
             }
             catch (Exception ex)
@@ -923,7 +939,8 @@ namespace RWPM.Controllers
                 }
 
                 var username = User.Identity?.Name ?? "system";
-                await _attendanceAdjustmentService.CreateRequestAsync(model, username);
+                var createdAdj = await _attendanceAdjustmentService.CreateRequestAsync(model, username);
+                await _notificationService.NotifyRequestSubmittedAsync(NotificationRequestTypes.Attendance, createdAdj.AttendanceAdjustmentRequestId, username);
                 return Json(new { success = true, message = RequestResource.Adj_SubmitSuccess });
             }
             catch (Exception ex)

@@ -8,9 +8,66 @@
     var user = HttpContextAccessor.HttpContext?.User;
 }
 
-<ul class="navbar-nav ms-auto align-items-center">
+<ul class="navbar-nav flex-row ms-auto align-items-center">
     @if (user?.Identity?.IsAuthenticated ?? false)
     {
+        @* ===== Chuông thông báo (wwwroot/js/notifications.js) ===== *@
+        var notifI18n = System.Text.Json.JsonSerializer.Serialize(new Dictionary<string, string>
+        {
+            ["empty"] = RWPM.Resources.Shared.NotificationResource.Ui_Empty,
+            ["loading"] = RWPM.Resources.Shared.NotificationResource.Ui_Loading,
+            ["loadError"] = RWPM.Resources.Shared.NotificationResource.Ui_LoadError,
+            ["newNotification"] = RWPM.Resources.Shared.NotificationResource.Ui_NewNotification,
+            ["justNow"] = RWPM.Resources.Shared.NotificationResource.Rel_JustNow,
+            ["minutesAgo"] = RWPM.Resources.Shared.NotificationResource.Rel_MinutesAgo,
+            ["hoursAgo"] = RWPM.Resources.Shared.NotificationResource.Rel_HoursAgo,
+            ["daysAgo"] = RWPM.Resources.Shared.NotificationResource.Rel_DaysAgo
+        });
+        <li class="nav-item dropdown me-1" id="appNotif"
+            data-latest-url="@Url.Action("Latest", "Notification")"
+            data-count-url="@Url.Action("UnreadCount", "Notification")"
+            data-mark-read-url="@Url.Action("MarkRead", "Notification")"
+            data-mark-all-url="@Url.Action("MarkAllRead", "Notification")"
+            data-hub-url="@Url.Content("~/hub/notifications")"
+            data-i18n="@notifI18n">
+            <style>
+                #appNotif .app-notif-toggle { position: relative; padding: .35rem .5rem; }
+                #appNotif .app-notif-toggle::after { display: none; }
+                #appNotif .app-notif-badge { position: absolute; top: 2px; right: 0; font-size: .65rem; min-width: 1.15rem; padding: .2em .35em; }
+                #appNotif .app-notif-menu { width: 360px; max-width: calc(100vw - 1.5rem); padding: 0; overflow: hidden; }
+                #appNotif .app-notif-list { max-height: 420px; overflow-y: auto; }
+                #appNotif .app-notif-item { display: flex; gap: .7rem; padding: .65rem .9rem; border-bottom: 1px solid #eef1f5; color: inherit; text-decoration: none; white-space: normal; }
+                #appNotif .app-notif-item:hover { background: #f5f8fc; }
+                #appNotif .app-notif-item.is-unread { background: #f0f6ff; }
+                #appNotif .app-notif-item.is-unread .app-notif-title { font-weight: 700; color: #1f2d3d; }
+                #appNotif .app-notif-title { font-weight: 500; font-size: .87rem; color: #5c6d82; }
+                #appNotif .app-notif-msg { font-size: .8rem; color: #5c6d82; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+                #appNotif .app-notif-item.is-unread .app-notif-msg { color: #243950; }
+                #appNotif .app-notif-time { font-size: .72rem; color: #8a97a8; }
+                #appNotif .app-notif-icon { width: 34px; height: 34px; flex-shrink: 0; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; }
+                #appNotif .app-notif-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--bs-primary); flex-shrink: 0; margin-top: .4rem; }
+            </style>
+            @Html.AntiForgeryToken()
+            <a class="nav-link app-notif-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"
+               aria-label="@RWPM.Resources.Shared.NotificationResource.Ui_Notifications" title="@RWPM.Resources.Shared.NotificationResource.Ui_Notifications">
+                <i class="bi bi-bell fs-5"></i>
+                <span class="badge rounded-pill bg-danger app-notif-badge d-none" data-notif-badge>0</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end shadow app-notif-menu">
+                <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom bg-light">
+                    <strong class="small">@RWPM.Resources.Shared.NotificationResource.Ui_Notifications</strong>
+                    <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none" data-notif-mark-all>
+                        <i class="bi bi-check2-all"></i> @RWPM.Resources.Shared.NotificationResource.Ui_MarkAllRead
+                    </button>
+                </div>
+                <div class="app-notif-list" data-notif-list>
+                    <div class="text-center text-muted small py-4">@RWPM.Resources.Shared.NotificationResource.Ui_Loading</div>
+                </div>
+                <a class="d-block text-center small fw-semibold py-2 border-top text-decoration-none" asp-controller="Notification" asp-action="Index">
+                    @RWPM.Resources.Shared.NotificationResource.Ui_ViewAll
+                </a>
+            </div>
+        </li>
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-person-circle me-1 fs-4"></i>
