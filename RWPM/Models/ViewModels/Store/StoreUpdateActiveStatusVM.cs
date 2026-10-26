@@ -1,5 +1,4 @@
 using RWPM.Common.Attributes;
-using System.ComponentModel.DataAnnotations;
 
 namespace RWPM.Models.ViewModels.Store
 {

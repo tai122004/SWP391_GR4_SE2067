@@ -12,53 +12,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ShiftCode" xml:space="preserve">
-    <value>Shift Code</value>
-  </data>
   <data name="ShiftName" xml:space="preserve">
     <value>Shift Name</value>
-  </data>
-  <data name="ShiftName_S" xml:space="preserve">
-    <value>Morning Shift</value>
-  </data>
-  <data name="ShiftName_C" xml:space="preserve">
-    <value>Afternoon/Evening Shift</value>
-  </data>
-  <data name="ShiftName_G" xml:space="preserve">
-    <value>Split Shift</value>
-  </data>
-  <data name="ShiftName_HC" xml:space="preserve">
-    <value>Full Day Shift</value>
-  </data>
-  <data name="ShiftType" xml:space="preserve">
-    <value>Shift Type</value>
-  </data>
-  <data name="ShiftType_Morning" xml:space="preserve">
-    <value>Morning</value>
-  </data>
-  <data name="ShiftType_Afternoon" xml:space="preserve">
-    <value>Afternoon/Evening</value>
-  </data>
-  <data name="ShiftType_Split" xml:space="preserve">
-    <value>Split</value>
-  </data>
-  <data name="ShiftType_Peak" xml:space="preserve">
-    <value>Peak Hours Shift</value>
-  </data>
-  <data name="ShiftType_FullDay" xml:space="preserve">
-    <value>Full Day</value>
   </data>
   <data name="StartTime" xml:space="preserve">
     <value>Start Time</value>
   </data>
   <data name="EndTime" xml:space="preserve">
     <value>End Time</value>
-  </data>
-  <data name="StartTime2" xml:space="preserve">
-    <value>Start Time (Period 2)</value>
-  </data>
-  <data name="EndTime2" xml:space="preserve">
-    <value>End Time (Period 2)</value>
   </data>
   <data name="BreakMinutes" xml:space="preserve">
     <value>Break (minutes)</value>
@@ -72,33 +33,6 @@
   <data name="Search" xml:space="preserve">
     <value>Search</value>
   </data>
-  <data name="TimeDisplay" xml:space="preserve">
-    <value>Time Frame</value>
-  </data>
-  <data name="Invalid_TimeRange" xml:space="preserve">
-    <value>End time must be greater than start time.</value>
-  </data>
-  <data name="Invalid_SplitShift_Required" xml:space="preserve">
-    <value>Split shift requires period 2 start and end times.</value>
-  </data>
-  <data name="Invalid_SplitShift_TimeRange" xml:space="preserve">
-    <value>Period 2 end time must be greater than period 2 start time.</value>
-  </data>
-  <data name="Invalid_SplitShift_Overlap" xml:space="preserve">
-    <value>Period 2 must start after period 1 ends.</value>
-  </data>
-  <data name="Invalid_BreakMinutes" xml:space="preserve">
-    <value>Break time cannot exceed or equal total shift duration.</value>
-  </data>
-  <data name="Invalid_MinShiftDuration" xml:space="preserve">
-    <value>Shift duration must be at least 2 hours (120 minutes).</value>
-  </data>
-  <data name="Invalid_MinSplitPeriodDuration" xml:space="preserve">
-    <value>Each period of a split shift must be at least 1.5 hours (90 minutes) and total duration must be at least 4 hours.</value>
-  </data>
-  <data name="Invalid_MaxBreakMinutes" xml:space="preserve">
-    <value>Break time must be between 0 and 60 minutes (1 hour).</value>
-  </data>
   <data name="GracePeriodMinutes" xml:space="preserve">
     <value>Grace Period (minutes)</value>
   </data>
@@ -110,30 +44,6 @@
   </data>
   <data name="LateThresholdMinutes" xml:space="preserve">
     <value>Late Threshold (minutes)</value>
-  </data>
-  <data name="IsTemplate" xml:space="preserve">
-    <value>Shift Template</value>
-  </data>
-  <data name="ShiftClassification" xml:space="preserve">
-    <value>Classification</value>
-  </data>
-  <data name="ShiftType_Overtime" xml:space="preserve">
-    <value>Overtime</value>
-  </data>
-  <data name="ShiftType_Flexible" xml:space="preserve">
-    <value>Flexible / Event</value>
-  </data>
-  <data name="Invalid_GracePeriodMinutes" xml:space="preserve">
-    <value>Grace period must be non-negative.</value>
-  </data>
-  <data name="Invalid_EarlyCheckInMinutes" xml:space="preserve">
-    <value>Early check-in time must be non-negative.</value>
-  </data>
-  <data name="Invalid_LateThresholdMinutes" xml:space="preserve">
-    <value>Late threshold must be non-negative.</value>
-  </data>
-  <data name="Invalid_GracePeriodThreshold" xml:space="preserve">
-    <value>Grace period must be less than late threshold.</value>
   </data>
   <data name="StoreId" xml:space="preserve">
     <value>Applied Branch</value>

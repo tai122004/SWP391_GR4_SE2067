@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+    <data name="Menu_MyAvailability" xml:space="preserve">
+    <value>My availability</value>
+  </data>
+  <data name="Menu_ReviewAvailability" xml:space="preserve">
+    <value>Review availability</value>
+  </data>
+  <data name="Action_AddDate" xml:space="preserve">
+    <value>Add date</value>
+  </data>
+  <data name="Action_Approve" xml:space="preserve">
+    <value>Approve</value>
+  </data>
+  <data name="Action_ApproveSelected" xml:space="preserve">
+    <value>Approve selected</value>
+  </data>
+  <data name="Action_BackToReview" xml:space="preserve">
+    <value>Back to review</value>
+  </data>
+  <data name="Action_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Action_MyAvailability" xml:space="preserve">
+    <value>My availability</value>
+  </data>
+  <data name="Action_Reject" xml:space="preserve">
+    <value>Reject</value>
+  </data>
+  <data name="Action_RejectSelected" xml:space="preserve">
+    <value>Reject selected</value>
+  </data>
+  <data name="Action_SubmitWindows" xml:space="preserve">
+    <value>Submit for approval</value>
+  </data>
+  <data name="Action_ViewEmployee" xml:space="preserve">
+    <value>View employee's availability</value>
+  </data>
+  <data name="Bulk_SelectAll" xml:space="preserve">
+    <value>Select all pending rows on this page</value>
+  </data>
+  <data name="Bulk_Selected" xml:space="preserve">
+    <value>Selected:</value>
+  </data>
+  <data name="Card_Approved" xml:space="preserve">
+    <value>Approved</value>
+  </data>
+  <data name="Card_Dates" xml:space="preserve">
+    <value>Unavailable dates</value>
+  </data>
+  <data name="Card_Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="Card_Rejected" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+  <data name="Card_UpcomingDates" xml:space="preserve">
+    <value>Unavailable (next {0} days)</value>
+  </data>
+  <data name="Card_Windows" xml:space="preserve">
+    <value>Weekly availability</value>
+  </data>
+  <data name="Check_NoWindowThatDay" xml:space="preserve">
+    <value>no approved window</value>
+  </data>
+  <data name="Check_OutsideAvailability" xml:space="preserve">
+    <value>Shift {0} ({1}) is outside the employee's approved availability ({2}: {3}).</value>
+  </data>
+  <data name="Check_Unavailable" xml:space="preserve">
+    <value>The employee declared they cannot work on {0}.</value>
+  </data>
+  <data name="Check_UnavailableWithReason" xml:space="preserve">
+    <value>The employee declared they cannot work on {0}. Reason: {1}</value>
+  </data>
+  <data name="Col_Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Col_Day" xml:space="preserve">
+    <value>Weekday</value>
+  </data>
+  <data name="Col_Employee" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="Col_Note" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Col_Reason" xml:space="preserve">
+    <value>Reason</value>
+  </data>
+  <data name="Col_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Col_Store" xml:space="preserve">
+    <value>Store</value>
+  </data>
+  <data name="Col_SubmittedAt" xml:space="preserve">
+    <value>Submitted</value>
+  </data>
+  <data name="Col_TimeRange" xml:space="preserve">
+    <value>Time range</value>
+  </data>
+  <data name="Confirm_ApproveMany" xml:space="preserve">
+    <value>Approve {0} selected window(s)?</value>
+  </data>
+  <data name="Confirm_ApproveOne" xml:space="preserve">
+    <value>Approve availability: {0}?</value>
+  </data>
+  <data name="Confirm_ApproveTitle" xml:space="preserve">
+    <value>Approve availability</value>
+  </data>
+  <data name="Confirm_DeleteDate" xml:space="preserve">
+    <value>Delete unavailable date {0}?</value>
+  </data>
+  <data name="Confirm_DeleteWindow" xml:space="preserve">
+    <value>Delete window {0} {1}? It takes effect immediately.</value>
+  </data>
+  <data name="Dates_Count" xml:space="preserve">
+    <value>{0} upcoming</value>
+  </data>
+  <data name="Dates_Empty" xml:space="preserve">
+    <value>You have not declared any unavailable date.</value>
+  </data>
+  <data name="Dates_EmptyEmployee" xml:space="preserve">
+    <value>No upcoming unavailable dates.</value>
+  </data>
+  <data name="Dates_NoReason" xml:space="preserve">
+    <value>No reason given</value>
+  </data>
+  <data name="Day_0" xml:space="preserve">
+    <value>Sunday</value>
+  </data>
+  <data name="Day_1" xml:space="preserve">
+    <value>Monday</value>
+  </data>
+  <data name="Day_2" xml:space="preserve">
+    <value>Tuesday</value>
+  </data>
+  <data name="Day_3" xml:space="preserve">
+    <value>Wednesday</value>
+  </data>
+  <data name="Day_4" xml:space="preserve">
+    <value>Thursday</value>
+  </data>
+  <data name="Day_5" xml:space="preserve">
+    <value>Friday</value>
+  </data>
+  <data name="Day_6" xml:space="preserve">
+    <value>Saturday</value>
+  </data>
+  <data name="DayShort_0" xml:space="preserve">
+    <value>Sun</value>
+  </data>
+  <data name="DayShort_1" xml:space="preserve">
+    <value>Mon</value>
+  </data>
+  <data name="DayShort_2" xml:space="preserve">
+    <value>Tue</value>
+  </data>
+  <data name="DayShort_3" xml:space="preserve">
+    <value>Wed</value>
+  </data>
+  <data name="DayShort_4" xml:space="preserve">
+    <value>Thu</value>
+  </data>
+  <data name="DayShort_5" xml:space="preserve">
+    <value>Fri</value>
+  </data>
+  <data name="DayShort_6" xml:space="preserve">
+    <value>Sat</value>
+  </data>
+  <data name="Employee_AnyTime" xml:space="preserve">
+    <value>Available any time</value>
+  </data>
+  <data name="Employee_NoWindows" xml:space="preserve">
+    <value>This employee has not declared weekly availability, so they are treated as available any time.</value>
+  </data>
+  <data name="Employee_OnlyPendingHint" xml:space="preserve">
+    <value>Only pending windows exist; until one is approved the employee is treated as available any time.</value>
+  </data>
+  <data name="Employee_ReviewPending" xml:space="preserve">
+    <value>Review {0} pending</value>
+  </data>
+  <data name="Employee_Title" xml:space="preserve">
+    <value>Employee availability</value>
+  </data>
+  <data name="Employee_WeekTitle" xml:space="preserve">
+    <value>Weekly availability</value>
+  </data>
+  <data name="Employee_WindowList" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="Err_AlreadyProcessed" xml:space="preserve">
+    <value>The selected windows have already been processed.</value>
+  </data>
+  <data name="Err_ApproveOverlap" xml:space="preserve">
+    <value>Cannot approve: {1} {2} of {0} overlaps another approved window.</value>
+  </data>
+  <data name="Err_DateDuplicate" xml:space="preserve">
+    <value>You have already declared this date.</value>
+  </data>
+  <data name="Err_DateHasApprovedShift" xml:space="preserve">
+    <value>You already have an approved shift on {0} ({1}). Use a leave or shift swap request instead.</value>
+  </data>
+  <data name="Err_DateHasPendingShift" xml:space="preserve">
+    <value>You have a pending shift registration on {0} ({1}). Cancel it first.</value>
+  </data>
+  <data name="Err_DateLead" xml:space="preserve">
+    <value>Unavailable dates must be declared at least {0} days ahead (from {1}).</value>
+  </data>
+  <data name="Err_DateNotFound" xml:space="preserve">
+    <value>Unavailable date not found.</value>
+  </data>
+  <data name="Err_DatePastDelete" xml:space="preserve">
+    <value>Past dates cannot be deleted.</value>
+  </data>
+  <data name="Err_DateRequired" xml:space="preserve">
+    <value>Please choose a valid date.</value>
+  </data>
+  <data name="Err_DateTooFar" xml:space="preserve">
+    <value>You can declare at most {0} days ahead (until {1}).</value>
+  </data>
+  <data name="Err_DaysInvalid" xml:space="preserve">
+    <value>Invalid weekday.</value>
+  </data>
+  <data name="Err_DaysRequired" xml:space="preserve">
+    <value>Please choose at least one weekday.</value>
+  </data>
+  <data name="Err_DecisionInvalid" xml:space="preserve">
+    <value>Only approve or reject is allowed.</value>
+  </data>
+  <data name="Err_EmployeeNotFound" xml:space="preserve">
+    <value>Employee not found.</value>
+  </data>
+  <data name="Err_MaxPerDay" xml:space="preserve">
+    <value>{0} already has the maximum of {1} windows (pending + approved).</value>
+  </data>
+  <data name="Err_MaxTotal" xml:space="preserve">
+    <value>You can have at most {0} windows (pending + approved).</value>
+  </data>
+  <data name="Err_NoProfile" xml:space="preserve">
+    <value>Your account has no active employee profile.</value>
+  </data>
+  <data name="Err_NoReviewPermission" xml:space="preserve">
+    <value>You are not allowed to review availability.</value>
+  </data>
+  <data name="Err_NotOwner" xml:space="preserve">
+    <value>You can only change your own declarations.</value>
+  </data>
+  <data name="Err_NoteTooLong" xml:space="preserve">
+    <value>Note must not exceed 255 characters.</value>
+  </data>
+  <data name="Err_NothingSelected" xml:space="preserve">
+    <value>Please select at least one window.</value>
+  </data>
+  <data name="Err_OperationFailed" xml:space="preserve">
+    <value>The operation failed. Please try again.</value>
+  </data>
+  <data name="Err_OutOfScope" xml:space="preserve">
+    <value>You cannot review employees outside your store.</value>
+  </data>
+  <data name="Err_Overlap" xml:space="preserve">
+    <value>{0} {1} overlaps an existing window ({2} {3}).</value>
+  </data>
+  <data name="Err_OverlapSelected" xml:space="preserve">
+    <value>The window on {0} overlaps the one on {1} (it runs past midnight).</value>
+  </data>
+  <data name="Err_ReasonTooLong" xml:space="preserve">
+    <value>Reason must not exceed 255 characters.</value>
+  </data>
+  <data name="Err_RejectReason" xml:space="preserve">
+    <value>Rejection reason must contain 1–255 characters.</value>
+  </data>
+  <data name="Err_SelfApprove" xml:space="preserve">
+    <value>You cannot approve or reject your own availability.</value>
+  </data>
+  <data name="Err_TimeInvalid" xml:space="preserve">
+    <value>Please enter a valid time (HH:mm).</value>
+  </data>
+  <data name="Err_TimeSame" xml:space="preserve">
+    <value>Start and end time must differ.</value>
+  </data>
+  <data name="Err_TooManySelected" xml:space="preserve">
+    <value>Too many windows selected (max 500).</value>
+  </data>
+  <data name="Err_WindowNotFound" xml:space="preserve">
+    <value>Availability window not found.</value>
+  </data>
+  <data name="Filter_AllStatuses" xml:space="preserve">
+    <value>All statuses</value>
+  </data>
+  <data name="Filter_AllStores" xml:space="preserve">
+    <value>All stores</value>
+  </data>
+  <data name="Filter_Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Filter_SearchPlaceholder" xml:space="preserve">
+    <value>Name, code or username...</value>
+  </data>
+  <data name="Filter_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Filter_Store" xml:space="preserve">
+    <value>Store</value>
+  </data>
+  <data name="Form_AddWindow" xml:space="preserve">
+    <value>Add weekly window</value>
+  </data>
+  <data name="Form_Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Form_DateRangeHint" xml:space="preserve">
+    <value>From {0} to {1}</value>
+  </data>
+  <data name="Form_Days" xml:space="preserve">
+    <value>Weekdays</value>
+  </data>
+  <data name="Form_From" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="Form_LimitHint" xml:space="preserve">
+    <value>Max {0} windows per weekday; windows must not overlap.</value>
+  </data>
+  <data name="Form_Note" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Form_NotePlaceholder" xml:space="preserve">
+    <value>e.g. after classes</value>
+  </data>
+  <data name="Form_PickAll" xml:space="preserve">
+    <value>Whole week</value>
+  </data>
+  <data name="Form_PickNone" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="Form_PickWeekdays" xml:space="preserve">
+    <value>Mon–Fri</value>
+  </data>
+  <data name="Form_PickWeekend" xml:space="preserve">
+    <value>Weekend</value>
+  </data>
+  <data name="Form_Reason" xml:space="preserve">
+    <value>Reason (optional)</value>
+  </data>
+  <data name="Form_ReasonPlaceholder" xml:space="preserve">
+    <value>e.g. exam, family matter</value>
+  </data>
+  <data name="Form_To" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="Grid_CarryHint" xml:space="preserve">
+    <value>continued from the previous day (overnight window)</value>
+  </data>
+  <data name="Hint_CrossesMidnight" xml:space="preserve">
+    <value>End time before start time means the window runs past midnight into the next day.</value>
+  </data>
+  <data name="Hint_Dates" xml:space="preserve">
+    <value>Unavailable dates need no approval but must be declared at least {0} days ahead (up to {1} days). You cannot declare a date on which you already have a shift — use leave/shift swap, or cancel the pending registration.</value>
+  </data>
+  <data name="Hint_NoWindows" xml:space="preserve">
+    <value>While you have no approved window, you are considered available at any time.</value>
+  </data>
+  <data name="Hint_NotLeave" xml:space="preserve">
+    <value>This is scheduling information only: it is not leave, does not use your leave balance and does not affect payroll.</value>
+  </data>
+  <data name="Hint_Title" xml:space="preserve">
+    <value>How it works</value>
+  </data>
+  <data name="Hint_Windows" xml:space="preserve">
+    <value>Weekly windows need approval by your store manager (or HR). Only approved windows are used when scheduling: a shift must fit entirely inside one window.</value>
+  </data>
+  <data name="My_AnyTime" xml:space="preserve">
+    <value>No weekly windows declared — you are available any time.</value>
+  </data>
+  <data name="My_NoProfile" xml:space="preserve">
+    <value>Your account has no employee profile, so you cannot declare availability.</value>
+  </data>
+  <data name="My_Subtitle" xml:space="preserve">
+    <value>Declare when you can and cannot work</value>
+  </data>
+  <data name="My_Title" xml:space="preserve">
+    <value>Work availability</value>
+  </data>
+  <data name="NextDaySuffix" xml:space="preserve">
+    <value>(+1)</value>
+  </data>
+  <data name="Reject_Many" xml:space="preserve">
+    <value>{0} selected window(s)</value>
+  </data>
+  <data name="Reject_Placeholder" xml:space="preserve">
+    <value>Explain why, so the employee can adjust...</value>
+  </data>
+  <data name="Reject_Prompt" xml:space="preserve">
+    <value>Rejection reason</value>
+  </data>
+  <data name="Reject_Title" xml:space="preserve">
+    <value>Reject availability</value>
+  </data>
+  <data name="Review_Empty" xml:space="preserve">
+    <value>No availability windows match the filter.</value>
+  </data>
+  <data name="Review_ListTitle" xml:space="preserve">
+    <value>Weekly availability windows</value>
+  </data>
+  <data name="Review_ScopeLabel" xml:space="preserve">
+    <value>Store:</value>
+  </data>
+  <data name="Review_Subtitle" xml:space="preserve">
+    <value>Approve or reject employees' weekly availability</value>
+  </data>
+  <data name="Review_Title" xml:space="preserve">
+    <value>Review availability</value>
+  </data>
+  <data name="Status_Approved" xml:space="preserve">
+    <value>Approved</value>
+  </data>
+  <data name="Status_ApprovedBy" xml:space="preserve">
+    <value>Approved by {0} at {1}</value>
+  </data>
+  <data name="Status_Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="Status_Rejected" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+  <data name="Status_RejectedBy" xml:space="preserve">
+    <value>Rejected by {0} at {1}</value>
+  </data>
+  <data name="Toast_Approved" xml:space="preserve">
+    <value>Approved {0} window(s).</value>
+  </data>
+  <data name="Toast_DateAdded" xml:space="preserve">
+    <value>Unavailable date added.</value>
+  </data>
+  <data name="Toast_DateDeleted" xml:space="preserve">
+    <value>Unavailable date deleted.</value>
+  </data>
+  <data name="Toast_Rejected" xml:space="preserve">
+    <value>Rejected {0} window(s).</value>
+  </data>
+  <data name="Toast_Skipped" xml:space="preserve">
+    <value>{0} already processed window(s) were skipped.</value>
+  </data>
+  <data name="Toast_WindowDeleted" xml:space="preserve">
+    <value>Window deleted.</value>
+  </data>
+  <data name="Toast_WindowsAdded" xml:space="preserve">
+    <value>Submitted {0} window(s) for approval.</value>
+  </data>
+  <data name="Unassigned" xml:space="preserve">
+    <value>No store</value>
+  </data>
+  <data name="Employee_ListEmpty" xml:space="preserve">
+    <value>No approved or pending windows.</value>
+  </data>
+</root>

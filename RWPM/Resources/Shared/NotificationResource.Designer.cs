@@ -51,12 +51,6 @@ namespace RWPM.Resources.Shared {
             }
         }
 
-        public static string Ui_MarkRead {
-            get {
-                return ResourceManager.GetString("Ui_MarkRead", resourceCulture);
-            }
-        }
-
         public static string Ui_ViewAll {
             get {
                 return ResourceManager.GetString("Ui_ViewAll", resourceCulture);
@@ -300,6 +294,77 @@ namespace RWPM.Resources.Shared {
         public static string Body_PayslipAvailable {
             get {
                 return ResourceManager.GetString("Body_PayslipAvailable", resourceCulture);
+            }
+        }
+
+        public static string Title_AvailabilitySubmitted {
+            get {
+                return ResourceManager.GetString("Title_AvailabilitySubmitted", resourceCulture);
+            }
+        }
+
+        public static string Body_AvailabilitySubmitted {
+            get {
+                return ResourceManager.GetString("Body_AvailabilitySubmitted", resourceCulture);
+            }
+        }
+
+        public static string Title_AvailabilityApproved {
+            get {
+                return ResourceManager.GetString("Title_AvailabilityApproved", resourceCulture);
+            }
+        }
+
+        public static string Body_AvailabilityApproved {
+            get {
+                return ResourceManager.GetString("Body_AvailabilityApproved", resourceCulture);
+            }
+        }
+
+        public static string Title_AvailabilityRejected {
+            get {
+                return ResourceManager.GetString("Title_AvailabilityRejected", resourceCulture);
+            }
+        }
+
+        public static string Body_AvailabilityRejected {
+            get {
+                return ResourceManager.GetString("Body_AvailabilityRejected", resourceCulture);
+            }
+        }
+
+        /// <summary>Shift understaffed</summary>
+        public static string Title_ShiftShortage {
+            get {
+                return ResourceManager.GetString("Title_ShiftShortage", resourceCulture);
+            }
+        }
+
+        /// <summary>{0}'s approved leave leaves {1}</summary>
+        public static string Body_ShiftShortage_Leave {
+            get {
+                return ResourceManager.GetString("Body_ShiftShortage_Leave", resourceCulture);
+            }
+        }
+
+        /// <summary>{0}'s approved shift change leaves {1}</summary>
+        public static string Body_ShiftShortage_Swap {
+            get {
+                return ResourceManager.GetString("Body_ShiftShortage_Swap", resourceCulture);
+            }
+        }
+
+        /// <summary>the {0} shift on {1} short by {2}</summary>
+        public static string ShiftShortage_Item {
+            get {
+                return ResourceManager.GetString("ShiftShortage_Item", resourceCulture);
+            }
+        }
+
+        /// <summary> (+{0} more shifts)</summary>
+        public static string ShiftShortage_More {
+            get {
+                return ResourceManager.GetString("ShiftShortage_More", resourceCulture);
             }
         }
     }

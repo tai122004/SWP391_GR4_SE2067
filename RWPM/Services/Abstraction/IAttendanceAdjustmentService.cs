@@ -1,9 +1,6 @@
 using RWPM.Common.Enums;
 using RWPM.Models.Entities;
 using RWPM.Models.ViewModels.ShiftRegistration;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace RWPM.Services.Abstraction
 {

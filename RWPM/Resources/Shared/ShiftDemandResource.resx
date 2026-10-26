@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Nav_ShiftDemand" xml:space="preserve">
+    <value>Staffing demand</value>
+  </data>
+  <data name="Nav_Coverage" xml:space="preserve">
+    <value>Shift coverage</value>
+  </data>
+  <data name="Index_Title" xml:space="preserve">
+    <value>Shift staffing demand</value>
+  </data>
+  <data name="Index_Subtitle" xml:space="preserve">
+    <value>Set how many people each shift needs per weekday and for specific dates</value>
+  </data>
+  <data name="Coverage_Title" xml:space="preserve">
+    <value>Shift coverage</value>
+  </data>
+  <data name="Coverage_Subtitle" xml:space="preserve">
+    <value>Compare approved staff with the demand of each shift during the week</value>
+  </data>
+  <data name="Coverage_Hint" xml:space="preserve">
+    <value>Click a cell to see staff, approve registrations or assign people.</value>
+  </data>
+  <data name="Coverage_Empty" xml:space="preserve">
+    <value>No shifts apply at this store during this week.</value>
+  </data>
+  <data name="Coverage_Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="Scope_Label" xml:space="preserve">
+    <value>Scope:</value>
+  </data>
+  <data name="Label_Store" xml:space="preserve">
+    <value>Store</value>
+  </data>
+  <data name="Label_Week" xml:space="preserve">
+    <value>Week</value>
+  </data>
+  <data name="Store_None" xml:space="preserve">
+    <value>There is no active store in your scope.</value>
+  </data>
+  <data name="Template_Title" xml:space="preserve">
+    <value>Weekly template</value>
+  </data>
+  <data name="Template_Hint" xml:space="preserve">
+    <value>Blank = not configured; 0 = no one needed that day. Date overrides take precedence over the weekly template.</value>
+  </data>
+  <data name="Template_CellTitle" xml:space="preserve">
+    <value>People needed (0–100), leave blank if not configured</value>
+  </data>
+  <data name="Template_Empty" xml:space="preserve">
+    <value>This store has no active shifts. Assign shifts to the store first.</value>
+  </data>
+  <data name="Template_Saved" xml:space="preserve">
+    <value>Weekly demand template saved.</value>
+  </data>
+  <data name="Template_Unsaved" xml:space="preserve">
+    <value>You have unsaved changes</value>
+  </data>
+  <data name="Shift_EffectiveTo" xml:space="preserve">
+    <value>Effective until {0}</value>
+  </data>
+  <data name="Col_Shift" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="Col_Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Col_Required" xml:space="preserve">
+    <value>Required</value>
+  </data>
+  <data name="Col_TemplateValue" xml:space="preserve">
+    <value>Weekly template</value>
+  </data>
+  <data name="Col_Note" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Col_UpdatedBy" xml:space="preserve">
+    <value>Updated by</value>
+  </data>
+  <data name="Day_Mon" xml:space="preserve">
+    <value>Mon</value>
+  </data>
+  <data name="Day_Tue" xml:space="preserve">
+    <value>Tue</value>
+  </data>
+  <data name="Day_Wed" xml:space="preserve">
+    <value>Wed</value>
+  </data>
+  <data name="Day_Thu" xml:space="preserve">
+    <value>Thu</value>
+  </data>
+  <data name="Day_Fri" xml:space="preserve">
+    <value>Fri</value>
+  </data>
+  <data name="Day_Sat" xml:space="preserve">
+    <value>Sat</value>
+  </data>
+  <data name="Day_Sun" xml:space="preserve">
+    <value>Sun</value>
+  </data>
+  <data name="Btn_SaveTemplate" xml:space="preserve">
+    <value>Save weekly template</value>
+  </data>
+  <data name="Btn_CopyFromStore" xml:space="preserve">
+    <value>Copy from another store</value>
+  </data>
+  <data name="Btn_ViewCoverage" xml:space="preserve">
+    <value>View shift coverage</value>
+  </data>
+  <data name="Btn_ConfigureDemand" xml:space="preserve">
+    <value>Configure demand</value>
+  </data>
+  <data name="Btn_AddOverride" xml:space="preserve">
+    <value>Add override</value>
+  </data>
+  <data name="Btn_Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="Btn_Approve" xml:space="preserve">
+    <value>Approve</value>
+  </data>
+  <data name="Btn_Assign" xml:space="preserve">
+    <value>Assign</value>
+  </data>
+  <data name="Override_Title" xml:space="preserve">
+    <value>Date overrides</value>
+  </data>
+  <data name="Override_Hint" xml:space="preserve">
+    <value>For holidays, promotions... The date value replaces the weekly template.</value>
+  </data>
+  <data name="Override_Empty" xml:space="preserve">
+    <value>No overrides yet.</value>
+  </data>
+  <data name="Override_Past" xml:space="preserve">
+    <value>Past</value>
+  </data>
+  <data name="Override_Saved" xml:space="preserve">
+    <value>Date override saved.</value>
+  </data>
+  <data name="Override_Deleted" xml:space="preserve">
+    <value>Date override deleted.</value>
+  </data>
+  <data name="Override_ConfirmDelete" xml:space="preserve">
+    <value>Delete override {0}?</value>
+  </data>
+  <data name="Modal_AddOverride" xml:space="preserve">
+    <value>Add date override</value>
+  </data>
+  <data name="Modal_EditOverride" xml:space="preserve">
+    <value>Edit date override</value>
+  </data>
+  <data name="Field_Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Field_Shift" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="Field_Required" xml:space="preserve">
+    <value>People needed</value>
+  </data>
+  <data name="Field_RequiredHint" xml:space="preserve">
+    <value>0–100; 0 = no one needed.</value>
+  </data>
+  <data name="Field_Note" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Field_NotePlaceholder" xml:space="preserve">
+    <value>E.g. public holiday, weekend promotion...</value>
+  </data>
+  <data name="Copy_Title" xml:space="preserve">
+    <value>Copy weekly template from another store</value>
+  </data>
+  <data name="Copy_Hint" xml:space="preserve">
+    <value>The weekly template of shifts used by both stores will be replaced by the source store's template. Date overrides are not copied.</value>
+  </data>
+  <data name="Copy_Source" xml:space="preserve">
+    <value>Source store</value>
+  </data>
+  <data name="Copy_Target" xml:space="preserve">
+    <value>Target store: {0}</value>
+  </data>
+  <data name="Copy_Confirm" xml:space="preserve">
+    <value>Replace the current weekly template with the one from {0}?</value>
+  </data>
+  <data name="Copy_Done" xml:space="preserve">
+    <value>Copied {0} demand cells.</value>
+  </data>
+  <data name="Card_ShortShifts" xml:space="preserve">
+    <value>Understaffed shifts</value>
+  </data>
+  <data name="Card_MissingPeople" xml:space="preserve">
+    <value>People still needed</value>
+  </data>
+  <data name="Card_OverShifts" xml:space="preserve">
+    <value>Overstaffed shifts</value>
+  </data>
+  <data name="Card_NotConfigured" xml:space="preserve">
+    <value>Not configured</value>
+  </data>
+  <data name="Legend_Short" xml:space="preserve">
+    <value>Short</value>
+  </data>
+  <data name="Legend_Enough" xml:space="preserve">
+    <value>Enough</value>
+  </data>
+  <data name="Legend_Over" xml:space="preserve">
+    <value>Over</value>
+  </data>
+  <data name="Legend_NotConfigured" xml:space="preserve">
+    <value>Not configured</value>
+  </data>
+  <data name="Legend_NotNeeded" xml:space="preserve">
+    <value>Not needed</value>
+  </data>
+  <data name="Cell_Pending" xml:space="preserve">
+    <value>{0} pending</value>
+  </data>
+  <data name="Cell_NotApplicable" xml:space="preserve">
+    <value>N/A</value>
+  </data>
+  <data name="Cell_Override" xml:space="preserve">
+    <value>Date override</value>
+  </data>
+  <data name="Cell_Short" xml:space="preserve">
+    <value>Short {0}</value>
+  </data>
+  <data name="Cell_Over" xml:space="preserve">
+    <value>Over {0}</value>
+  </data>
+  <data name="Nav_PrevWeek" xml:space="preserve">
+    <value>Previous week</value>
+  </data>
+  <data name="Nav_ThisWeek" xml:space="preserve">
+    <value>This week</value>
+  </data>
+  <data name="Nav_NextWeek" xml:space="preserve">
+    <value>Next week</value>
+  </data>
+  <data name="Nav_PickWeek" xml:space="preserve">
+    <value>Pick a date to jump to its week</value>
+  </data>
+  <data name="Week_Label" xml:space="preserve">
+    <value>Week {0} – {1}</value>
+  </data>
+  <data name="Detail_Title" xml:space="preserve">
+    <value>Shift details</value>
+  </data>
+  <data name="Detail_Required" xml:space="preserve">
+    <value>Required</value>
+  </data>
+  <data name="Detail_Approved" xml:space="preserve">
+    <value>Approved</value>
+  </data>
+  <data name="Detail_PendingCount" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="Detail_Shortage" xml:space="preserve">
+    <value>Short / over</value>
+  </data>
+  <data name="Detail_AssignedList" xml:space="preserve">
+    <value>Assigned (approved)</value>
+  </data>
+  <data name="Detail_PendingList" xml:space="preserve">
+    <value>Pending registrations</value>
+  </data>
+  <data name="Detail_Suggestions" xml:space="preserve">
+    <value>Suggested employees</value>
+  </data>
+  <data name="Detail_SuggestionsHint" xml:space="preserve">
+    <value>Active employees of this store not yet registered for this shift. Suitable people are listed first.</value>
+  </data>
+  <data name="Detail_NoAssigned" xml:space="preserve">
+    <value>No one approved yet.</value>
+  </data>
+  <data name="Detail_NoPending" xml:space="preserve">
+    <value>No pending registrations.</value>
+  </data>
+  <data name="Detail_NoSuggestions" xml:space="preserve">
+    <value>No suitable employees.</value>
+  </data>
+  <data name="Detail_PastNote" xml:space="preserve">
+    <value>This date has passed — view only.</value>
+  </data>
+  <data name="Detail_NotConfiguredNote" xml:space="preserve">
+    <value>This shift has no demand configured, so shortage/overstaffing is not calculated.</value>
+  </data>
+  <data name="Detail_ApprovedBy" xml:space="preserve">
+    <value>Approved by</value>
+  </data>
+  <data name="Detail_RegisteredAt" xml:space="preserve">
+    <value>Registered at</value>
+  </data>
+  <data name="Suggest_Available" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="Suggest_NoDeclared" xml:space="preserve">
+    <value>No availability declared</value>
+  </data>
+  <data name="Approve_Confirm" xml:space="preserve">
+    <value>Approve the shift registration of {0}?</value>
+  </data>
+  <data name="Approve_Success" xml:space="preserve">
+    <value>Registration approved.</value>
+  </data>
+  <data name="Assign_Confirm" xml:space="preserve">
+    <value>Assign {0} to this shift (approved immediately)?</value>
+  </data>
+  <data name="Assign_Success" xml:space="preserve">
+    <value>{0} has been assigned.</value>
+  </data>
+  <data name="Assign_Note" xml:space="preserve">
+    <value>Assigned from Shift coverage</value>
+  </data>
+  <data name="Reason_Overlap" xml:space="preserve">
+    <value>Overlaps shift {0} ({1})</value>
+  </data>
+  <data name="Reason_OnLeave" xml:space="preserve">
+    <value>On approved leave</value>
+  </data>
+  <data name="Reason_Self" xml:space="preserve">
+    <value>You cannot assign/approve yourself</value>
+  </data>
+  <data name="Reason_Rejected" xml:space="preserve">
+    <value>A registration for this shift was rejected earlier</value>
+  </data>
+  <data name="Reason_Unavailable" xml:space="preserve">
+    <value>Not available for this shift</value>
+  </data>
+  <data name="Warn_OverDemand" xml:space="preserve">
+    <value>{0} {1} at {2}: needs {3}, will approve {4} (over by {5})</value>
+  </data>
+  <data name="Warn_ShiftLabel" xml:space="preserve">
+    <value>Shift {0}</value>
+  </data>
+  <data name="Warn_ShiftPrefixCheck" xml:space="preserve">
+    <value>Shift </value>
+  </data>
+  <data name="Warn_OverDemandTitle" xml:space="preserve">
+    <value>Over demand</value>
+  </data>
+  <data name="Warn_ConfirmContinue" xml:space="preserve">
+    <value>Continue anyway?</value>
+  </data>
+  <data name="Common_Error" xml:space="preserve">
+    <value>Something went wrong, please try again.</value>
+  </data>
+  <data name="Common_Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="Err_StoreNotFound" xml:space="preserve">
+    <value>Store not found or inactive.</value>
+  </data>
+  <data name="Err_NoStoreAccess" xml:space="preserve">
+    <value>You cannot manage staffing demand for this store.</value>
+  </data>
+  <data name="Err_ShiftNotApplicable" xml:space="preserve">
+    <value>The shift does not apply at this store on the selected date.</value>
+  </data>
+  <data name="Err_ShiftNotInStore" xml:space="preserve">
+    <value>The shift does not apply at this store.</value>
+  </data>
+  <data name="Err_RequiredRange" xml:space="preserve">
+    <value>Required people must be a whole number from {0} to {1}.</value>
+  </data>
+  <data name="Err_DayOfWeek" xml:space="preserve">
+    <value>Invalid day of week.</value>
+  </data>
+  <data name="Err_DuplicateCell" xml:space="preserve">
+    <value>Duplicate data, please reload the page.</value>
+  </data>
+  <data name="Err_DateRequired" xml:space="preserve">
+    <value>Please choose a date.</value>
+  </data>
+  <data name="Err_DatePast" xml:space="preserve">
+    <value>The override date must be today or later.</value>
+  </data>
+  <data name="Err_DateTooFar" xml:space="preserve">
+    <value>The override date cannot be more than 1 year ahead.</value>
+  </data>
+  <data name="Err_OverrideExists" xml:space="preserve">
+    <value>This shift already has an override on {0}.</value>
+  </data>
+  <data name="Err_OverrideNotFound" xml:space="preserve">
+    <value>Override not found.</value>
+  </data>
+  <data name="Err_OverridePastLocked" xml:space="preserve">
+    <value>Overrides for past dates cannot be changed or deleted.</value>
+  </data>
+  <data name="Err_NoteTooLong" xml:space="preserve">
+    <value>Note must be at most {0} characters.</value>
+  </data>
+  <data name="Err_DateRange" xml:space="preserve">
+    <value>Invalid date range (maximum {0} days).</value>
+  </data>
+  <data name="Err_CopySameStore" xml:space="preserve">
+    <value>The source store must differ from the current store.</value>
+  </data>
+  <data name="Err_CopyForbidden" xml:space="preserve">
+    <value>Only HR/Admin can copy templates between stores.</value>
+  </data>
+  <data name="Err_EmployeeNotInStore" xml:space="preserve">
+    <value>The employee does not belong to this store or is inactive.</value>
+  </data>
+  <data name="Err_PastDateAssign" xml:space="preserve">
+    <value>Cannot assign for a past date.</value>
+  </data>
+  <data name="Err_InvalidInput" xml:space="preserve">
+    <value>Invalid data.</value>
+  </data>
+</root>

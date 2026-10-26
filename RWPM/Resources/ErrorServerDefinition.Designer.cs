@@ -79,24 +79,6 @@ namespace RWPM.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete failed. This account is an approver of the document request..
-        /// </summary>
-        public static string Acc_Delete_IsApproverOfSomeDocReq {
-            get {
-                return ResourceManager.GetString("Acc_Delete_IsApproverOfSomeDocReq", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Delete failed. This account is an approver of the document processing flow..
-        /// </summary>
-        public static string Acc_Delete_UseAsApprover {
-            get {
-                return ResourceManager.GetString("Acc_Delete_UseAsApprover", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Your account has been locked. Please contact the administrator to unlock it..
         /// </summary>
         public static string Acc_IsLock {
@@ -124,24 +106,6 @@ namespace RWPM.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Account has no department..
-        /// </summary>
-        public static string Acc_NotAdminButNotHaveDept {
-            get {
-                return ResourceManager.GetString("Acc_NotAdminButNotHaveDept", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Username already exists..
-        /// </summary>
-        public static string Acc_UsernameExists {
-            get {
-                return ResourceManager.GetString("Acc_UsernameExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Username does not exists..
         /// </summary>
         public static string Acc_UsernameNotExists {
@@ -160,506 +124,11 @@ namespace RWPM.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Day off already exists..
-        /// </summary>
-        public static string DayOff_DayOffExists {
-            get {
-                return ResourceManager.GetString("DayOff_DayOffExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid data!.
-        /// </summary>
-        public static string DayOff_InvalidData {
-            get {
-                return ResourceManager.GetString("DayOff_InvalidData", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Department code already exists..
-        /// </summary>
-        public static string DeptCat_CodeExists {
-            get {
-                return ResourceManager.GetString("DeptCat_CodeExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Department code does not exists..
-        /// </summary>
-        public static string DeptCat_CodeNotExists {
-            get {
-                return ResourceManager.GetString("DeptCat_CodeNotExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot delete because this department is being used by another account..
-        /// </summary>
-        public static string DeptCat_Delete_HaveAccountUse {
-            get {
-                return ResourceManager.GetString("DeptCat_Delete_HaveAccountUse", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot delete because this department is being used by another document processing flow department..
-        /// </summary>
-        public static string DeptCat_Delete_HaveDocFlowDeptUse {
-            get {
-                return ResourceManager.GetString("DeptCat_Delete_HaveDocFlowDeptUse", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot delete because this department is being used by another document type category..
-        /// </summary>
-        public static string DeptCat_Delete_HaveDocTypeCatUse {
-            get {
-                return ResourceManager.GetString("DeptCat_Delete_HaveDocTypeCatUse", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Department is inactive..
-        /// </summary>
-        public static string DeptCat_Inactive {
-            get {
-                return ResourceManager.GetString("DeptCat_Inactive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Department does not exist..
-        /// </summary>
-        public static string DeptCat_NotExists {
-            get {
-                return ResourceManager.GetString("DeptCat_NotExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Approve status not valid..
-        /// </summary>
-        public static string DocFlow_ApproveStatusNotValid {
-            get {
-                return ResourceManager.GetString("DocFlow_ApproveStatusNotValid", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Document processing flow code already exists..
-        /// </summary>
-        public static string DocFlow_CodeExists {
-            get {
-                return ResourceManager.GetString("DocFlow_CodeExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot delete because this document flow processing is being used by another document type category..
-        /// </summary>
-        public static string DocFlow_Delete_HaveDocTypeCatUse {
-            get {
-                return ResourceManager.GetString("DocFlow_Delete_HaveDocTypeCatUse", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Document processing flow is inactive..
-        /// </summary>
-        public static string DocFlow_Inactive {
-            get {
-                return ResourceManager.GetString("DocFlow_Inactive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Document processing flow does not exist..
-        /// </summary>
-        public static string DocFlow_NotExists {
-            get {
-                return ResourceManager.GetString("DocFlow_NotExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This document type is not support for department of current user..
-        /// </summary>
-        public static string DocFlow_NotSupportCurrrentDepartment {
-            get {
-                return ResourceManager.GetString("DocFlow_NotSupportCurrrentDepartment", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot submit document for which you are the approver..
-        /// </summary>
-        public static string DocFlow_SenderIsApprover {
-            get {
-                return ResourceManager.GetString("DocFlow_SenderIsApprover", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This document processing flow already exists this department..
-        /// </summary>
-        public static string DocFlowDept_Exists {
-            get {
-                return ResourceManager.GetString("DocFlowDept_Exists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This account has been choose as approver..
-        /// </summary>
-        public static string DocFlowDeptDtl_ApproverHasChoose {
-            get {
-                return ResourceManager.GetString("DocFlowDeptDtl_ApproverHasChoose", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Update order of approver list failed. The approver number is not match..
-        /// </summary>
-        public static string DocFlowDeptDtl_InvalidOperation_UpdateOrder {
-            get {
-                return ResourceManager.GetString("DocFlowDeptDtl_InvalidOperation_UpdateOrder", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Key already exists..
-        /// </summary>
-        public static string DocFlowDeptDtl_KeyExists {
-            get {
-                return ResourceManager.GetString("DocFlowDeptDtl_KeyExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Document processing flow of this department does not exists..
-        /// </summary>
-        public static string DocFlowDeptDtl_ListNotExists {
-            get {
-                return ResourceManager.GetString("DocFlowDeptDtl_ListNotExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Document processing flow of this department does not have any approver..
-        /// </summary>
-        public static string DocFlowDeptDtl_None {
-            get {
-                return ResourceManager.GetString("DocFlowDeptDtl_None", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Current document processing flow of department not exists this approver..
-        /// </summary>
-        public static string DocFlowDeptDtl_NotExists {
-            get {
-                return ResourceManager.GetString("DocFlowDeptDtl_NotExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot delete because this document group category is being used by another document type category..
-        /// </summary>
-        public static string DocGrpCat_Delete_HaveDocTypeCat {
-            get {
-                return ResourceManager.GetString("DocGrpCat_Delete_HaveDocTypeCat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Document group name already exists..
-        /// </summary>
-        public static string DocGrpCat_NameExists {
-            get {
-                return ResourceManager.GetString("DocGrpCat_NameExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Document group category does not exists..
-        /// </summary>
-        public static string DocGrpCat_NotExists {
-            get {
-                return ResourceManager.GetString("DocGrpCat_NotExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Please select approver for this document..
-        /// </summary>
-        public static string DocReq_ApproversRequired {
-            get {
-                return ResourceManager.GetString("DocReq_ApproversRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You have make approve successfully..
-        /// </summary>
-        public static string DocReq_ApproveSuccessfully {
-            get {
-                return ResourceManager.GetString("DocReq_ApproveSuccessfully", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The maximum number of attachments is 10 files..
-        /// </summary>
-        public static string DocReq_AttachedFileMaximumIs10 {
-            get {
-                return ResourceManager.GetString("DocReq_AttachedFileMaximumIs10", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to (Server error) Attached file not exists..
-        /// </summary>
-        public static string DocReq_AttachedFileNotExists {
-            get {
-                return ResourceManager.GetString("DocReq_AttachedFileNotExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Attach file is required..
-        /// </summary>
-        public static string DocReq_AttachedFileRequired {
-            get {
-                return ResourceManager.GetString("DocReq_AttachedFileRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You must enter a comment when rejecting this document..
-        /// </summary>
-        public static string DocReq_CommentRequiredWhenApprove {
-            get {
-                return ResourceManager.GetString("DocReq_CommentRequiredWhenApprove", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You were not able to submit documents because you submitted too many..
-        /// </summary>
-        public static string DocReq_LimitRequestDocument {
-            get {
-                return ResourceManager.GetString("DocReq_LimitRequestDocument", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Must enter one or more approver.
-        /// </summary>
-        public static string DocReq_NotApprover {
-            get {
-                return ResourceManager.GetString("DocReq_NotApprover", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Document request not exists..
-        /// </summary>
-        public static string DocReq_NotExists {
-            get {
-                return ResourceManager.GetString("DocReq_NotExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Only accounts has department can send document..
-        /// </summary>
-        public static string DocReq_OnlyForAccountHasDepartment {
-            get {
-                return ResourceManager.GetString("DocReq_OnlyForAccountHasDepartment", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Only employees has department can send document..
-        /// </summary>
-        public static string DocReq_OnlyForEmployeeHasDepartment {
-            get {
-                return ResourceManager.GetString("DocReq_OnlyForEmployeeHasDepartment", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This account  is not the current approver for this document..
-        /// </summary>
-        public static string DocReq_ThisAccountIsNotTheCurrentApprover {
-            get {
-                return ResourceManager.GetString("DocReq_ThisAccountIsNotTheCurrentApprover", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to proceed with approval of processed document..
-        /// </summary>
-        public static string DocReq_UnableToApproveProcesseDoc {
-            get {
-                return ResourceManager.GetString("DocReq_UnableToApproveProcesseDoc", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to (Server error): Document request result not exists..
-        /// </summary>
-        public static string DocReqRs_NotExists {
-            get {
-                return ResourceManager.GetString("DocReqRs_NotExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Document type category code already exists..
-        /// </summary>
-        public static string DocTypeCat_CodeExists {
-            get {
-                return ResourceManager.GetString("DocTypeCat_CodeExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot delete because this document type category is being used by another document request..
-        /// </summary>
-        public static string DocTypeCat_Delete_HaveDocReqUse {
-            get {
-                return ResourceManager.GetString("DocTypeCat_Delete_HaveDocReqUse", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Document type category is inactive..
-        /// </summary>
-        public static string DocTypeCat_Inactive {
-            get {
-                return ResourceManager.GetString("DocTypeCat_Inactive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Document type category does not exists..
-        /// </summary>
-        public static string DocTypeCat_NotExists {
-            get {
-                return ResourceManager.GetString("DocTypeCat_NotExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Employee code already exists..
-        /// </summary>
-        public static string Employee_CodeExists {
-            get {
-                return ResourceManager.GetString("Employee_CodeExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to No employee found with ID.
         /// </summary>
         public static string Employee_IdNotExists {
             get {
                 return ResourceManager.GetString("Employee_IdNotExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Employee does not exists..
-        /// </summary>
-        public static string Employee_NotExists {
-            get {
-                return ResourceManager.GetString("Employee_NotExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Factory category code already exists..
-        /// </summary>
-        public static string FactoryCat_CodeExists {
-            get {
-                return ResourceManager.GetString("FactoryCat_CodeExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot delete because this factory category is being used by another department..
-        /// </summary>
-        public static string FactoryCat_Delete_HaveDepartmentUse {
-            get {
-                return ResourceManager.GetString("FactoryCat_Delete_HaveDepartmentUse", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Factory category is inactive..
-        /// </summary>
-        public static string FactoryCat_Inactive {
-            get {
-                return ResourceManager.GetString("FactoryCat_Inactive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Factory category does not exists..
-        /// </summary>
-        public static string FactoryCat_NotExists {
-            get {
-                return ResourceManager.GetString("FactoryCat_NotExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Update order of leave job reason list failed. The reason number is not match..
-        /// </summary>
-        public static string LeaveJobReason_InvalidOperation_UpdateOrder {
-            get {
-                return ResourceManager.GetString("LeaveJobReason_InvalidOperation_UpdateOrder", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Leave job reason does not exists..
-        /// </summary>
-        public static string LeaveJobReason_NotExists {
-            get {
-                return ResourceManager.GetString("LeaveJobReason_NotExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Title already exists..
-        /// </summary>
-        public static string LeaveJobReason_TitleExists {
-            get {
-                return ResourceManager.GetString("LeaveJobReason_TitleExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Leave job reason detail does not exists..
-        /// </summary>
-        public static string LeaveJobReasonDtl_NotExists {
-            get {
-                return ResourceManager.GetString("LeaveJobReasonDtl_NotExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error uploading file to server..
-        /// </summary>
-        public static string Lot_UploadError {
-            get {
-                return ResourceManager.GetString("Lot_UploadError", resourceCulture);
             }
         }
         
@@ -690,12 +159,33 @@ namespace RWPM.Resources {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to Account has been linked..
-        /// </summary>
-        public static string Username_Exists {
+        public static string ImportLog_NotExists {
             get {
-                return ResourceManager.GetString("Username_Exists", resourceCulture);
+                return ResourceManager.GetString("ImportLog_NotExists", resourceCulture);
+            }
+        }
+
+        public static string File_EmptyOrNull {
+            get {
+                return ResourceManager.GetString("File_EmptyOrNull", resourceCulture);
+            }
+        }
+
+        public static string Store_NotExists {
+            get {
+                return ResourceManager.GetString("Store_NotExists", resourceCulture);
+            }
+        }
+
+        public static string Store_Delete_HaveEmployeeUse {
+            get {
+                return ResourceManager.GetString("Store_Delete_HaveEmployeeUse", resourceCulture);
+            }
+        }
+
+        public static string Store_Delete_HaveShiftRegUse {
+            get {
+                return ResourceManager.GetString("Store_Delete_HaveShiftRegUse", resourceCulture);
             }
         }
     }

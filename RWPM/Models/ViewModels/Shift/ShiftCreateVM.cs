@@ -15,8 +15,11 @@ public class ShiftCreateVM : IValidatableObject
     [Display(Name = "EndTime", ResourceType = typeof(Resources.Models.Shift))]
     [RequiredLocalization]
     public TimeSpan? EndTime { get; set; }
+    [Display(Name = "EndsNextDay", ResourceType = typeof(Resources.Shared.Shift))]
     public bool EndsNextDay { get; set; }
+    [Display(Name = "BreakStart", ResourceType = typeof(Resources.Shared.Shift))]
     public TimeSpan? BreakStartTime { get; set; }
+    [Display(Name = "BreakEnd", ResourceType = typeof(Resources.Shared.Shift))]
     public TimeSpan? BreakEndTime { get; set; }
     public bool BreakStartsNextDay { get; set; }
     public bool BreakEndsNextDay { get; set; }
@@ -24,11 +27,15 @@ public class ShiftCreateVM : IValidatableObject
     [RequiredLocalization, RangeLocalized(0,60)] public int? GracePeriodMinutes { get; set; } = RWPM.Common.Constants.ShiftDefaults.GracePeriodMinutes;
     [Display(Name = "EarlyCheckOutMinutes", ResourceType = typeof(Resources.Models.Shift))]
     [RequiredLocalization, RangeLocalized(0,60)] public int? EarlyCheckOutMinutes { get; set; } = RWPM.Common.Constants.ShiftDefaults.EarlyCheckOutMinutes;
+    [Display(Name = "EffectiveFrom", ResourceType = typeof(Resources.Shared.Shift))]
     [DataType(DataType.Date)] public DateTime EffectiveFrom { get; set; } = DateTime.Today;
+    [Display(Name = "EffectiveTo", ResourceType = typeof(Resources.Shared.Shift))]
     [DataType(DataType.Date)] public DateTime? EffectiveTo { get; set; }
     [Display(Name = "Description", ResourceType = typeof(Resources.Models.Shift))]
     [MaxLengthLocalized(255)] public string? Description { get; set; }
+    [Display(Name = "ApplicableStores", ResourceType = typeof(Resources.Shared.Shift))]
     public List<int> StoreIds { get; set; } = new();
+    [Display(Name = "IsActive", ResourceType = typeof(Resources.Models.Shift))]
     public bool IsActive { get; set; } = true;
 
     public IEnumerable<ValidationResult> Validate(ValidationContext context)

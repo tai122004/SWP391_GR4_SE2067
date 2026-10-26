@@ -99,6 +99,16 @@ public static class InputRules
         if (digits.Length == 9 && !digits.StartsWith('0')) digits = "0" + digits;
         return digits;
     }
+    // Thông báo hiển thị cho người dùng từ một exception bất kỳ: chỉ giữ message của các lỗi nghiệp vụ
+    // (đã được bản địa hóa khi throw); lỗi kỹ thuật (DB, hệ thống...) thay bằng thông báo chung theo ngôn ngữ hiện tại.
+    public static string UserMessage(Exception error) => error switch
+    {
+        ValidationException or InvalidOperationException or ArgumentException or KeyNotFoundException => error.Message,
+        // Giữ lý do cụ thể (vd. ngoài phạm vi chi nhánh) nếu có; chỉ thay message mặc định của .NET bằng câu chung
+        UnauthorizedAccessException ua when !string.IsNullOrWhiteSpace(ua.Message) && ua.Message != new UnauthorizedAccessException().Message => ua.Message,
+        UnauthorizedAccessException => RWPM.Resources.Shared.Auth.Err_AccessDenied,
+        _ => Duplicate(error)?.Message ?? RWPM.Resources.Shared.SharedResource.OperationFailed
+    };
     public static InputValidationException? Duplicate(Exception error)
     {
         if (error is not Microsoft.EntityFrameworkCore.DbUpdateException) return null;

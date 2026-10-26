@@ -77,7 +77,7 @@
     <value>Tìm kiếm</value>
   </data>
   <data name="Pending" xml:space="preserve">
-    <value>Yêu cầu</value>
+    <value>Chờ duyệt</value>
   </data>
   <data name="Approved" xml:space="preserve">
     <value>Chấp thuận</value>
@@ -100,9 +100,6 @@
   <data name="Date" xml:space="preserve">
     <value>Ngày</value>
   </data>
-  <data name="Approver" xml:space="preserve">
-    <value>Người phê duyệt</value>
-  </data>
   <data name="Approve" xml:space="preserve">
     <value>Chấp thuận</value>
   </data>
@@ -111,9 +108,6 @@
   </data>
   <data name="Delete" xml:space="preserve">
     <value>Xóa</value>
-  </data>
-  <data name="Department" xml:space="preserve">
-    <value>Phòng ban</value>
   </data>
   <data name="Code" xml:space="preserve">
     <value>Mã đơn</value>
@@ -127,14 +121,8 @@
   <data name="Status" xml:space="preserve">
     <value>Trạng thái</value>
   </data>
-  <data name="CurrentlySelecting" xml:space="preserve">
-    <value>Đang chọn</value>
-  </data>
   <data name="Requests" xml:space="preserve">
     <value>yêu cầu</value>
-  </data>
-  <data name="BulkActionDesc" xml:space="preserve">
-    <value>Bạn có thể thao tác hàng loạt cho các yêu cầu đã chọn.</value>
   </data>
   <data name="ApproveAll" xml:space="preserve">
     <value>Chấp thuận tất cả</value>
@@ -162,9 +150,6 @@
   </data>
   <data name="BulkRejectSuccess" xml:space="preserve">
     <value>Đã từ chối các yêu cầu thành công</value>
-  </data>
-  <data name="NotApprovedYet" xml:space="preserve">
-    <value>Chưa duyệt</value>
   </data>
   <data name="ConfirmApproveMsg" xml:space="preserve">
     <value>Bạn có chắc chắn muốn chấp thuận yêu cầu này không?</value>
@@ -232,14 +217,8 @@
   <data name="Swap_SelectCoworkerShiftPrompt" xml:space="preserve">
     <value>-- Chọn ca của đồng nghiệp --</value>
   </data>
-  <data name="Swap_TargetShiftInfo" xml:space="preserve">
-    <value>Đổi sang / Đổi với</value>
-  </data>
   <data name="Filter_AllTypes" xml:space="preserve">
     <value>Tất cả loại yêu cầu</value>
-  </data>
-  <data name="Filter_ShiftRegOnly" xml:space="preserve">
-    <value>Đăng ký ca</value>
   </data>
   <data name="Filter_ShiftSwapOnly" xml:space="preserve">
     <value>Đổi ca làm</value>
@@ -292,9 +271,6 @@
   <data name="Leave_DaysUnit" xml:space="preserve">
     <value>ngày</value>
   </data>
-  <data name="Leave_InsufficientBalance" xml:space="preserve">
-    <value>Số ngày xin nghỉ vượt quá số ngày phép năm còn lại (còn {0} ngày)!</value>
-  </data>
   <data name="Page_Subtitle" xml:space="preserve">
     <value>Theo dõi, xét duyệt các yêu cầu đăng ký ca, đổi ca, xin nghỉ phép và điều chỉnh giờ chấm công.</value>
   </data>
@@ -303,9 +279,6 @@
   </data>
   <data name="Status_Rejected" xml:space="preserve">
     <value>Đã từ chối</value>
-  </data>
-  <data name="Stats_Filtering" xml:space="preserve">
-    <value>Đang lọc</value>
   </data>
   <data name="Filter_SearchPlaceholder" xml:space="preserve">
     <value>Tìm theo tên, mã đơn, ca làm...</value>
@@ -334,23 +307,11 @@
   <data name="Detail_SentAt" xml:space="preserve">
     <value>Thời gian gửi</value>
   </data>
-  <data name="Detail_ContentTitle" xml:space="preserve">
-    <value>Nội dung chi tiết yêu cầu</value>
-  </data>
-  <data name="Detail_AttendanceTitle" xml:space="preserve">
-    <value>Chi tiết điều chỉnh giờ vào / ra</value>
-  </data>
   <data name="Detail_EmployeeNote" xml:space="preserve">
     <value>Lý do / Ghi chú của nhân viên</value>
   </data>
-  <data name="Detail_Reviewer" xml:space="preserve">
-    <value>Người xét duyệt</value>
-  </data>
   <data name="Detail_ProposedTime" xml:space="preserve">
     <value>Giờ đề xuất sửa</value>
-  </data>
-  <data name="Detail_AtTime" xml:space="preserve">
-    <value>lúc {0}</value>
   </data>
   <data name="Empty_Title" xml:space="preserve">
     <value>Chưa chọn yêu cầu nào</value>
@@ -493,9 +454,6 @@
   <data name="Adj_ErrEmployeeNotFound" xml:space="preserve">
     <value>Không tìm thấy thông tin hồ sơ nhân viên.</value>
   </data>
-  <data name="Adj_ErrOtherEmployeeRecord" xml:space="preserve">
-    <value>Bạn không có quyền yêu cầu điều chỉnh bản ghi chấm công của nhân viên khác.</value>
-  </data>
   <data name="Adj_ErrPendingForShift" xml:space="preserve">
     <value>Bạn đã gửi yêu cầu điều chỉnh cho ca làm này và đang chờ quản lý phê duyệt.</value>
   </data>
@@ -612,5 +570,53 @@
   </data>
   <data name="Filter_SearchEnterHint" xml:space="preserve">
     <value>Nhấn Enter để tìm trên tất cả các trang</value>
+  </data>
+  <data name="Warn_ConfirmTitle" xml:space="preserve">
+    <value>Cảnh báo khi duyệt</value>
+  </data>
+  <data name="Warn_ConfirmContinue" xml:space="preserve">
+    <value>Vẫn tiếp tục duyệt?</value>
+  </data>
+  <data name="Tab_Pending" xml:space="preserve">
+    <value>Chờ duyệt</value>
+  </data>
+  <data name="Tab_Approved" xml:space="preserve">
+    <value>Đã duyệt</value>
+  </data>
+  <data name="Tab_Rejected" xml:space="preserve">
+    <value>Từ chối</value>
+  </data>
+  <data name="Bulk_SelectedCount" xml:space="preserve">
+    <value>Đã chọn {0} đơn</value>
+  </data>
+  <data name="Bulk_Clear" xml:space="preserve">
+    <value>Bỏ chọn</value>
+  </data>
+  <data name="Detail_WarningsTitle" xml:space="preserve">
+    <value>Cần lưu ý trước khi duyệt</value>
+  </data>
+  <data name="Detail_ApproverNote" xml:space="preserve">
+    <value>Ghi chú của người duyệt</value>
+  </data>
+  <data name="Detail_ApproverNoteHint" xml:space="preserve">
+    <value>Dùng làm lý do khi từ chối; với đơn sửa chấm công, ghi chú cũng được lưu kèm khi duyệt.</value>
+  </data>
+  <data name="Detail_ApproverNotePlaceholder" xml:space="preserve">
+    <value>Nhập ghi chú hoặc lý do từ chối...</value>
+  </data>
+  <data name="Detail_ProcessedAt" xml:space="preserve">
+    <value>Thời gian xử lý</value>
+  </data>
+  <data name="Detail_SwapTo" xml:space="preserve">
+    <value>Đổi sang</value>
+  </data>
+  <data name="Filter_Apply" xml:space="preserve">
+    <value>Áp dụng</value>
+  </data>
+  <data name="Att_PageSubtitle" xml:space="preserve">
+    <value>Chấm công vào/ra bằng ảnh chụp trực tiếp và GPS, xem lại lịch sử chấm công.</value>
+  </data>
+  <data name="Att_HoursUnit" xml:space="preserve">
+    <value>{0} giờ</value>
   </data>
 </root>

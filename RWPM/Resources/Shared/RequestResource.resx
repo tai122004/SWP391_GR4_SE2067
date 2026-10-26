@@ -100,9 +100,6 @@
   <data name="Date" xml:space="preserve">
     <value>Date</value>
   </data>
-  <data name="Approver" xml:space="preserve">
-    <value>Approver</value>
-  </data>
   <data name="Approve" xml:space="preserve">
     <value>Approve</value>
   </data>
@@ -111,9 +108,6 @@
   </data>
   <data name="Delete" xml:space="preserve">
     <value>Delete</value>
-  </data>
-  <data name="Department" xml:space="preserve">
-    <value>Department</value>
   </data>
   <data name="Code" xml:space="preserve">
     <value>Code</value>
@@ -127,14 +121,8 @@
   <data name="Status" xml:space="preserve">
     <value>Status</value>
   </data>
-  <data name="CurrentlySelecting" xml:space="preserve">
-    <value>Currently selecting</value>
-  </data>
   <data name="Requests" xml:space="preserve">
     <value>requests</value>
-  </data>
-  <data name="BulkActionDesc" xml:space="preserve">
-    <value>You can perform bulk actions for the selected requests.</value>
   </data>
   <data name="ApproveAll" xml:space="preserve">
     <value>Approve all</value>
@@ -162,9 +150,6 @@
   </data>
   <data name="BulkRejectSuccess" xml:space="preserve">
     <value>Bulk requests rejected successfully</value>
-  </data>
-  <data name="NotApprovedYet" xml:space="preserve">
-    <value>Not approved yet</value>
   </data>
   <data name="ConfirmApproveMsg" xml:space="preserve">
     <value>Are you sure you want to approve this request?</value>
@@ -232,14 +217,8 @@
   <data name="Swap_SelectCoworkerShiftPrompt" xml:space="preserve">
     <value>-- Select coworker shift --</value>
   </data>
-  <data name="Swap_TargetShiftInfo" xml:space="preserve">
-    <value>Swap to</value>
-  </data>
   <data name="Filter_AllTypes" xml:space="preserve">
     <value>All request types</value>
-  </data>
-  <data name="Filter_ShiftRegOnly" xml:space="preserve">
-    <value>Shift registrations</value>
   </data>
   <data name="Filter_ShiftSwapOnly" xml:space="preserve">
     <value>Shift swaps</value>
@@ -292,9 +271,6 @@
   <data name="Leave_DaysUnit" xml:space="preserve">
     <value>days</value>
   </data>
-  <data name="Leave_InsufficientBalance" xml:space="preserve">
-    <value>Number of requested days exceeds remaining annual leave balance ({0} days left)!</value>
-  </data>
   <data name="Page_Subtitle" xml:space="preserve">
     <value>Track and review shift registration, shift swap, leave and attendance adjustment requests.</value>
   </data>
@@ -303,9 +279,6 @@
   </data>
   <data name="Status_Rejected" xml:space="preserve">
     <value>Rejected</value>
-  </data>
-  <data name="Stats_Filtering" xml:space="preserve">
-    <value>Filtering</value>
   </data>
   <data name="Filter_SearchPlaceholder" xml:space="preserve">
     <value>Search by name, request code, shift...</value>
@@ -334,23 +307,11 @@
   <data name="Detail_SentAt" xml:space="preserve">
     <value>Sent at</value>
   </data>
-  <data name="Detail_ContentTitle" xml:space="preserve">
-    <value>Request details</value>
-  </data>
-  <data name="Detail_AttendanceTitle" xml:space="preserve">
-    <value>Check-in / check-out adjustment details</value>
-  </data>
   <data name="Detail_EmployeeNote" xml:space="preserve">
     <value>Employee's reason / note</value>
   </data>
-  <data name="Detail_Reviewer" xml:space="preserve">
-    <value>Reviewed by</value>
-  </data>
   <data name="Detail_ProposedTime" xml:space="preserve">
     <value>Proposed time</value>
-  </data>
-  <data name="Detail_AtTime" xml:space="preserve">
-    <value>at {0}</value>
   </data>
   <data name="Empty_Title" xml:space="preserve">
     <value>No request selected</value>
@@ -493,9 +454,6 @@
   <data name="Adj_ErrEmployeeNotFound" xml:space="preserve">
     <value>Employee profile information not found.</value>
   </data>
-  <data name="Adj_ErrOtherEmployeeRecord" xml:space="preserve">
-    <value>You do not have permission to request an adjustment of another employee's attendance record.</value>
-  </data>
   <data name="Adj_ErrPendingForShift" xml:space="preserve">
     <value>You have already submitted an adjustment request for this shift and it is awaiting manager approval.</value>
   </data>
@@ -612,5 +570,53 @@
   </data>
   <data name="Filter_SearchEnterHint" xml:space="preserve">
     <value>Press Enter to search all pages</value>
+  </data>
+  <data name="Warn_ConfirmTitle" xml:space="preserve">
+    <value>Approval warnings</value>
+  </data>
+  <data name="Warn_ConfirmContinue" xml:space="preserve">
+    <value>Approve anyway?</value>
+  </data>
+  <data name="Tab_Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="Tab_Approved" xml:space="preserve">
+    <value>Approved</value>
+  </data>
+  <data name="Tab_Rejected" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+  <data name="Bulk_SelectedCount" xml:space="preserve">
+    <value>{0} selected</value>
+  </data>
+  <data name="Bulk_Clear" xml:space="preserve">
+    <value>Clear selection</value>
+  </data>
+  <data name="Detail_WarningsTitle" xml:space="preserve">
+    <value>Review before approving</value>
+  </data>
+  <data name="Detail_ApproverNote" xml:space="preserve">
+    <value>Reviewer note</value>
+  </data>
+  <data name="Detail_ApproverNoteHint" xml:space="preserve">
+    <value>Used as the reason when rejecting; for attendance adjustments it is also saved with the approval.</value>
+  </data>
+  <data name="Detail_ApproverNotePlaceholder" xml:space="preserve">
+    <value>Add a note or a reason for rejection...</value>
+  </data>
+  <data name="Detail_ProcessedAt" xml:space="preserve">
+    <value>Processed at</value>
+  </data>
+  <data name="Detail_SwapTo" xml:space="preserve">
+    <value>Swap to</value>
+  </data>
+  <data name="Filter_Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Att_PageSubtitle" xml:space="preserve">
+    <value>Clock in and out with a live photo and GPS, and review attendance history.</value>
+  </data>
+  <data name="Att_HoursUnit" xml:space="preserve">
+    <value>{0} h</value>
   </data>
 </root>

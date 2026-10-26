@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using RWPM.Hubs;
 using RWPM.Services.Abstraction;
 
@@ -12,9 +11,6 @@ namespace RWPM.Services.Implementation
         { 
             _hubContext = hubContext; 
         }
-
-        public Task UpdateProgressMessage(string userId, string message)
-            => _hubContext.Clients.User(userId).SendAsync("ProgressNotificationService_UpdateProgressMessage", message);
 
         public Task UpdateProgressBar(string userId, byte percent)
             => _hubContext.Clients.User(userId).SendAsync("ProgressNotificationService_UpdateProgressBar", percent);

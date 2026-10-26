@@ -365,3 +365,149 @@ body {
 .app-time-menu .app-time-chip { font-variant-numeric: tabular-nums; white-space: nowrap; }
 .app-time-picker .app-time-display { font-variant-numeric: tabular-nums; }
 .shift-presets .shift-preset { font-variant-numeric: tabular-nums; }
+
+/* =====================================================================
+   RWPM design system v2 — phẳng, gọn, nhất quán
+   - Bo góc: 1 mức (6px); tròn chỉ cho avatar / chấm trạng thái
+   - Không đổ bóng trên trang; bóng chỉ cho lớp nổi (dropdown, modal, toast)
+   - Màu trạng thái chỉ dùng cho trạng thái, dạng nền nhạt + chữ đậm hoặc chấm màu
+   - Font: Be Vietnam Pro, số liệu tabular
+   ===================================================================== */
+:root {
+  --app-radius: 6px;
+  --app-bg: #F6F7F9;
+  --app-surface: #FFFFFF;
+  --app-surface-2: #F9FAFB;
+  --app-border: #E3E6EA;
+  --app-border-strong: #D5DAE0;
+  --app-text: #17202B;
+  --app-text-2: #5B6573;
+  --app-muted: #6B7480;
+  --app-blue: #1554BB;
+  --app-blue-hover: #0F3F8C;
+  --app-blue-soft: #EEF3FB;
+  --app-navy: #12263D;
+  --app-navy-active: #1F3A5A;
+  --app-success: #1F7A4D; --app-success-soft: #E3F2EA; --app-success-text: #17603A;
+  --app-warning: #A15C07; --app-warning-soft: #FBEFD9; --app-warning-text: #7D4405;
+  --app-danger: #B42318;  --app-danger-soft: #FBE4E1;  --app-danger-text: #8E1B12;
+  --app-info: #2F6FB3;    --app-info-soft: #E6EFF9;    --app-info-text: #1D4F86;
+  --app-neutral-soft: #F1F3F5; --app-neutral-text: #3B4552;
+  --app-overlay-shadow: 0 8px 24px rgba(23,32,43,.12), 0 2px 6px rgba(23,32,43,.06);
+  --app-font: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --bs-border-radius: 6px; --bs-border-radius-sm: 6px; --bs-border-radius-lg: 6px; --bs-border-radius-xl: 6px; --bs-border-radius-xxl: 6px;
+  --bs-body-font-family: var(--app-font);
+  --bs-body-color: var(--app-text);
+  --bs-border-color: var(--app-border);
+  --bs-primary: #1554BB; --bs-primary-rgb: 21,84,187;
+  --bs-link-color: #1554BB; --bs-link-hover-color: #0F3F8C;
+}
+html { font-size: 14px; }
+body { font-family: var(--app-font); background: var(--app-bg); color: var(--app-text); }
+.num, .tabular, td.text-end, .table td.text-end { font-variant-numeric: tabular-nums; }
+
+/* --- Bo góc: thống nhất 6px --- */
+.rounded, .rounded-1, .rounded-2, .rounded-3, .rounded-4, .rounded-5,
+.card, .modal-content, .dropdown-menu, .form-control, .form-select, .input-group-text,
+.btn, .badge, .alert, .toast, .list-group, .nav-pills .nav-link, .page-link,
+.app-filter-panel, .app-content-card, .app-main .card, .app-main .modern-card, .summary-card,
+.app-main .tanca-btn, .app-main .btn-icon, .app-main .tanca-select, .select2-container .select2-selection { border-radius: var(--app-radius) !important; }
+.btn.rounded-pill, .badge.rounded-pill, .form-control.rounded-pill, .input-group.rounded-pill, .rounded-pill:not(.app-dot):not(.avatar-initials) { border-radius: var(--app-radius) !important; }
+.rounded-circle, .avatar-initials, .app-dot { border-radius: 50% !important; }
+.input-group > :not(:first-child):not(.dropdown-menu) { border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; }
+.input-group > :not(:last-child):not(.dropdown-toggle):not(.dropdown-menu) { border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }
+.pagination .page-item .page-link { margin: 0 2px; }
+
+/* --- Không đổ bóng trên trang; chỉ lớp nổi có bóng --- */
+.app-main .shadow, .app-main .shadow-sm, .app-main .shadow-lg, .app-main .shadow-xs,
+.app-main .card, .app-main .modern-card, .summary-card, .management-table-card, .shift-table-card { box-shadow: none !important; }
+.dropdown-menu, .modal-content, .toast, .popover, .select2-dropdown { box-shadow: var(--app-overlay-shadow) !important; border: 1px solid var(--app-border) !important; }
+.app-main .dashboard-link:hover { transform: none; }
+
+/* --- Thẻ, bảng, form --- */
+.app-main .card, .app-main .modern-card, .app-content-card, .app-filter-panel { background: var(--app-surface); border: 1px solid var(--app-border) !important; }
+.summary-card { border-left-width: 1px !important; border-left-color: var(--app-border) !important; }
+.summary-card .rounded-circle { display: none !important; }
+.app-main .card-header { background: var(--app-surface); font-weight: 600; font-size: 1rem; }
+.app-main h4 { font-size: 1.55rem; font-weight: 600; letter-spacing: -.01em; }
+.app-main h5 { font-size: 1.07rem; font-weight: 600; }
+.app-main .table { color: var(--app-text); font-size: .93rem; }
+.app-main .table thead th, .app-main .modern-table thead th { background: var(--app-surface-2); color: var(--app-text-2); font-weight: 500; font-size: .86rem; padding: .7rem 1rem; }
+.app-main .table tbody td, .app-main .modern-table tbody td { padding: .7rem 1rem; border-bottom-color: #EEF0F3; vertical-align: middle; }
+.app-main .table tbody tr:hover { background: #F7F9FC; }
+.app-main .form-label { color: var(--app-text); font-weight: 500; font-size: .93rem; }
+.app-main .form-control, .app-main .form-select, .app-main .input-group-text { border-color: var(--app-border-strong); min-height: 38px; }
+.app-main .input-group-text { background: var(--app-surface-2); color: var(--app-text-2); }
+.app-main .form-control:focus, .app-main .form-select:focus { border-color: var(--app-blue); box-shadow: 0 0 0 3px #DCE7F8; }
+label.required::after, .form-label.required::after { content: " *"; color: var(--app-danger); }
+
+/* --- Nút: một nút chính mỗi màn, còn lại viền xám --- */
+.btn { font-weight: 500; }
+.btn-primary { background: var(--app-blue); border-color: var(--app-blue); }
+.btn-primary:hover, .btn-primary:focus { background: var(--app-blue-hover); border-color: var(--app-blue-hover); }
+.btn-success { background: var(--app-success); border-color: var(--app-success); }
+.btn-outline-primary, .btn-outline-secondary, .btn-outline-dark, .btn-outline-success, .btn-outline-info, .btn-light {
+  background: var(--app-surface); border-color: var(--app-border-strong); color: var(--app-text); }
+.btn-outline-primary:hover, .btn-outline-secondary:hover, .btn-outline-dark:hover, .btn-outline-success:hover, .btn-outline-info:hover, .btn-light:hover {
+  background: var(--app-surface-2); border-color: var(--app-border-strong); color: var(--app-text); }
+.btn-outline-danger { background: var(--app-surface); border-color: #F1C4BE; color: var(--app-danger); }
+.btn-outline-danger:hover { background: var(--app-danger-soft); border-color: #F1C4BE; color: var(--app-danger-text); }
+.btn-outline-warning { background: var(--app-surface); border-color: #F0D9A8; color: var(--app-warning-text); }
+.btn-outline-warning:hover { background: var(--app-warning-soft); color: var(--app-warning-text); }
+
+/* --- Nhãn trạng thái: nền nhạt + chữ đậm (thay khối màu đặc) --- */
+.badge { font-weight: 500; font-size: .8rem; padding: .3em .6em; letter-spacing: 0; }
+.badge.bg-success, .badge.text-bg-success { background: var(--app-success-soft) !important; color: var(--app-success-text) !important; }
+.badge.bg-warning, .badge.text-bg-warning { background: var(--app-warning-soft) !important; color: var(--app-warning-text) !important; }
+.badge.bg-danger, .badge.text-bg-danger { background: var(--app-danger-soft) !important; color: var(--app-danger-text) !important; }
+.badge.bg-info, .badge.text-bg-info, .badge.bg-primary, .badge.text-bg-primary { background: var(--app-info-soft) !important; color: var(--app-info-text) !important; }
+.badge.bg-secondary, .badge.text-bg-secondary, .badge.bg-light, .badge.bg-dark { background: var(--app-neutral-soft) !important; color: var(--app-neutral-text) !important; }
+.app-badge { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 8px; border-radius: var(--app-radius); font-size: .8rem; font-weight: 500; white-space: nowrap; }
+.app-badge-success { background: var(--app-success-soft); color: var(--app-success-text); }
+.app-badge-warning { background: var(--app-warning-soft); color: var(--app-warning-text); }
+.app-badge-danger { background: var(--app-danger-soft); color: var(--app-danger-text); }
+.app-badge-info { background: var(--app-info-soft); color: var(--app-info-text); }
+.app-badge-neutral { background: var(--app-neutral-soft); color: var(--app-neutral-text); }
+.app-status { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.app-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #9AA3AE; flex: 0 0 7px; }
+.app-dot-success { background: var(--app-success); } .app-dot-warning { background: #C27A0E; } .app-dot-danger { background: var(--app-danger); } .app-dot-info { background: var(--app-info); }
+
+/* Khối nền màu đặc trên thẻ thống kê -> trắng, chỉ số mới mang màu */
+.app-main .card.bg-primary, .app-main .card.bg-success, .app-main .card.bg-warning, .app-main .card.bg-danger, .app-main .card.bg-info,
+.app-main .card.text-white { background: var(--app-surface) !important; color: var(--app-text) !important; }
+.app-main .card.text-white .text-white, .app-main .card.text-white .text-white-50 { color: var(--app-text-2) !important; }
+.app-main .bg-primary.bg-opacity-10, .app-main .bg-success.bg-opacity-10, .app-main .bg-warning.bg-opacity-10, .app-main .bg-danger.bg-opacity-10, .app-main .bg-info.bg-opacity-10 { background-color: var(--app-surface-2) !important; }
+.app-main .alert { border: 1px solid transparent; }
+.app-main .alert-warning { background: #FDF6E8; border-color: #F3DDB0; color: #6A3C04; }
+.app-main .alert-danger { background: #FDF0EE; border-color: #F1C4BE; color: var(--app-danger-text); }
+.app-main .alert-success { background: #EEF7F2; border-color: #C5E3D2; color: var(--app-success-text); }
+.app-main .alert-info, .app-main .alert-primary { background: var(--app-blue-soft); border-color: #D6E2F5; color: #1D3F73; }
+
+/* --- Thanh bên: navy, chia nhóm --- */
+.app-sidebar { background: var(--app-navy); box-shadow: none; }
+.app-brand { min-height: 64px; padding: 1rem 1.25rem; }
+.app-brand-name { font-weight: 600; font-size: 1.25rem; letter-spacing: .04em; }
+.app-brand-caption { color: #8496AD; letter-spacing: .08em; }
+.app-nav { gap: 2px; padding: .75rem .65rem 1.5rem; }
+.app-nav-group { margin: .9rem .6rem .25rem; color: #8496AD; font-size: .76rem; font-weight: 500; letter-spacing: .02em; }
+.app-nav-link { min-height: 38px; padding: .5rem .7rem; gap: .7rem; color: #C9D3E0; border-radius: var(--app-radius); font-size: .93rem; font-weight: 400; }
+.app-nav-link i { font-size: 1rem; width: 1.1rem; }
+.app-nav-link:hover, .app-nav-link:focus-visible { background: rgba(255,255,255,.07); color: #fff; }
+.app-nav-link.active { background: var(--app-navy-active); color: #fff; font-weight: 500; box-shadow: none; }
+.app-topbar { height: 56px; padding: 0 1.75rem; }
+.app-topbar-title { color: var(--app-text-2); font-size: .93rem; }
+.app-main { padding: 1.75rem clamp(1rem, 2.25vw, 2.25rem) 3rem; }
+.app-page-header { margin-bottom: 1.25rem; align-items: flex-end; }
+.app-page-header h1, .app-page-header h2, .app-page-header h3, .app-page-header h4 { font-size: 1.55rem; font-weight: 600; color: var(--app-text); }
+.app-page-header .text-primary, .app-page-header h4 > i, .app-page-header h1 > i { display: none; }
+.modal-header { border-bottom: 1px solid var(--app-border); }
+.modal-title { font-size: 1.07rem; font-weight: 600; }
+.modal-footer { background: var(--app-surface-2); border-top: 1px solid var(--app-border); }
+
+/* Nhóm nút liền nhau: chỉ bo góc ngoài cùng */
+.btn-group > .btn:not(:first-child), .btn-group > .btn-group:not(:first-child) > .btn { border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; }
+.btn-group > .btn:not(:last-child):not(.dropdown-toggle), .btn-group > .btn-group:not(:last-child) > .btn { border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }
+.btn-group-vertical > .btn:not(:first-child) { border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; }
+.btn-group-vertical > .btn:not(:last-child) { border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important; }
+/* Công tắc trạng thái (Acc/Store/Employee) theo token mới */
+.status-choice { color: var(--app-text-2); }

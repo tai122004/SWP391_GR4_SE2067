@@ -4,19 +4,22 @@ using Microsoft.Extensions.Localization;
 using RWPM.Common;
 using RWPM.Common.Attributes;
 using RWPM.Common.Exceptions;
-using RWPM.Common.Helper;
+using RWPM.Common.Security;
 using RWPM.Models.ViewModels.Shift;
 using RWPM.Services.Abstraction;
 
 namespace RWPM.Controllers
 {
-    [Authorize(Roles = "Admin,HR,StoreManager")]
+    [Authorize(Roles = AppRoles.Managers)]
     public class ShiftController : Controller
     {
+        /// <summary>Chỉ Admin và Quản lý cửa hàng được tạo/sửa ca (HR chỉ xem).</summary>
+        private const string ShiftEditors = AppRoles.Admin + "," + AppRoles.StoreManager;
+
         private readonly IStringLocalizer _localizer;
         private readonly IShiftService _shiftService;
         private readonly IStoreService _storeService;
-        private bool IsStoreManager => User.IsInRole("StoreManager") && !User.IsInRole("Admin");
+        private bool IsStoreManager => User.IsStoreManager() && !User.IsAdmin();
 
         public ShiftController(
             IStringLocalizer<ErrorServerDefinition> localizer,
@@ -40,12 +43,12 @@ namespace RWPM.Controllers
                 storeSelectList = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(
                     storeSelectList.Where(x => x.Value == managedStoreId.Value.ToString()), "Value", "Text");
             ViewBag.ManagedStoreId = managedStoreId;
-            ViewBag.CanManageShifts = !User.IsInRole("HR") || User.IsInRole("Admin") || IsStoreManager;
+            ViewBag.CanManageShifts = !User.IsHR() || User.IsAdmin() || IsStoreManager;
             return View(new ShiftListVM(result, searchObject, storeSelectList));
         }
 
         // GET: Shift/Create
-        [Authorize(Roles = "Admin,StoreManager")]
+        [Authorize(Roles = ShiftEditors)]
         public async Task<IActionResult> Create()
         {
             var managedStoreId = IsStoreManager ? await _shiftService.GetManagedStoreIdAsync() : null;
@@ -58,7 +61,7 @@ namespace RWPM.Controllers
         // POST: Shift/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,StoreManager")]
+        [Authorize(Roles = ShiftEditors)]
         public async Task<IActionResult> Create(ShiftCreateVM viewModel)
         {
             var managedStoreId = IsStoreManager ? await _shiftService.GetManagedStoreIdAsync() : null;
@@ -93,7 +96,7 @@ namespace RWPM.Controllers
         }
 
         // GET: Shift/Edit/5
-        [Authorize(Roles = "Admin,StoreManager")]
+        [Authorize(Roles = ShiftEditors)]
         public async Task<IActionResult> Edit(int id)
         {
             var shift = await _shiftService.GetByIdAsync(id);
@@ -112,7 +115,7 @@ namespace RWPM.Controllers
         // POST: Shift/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,StoreManager")]
+        [Authorize(Roles = ShiftEditors)]
         public async Task<IActionResult> Edit(int id, ShiftEditVM viewModel)
         {
             if (id != viewModel.ShiftId)
@@ -154,7 +157,7 @@ namespace RWPM.Controllers
 
         // GET: Shift/Delete/5 (Chính sách Bảo toàn dữ liệu - Không hỗ trợ xóa cứng)
         [HttpGet]
-        [Authorize(Roles = "Admin,StoreManager")]
+        [Authorize(Roles = ShiftEditors)]
         public IActionResult Delete(int id)
         {
             AlertHelper.AddErrorMessage(TempData, RWPM.Resources.Shared.Shift.Err_DeleteNotSupported);
@@ -164,18 +167,17 @@ namespace RWPM.Controllers
         // POST: Shift/DeleteConfirmed (Chính sách Bảo toàn dữ liệu - Chặn xóa cứng)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,StoreManager")]
+        [Authorize(Roles = ShiftEditors)]
         public IActionResult DeleteConfirmed(int shiftId)
         {
             AlertHelper.AddErrorMessage(TempData, RWPM.Resources.Shared.Shift.Err_DeleteNotSupported);
             return RedirectToAction(nameof(Index));
         }
 
-
         // POST: Shift/UpdateActiveStatus/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,StoreManager")]
+        [Authorize(Roles = ShiftEditors)]
         public async Task<IActionResult> UpdateActiveStatus(int id, [FromBody] ShiftUpdateActiveStatusVM viewModel)
         {
             if (id != viewModel.ShiftId)

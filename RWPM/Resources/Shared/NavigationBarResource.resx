@@ -17,16 +17,7 @@
     <resheader name="version">2.0</resheader>
     <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
     <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
+                        
     There are any number of "resheader" rows that contain simple 
     name/value pairs.
     
@@ -117,17 +108,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Categories" xml:space="preserve">
-    <value>Categories management</value>
-  </data>
   <data name="AccountManagement" xml:space="preserve">
     <value>Account management</value>
-  </data>
-  <data name="Functions" xml:space="preserve">
-    <value>Functions</value>
-  </data>
-  <data name="OrtherFunctions" xml:space="preserve">
-    <value>Other functions</value>
   </data>
   <data name="ChangePassword" xml:space="preserve">
     <value>Change password</value>
@@ -138,20 +120,8 @@
   <data name="AccountProfile" xml:space="preserve">
     <value>Account profile</value>
   </data>
-  <data name="LotNoManagement" xml:space="preserve">
-    <value>LotNo Management</value>
-  </data>
-  <data name="PurchaseOrder" xml:space="preserve">
-    <value>Purchase Order</value>
-  </data>
   <data name="Wire" xml:space="preserve">
     <value>Wire</value>
-  </data>
-  <data name="DeclaredData" xml:space="preserve">
-    <value>Declared data</value>
-  </data>
-  <data name="DayOff" xml:space="preserve">
-    <value>Day Off</value>
   </data>
   <data name="EmployeeManagement" xml:space="preserve">
     <value>Employee Management</value>
@@ -179,5 +149,17 @@
   </data>
   <data name="MainNavigation" xml:space="preserve">
     <value>Main navigation</value>
+  </data>
+  <data name="Group_People" xml:space="preserve">
+    <value>People</value>
+  </data>
+  <data name="Group_Scheduling" xml:space="preserve">
+    <value>Scheduling</value>
+  </data>
+  <data name="Group_AttendanceRequests" xml:space="preserve">
+    <value>Attendance &amp; requests</value>
+  </data>
+  <data name="Group_PayPerformance" xml:space="preserve">
+    <value>Pay &amp; performance</value>
   </data>
 </root>

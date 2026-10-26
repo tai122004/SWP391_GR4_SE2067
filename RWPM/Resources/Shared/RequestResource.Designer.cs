@@ -97,24 +97,6 @@ namespace RWPM.Resources.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Approver.
-        /// </summary>
-        public static string Approver {
-            get {
-                return ResourceManager.GetString("Approver", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You can perform bulk actions for the selected requests..
-        /// </summary>
-        public static string BulkActionDesc {
-            get {
-                return ResourceManager.GetString("BulkActionDesc", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to By date sent.
         /// </summary>
         public static string ByDateSent {
@@ -151,15 +133,6 @@ namespace RWPM.Resources.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Currently selecting.
-        /// </summary>
-        public static string CurrentlySelecting {
-            get {
-                return ResourceManager.GetString("CurrentlySelecting", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Date.
         /// </summary>
         public static string Date {
@@ -174,15 +147,6 @@ namespace RWPM.Resources.Shared {
         public static string Delete {
             get {
                 return ResourceManager.GetString("Delete", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Department.
-        /// </summary>
-        public static string Department {
-            get {
-                return ResourceManager.GetString("Department", resourceCulture);
             }
         }
         
@@ -376,15 +340,6 @@ namespace RWPM.Resources.Shared {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to Not approved yet.
-        /// </summary>
-        public static string NotApprovedYet {
-            get {
-                return ResourceManager.GetString("NotApprovedYet", resourceCulture);
-            }
-        }
-
-        /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to approve this request?.
         /// </summary>
         public static string ConfirmApproveMsg {
@@ -429,9 +384,7 @@ namespace RWPM.Resources.Shared {
         public static string Swap_SelectSourcePrompt => ResourceManager.GetString("Swap_SelectSourcePrompt", resourceCulture);
         public static string Swap_SelectCoworkerPrompt => ResourceManager.GetString("Swap_SelectCoworkerPrompt", resourceCulture);
         public static string Swap_SelectCoworkerShiftPrompt => ResourceManager.GetString("Swap_SelectCoworkerShiftPrompt", resourceCulture);
-        public static string Swap_TargetShiftInfo => ResourceManager.GetString("Swap_TargetShiftInfo", resourceCulture);
         public static string Filter_AllTypes => ResourceManager.GetString("Filter_AllTypes", resourceCulture);
-        public static string Filter_ShiftRegOnly => ResourceManager.GetString("Filter_ShiftRegOnly", resourceCulture);
         public static string Filter_ShiftSwapOnly => ResourceManager.GetString("Filter_ShiftSwapOnly", resourceCulture);
         public static string LeaveRequest => ResourceManager.GetString("LeaveRequest", resourceCulture);
         public static string Filter_LeaveOnly => ResourceManager.GetString("Filter_LeaveOnly", resourceCulture);
@@ -449,8 +402,6 @@ namespace RWPM.Resources.Shared {
         public static string Leave_RejectSuccess => ResourceManager.GetString("Leave_RejectSuccess", resourceCulture);
         public static string Leave_DeleteSuccess => ResourceManager.GetString("Leave_DeleteSuccess", resourceCulture);
         public static string Leave_DaysUnit => ResourceManager.GetString("Leave_DaysUnit", resourceCulture);
-        public static string Leave_InsufficientBalance => ResourceManager.GetString("Leave_InsufficientBalance", resourceCulture);
-    
 
         public static string Page_Subtitle {
             get {
@@ -467,12 +418,6 @@ namespace RWPM.Resources.Shared {
         public static string Status_Rejected {
             get {
                 return ResourceManager.GetString("Status_Rejected", resourceCulture);
-            }
-        }
-
-        public static string Stats_Filtering {
-            get {
-                return ResourceManager.GetString("Stats_Filtering", resourceCulture);
             }
         }
 
@@ -530,39 +475,15 @@ namespace RWPM.Resources.Shared {
             }
         }
 
-        public static string Detail_ContentTitle {
-            get {
-                return ResourceManager.GetString("Detail_ContentTitle", resourceCulture);
-            }
-        }
-
-        public static string Detail_AttendanceTitle {
-            get {
-                return ResourceManager.GetString("Detail_AttendanceTitle", resourceCulture);
-            }
-        }
-
         public static string Detail_EmployeeNote {
             get {
                 return ResourceManager.GetString("Detail_EmployeeNote", resourceCulture);
             }
         }
 
-        public static string Detail_Reviewer {
-            get {
-                return ResourceManager.GetString("Detail_Reviewer", resourceCulture);
-            }
-        }
-
         public static string Detail_ProposedTime {
             get {
                 return ResourceManager.GetString("Detail_ProposedTime", resourceCulture);
-            }
-        }
-
-        public static string Detail_AtTime {
-            get {
-                return ResourceManager.GetString("Detail_AtTime", resourceCulture);
             }
         }
 
@@ -848,12 +769,6 @@ namespace RWPM.Resources.Shared {
             }
         }
 
-        public static string Adj_ErrOtherEmployeeRecord {
-            get {
-                return ResourceManager.GetString("Adj_ErrOtherEmployeeRecord", resourceCulture);
-            }
-        }
-
         public static string Adj_ErrPendingForShift {
             get {
                 return ResourceManager.GetString("Adj_ErrPendingForShift", resourceCulture);
@@ -1086,6 +1001,118 @@ namespace RWPM.Resources.Shared {
         public static string Filter_SearchEnterHint {
             get {
                 return ResourceManager.GetString("Filter_SearchEnterHint", resourceCulture);
+            }
+        }
+
+        /// <summary>Approval warnings</summary>
+        public static string Warn_ConfirmTitle {
+            get {
+                return ResourceManager.GetString("Warn_ConfirmTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>Approve anyway?</summary>
+        public static string Warn_ConfirmContinue {
+            get {
+                return ResourceManager.GetString("Warn_ConfirmContinue", resourceCulture);
+            }
+        }
+
+        /// <summary>Pending</summary>
+        public static string Tab_Pending {
+            get {
+                return ResourceManager.GetString("Tab_Pending", resourceCulture);
+            }
+        }
+
+        /// <summary>Approved</summary>
+        public static string Tab_Approved {
+            get {
+                return ResourceManager.GetString("Tab_Approved", resourceCulture);
+            }
+        }
+
+        /// <summary>Rejected</summary>
+        public static string Tab_Rejected {
+            get {
+                return ResourceManager.GetString("Tab_Rejected", resourceCulture);
+            }
+        }
+
+        /// <summary>{0} selected</summary>
+        public static string Bulk_SelectedCount {
+            get {
+                return ResourceManager.GetString("Bulk_SelectedCount", resourceCulture);
+            }
+        }
+
+        /// <summary>Clear selection</summary>
+        public static string Bulk_Clear {
+            get {
+                return ResourceManager.GetString("Bulk_Clear", resourceCulture);
+            }
+        }
+
+        /// <summary>Review before approving</summary>
+        public static string Detail_WarningsTitle {
+            get {
+                return ResourceManager.GetString("Detail_WarningsTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>Reviewer note</summary>
+        public static string Detail_ApproverNote {
+            get {
+                return ResourceManager.GetString("Detail_ApproverNote", resourceCulture);
+            }
+        }
+
+        /// <summary>Used as the reason when rejecting; for attendance adjustments it is also saved with the approval.</summary>
+        public static string Detail_ApproverNoteHint {
+            get {
+                return ResourceManager.GetString("Detail_ApproverNoteHint", resourceCulture);
+            }
+        }
+
+        /// <summary>Add a note or a reason for rejection...</summary>
+        public static string Detail_ApproverNotePlaceholder {
+            get {
+                return ResourceManager.GetString("Detail_ApproverNotePlaceholder", resourceCulture);
+            }
+        }
+
+        /// <summary>Processed at</summary>
+        public static string Detail_ProcessedAt {
+            get {
+                return ResourceManager.GetString("Detail_ProcessedAt", resourceCulture);
+            }
+        }
+
+        /// <summary>Swap to</summary>
+        public static string Detail_SwapTo {
+            get {
+                return ResourceManager.GetString("Detail_SwapTo", resourceCulture);
+            }
+        }
+
+        /// <summary>Apply</summary>
+        public static string Filter_Apply {
+            get {
+                return ResourceManager.GetString("Filter_Apply", resourceCulture);
+            }
+        }
+
+        /// <summary>Clock in and out with a live photo and GPS, and review attendance history.</summary>
+        public static string Att_PageSubtitle {
+            get {
+                return ResourceManager.GetString("Att_PageSubtitle", resourceCulture);
+            }
+        }
+
+        /// <summary>{0} h</summary>
+        public static string Att_HoursUnit {
+            get {
+                return ResourceManager.GetString("Att_HoursUnit", resourceCulture);
             }
         }
     }

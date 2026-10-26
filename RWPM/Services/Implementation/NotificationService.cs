@@ -303,6 +303,27 @@ namespace RWPM.Services.Implementation
                     message = Format(NR.Body_PayslipAvailable, A(0), A(1));
                     icon = "bi-cash-stack"; color = "primary";
                     break;
+                case NotificationTypes.AvailabilitySubmitted:
+                    title = NR.Title_AvailabilitySubmitted;
+                    message = Format(NR.Body_AvailabilitySubmitted, A(0), A(1), RWPM.Common.Validation.AvailabilityRules.DescribeEncoded(A(2)));
+                    icon = "bi-clock-history"; color = "warning";
+                    break;
+                case NotificationTypes.AvailabilityApproved:
+                    title = NR.Title_AvailabilityApproved;
+                    message = Format(NR.Body_AvailabilityApproved, A(0), RWPM.Common.Validation.AvailabilityRules.DescribeEncoded(A(1)));
+                    icon = "bi-check-circle-fill"; color = "success";
+                    break;
+                case NotificationTypes.AvailabilityRejected:
+                    title = NR.Title_AvailabilityRejected;
+                    message = Format(NR.Body_AvailabilityRejected, A(0), RWPM.Common.Validation.AvailabilityRules.DescribeEncoded(A(1)), A(2));
+                    icon = "bi-x-circle-fill"; color = "danger";
+                    break;
+                case NotificationTypes.ShiftShortage:
+                    title = NR.Title_ShiftShortage;
+                    message = Format(A(0) == NotificationRequestTypes.ShiftSwap ? NR.Body_ShiftShortage_Swap : NR.Body_ShiftShortage_Leave,
+                        A(1), DescribeShortageItems(A(2), A(3)));
+                    icon = "bi-people"; color = "danger";
+                    break;
                 default:
                     title = NR.Title_Default;
                     message = string.Join(" ", args.Where(a => !string.IsNullOrWhiteSpace(a)));
@@ -335,6 +356,25 @@ namespace RWPM.Services.Implementation
             if (ageSeconds < 86400) return Format(NR.Rel_HoursAgo, ageSeconds / 3600);
             if (ageSeconds < 7 * 86400) return Format(NR.Rel_DaysAgo, ageSeconds / 86400);
             return created.ToString("dd/MM/yyyy HH:mm");
+        }
+
+        /// <summary>Dịch danh sách ca thiếu người (xem NotificationTypes.ShiftShortage) theo ngôn ngữ người xem.</summary>
+        private static string DescribeShortageItems(string encoded, string extra)
+        {
+            var items = (encoded ?? string.Empty).Split('\n', StringSplitOptions.RemoveEmptyEntries)
+                .Select(line => line.Split('\t'))
+                .Where(p => p.Length == 3)
+                .Select(p =>
+                {
+                    var name = p[0].Trim();
+                    // Mẫu câu đã có chữ "ca" -> bỏ tiền tố "Ca " trong tên ca để tránh lặp
+                    if (name.Length > 3 && name.StartsWith("ca ", StringComparison.OrdinalIgnoreCase)) name = name.Substring(3).Trim();
+                    return Format(NR.ShiftShortage_Item, name, p[1].Trim(), p[2].Trim());
+                })
+                .ToList();
+            var text = string.Join(", ", items);
+            if (int.TryParse(extra, out var more) && more > 0) text += Format(NR.ShiftShortage_More, more);
+            return text;
         }
 
         private static string RequestTypeName(string key) => key switch

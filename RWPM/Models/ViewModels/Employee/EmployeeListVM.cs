@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using RWPM.Common.Models;
-using RWPM.Models.Entities;
 
 namespace RWPM.Models.ViewModels.Employee
 {

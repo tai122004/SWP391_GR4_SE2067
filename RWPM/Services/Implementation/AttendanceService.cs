@@ -3,14 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using RWPM.Infrastructure.Data;
 using RWPM.Models.Entities;
 using RWPM.Services.Abstraction;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
 using RWPM.Resources.Shared;
 using RWPM.Common.Constants;
-using Microsoft.Extensions.Hosting;
 using RWPM.Common.Validation;
 
 namespace RWPM.Services.Implementation
@@ -47,11 +41,11 @@ namespace RWPM.Services.Implementation
 
         public async Task<(AttendanceRecord Record, string? WarningMessage)> CheckInAsync(string username, double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
         {
-            var errorMessage = SharedResource.ResourceManager.GetString("Attendance_Err_NotInAllowedTime");
+            var errorMessage = SharedResource.Attendance_Err_NotInAllowedTime;
             bool isValid = false;
             if (photo == null || photo.Length == 0)
             {
-                throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_NoPhotoIn"));
+                throw new InvalidOperationException(SharedResource.Attendance_Err_NoPhotoIn);
             }
             ValidatePhoto(photo);
 
@@ -60,7 +54,7 @@ namespace RWPM.Services.Implementation
             var employee = await _context.Employee.Include(e => e.Store).FirstOrDefaultAsync(e => e.Username == username);
             if (employee == null)
             {
-                throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_NoEmployee"));
+                throw new InvalidOperationException(SharedResource.Attendance_Err_NoEmployee);
             }
 
             var registrations = await _context.Set<ShiftRegistration>()
@@ -72,7 +66,7 @@ namespace RWPM.Services.Implementation
 
             if (!registrations.Any())
             {
-                throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_NoShift"));
+                throw new InvalidOperationException(SharedResource.Attendance_Err_NoShift);
             }
 
             var nowAt = DateTime.Now;
@@ -99,14 +93,13 @@ namespace RWPM.Services.Implementation
                     .ToList();
                 if (!candidates.Any())
                 {
-                    throw new Exception(errorMessage);
+                    throw new InvalidOperationException(errorMessage);
                 }
 
                 matchedRegistration = candidates.OrderBy(r => Math.Abs((nowAt - r.WorkDate.Date.Add(r.Shift.StartTime)).TotalMinutes)).First();
                 var shift = matchedRegistration.Shift;
 
                 int eCheckIn = ShiftDefaults.EarlyCheckInMinutes;
-                int lThreshold = ShiftDefaults.LateThresholdMinutes;
                 if (nowAt > ShiftTimeHelper.GetDateTimeRange(matchedRegistration.WorkDate, shift).EndAt)
                 {
                     isValid = false;
@@ -115,7 +108,7 @@ namespace RWPM.Services.Implementation
                 {
                     if (!_env.IsDevelopment())
                     {
-                        errorMessage = string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_TooEarlyIn"), shift.ShiftName, eCheckIn);
+                        errorMessage = string.Format(SharedResource.Attendance_Err_TooEarlyIn, shift.ShiftName, eCheckIn);
                     }
                     else
                     {
@@ -130,7 +123,7 @@ namespace RWPM.Services.Implementation
 
             if (!isValid)
             {
-                throw new Exception(errorMessage);
+                throw new InvalidOperationException(errorMessage);
             }
 
             var matchedShift = matchedRegistration.Shift;
@@ -144,9 +137,8 @@ namespace RWPM.Services.Implementation
 
             if (existingRecordForShift != null)
             {
-                throw new Exception(string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_AlreadyCompleted"), matchedShift.ShiftName));
+                throw new InvalidOperationException(string.Format(SharedResource.Attendance_Err_AlreadyCompleted, matchedShift.ShiftName));
             }
-
 
             // GeoLocation Validation
             double? calculatedDistance = null;
@@ -154,7 +146,7 @@ namespace RWPM.Services.Implementation
             {
                 if (!userLatitude.HasValue || !userLongitude.HasValue)
                 {
-                    throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_NoGPS"));
+                    throw new InvalidOperationException(SharedResource.Attendance_Err_NoGPS);
                 }
 
                 double distance = GeoLocationHelper.CalculateDistanceMeters(
@@ -166,7 +158,7 @@ namespace RWPM.Services.Implementation
                                  && Math.Abs(userLongitude.Value - targetStore.Longitude.Value) < 0.000001;
                 if (isExactMatch && !_env.IsDevelopment())
                 {
-                    throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_FakeGPS"));
+                    throw new InvalidOperationException(SharedResource.Attendance_Err_FakeGPS);
                 }
 
                 // Reject invalid store configuration instead of silently skipping the minimum distance.
@@ -175,13 +167,13 @@ namespace RWPM.Services.Implementation
                 AttendanceInputRules.ValidateRadius(minDistance, allowedRadius);
                 if (minDistance > 0 && distance < minDistance)
                 {
-                    throw new Exception(string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_MinDistance"), targetStore.StoreName, Math.Round(distance), minDistance));
+                    throw new InvalidOperationException(string.Format(SharedResource.Attendance_Err_MinDistance, targetStore.StoreName, Math.Round(distance), minDistance));
                 }
 
                 // Kiểm tra bán kính tối đa — phải nằm trong phạm vi cho phép
                 if (distance > allowedRadius)
                 {
-                    throw new Exception(string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_MaxRadius"), targetStore.StoreName, Math.Round(distance), allowedRadius));
+                    throw new InvalidOperationException(string.Format(SharedResource.Attendance_Err_MaxRadius, targetStore.StoreName, Math.Round(distance), allowedRadius));
                 }
 
                 calculatedDistance = distance;
@@ -196,7 +188,7 @@ namespace RWPM.Services.Implementation
                 CheckInLatitude = userLatitude,
                 CheckInLongitude = userLongitude,
                 DistanceMeters = calculatedDistance,
-                CheckInPhotoPath = await SavePhotoAsync(photo!, username, "CheckIn")
+                CheckInPhotoPath = await SavePhotoAsync(photo!, "CheckIn")
             };
 
             _context.AttendanceRecord.Add(record);
@@ -221,7 +213,7 @@ namespace RWPM.Services.Implementation
         {
             if (photo == null || photo.Length == 0)
             {
-                throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_NoPhotoOut"));
+                throw new InvalidOperationException(SharedResource.Attendance_Err_NoPhotoOut);
             }
             ValidatePhoto(photo);
 
@@ -229,14 +221,14 @@ namespace RWPM.Services.Implementation
             
             if (record == null)
             {
-                throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_NotCheckedIn"));
+                throw new InvalidOperationException(SharedResource.Attendance_Err_NotCheckedIn);
             }
             if (record.CheckOutTime.HasValue)
             {
-                throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_AlreadyCheckedOut"));
+                throw new InvalidOperationException(SharedResource.Attendance_Err_AlreadyCheckedOut);
             }
             if (!record.CheckInTime.HasValue)
-                throw new Exception(SharedResource.Attendance_Err_NotCheckedIn);
+                throw new InvalidOperationException(SharedResource.Attendance_Err_NotCheckedIn);
             (DateTime StartAt, DateTime EndAt)? checkInRange = record.Shift == null
                 ? null : ShiftTimeHelper.GetDateTimeRange(record.Date, record.Shift);
             var actualCheckIn = new[] { -1, 0, 1 }
@@ -266,7 +258,7 @@ namespace RWPM.Services.Implementation
             {
                 if (!userLatitude.HasValue || !userLongitude.HasValue)
                 {
-                    throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_NoGPS"));
+                    throw new InvalidOperationException(SharedResource.Attendance_Err_NoGPS);
                 }
 
                 double distance = GeoLocationHelper.CalculateDistanceMeters(
@@ -278,7 +270,7 @@ namespace RWPM.Services.Implementation
                                  && Math.Abs(userLongitude.Value - targetStore.Longitude.Value) < 0.000001;
                 if (isExactMatch && !_env.IsDevelopment())
                 {
-                    throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_FakeGPS"));
+                    throw new InvalidOperationException(SharedResource.Attendance_Err_FakeGPS);
                 }
 
                 // Reject invalid store configuration instead of silently skipping the minimum distance.
@@ -287,20 +279,20 @@ namespace RWPM.Services.Implementation
                 AttendanceInputRules.ValidateRadius(minDistance, allowedRadius);
                 if (minDistance > 0 && distance < minDistance)
                 {
-                    throw new Exception(string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_MinDistance"), targetStore.StoreName, Math.Round(distance), minDistance));
+                    throw new InvalidOperationException(string.Format(SharedResource.Attendance_Err_MinDistance, targetStore.StoreName, Math.Round(distance), minDistance));
                 }
 
                 // Kiểm tra bán kính tối đa — phải nằm trong phạm vi cho phép
                 if (distance > allowedRadius)
                 {
-                    throw new Exception(string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_MaxRadius"), targetStore.StoreName, Math.Round(distance), allowedRadius));
+                    throw new InvalidOperationException(string.Format(SharedResource.Attendance_Err_MaxRadius, targetStore.StoreName, Math.Round(distance), allowedRadius));
                 }
             }
 
             record.CheckOutTime = DateTime.Now.TimeOfDay;
             record.CheckOutLatitude = userLatitude;
             record.CheckOutLongitude = userLongitude;
-            record.CheckOutPhotoPath = await SavePhotoAsync(photo!, username, "CheckOut");
+            record.CheckOutPhotoPath = await SavePhotoAsync(photo!, "CheckOut");
 
             await _context.SaveChangesAsync();
 
@@ -335,23 +327,6 @@ namespace RWPM.Services.Implementation
                 .ToListAsync();
         }
 
-        public async Task<List<AttendanceRecord>> GetAllHistoryAsync(string? searchQuery = null)
-        {
-            var query = _context.AttendanceRecord
-                .Include(x => x.Shift)
-                .Include(x => x.AdjustmentHistories)
-                .AsQueryable();
-            if (!string.IsNullOrWhiteSpace(searchQuery))
-            {
-                query = query.Where(x => x.Username.Contains(searchQuery));
-            }
-            return await query
-                .OrderByDescending(x => x.Date)
-                .ThenByDescending(x => x.CheckInTime)
-                .ThenByDescending(x => x.AttendanceId)
-                .ToListAsync();
-        }
-
         public async Task AdjustAttendanceAsync(int recordId, TimeSpan? newCheckIn, TimeSpan? newCheckOut, string reason, string modifierUsername)
         {
             var record = await _context.AttendanceRecord.Include(r => r.Shift)
@@ -359,7 +334,7 @@ namespace RWPM.Services.Implementation
 
             if (record == null)
             {
-                throw new Exception(SharedResource.Attendance_Err_RecordNotFound);
+                throw new InvalidOperationException(SharedResource.Attendance_Err_RecordNotFound);
             }
 
             await AttendanceAdjustmentService.EnsurePeriodUnlockedAsync(_context, record.Date);
@@ -408,7 +383,7 @@ namespace RWPM.Services.Implementation
         {
             if (photo.Length > MaxPhotoBytes)
             {
-                throw new Exception(RWPM.Common.Validation.InputRules.Text("Ảnh chấm công vượt quá dung lượng cho phép (5MB).", "Attendance photo exceeds the 5MB limit."));
+                throw new InvalidOperationException(RWPM.Common.Validation.InputRules.Text("Ảnh chấm công vượt quá dung lượng cho phép (5MB).", "Attendance photo exceeds the 5MB limit."));
             }
 
             var contentType = (photo.ContentType ?? string.Empty).ToLowerInvariant();
@@ -426,10 +401,10 @@ namespace RWPM.Services.Implementation
             if ((contentType == "image/jpeg" || contentType == "image/jpg" || contentType == "image/pjpeg") && isJpeg) return ".jpg";
             if (contentType == "image/png" && isPng) return ".png";
 
-            throw new Exception(RWPM.Common.Validation.InputRules.Text("Ảnh chấm công phải là file JPEG hoặc PNG.", "Attendance photo must be a JPEG or PNG image."));
+            throw new InvalidOperationException(RWPM.Common.Validation.InputRules.Text("Ảnh chấm công phải là file JPEG hoặc PNG.", "Attendance photo must be a JPEG or PNG image."));
         }
 
-        private async Task<string> SavePhotoAsync(Microsoft.AspNetCore.Http.IFormFile photo, string username, string type)
+        private async Task<string> SavePhotoAsync(Microsoft.AspNetCore.Http.IFormFile photo, string type)
         {
             var extension = ValidatePhoto(photo);
 

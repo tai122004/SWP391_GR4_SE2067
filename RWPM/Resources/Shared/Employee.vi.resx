@@ -17,16 +17,7 @@
     <resheader name="version">2.0</resheader>
     <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
     <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
+                        
     There are any number of "resheader" rows that contain simple 
     name/value pairs.
     
@@ -165,9 +156,6 @@
   <data name="Placeholder_Search" xml:space="preserve">
     <value>Nhập mã nhân viên, họ và tên, tài khoản...</value>
   </data>
-  <data name="Placeholder_Store" xml:space="preserve">
-    <value>--- Chọn cửa hàng ---</value>
-  </data>
   <data name="Search" xml:space="preserve">
     <value>Tìm kiếm</value>
   </data>
@@ -216,9 +204,6 @@
   <data name="Column_JoinDate" xml:space="preserve">
     <value>Ngày bắt đầu làm việc</value>
   </data>
-  <data name="Edit_SectionTitle" xml:space="preserve">
-    <value>Thông tin công việc &amp; Cửa hàng</value>
-  </data>
   <data name="Edit_ActiveLabel" xml:space="preserve">
     <value>Đang làm việc (Kích hoạt)</value>
   </data>
@@ -233,9 +218,6 @@
   </data>
   <data name="Unassigned" xml:space="preserve">
     <value>Chưa phân bổ</value>
-  </data>
-  <data name="NoEmail" xml:space="preserve">
-    <value>Chưa có email</value>
   </data>
   <data name="ExportExcel" xml:space="preserve">
     <value>Xuất file Excel</value>
@@ -288,9 +270,6 @@
   <data name="Badge_Resigned" xml:space="preserve">
     <value>Đã thôi việc</value>
   </data>
-  <data name="Badge_Probation" xml:space="preserve">
-    <value>Thử việc</value>
-  </data>
   <data name="Excel_Action" xml:space="preserve">
     <value>Excel</value>
   </data>
@@ -305,15 +284,6 @@
   </data>
   <data name="Excel_SelectFile" xml:space="preserve">
     <value>Chọn file Excel (.xlsx)</value>
-  </data>
-  <data name="Excel_UploadAndImport" xml:space="preserve">
-    <value>Bắt đầu nhập dữ liệu</value>
-  </data>
-  <data name="Excel_TemplateNote" xml:space="preserve">
-    <value>Vui lòng tải file mẫu để nhập đúng cấu trúc cột. Mật khẩu mặc định sau khi nhập là: Aa@123456</value>
-  </data>
-  <data name="Excel_Close" xml:space="preserve">
-    <value>Đóng</value>
   </data>
   <data name="Excel_Btn_Preview" xml:space="preserve">
     <value>Kiểm tra dữ liệu</value>
@@ -408,50 +378,11 @@
   <data name="Import_SessionExpired" xml:space="preserve">
     <value>Phiên nhập dữ liệu đã hết hạn hoặc không tìm thấy dữ liệu hợp lệ. Vui lòng tải lại file.</value>
   </data>
-  <data name="Import_NoSheet" xml:space="preserve">
-    <value>File Excel không đúng định dạng hoặc không có sheet dữ liệu.</value>
-  </data>
   <data name="Import_NoWorksheet" xml:space="preserve">
     <value>File Excel không đúng định dạng hoặc không có trang tính dữ liệu.</value>
   </data>
-  <data name="Import_NoRows" xml:space="preserve">
-    <value>File Excel không có dòng dữ liệu nào để nhập.</value>
-  </data>
   <data name="Import_NoRowsPreview" xml:space="preserve">
     <value>File Excel không chứa dòng dữ liệu nào.</value>
-  </data>
-  <data name="Import_RowError" xml:space="preserve">
-    <value>Dòng {0}: {1}</value>
-  </data>
-  <data name="Import_FullNameRequired" xml:space="preserve">
-    <value>Họ và tên không được để trống.</value>
-  </data>
-  <data name="Import_UsernameRequired" xml:space="preserve">
-    <value>Tên đăng nhập không được để trống.</value>
-  </data>
-  <data name="Import_EmailRequired" xml:space="preserve">
-    <value>Email không được để trống.</value>
-  </data>
-  <data name="Import_UsernameExistsInSystem" xml:space="preserve">
-    <value>Tên đăng nhập '{0}' đã tồn tại trong hệ thống.</value>
-  </data>
-  <data name="Import_UsernameExists" xml:space="preserve">
-    <value>Tên đăng nhập '{0}' đã tồn tại.</value>
-  </data>
-  <data name="Import_StoreInvalid" xml:space="preserve">
-    <value>Mã cửa hàng '{0}' không hợp lệ hoặc không tồn tại. Vui lòng xem sheet '{1}'.</value>
-  </data>
-  <data name="Import_StoreNotFound" xml:space="preserve">
-    <value>Mã cửa hàng '{0}' không tồn tại. Vui lòng xem sheet '{1}'.</value>
-  </data>
-  <data name="Import_EmpCodeExistsInSystem" xml:space="preserve">
-    <value>Mã nhân viên '{0}' đã tồn tại trong hệ thống.</value>
-  </data>
-  <data name="Import_EmpCodeExists" xml:space="preserve">
-    <value>Mã nhân viên '{0}' đã tồn tại.</value>
-  </data>
-  <data name="Import_StoreNotRequired" xml:space="preserve">
-    <value>Không yêu cầu</value>
   </data>
   <data name="Err_EmployeeNotFound" xml:space="preserve">
     <value>Không tìm thấy nhân viên ID {0}.</value>
@@ -609,7 +540,7 @@
   <data name="Create_SubTitle" xml:space="preserve">
     <value>Thêm hồ sơ nhân viên mới và phân công vào cửa hàng</value>
   </data>
-  <data name="Import_PhoneInvalid" xml:space="preserve">
-    <value>Số điện thoại '{0}' không hợp lệ (phải gồm đúng 10 chữ số và bắt đầu bằng số 0).</value>
+  <data name="Aria_Breadcrumb" xml:space="preserve">
+    <value>Đường dẫn trang</value>
   </data>
 </root>

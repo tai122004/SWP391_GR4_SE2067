@@ -95,5 +95,29 @@ namespace RWPM.Resources.Shared {
                 return ResourceManager.GetString("PageHeader", resourceCulture);
             }
         }
+
+        public static string SubTitle {
+            get {
+                return ResourceManager.GetString("SubTitle", resourceCulture);
+            }
+        }
+
+        public static string SubTitle_Account {
+            get {
+                return ResourceManager.GetString("SubTitle_Account", resourceCulture);
+            }
+        }
+
+        public static string NewPassword_Hint {
+            get {
+                return ResourceManager.GetString("NewPassword_Hint", resourceCulture);
+            }
+        }
+
+        public static string TogglePassword {
+            get {
+                return ResourceManager.GetString("TogglePassword", resourceCulture);
+            }
+        }
     }
 }

@@ -374,6 +374,115 @@ namespace RWPM.Migrations
                     b.ToTable("Employee");
                 });
 
+            modelBuilder.Entity("RWPM.Models.Entities.EmployeeAvailability", b =>
+                {
+                    b.Property<int>("EmployeeAvailabilityId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeAvailabilityId"), 1L, 1);
+
+                    b.Property<DateTime?>("ApprovedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ApprovedBy")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasPrecision(0)
+                        .HasColumnType("datetime2(0)");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("RejectionReason")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasPrecision(0)
+                        .HasColumnType("datetime2(0)");
+
+                    b.HasKey("EmployeeAvailabilityId");
+
+                    b.HasIndex("EmployeeId", "DayOfWeek", "Status");
+
+                    b.ToTable("EmployeeAvailability");
+
+                    b.HasCheckConstraint("CK_EmployeeAvailability_DayOfWeek", "[DayOfWeek] BETWEEN 0 AND 6");
+
+                    b.HasCheckConstraint("CK_EmployeeAvailability_Times", "[StartTime] <> [EndTime]");
+                });
+
+            modelBuilder.Entity("RWPM.Models.Entities.EmployeeUnavailability", b =>
+                {
+                    b.Property<int>("EmployeeUnavailabilityId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeUnavailabilityId"), 1L, 1);
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasPrecision(0)
+                        .HasColumnType("datetime2(0)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasPrecision(0)
+                        .HasColumnType("datetime2(0)");
+
+                    b.HasKey("EmployeeUnavailabilityId");
+
+                    b.HasIndex("EmployeeId", "Date")
+                        .IsUnique();
+
+                    b.ToTable("EmployeeUnavailability");
+                });
+
             modelBuilder.Entity("RWPM.Models.Entities.ImportLog", b =>
                 {
                     b.Property<Guid>("Id")
@@ -956,6 +1065,71 @@ namespace RWPM.Migrations
                     b.HasCheckConstraint("CK_Shift_EffectiveDates", "[EffectiveTo] IS NULL OR [EffectiveTo] >= [EffectiveFrom]");
                 });
 
+            modelBuilder.Entity("RWPM.Models.Entities.ShiftDemand", b =>
+                {
+                    b.Property<int>("ShiftDemandId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ShiftDemandId"), 1L, 1);
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasPrecision(0)
+                        .HasColumnType("datetime2(0)");
+
+                    b.Property<DateTime?>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("DayOfWeek")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("RequiredCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ShiftId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StoreId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasPrecision(0)
+                        .HasColumnType("datetime2(0)");
+
+                    b.HasKey("ShiftDemandId");
+
+                    b.HasIndex("ShiftId");
+
+                    b.HasIndex("StoreId", "ShiftId", "Date")
+                        .IsUnique()
+                        .HasFilter("[Date] IS NOT NULL");
+
+                    b.HasIndex("StoreId", "ShiftId", "DayOfWeek")
+                        .IsUnique()
+                        .HasFilter("[DayOfWeek] IS NOT NULL");
+
+                    b.ToTable("ShiftDemand");
+
+                    b.HasCheckConstraint("CK_ShiftDemand_DayOfWeek", "[DayOfWeek] IS NULL OR [DayOfWeek] BETWEEN 0 AND 6");
+
+                    b.HasCheckConstraint("CK_ShiftDemand_Kind", "([DayOfWeek] IS NULL AND [Date] IS NOT NULL) OR ([DayOfWeek] IS NOT NULL AND [Date] IS NULL)");
+
+                    b.HasCheckConstraint("CK_ShiftDemand_RequiredCount", "[RequiredCount] BETWEEN 0 AND 100");
+                });
+
             modelBuilder.Entity("RWPM.Models.Entities.ShiftRegistration", b =>
                 {
                     b.Property<int>("ShiftRegistrationId")
@@ -1301,6 +1475,28 @@ namespace RWPM.Migrations
                     b.Navigation("Store");
                 });
 
+            modelBuilder.Entity("RWPM.Models.Entities.EmployeeAvailability", b =>
+                {
+                    b.HasOne("RWPM.Models.Entities.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("RWPM.Models.Entities.EmployeeUnavailability", b =>
+                {
+                    b.HasOne("RWPM.Models.Entities.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
             modelBuilder.Entity("RWPM.Models.Entities.ImportLog", b =>
                 {
                     b.HasOne("RWPM.Models.Entities.Acc", "Creator")
@@ -1411,6 +1607,25 @@ namespace RWPM.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Employee");
+
+                    b.Navigation("Store");
+                });
+
+            modelBuilder.Entity("RWPM.Models.Entities.ShiftDemand", b =>
+                {
+                    b.HasOne("RWPM.Models.Entities.Shift", "Shift")
+                        .WithMany()
+                        .HasForeignKey("ShiftId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Shift");
 
                     b.Navigation("Store");
                 });

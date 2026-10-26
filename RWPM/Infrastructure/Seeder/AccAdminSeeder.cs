@@ -33,25 +33,6 @@ namespace RWPM.Infrastructure.Seeder
 
                 await databaseContext.SaveChangesAsync();
             }
-
-            //if (!await databaseContext.Acc.AnyAsync(x => x.Username == AccountHelper.ANONYMOUS_USERNAME))
-            //{
-            //    await databaseContext.Acc.AddRangeAsync(new List<Acc>()
-            //    {
-            //        new Acc
-            //        {
-            //            Username = AccountHelper.ANONYMOUS_USERNAME,
-            //            Password = hasher.HashPassword(null!, "4n329087d490-mjru390ur-24u9r-3iu290-"),
-            //            FullName = "ANONYMOUS_USERNAME",
-            //            Email = "anonymous_sumi@gmail.com",
-            //            Role = AccountRole.User,
-            //            CreatedDate = DateTime.Now,
-            //            CreatedBy = AccountHelper.SEEDER,
-            //        }
-            //    });
-
-            //    await databaseContext.SaveChangesAsync();
-            //}
         }
     }
 }

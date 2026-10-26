@@ -3,14 +3,12 @@
 @{
     ViewData["Title"] = SharedResource.ResourceManager.GetString("Attendance_Title");
     var todayRecord = ViewBag.TodayRecord as RWPM.Models.Entities.AttendanceRecord;
-    bool isAdmin = ViewBag.IsAdmin ?? false;
     bool canManage = ViewBag.CanManage ?? false;
-    string searchQuery = ViewBag.SearchQuery as string;
+    string? searchQuery = ViewBag.SearchQuery as string;
     
-    var myHistory = ViewBag.MyHistory as List<RWPM.Models.Entities.AttendanceRecord> ?? (Model != null && !isAdmin ? Model.ToList() : new List<RWPM.Models.Entities.AttendanceRecord>());
-    var employeeHistory = ViewBag.EmployeeHistory as List<RWPM.Models.Entities.AttendanceRecord> ?? (isAdmin && Model != null ? Model.ToList() : new List<RWPM.Models.Entities.AttendanceRecord>());
-    string scopeTitle = ViewBag.ScopeTitle as string ?? (isAdmin ? SharedResource.Attendance_Scope_Company : "");
-    bool hasSearch = !string.IsNullOrWhiteSpace(searchQuery);
+    var myHistory = ViewBag.MyHistory as List<RWPM.Models.Entities.AttendanceRecord> ?? (Model?.ToList() ?? new List<RWPM.Models.Entities.AttendanceRecord>());
+    var employeeHistory = ViewBag.EmployeeHistory as List<RWPM.Models.Entities.AttendanceRecord> ?? new List<RWPM.Models.Entities.AttendanceRecord>();
+    string scopeTitle = ViewBag.ScopeTitle as string ?? "";
     string activeTab = ViewBag.ActiveTab as string ?? "my";
     bool isEmpTabActive = activeTab == "employees";
     
@@ -26,360 +24,161 @@
 }
 
 <style>
-    .nav-pills .nav-link {
-        color: #495057;
-        background-color: #f8f9fa;
-        border: 1px solid #dee2e6;
-        transition: all 0.2s ease-in-out;
-    }
-    .nav-pills .nav-link:hover {
-        background-color: #e9ecef;
-        color: #212529;
-    }
-    .nav-pills .nav-link.active {
-        color: #fff !important;
-        background-color: #0d6efd !important;
-        border-color: #0d6efd !important;
-    }
-    .nav-pills .nav-link.active .badge {
-        background-color: rgba(255, 255, 255, 0.25) !important;
-        color: #fff !important;
-    }
-    .table-pagination .pagination {
-        margin-bottom: 0;
-    }
-    .table-pagination .page-link {
-        color: #495057;
-        border: 1px solid #dee2e6;
-        padding: 0.35rem 0.75rem;
-        font-size: 0.85rem;
-        border-radius: 6px;
-        margin: 0 2px;
-        transition: all 0.15s ease-in-out;
-    }
-    .table-pagination .page-link:hover {
-        background-color: #e9ecef;
-        color: #0d6efd;
-    }
-    .table-pagination .page-item.active .page-link {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
-        color: #fff;
-        font-weight: 600;
-        box-shadow: 0 2px 4px rgba(13, 110, 253, 0.25);
-    }
-    .table-pagination .page-item.disabled .page-link {
-        color: #adb5bd;
-        background-color: #f8f9fa;
-        border-color: #dee2e6;
-        cursor: not-allowed;
-    }
+    /* Attendance — scoped on top of the global design system (site.css v2) */
+    .att-tabs { display: flex; gap: 1.5rem; border-bottom: 1px solid var(--app-border); margin-bottom: 1rem; flex-wrap: nowrap; overflow-x: auto; }
+    .att-tabs .nav-link { display: inline-flex; align-items: center; gap: .45rem; padding: .55rem 0; margin-bottom: -1px; border: 0; border-bottom: 2px solid transparent;
+                          border-radius: 0 !important; background: none; color: var(--app-text-2); font-weight: 500; white-space: nowrap; }
+    .att-tabs .nav-link:hover { color: var(--app-text); }
+    .att-tabs .nav-link.active { color: var(--app-blue); border-bottom-color: var(--app-blue); background: none; }
+    .att-tab-count { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 20px; padding: 0 6px; border-radius: var(--app-radius);
+                     background: var(--app-neutral-soft); color: var(--app-neutral-text); font-size: .78rem; font-variant-numeric: tabular-nums; }
+    .att-tabs .nav-link.active .att-tab-count { background: var(--app-blue-soft); color: var(--app-blue); }
+    .att-section-title { font-size: 1.07rem; font-weight: 600; margin: 0 0 .75rem; color: var(--app-text); }
+    .att-today-date { font-size: 1.35rem; font-weight: 600; color: var(--app-text); font-variant-numeric: tabular-nums; }
+    .att-time { font-variant-numeric: tabular-nums; }
+    .att-adjusted-btn { color: var(--app-blue); font-size: .95rem; text-decoration: none; cursor: pointer; }
+    .table-pagination .pagination { margin-bottom: 0; }
+    .attendance-page .list-group-item.active { background: var(--app-blue-soft); color: var(--app-blue); border-color: var(--app-border); }
 </style>
 
 <div class="attendance-page">
-    <div class="row mt-3">
+    <div class="app-page-header">
+        <div>
+            <h4>@SharedResource.Attendance_Title</h4>
+            <p class="text-muted">@RequestResource.Att_PageSubtitle</p>
+        </div>
+    </div>
+    <div class="row">
         <!-- Phần bấm giờ -->
         <div class="col-md-4 col-lg-3 mb-4">
-            <div class="mb-3">
-                <h4 class="fw-semibold text-dark d-flex align-items-center">
-                    <i id="leftPanelIcon" class="bi @(canManage && isEmpTabActive ? "bi-people" : "bi-clock") me-2"></i>
-                    <span id="leftPanelHeader">@(canManage && isEmpTabActive ? SharedResource.Attendance_EmployeeList : SharedResource.Attendance_Today)</span>
-                </h4>
-            </div>
-            
+            <h5 class="att-section-title" id="leftPanelHeader">@(canManage && isEmpTabActive ? SharedResource.Attendance_EmployeeList : SharedResource.Attendance_Today)</h5>
+
             <div class="modern-card p-4 text-center">
-                <h3 class="mb-4 text-primary fw-bold">@DateTime.Now.ToString("dd/MM/yyyy")</h3>
+                <div class="att-today-date mb-3">@DateTime.Now.ToString("dd/MM/yyyy")</div>
                 
-                @if (!isAdmin)
-                {
-                    <div id="personalClockInArea" class="@(canManage && isEmpTabActive ? "d-none" : "")">
-                        @if (isFullyCompleted)
-                        {
-                            var completedList = todayRecords?
-                                .Where(x => x.CheckOutTime.HasValue)
-                                .OrderBy(x => x.CheckInTime)
-                                .ToList();
+                <div id="personalClockInArea" class="@(canManage && isEmpTabActive ? "d-none" : "")">
+                    @if (isFullyCompleted)
+                    {
+                        var completedList = todayRecords?
+                            .Where(x => x.CheckOutTime.HasValue)
+                            .OrderBy(x => x.CheckInTime)
+                            .ToList();
 
-                            <div class="alert alert-info small text-start mb-3 p-3" style="border-radius: 10px;">
-                                <div class="d-flex align-items-center fw-bold text-success mb-2">
-                                    <i class="bi bi-check-circle-fill fs-6 me-2"></i>
-                                    <span>@SharedResource.ResourceManager.GetString("Attendance_AllCompletedToday")</span>
-                                </div>
+                        <div class="alert alert-success small text-start mb-3 p-3">
+                            <div class="d-flex align-items-center fw-medium mb-2">
+                                <i class="bi bi-check-circle me-2"></i>
+                                <span>@SharedResource.ResourceManager.GetString("Attendance_AllCompletedToday")</span>
+                            </div>
 
-                                @if (completedList != null && completedList.Any())
-                                {
-                                    <div class="d-flex flex-column gap-2 mt-2">
-                                        @foreach (var rec in completedList)
-                                        {
-                                            <div class="bg-white bg-opacity-75 p-2 rounded border" style="font-size: 0.85rem;">
-                                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                                    <span class="fw-bold text-dark">
-                                                        <i class="bi bi-clock-history text-primary me-1"></i>@(rec.Shift?.ShiftName ?? SharedResource.Attendance_DefaultShiftName)
-                                                    </span>
-                                                    @if (rec.WorkHours.HasValue)
-                                                    {
-                                                        <span class="badge bg-success-subtle text-success border border-success-subtle">@rec.WorkHours.Value.ToString("0.##")h</span>
-                                                    }
+                            @if (completedList != null && completedList.Any())
+                            {
+                                <div class="d-flex flex-column gap-2 mt-2">
+                                    @foreach (var rec in completedList)
+                                    {
+                                        <div class="bg-white p-2 rounded border" style="font-size: 0.85rem;">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span class="fw-medium text-dark">@(rec.Shift?.ShiftName ?? SharedResource.Attendance_DefaultShiftName)</span>
+                                                @if (rec.WorkHours.HasValue)
+                                                {
+                                                    <span class="app-badge app-badge-success">@string.Format(RequestResource.Att_HoursUnit, rec.WorkHours.Value.ToString("0.##"))</span>
+                                                }
+                                            </div>
+                                            <div class="row g-1 text-muted" style="font-size: 0.8rem;">
+                                                <div class="col-6">
+                                                    <span>@SharedResource.ResourceManager.GetString("Attendance_CheckInTime")</span> 
+                                                    <strong class="text-dark att-time">@(rec.CheckInTime?.ToString(@"hh\:mm") ?? "--:--")</strong>
                                                 </div>
-                                                <div class="row g-1 text-muted" style="font-size: 0.8rem;">
-                                                    <div class="col-6">
-                                                        <span>@SharedResource.ResourceManager.GetString("Attendance_CheckInTime")</span> 
-                                                        <strong class="text-dark">@(rec.CheckInTime?.ToString(@"hh\:mm") ?? "--:--")</strong>
-                                                    </div>
-                                                    <div class="col-6">
-                                                        <span>@SharedResource.ResourceManager.GetString("Attendance_CheckOutTime")</span> 
-                                                        <strong class="text-dark">@(rec.CheckOutTime?.ToString(@"hh\:mm") ?? "--:--")</strong>
-                                                    </div>
+                                                <div class="col-6">
+                                                    <span>@SharedResource.ResourceManager.GetString("Attendance_CheckOutTime")</span> 
+                                                    <strong class="text-dark att-time">@(rec.CheckOutTime?.ToString(@"hh\:mm") ?? "--:--")</strong>
                                                 </div>
                                             </div>
-                                        }
-                                    </div>
-                                }
-                            </div>
-                        }
-                        else if (canCheckIn || canCheckOut)
-                        {
-                            <div id="gpsStatus" class="alert alert-info small py-1 mb-2 d-none">
-                                <i class="bi bi-geo-alt spinner-grow spinner-grow-sm me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_GPSLoading")
-                            </div>
-
-                            <form id="attendanceForm" method="post" enctype="multipart/form-data" class="d-grid gap-2">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="userLatitude" id="userLatitude" />
-                                <input type="hidden" name="userLongitude" id="userLongitude" />
-                                <div class="mb-3 text-center">
-                                    <label class="form-label small fw-semibold text-danger"><i class="bi bi-camera"></i> @SharedResource.ResourceManager.GetString("Attendance_PhotoTitle")</label>
-                                    
-                                    <div id="camera-container" class="position-relative bg-dark rounded overflow-hidden mx-auto mb-2" style="width: 100%; max-width: 320px; aspect-ratio: 3/4; display: flex; align-items: center; justify-content: center;">
-                                        <video id="camera-stream" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
-                                        <img id="camera-preview" style="width: 100%; height: 100%; object-fit: cover; display: none;" />
-                                        <div id="camera-loading" class="text-white small position-absolute top-50 start-50 translate-middle">@SharedResource.ResourceManager.GetString("Attendance_CamLoading")</div>
-                                    </div>
-                                    
-                                    <div class="d-flex justify-content-center gap-2 mb-2">
-                                        <button type="button" id="btnCapture" class="btn btn-sm btn-primary">
-                                            <i class="bi bi-camera-fill"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnCapture")
-                                        </button>
-                                        <button type="button" id="btnRetake" class="btn btn-sm btn-outline-secondary" style="display: none;">
-                                            <i class="bi bi-arrow-counterclockwise"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnRetake")
-                                        </button>
-                                    </div>
-                                    
-                                    <input type="file" name="photo" id="photoInput" accept="image/jpeg" class="d-none" required />
-                                    <canvas id="camera-canvas" class="d-none"></canvas>
-                                    <div class="form-text" style="font-size: 0.75rem;">@SharedResource.ResourceManager.GetString("Attendance_PhotoGuide")</div>
+                                        </div>
+                                    }
                                 </div>
-
-                                <button type="button" id="btnCheckIn" asp-action="CheckIn" class="btn btn-sm btn-outline-success" disabled="@(canCheckIn ? null : "disabled")">
-                                    <i class="bi bi-box-arrow-in-right me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnCheckIn")
-                                </button>
-                                <button type="button" id="btnCheckOut" asp-action="CheckOut" class="btn btn-sm btn-outline-danger" disabled="@(canCheckOut ? null : "disabled")">
-                                    <i class="bi bi-box-arrow-right me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnCheckOut")
-                                </button>
-                            </form>
-                        }
-                        else
-                        {
-                            <div class="alert alert-warning small py-2 text-start">
-                                <i class="bi bi-exclamation-triangle-fill text-warning me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_WarningNoShift")
-                            </div>
-                        }
-                    </div>
-
-                    @if (canManage && empList != null && empList.Count > 0)
-                    {
-                        <div id="managerEmpListContainer" class="text-start @(isEmpTabActive ? "" : "d-none")">
-                            <label class="form-label small fw-semibold text-secondary d-flex justify-content-between align-items-center mb-2">
-                                <span><i class="bi bi-people me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_EmployeeList")</span>
-                                <span class="badge bg-secondary-subtle text-dark">@empList.Count</span>
-                            </label>
-                            <div class="list-group list-group-flush border rounded small" style="max-height: 380px; overflow-y: auto;">
-                                <a href="@Url.Action("Index", new { searchQuery = "", view = "employees" })" class="list-group-item list-group-item-action py-2 @(isEmpTabActive && string.IsNullOrEmpty(searchQuery) ? "active fw-bold" : "")">
-                                    <i class="bi bi-people-fill me-2"></i> <strong>@SharedResource.ResourceManager.GetString("Attendance_AllEmployees")</strong>
-                                </a>
-                                @foreach(var emp in empList)
-                                {
-                                    <a href="@Url.Action("Index", new { searchQuery = emp.Username, view = "employees" })" class="list-group-item list-group-item-action py-2 @(searchQuery == emp.Username ? "active fw-bold" : "")">
-                                        <i class="bi bi-person me-2"></i> @emp.FullName <span class="text-muted small">(@emp.Username)</span>
-                                    </a>
-                                }
-                            </div>
+                            }
                         </div>
                     }
-                }
-                else
+                    else if (canCheckIn || canCheckOut)
+                    {
+                        <div id="gpsStatus" class="alert alert-info small py-1 mb-2 d-none">
+                            <i class="bi bi-geo-alt spinner-grow spinner-grow-sm me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_GPSLoading")
+                        </div>
+
+                        <form id="attendanceForm" method="post" enctype="multipart/form-data" class="d-grid gap-2">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="userLatitude" id="userLatitude" />
+                            <input type="hidden" name="userLongitude" id="userLongitude" />
+                            <div class="mb-3 text-center">
+                                <label class="form-label small required">@SharedResource.ResourceManager.GetString("Attendance_PhotoTitle")</label>
+                                
+                                <div id="camera-container" class="position-relative bg-dark rounded overflow-hidden mx-auto mb-2" style="width: 100%; max-width: 320px; aspect-ratio: 3/4; display: flex; align-items: center; justify-content: center;">
+                                    <video id="camera-stream" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+                                    <img id="camera-preview" style="width: 100%; height: 100%; object-fit: cover; display: none;" />
+                                    <div id="camera-loading" class="text-white small position-absolute top-50 start-50 translate-middle">@SharedResource.ResourceManager.GetString("Attendance_CamLoading")</div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-center gap-2 mb-2">
+                                    <button type="button" id="btnCapture" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-camera-fill"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnCapture")
+                                    </button>
+                                    <button type="button" id="btnRetake" class="btn btn-sm btn-outline-secondary" style="display: none;">
+                                        <i class="bi bi-arrow-counterclockwise"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnRetake")
+                                    </button>
+                                </div>
+                                
+                                <input type="file" name="photo" id="photoInput" accept="image/jpeg" class="d-none" required />
+                                <canvas id="camera-canvas" class="d-none"></canvas>
+                                <div class="form-text" style="font-size: 0.75rem;">@SharedResource.ResourceManager.GetString("Attendance_PhotoGuide")</div>
+                            </div>
+
+                            <button type="button" id="btnCheckIn" asp-action="CheckIn" class="btn @(canCheckIn ? "btn-primary" : "btn-outline-secondary")" disabled="@(canCheckIn ? null : "disabled")">
+                                <i class="bi bi-box-arrow-in-right me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnCheckIn")
+                            </button>
+                            <button type="button" id="btnCheckOut" asp-action="CheckOut" class="btn @(canCheckOut ? "btn-primary" : "btn-outline-secondary")" disabled="@(canCheckOut ? null : "disabled")">
+                                <i class="bi bi-box-arrow-right me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnCheckOut")
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning small py-2 text-start">
+                            <i class="bi bi-exclamation-triangle me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_WarningNoShift")
+                        </div>
+                    }
+                </div>
+
+                @if (canManage && empList != null && empList.Count > 0)
                 {
-                    <div class="alert alert-secondary small py-2 mb-3">
-                        <i class="bi bi-info-circle me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_AdminNoNeed")
-                    </div>
-                    
-                    @if (empList != null && empList.Count > 0)
-                    {
-                        <div class="text-start">
-                            <label class="form-label small fw-semibold text-secondary d-flex justify-content-between align-items-center">
-                                <span><i class="bi bi-people me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_EmployeeList")</span>
-                                <span class="badge bg-secondary-subtle text-dark">@empList.Count</span>
-                            </label>
-                            <div class="list-group list-group-flush border rounded small" style="max-height: 380px; overflow-y: auto;">
-                                <a href="@Url.Action("Index", new { searchQuery = "" })" class="list-group-item list-group-item-action py-2 @(string.IsNullOrEmpty(searchQuery) ? "active fw-bold" : "")">
-                                    <i class="bi bi-people-fill me-2"></i> <strong>@SharedResource.ResourceManager.GetString("Attendance_AllEmployees")</strong>
+                    <div id="managerEmpListContainer" class="text-start @(isEmpTabActive ? "" : "d-none")">
+                        <label class="form-label small fw-semibold text-secondary d-flex justify-content-between align-items-center mb-2">
+                            <span><i class="bi bi-people me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_EmployeeList")</span>
+                            <span class="app-badge app-badge-neutral">@empList.Count</span>
+                        </label>
+                        <div class="list-group list-group-flush border rounded small" style="max-height: 380px; overflow-y: auto;">
+                            <a href="@Url.Action("Index", new { searchQuery = "", view = "employees" })" class="list-group-item list-group-item-action py-2 @(isEmpTabActive && string.IsNullOrEmpty(searchQuery) ? "active fw-bold" : "")">
+                                <i class="bi bi-people-fill me-2"></i> <strong>@SharedResource.ResourceManager.GetString("Attendance_AllEmployees")</strong>
+                            </a>
+                            @foreach(var emp in empList)
+                            {
+                                <a href="@Url.Action("Index", new { searchQuery = emp.Username, view = "employees" })" class="list-group-item list-group-item-action py-2 @(searchQuery == emp.Username ? "active fw-bold" : "")">
+                                    <i class="bi bi-person me-2"></i> @emp.FullName <span class="text-muted small">(@emp.Username)</span>
                                 </a>
-                                @foreach(var emp in empList)
-                                {
-                                    <a href="@Url.Action("Index", new { searchQuery = emp.Username })" class="list-group-item list-group-item-action py-2 @(searchQuery == emp.Username ? "active fw-bold" : "")">
-                                        <i class="bi bi-person me-2"></i> @emp.FullName <span class="text-muted small">(@emp.Username)</span>
-                                    </a>
-                                }
-                            </div>
+                            }
                         </div>
-                    }
+                    </div>
                 }
             </div>
         </div>
 
         <!-- Phần Lịch sử -->
         <div class="col-md-8 col-lg-9 mb-4">
-            @if (isAdmin)
+            @if (canManage)
             {
-                <!-- 1. DÀNH CHO ADMIN: Chỉ hiển thị Lịch sử nhân viên toàn công ty, không hiện tab chấm công cá nhân -->
-                <div class="mb-3 d-flex justify-content-between align-items-center">
-                    <h4 class="fw-semibold text-dark d-flex align-items-center mb-0">
-                        <i class="bi bi-people me-2 text-primary"></i> @SharedResource.Attendance_EmployeeHistory @(!string.IsNullOrEmpty(scopeTitle) ? $"({scopeTitle})" : "")
-                        <span class="badge rounded-pill bg-primary ms-2 fs-6">@employeeHistory.Count</span>
-                    </h4>
-                </div>
-
-                <!-- Search form -->
-                <div class="modern-card p-3 mb-3">
-                    <form asp-action="Index" method="get" class="row g-2 align-items-center">
-                        <div class="col-md-6 col-lg-5">
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                                <input type="text" name="searchQuery" value="@searchQuery" class="form-control border-start-0 ps-0" placeholder="@SharedResource.ResourceManager.GetString("Attendance_SearchPlaceholder")" />
-                            </div>
-                        </div>
-                        <div class="col-auto d-flex gap-2">
-                            <button type="submit" class="btn btn-sm btn-primary">
-                                <i class="bi bi-funnel me-1"></i> @SharedResource.ResourceManager.GetString("Search")
-                            </button>
-                            <a href="@Url.Action("Index")" class="btn btn-sm btn-outline-secondary">
-                                <i class="bi bi-arrow-clockwise"></i> @SharedResource.ResourceManager.GetString("Attendance_ClearSearch")
-                            </a>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="modern-card overflow-hidden mb-3">
-                    <div class="table-responsive">
-                        <table class="table modern-table align-middle mb-0" id="adminAttendanceTable">
-                            <thead>
-                                <tr>
-                                    <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Date")</th>
-                                    <th class="text-nowrap">@SharedResource.ResourceManager.GetString("Attendance_EmployeeCol")</th>
-                                    <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_ShiftCol")</th>
-                                    <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_CheckInCol")</th>
-                                    <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_CheckOutCol")</th>
-                                    <th class="text-nowrap text-center">@RWPM.Resources.Shared.Shift.ResourceManager.GetString("HoursWorked")</th>
-                                    <th class="text-nowrap text-center"><i class="bi bi-image me-1"></i>@SharedResource.ResourceManager.GetString("Attendance_PhotoCol")</th>
-                                    <th class="text-nowrap text-center"><i class="bi bi-geo-alt me-1"></i>@SharedResource.ResourceManager.GetString("Attendance_DistanceCol")</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if (employeeHistory != null && employeeHistory.Any())
-                                {
-                                    foreach (var item in employeeHistory)
-                                    {
-                                        <tr>
-                                            <td class="text-center"><strong>@item.Date.ToString("dd/MM/yyyy")</strong></td>
-                                            <td>
-                                                <div class="d-flex flex-column">
-                                                    <span class="fw-semibold text-dark">@(item.Account?.FullName ?? item.Username)</span>
-                                                    @if (item.Account != null && !string.IsNullOrEmpty(item.Account.FullName) && item.Account.FullName != item.Username)
-                                                    {
-                                                        <span class="text-muted small" style="font-size: 0.8rem;">@@@item.Username</span>
-                                                    }
-                                                </div>
-                                            </td>
-                                            <td class="text-center">@(item.Shift != null ? item.Shift.ShiftName : "-")</td>
-                                            <td class="text-center text-success fw-bold">
-                                                @(item.CheckInTime.HasValue ? item.CheckInTime.Value.ToString(@"hh\:mm") : "--:--")
-                                                @if (item.IsAdjusted)
-                                                {
-                                                    <button type="button" 
-                                                            class="btn btn-link p-0 text-primary ms-1 align-baseline border-0 bg-transparent" 
-                                                            data-bs-toggle="modal" 
-                                                            data-bs-target="#historyModal_@item.AttendanceId" 
-                                                            title="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")"
-                                                            style="cursor: pointer; font-size: 0.95rem; text-decoration: none;">
-                                                        <i class="bi bi-info-circle"></i>
-                                                    </button>
-                                                }
-                                            </td>
-                                            <td class="text-center text-danger fw-bold">
-                                                @(item.CheckOutTime.HasValue ? item.CheckOutTime.Value.ToString(@"hh\:mm") : "--:--")
-                                                @if (item.IsAdjusted)
-                                                {
-                                                    <button type="button" 
-                                                            class="btn btn-link p-0 text-primary ms-1 align-baseline border-0 bg-transparent" 
-                                                            data-bs-toggle="modal" 
-                                                            data-bs-target="#historyModal_@item.AttendanceId" 
-                                                            title="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")"
-                                                            style="cursor: pointer; font-size: 0.95rem; text-decoration: none;">
-                                                        <i class="bi bi-info-circle"></i>
-                                                    </button>
-                                                }
-                                            </td>
-                                            <td class="text-center">@(item.WorkHours?.ToString("0.##") ?? "—")</td>
-                                            <td class="text-center">
-                                                @if (!string.IsNullOrEmpty(item.CheckInPhotoPath))
-                                                {
-                                                    <a href="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "in" })" target="_blank" title="@SharedResource.ResourceManager.GetString("Attendance_PhotoCheckIn")">
-                                                        <img src="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "in" })" class="img-thumbnail" style="width: 40px; height: 40px; object-fit: cover;" />
-                                                    </a>
-                                                }
-                                                @if (!string.IsNullOrEmpty(item.CheckOutPhotoPath))
-                                                {
-                                                    <a href="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "out" })" target="_blank" title="@SharedResource.ResourceManager.GetString("Attendance_PhotoCheckOut")">
-                                                        <img src="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "out" })" class="img-thumbnail ms-1" style="width: 40px; height: 40px; object-fit: cover;" />
-                                                    </a>
-                                                }
-                                            </td>
-                                            <td class="text-center small">
-                                                @if (item.DistanceMeters.HasValue)
-                                                {
-                                                    <span class="badge bg-success-subtle text-success border border-success-subtle">
-                                                        <i class="bi bi-check-circle me-1"></i> @Math.Round(item.DistanceMeters.Value)m
-                                                    </span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-muted">-</span>
-                                                }
-                                            </td>
-                                        </tr>
-                                    }
-                                }
-                                else
-                                {
-                                    <tr>
-                                        <td colspan="8" class="text-center text-muted py-4">
-                                            <i class="bi bi-inbox fs-3 d-block mb-2"></i>
-                                            @SharedResource.ResourceManager.GetString("Attendance_NoData")
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                    <div id="adminAttendancePagination" class="px-3 py-2 border-top d-flex justify-content-between align-items-center flex-wrap gap-2 d-none"></div>
-                </div>
-            }
-            else if (canManage)
-            {
-                <!-- 2. DÀNH CHO HR & QUẢN LÝ CỬA HÀNG: Có 2 Tab chuyển đổi giữa cá nhân và nhân viên -->
+                <!-- 1. DÀNH CHO HR & QUẢN LÝ CỬA HÀNG: Có 2 Tab chuyển đổi giữa cá nhân và nhân viên -->
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                    <div class="nav nav-pills gap-2" id="attendanceTabs" role="tablist">
-                        <button class="nav-link @(isEmpTabActive ? "" : "active") rounded-pill px-3 py-1 fw-semibold text-sm shadow-none" 
+                    <div class="nav att-tabs w-100" id="attendanceTabs" role="tablist">
+                        <button class="nav-link @(isEmpTabActive ? "" : "active") " 
                                 id="my-history-tab" 
                                 data-bs-toggle="pill" 
                                 data-bs-target="#my-history-pane" 
@@ -387,10 +186,10 @@
                                 role="tab" 
                                 aria-controls="my-history-pane" 
                                 aria-selected="@(isEmpTabActive ? "false" : "true")">
-                            <i class="bi bi-person-badge me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_MyHistory")
-                            <span class="badge rounded-pill bg-light text-dark ms-1">@myHistory.Count</span>
+                            @SharedResource.ResourceManager.GetString("Attendance_MyHistory")
+                            <span class="att-tab-count">@myHistory.Count</span>
                         </button>
-                        <button class="nav-link @(isEmpTabActive ? "active" : "") rounded-pill px-3 py-1 fw-semibold text-sm shadow-none" 
+                        <button class="nav-link @(isEmpTabActive ? "active" : "") " 
                                 id="emp-history-tab" 
                                 data-bs-toggle="pill" 
                                 data-bs-target="#emp-history-pane" 
@@ -398,8 +197,8 @@
                                 role="tab" 
                                 aria-controls="emp-history-pane" 
                                 aria-selected="@(isEmpTabActive ? "true" : "false")">
-                            <i class="bi bi-people me-1"></i> @SharedResource.Attendance_EmployeeHistory @(!string.IsNullOrEmpty(scopeTitle) ? $"({scopeTitle})" : "")
-                            <span class="badge rounded-pill bg-light text-dark ms-1">@employeeHistory.Count</span>
+                            @SharedResource.Attendance_EmployeeHistory @(!string.IsNullOrEmpty(scopeTitle) ? $"({scopeTitle})" : "")
+                            <span class="att-tab-count">@employeeHistory.Count</span>
                         </button>
                     </div>
                 </div>
@@ -412,13 +211,13 @@
                                 <table class="table modern-table align-middle mb-0" id="myAttendanceTable">
                                     <thead>
                                         <tr>
-                                            <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Date")</th>
-                                            <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_ShiftCol")</th>
+                                            <th class="text-nowrap">@SharedResource.ResourceManager.GetString("Date")</th>
+                                            <th class="text-nowrap">@SharedResource.ResourceManager.GetString("Attendance_ShiftCol")</th>
                                             <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_CheckInCol")</th>
                                             <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_CheckOutCol")</th>
-                                            <th class="text-nowrap text-center">@RWPM.Resources.Shared.Shift.ResourceManager.GetString("HoursWorked")</th>
-                                            <th class="text-nowrap text-center"><i class="bi bi-image me-1"></i>@SharedResource.ResourceManager.GetString("Attendance_PhotoCol")</th>
-                                            <th class="text-nowrap text-center"><i class="bi bi-geo-alt me-1"></i>@SharedResource.ResourceManager.GetString("Attendance_DistanceCol")</th>
+                                            <th class="text-nowrap text-end">@RWPM.Resources.Shared.Shift.ResourceManager.GetString("HoursWorked")</th>
+                                            <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_PhotoCol")</th>
+                                            <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_DistanceCol")</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -427,57 +226,53 @@
                                             foreach (var item in myHistory)
                                             {
                                                 <tr>
-                                                    <td class="text-center"><strong>@item.Date.ToString("dd/MM/yyyy")</strong></td>
-                                                    <td class="text-center">@(item.Shift != null ? item.Shift.ShiftName : "-")</td>
-                                                    <td class="text-center text-success fw-bold">
+                                                    <td class="text-nowrap att-time">@item.Date.ToString("dd/MM/yyyy")</td>
+                                                    <td>@(item.Shift != null ? item.Shift.ShiftName : "-")</td>
+                                                    <td class="text-center text-nowrap att-time">
                                                         @(item.CheckInTime.HasValue ? item.CheckInTime.Value.ToString(@"hh\:mm") : "--:--")
                                                         @if (item.IsAdjusted)
                                                         {
                                                             <button type="button" 
-                                                                    class="btn btn-link p-0 text-primary ms-1 align-baseline border-0 bg-transparent" 
+                                                                    class="btn btn-link p-0 ms-1 align-baseline border-0 bg-transparent att-adjusted-btn" 
                                                                     data-bs-toggle="modal" 
                                                                     data-bs-target="#historyModal_@item.AttendanceId" 
-                                                                    title="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")"
-                                                                    style="cursor: pointer; font-size: 0.95rem; text-decoration: none;">
+                                                                    title="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")" aria-label="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")">
                                                                 <i class="bi bi-info-circle"></i>
                                                             </button>
                                                         }
                                                     </td>
-                                                    <td class="text-center text-danger fw-bold">
+                                                    <td class="text-center text-nowrap att-time">
                                                         @(item.CheckOutTime.HasValue ? item.CheckOutTime.Value.ToString(@"hh\:mm") : "--:--")
                                                         @if (item.IsAdjusted)
                                                         {
                                                             <button type="button" 
-                                                                    class="btn btn-link p-0 text-primary ms-1 align-baseline border-0 bg-transparent" 
+                                                                    class="btn btn-link p-0 ms-1 align-baseline border-0 bg-transparent att-adjusted-btn" 
                                                                     data-bs-toggle="modal" 
                                                                     data-bs-target="#historyModal_@item.AttendanceId" 
-                                                                    title="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")"
-                                                                    style="cursor: pointer; font-size: 0.95rem; text-decoration: none;">
+                                                                    title="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")" aria-label="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")">
                                                                 <i class="bi bi-info-circle"></i>
                                                             </button>
                                                         }
                                                     </td>
-                                                    <td class="text-center">@(item.WorkHours?.ToString("0.##") ?? "—")</td>
+                                                    <td class="text-end att-time">@(item.WorkHours?.ToString("0.##") ?? "—")</td>
                                                     <td class="text-center">
                                                         @if (!string.IsNullOrEmpty(item.CheckInPhotoPath))
                                                         {
                                                             <a href="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "in" })" target="_blank" title="@SharedResource.ResourceManager.GetString("Attendance_PhotoCheckIn")">
-                                                                <img src="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "in" })" class="img-thumbnail" style="width: 40px; height: 40px; object-fit: cover;" />
+                                                                <img src="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "in" })" alt="@SharedResource.ResourceManager.GetString("Attendance_PhotoCheckIn")" class="img-thumbnail" style="width: 40px; height: 40px; object-fit: cover;" />
                                                             </a>
                                                         }
                                                         @if (!string.IsNullOrEmpty(item.CheckOutPhotoPath))
                                                         {
                                                             <a href="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "out" })" target="_blank" title="@SharedResource.ResourceManager.GetString("Attendance_PhotoCheckOut")">
-                                                                <img src="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "out" })" class="img-thumbnail ms-1" style="width: 40px; height: 40px; object-fit: cover;" />
+                                                                <img src="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "out" })" alt="@SharedResource.ResourceManager.GetString("Attendance_PhotoCheckOut")" class="img-thumbnail ms-1" style="width: 40px; height: 40px; object-fit: cover;" />
                                                             </a>
                                                         }
                                                     </td>
-                                                    <td class="text-center small">
+                                                    <td class="text-center text-nowrap small">
                                                         @if (item.DistanceMeters.HasValue)
                                                         {
-                                                            <span class="badge bg-success-subtle text-success border border-success-subtle">
-                                                                <i class="bi bi-check-circle me-1"></i> @Math.Round(item.DistanceMeters.Value)m
-                                                            </span>
+                                                            <span class="app-status"><span class="app-dot app-dot-success"></span>@Math.Round(item.DistanceMeters.Value) m</span>
                                                         }
                                                         else
                                                         {
@@ -491,7 +286,7 @@
                                         {
                                             <tr>
                                                 <td colspan="7" class="text-center text-muted py-4">
-                                                    <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                                    <i class="bi bi-inbox fs-4 d-block mb-2"></i>
                                                     @SharedResource.ResourceManager.GetString("Attendance_NoData")
                                                 </td>
                                             </tr>
@@ -506,18 +301,18 @@
                     <!-- Tab 2: Lịch sử nhân viên -->
                     <div class="tab-pane fade @(isEmpTabActive ? "show active" : "")" id="emp-history-pane" role="tabpanel" aria-labelledby="emp-history-tab" tabindex="0">
                         <!-- Search form -->
-                        <div class="modern-card p-3 mb-3">
+                        <div class="app-filter-panel p-3 mb-3">
                             <form asp-action="Index" method="get" class="row g-2 align-items-center">
                                 <input type="hidden" name="view" value="employees" />
                                 <div class="col-md-6 col-lg-5">
                                     <div class="input-group input-group-sm">
-                                        <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                                        <input type="text" name="searchQuery" value="@searchQuery" class="form-control border-start-0 ps-0" placeholder="@SharedResource.ResourceManager.GetString("Attendance_SearchPlaceholder")" />
+                                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                        <input type="text" name="searchQuery" value="@searchQuery" class="form-control" placeholder="@SharedResource.ResourceManager.GetString("Attendance_SearchPlaceholder")" aria-label="@SharedResource.ResourceManager.GetString("Attendance_SearchPlaceholder")" />
                                     </div>
                                 </div>
                                 <div class="col-auto d-flex gap-2">
-                                    <button type="submit" class="btn btn-sm btn-primary">
-                                        <i class="bi bi-funnel me-1"></i> @SharedResource.ResourceManager.GetString("Search")
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-search me-1"></i> @SharedResource.ResourceManager.GetString("Search")
                                     </button>
                                     <a href="@Url.Action("Index", new { view = "employees" })" class="btn btn-sm btn-outline-secondary">
                                         <i class="bi bi-arrow-clockwise"></i> @SharedResource.ResourceManager.GetString("Attendance_ClearSearch")
@@ -531,14 +326,14 @@
                                 <table class="table modern-table align-middle mb-0" id="empAttendanceTable">
                                     <thead>
                                         <tr>
-                                            <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Date")</th>
+                                            <th class="text-nowrap">@SharedResource.ResourceManager.GetString("Date")</th>
                                             <th class="text-nowrap">@SharedResource.ResourceManager.GetString("Attendance_EmployeeCol")</th>
-                                            <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_ShiftCol")</th>
+                                            <th class="text-nowrap">@SharedResource.ResourceManager.GetString("Attendance_ShiftCol")</th>
                                             <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_CheckInCol")</th>
                                             <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_CheckOutCol")</th>
-                                            <th class="text-nowrap text-center">@RWPM.Resources.Shared.Shift.ResourceManager.GetString("HoursWorked")</th>
-                                            <th class="text-nowrap text-center"><i class="bi bi-image me-1"></i>@SharedResource.ResourceManager.GetString("Attendance_PhotoCol")</th>
-                                            <th class="text-nowrap text-center"><i class="bi bi-geo-alt me-1"></i>@SharedResource.ResourceManager.GetString("Attendance_DistanceCol")</th>
+                                            <th class="text-nowrap text-end">@RWPM.Resources.Shared.Shift.ResourceManager.GetString("HoursWorked")</th>
+                                            <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_PhotoCol")</th>
+                                            <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_DistanceCol")</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -547,7 +342,7 @@
                                             foreach (var item in employeeHistory)
                                             {
                                                 <tr>
-                                                    <td class="text-center"><strong>@item.Date.ToString("dd/MM/yyyy")</strong></td>
+                                                    <td class="text-nowrap att-time">@item.Date.ToString("dd/MM/yyyy")</td>
                                                     <td>
                                                         <div class="d-flex flex-column">
                                                             <span class="fw-semibold text-dark">@(item.Account?.FullName ?? item.Username)</span>
@@ -557,56 +352,52 @@
                                                             }
                                                         </div>
                                                     </td>
-                                                    <td class="text-center">@(item.Shift != null ? item.Shift.ShiftName : "-")</td>
-                                                    <td class="text-center text-success fw-bold">
+                                                    <td>@(item.Shift != null ? item.Shift.ShiftName : "-")</td>
+                                                    <td class="text-center text-nowrap att-time">
                                                         @(item.CheckInTime.HasValue ? item.CheckInTime.Value.ToString(@"hh\:mm") : "--:--")
                                                         @if (item.IsAdjusted)
                                                         {
                                                             <button type="button" 
-                                                                    class="btn btn-link p-0 text-primary ms-1 align-baseline border-0 bg-transparent" 
+                                                                    class="btn btn-link p-0 ms-1 align-baseline border-0 bg-transparent att-adjusted-btn" 
                                                                     data-bs-toggle="modal" 
                                                                     data-bs-target="#historyModal_@item.AttendanceId" 
-                                                                    title="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")"
-                                                                    style="cursor: pointer; font-size: 0.95rem; text-decoration: none;">
+                                                                    title="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")" aria-label="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")">
                                                                 <i class="bi bi-info-circle"></i>
                                                             </button>
                                                         }
                                                     </td>
-                                                    <td class="text-center text-danger fw-bold">
+                                                    <td class="text-center text-nowrap att-time">
                                                         @(item.CheckOutTime.HasValue ? item.CheckOutTime.Value.ToString(@"hh\:mm") : "--:--")
                                                         @if (item.IsAdjusted)
                                                         {
                                                             <button type="button" 
-                                                                    class="btn btn-link p-0 text-primary ms-1 align-baseline border-0 bg-transparent" 
+                                                                    class="btn btn-link p-0 ms-1 align-baseline border-0 bg-transparent att-adjusted-btn" 
                                                                     data-bs-toggle="modal" 
                                                                     data-bs-target="#historyModal_@item.AttendanceId" 
-                                                                    title="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")"
-                                                                    style="cursor: pointer; font-size: 0.95rem; text-decoration: none;">
+                                                                    title="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")" aria-label="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")">
                                                                 <i class="bi bi-info-circle"></i>
                                                             </button>
                                                         }
                                                     </td>
-                                                    <td class="text-center">@(item.WorkHours?.ToString("0.##") ?? "—")</td>
+                                                    <td class="text-end att-time">@(item.WorkHours?.ToString("0.##") ?? "—")</td>
                                                     <td class="text-center">
                                                         @if (!string.IsNullOrEmpty(item.CheckInPhotoPath))
                                                         {
                                                             <a href="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "in" })" target="_blank" title="@SharedResource.ResourceManager.GetString("Attendance_PhotoCheckIn")">
-                                                                <img src="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "in" })" class="img-thumbnail" style="width: 40px; height: 40px; object-fit: cover;" />
+                                                                <img src="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "in" })" alt="@SharedResource.ResourceManager.GetString("Attendance_PhotoCheckIn")" class="img-thumbnail" style="width: 40px; height: 40px; object-fit: cover;" />
                                                             </a>
                                                         }
                                                         @if (!string.IsNullOrEmpty(item.CheckOutPhotoPath))
                                                         {
                                                             <a href="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "out" })" target="_blank" title="@SharedResource.ResourceManager.GetString("Attendance_PhotoCheckOut")">
-                                                                <img src="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "out" })" class="img-thumbnail ms-1" style="width: 40px; height: 40px; object-fit: cover;" />
+                                                                <img src="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "out" })" alt="@SharedResource.ResourceManager.GetString("Attendance_PhotoCheckOut")" class="img-thumbnail ms-1" style="width: 40px; height: 40px; object-fit: cover;" />
                                                             </a>
                                                         }
                                                     </td>
-                                                    <td class="text-center small">
+                                                    <td class="text-center text-nowrap small">
                                                         @if (item.DistanceMeters.HasValue)
                                                         {
-                                                            <span class="badge bg-success-subtle text-success border border-success-subtle">
-                                                                <i class="bi bi-check-circle me-1"></i> @Math.Round(item.DistanceMeters.Value)m
-                                                            </span>
+                                                            <span class="app-status"><span class="app-dot app-dot-success"></span>@Math.Round(item.DistanceMeters.Value) m</span>
                                                         }
                                                         else
                                                         {
@@ -620,7 +411,7 @@
                                         {
                                             <tr>
                                                 <td colspan="8" class="text-center text-muted py-4">
-                                                    <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                                    <i class="bi bi-inbox fs-4 d-block mb-2"></i>
                                                     @SharedResource.ResourceManager.GetString("Attendance_NoData")
                                                 </td>
                                             </tr>
@@ -635,26 +426,21 @@
             }
             else
             {
-                <!-- 3. DÀNH CHO NHÂN VIÊN: Chỉ xem lịch sử của mình -->
-                <div class="mb-3 d-flex justify-content-between align-items-center">
-                    <h4 class="fw-semibold text-dark d-flex align-items-center mb-0">
-                        <i class="bi bi-clock-history me-2"></i>
-                        @SharedResource.ResourceManager.GetString("Attendance_MyHistory")
-                    </h4>
-                </div>
+                <!-- 2. DÀNH CHO NHÂN VIÊN: Chỉ xem lịch sử của mình -->
+                <h5 class="att-section-title">@SharedResource.ResourceManager.GetString("Attendance_MyHistory")</h5>
 
                 <div class="modern-card overflow-hidden mb-3">
                     <div class="table-responsive">
                         <table class="table modern-table align-middle mb-0" id="employeeSelfAttendanceTable">
                             <thead>
                                 <tr>
-                                    <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Date")</th>
-                                    <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_ShiftCol")</th>
+                                    <th class="text-nowrap">@SharedResource.ResourceManager.GetString("Date")</th>
+                                    <th class="text-nowrap">@SharedResource.ResourceManager.GetString("Attendance_ShiftCol")</th>
                                     <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_CheckInCol")</th>
                                     <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_CheckOutCol")</th>
-                                    <th class="text-nowrap text-center">@RWPM.Resources.Shared.Shift.ResourceManager.GetString("HoursWorked")</th>
-                                    <th class="text-nowrap text-center"><i class="bi bi-image me-1"></i>@SharedResource.ResourceManager.GetString("Attendance_PhotoCol")</th>
-                                    <th class="text-nowrap text-center"><i class="bi bi-geo-alt me-1"></i>@SharedResource.ResourceManager.GetString("Attendance_DistanceCol")</th>
+                                    <th class="text-nowrap text-end">@RWPM.Resources.Shared.Shift.ResourceManager.GetString("HoursWorked")</th>
+                                    <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_PhotoCol")</th>
+                                    <th class="text-nowrap text-center">@SharedResource.ResourceManager.GetString("Attendance_DistanceCol")</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -663,57 +449,53 @@
                                     foreach (var item in myHistory)
                                     {
                                         <tr>
-                                            <td class="text-center"><strong>@item.Date.ToString("dd/MM/yyyy")</strong></td>
-                                            <td class="text-center">@(item.Shift != null ? item.Shift.ShiftName : "-")</td>
-                                            <td class="text-center text-success fw-bold">
+                                            <td class="text-nowrap att-time">@item.Date.ToString("dd/MM/yyyy")</td>
+                                            <td>@(item.Shift != null ? item.Shift.ShiftName : "-")</td>
+                                            <td class="text-center text-nowrap att-time">
                                                 @(item.CheckInTime.HasValue ? item.CheckInTime.Value.ToString(@"hh\:mm") : "--:--")
                                                 @if (item.IsAdjusted)
                                                 {
                                                     <button type="button" 
-                                                            class="btn btn-link p-0 text-primary ms-1 align-baseline border-0 bg-transparent" 
+                                                            class="btn btn-link p-0 ms-1 align-baseline border-0 bg-transparent att-adjusted-btn" 
                                                             data-bs-toggle="modal" 
                                                             data-bs-target="#historyModal_@item.AttendanceId" 
-                                                            title="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")"
-                                                            style="cursor: pointer; font-size: 0.95rem; text-decoration: none;">
+                                                            title="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")" aria-label="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")">
                                                         <i class="bi bi-info-circle"></i>
                                                     </button>
                                                 }
                                             </td>
-                                            <td class="text-center text-danger fw-bold">
+                                            <td class="text-center text-nowrap att-time">
                                                 @(item.CheckOutTime.HasValue ? item.CheckOutTime.Value.ToString(@"hh\:mm") : "--:--")
                                                 @if (item.IsAdjusted)
                                                 {
                                                     <button type="button" 
-                                                            class="btn btn-link p-0 text-primary ms-1 align-baseline border-0 bg-transparent" 
+                                                            class="btn btn-link p-0 ms-1 align-baseline border-0 bg-transparent att-adjusted-btn" 
                                                             data-bs-toggle="modal" 
                                                             data-bs-target="#historyModal_@item.AttendanceId" 
-                                                            title="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")"
-                                                            style="cursor: pointer; font-size: 0.95rem; text-decoration: none;">
+                                                            title="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")" aria-label="@SharedResource.ResourceManager.GetString("Attendance_AdjustedTooltip")">
                                                         <i class="bi bi-info-circle"></i>
                                                     </button>
                                                 }
                                             </td>
-                                            <td class="text-center">@(item.WorkHours?.ToString("0.##") ?? "—")</td>
+                                            <td class="text-end att-time">@(item.WorkHours?.ToString("0.##") ?? "—")</td>
                                             <td class="text-center">
                                                 @if (!string.IsNullOrEmpty(item.CheckInPhotoPath))
                                                 {
                                                     <a href="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "in" })" target="_blank" title="@SharedResource.ResourceManager.GetString("Attendance_PhotoCheckIn")">
-                                                        <img src="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "in" })" class="img-thumbnail" style="width: 40px; height: 40px; object-fit: cover;" />
+                                                        <img src="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "in" })" alt="@SharedResource.ResourceManager.GetString("Attendance_PhotoCheckIn")" class="img-thumbnail" style="width: 40px; height: 40px; object-fit: cover;" />
                                                     </a>
                                                 }
                                                 @if (!string.IsNullOrEmpty(item.CheckOutPhotoPath))
                                                 {
                                                     <a href="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "out" })" target="_blank" title="@SharedResource.ResourceManager.GetString("Attendance_PhotoCheckOut")">
-                                                        <img src="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "out" })" class="img-thumbnail ms-1" style="width: 40px; height: 40px; object-fit: cover;" />
+                                                        <img src="@Url.Action("Photo", "Attendance", new { id = item.AttendanceId, type = "out" })" alt="@SharedResource.ResourceManager.GetString("Attendance_PhotoCheckOut")" class="img-thumbnail ms-1" style="width: 40px; height: 40px; object-fit: cover;" />
                                                     </a>
                                                 }
                                             </td>
-                                            <td class="text-center small">
+                                            <td class="text-center text-nowrap small">
                                                 @if (item.DistanceMeters.HasValue)
                                                 {
-                                                    <span class="badge bg-success-subtle text-success border border-success-subtle">
-                                                        <i class="bi bi-check-circle me-1"></i> @Math.Round(item.DistanceMeters.Value)m
-                                                    </span>
+                                                    <span class="app-status"><span class="app-dot app-dot-success"></span>@Math.Round(item.DistanceMeters.Value) m</span>
                                                 }
                                                 else
                                                 {
@@ -727,7 +509,7 @@
                                 {
                                     <tr>
                                         <td colspan="7" class="text-center text-muted py-4">
-                                            <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                            <i class="bi bi-inbox fs-4 d-block mb-2"></i>
                                             @SharedResource.ResourceManager.GetString("Attendance_NoData")
                                         </td>
                                     </tr>
@@ -754,15 +536,13 @@
     {
         <div class="modal fade" id="historyModal_@item.AttendanceId" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
             <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
-                    <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
-                        <h5 class="modal-title fw-bold text-dark fs-5">
-                            <i class="bi bi-clock-history text-primary me-2"></i>@SharedResource.Attendance_AdjDetail_Title
-                        </h5>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">@SharedResource.Attendance_AdjDetail_Title</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@SharedResource.Button_Close"></button>
                     </div>
                     <div class="modal-body p-4 text-start">
-                        <div class="p-3 mb-3 rounded-3 bg-light border">
+                        <div class="p-3 mb-3 bg-light border rounded">
                             <div class="row g-2 mb-2">
                                 <div class="col-6">
                                     <span class="text-muted small d-block">@SharedResource.Attendance_AdjDetail_Employee</span>
@@ -782,34 +562,32 @@
                             <div class="row g-2">
                                 <div class="col-6">
                                     <span class="text-muted small d-block">@SharedResource.Attendance_AdjDetail_CurrentIn</span>
-                                    <span class="fw-bold text-success">@(item.CheckInTime.HasValue ? item.CheckInTime.Value.ToString(@"hh\:mm") : "--:--")</span>
+                                    <span class="fw-medium text-dark att-time">@(item.CheckInTime.HasValue ? item.CheckInTime.Value.ToString(@"hh\:mm") : "--:--")</span>
                                 </div>
                                 <div class="col-6">
                                     <span class="text-muted small d-block">@SharedResource.Attendance_AdjDetail_CurrentOut</span>
-                                    <span class="fw-bold text-danger">@(item.CheckOutTime.HasValue ? item.CheckOutTime.Value.ToString(@"hh\:mm") : "--:--")</span>
+                                    <span class="fw-medium text-dark att-time">@(item.CheckOutTime.HasValue ? item.CheckOutTime.Value.ToString(@"hh\:mm") : "--:--")</span>
                                 </div>
                             </div>
                         </div>
 
                         @if (item.AdjustmentHistories != null && item.AdjustmentHistories.Any())
                         {
-                            <h6 class="fw-bold small text-muted text-uppercase mb-2">@SharedResource.Attendance_AdjDetail_History</h6>
-                            <div class="list-group list-group-flush border rounded-3 overflow-hidden">
+                            <h6 class="small text-muted mb-2">@SharedResource.Attendance_AdjDetail_History</h6>
+                            <div class="list-group list-group-flush border rounded overflow-hidden">
                                 @foreach (var hist in item.AdjustmentHistories.OrderByDescending(h => h.ModifiedAt))
                                 {
                                     <div class="list-group-item p-3">
                                         <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
-                                                <i class="bi bi-person-check me-1"></i>@SharedResource.Attendance_AdjDetail_ModifiedBy @hist.ModifiedBy
-                                            </span>
+                                            <span class="app-badge app-badge-info">@SharedResource.Attendance_AdjDetail_ModifiedBy @hist.ModifiedBy</span>
                                             <span class="small text-muted">
-                                                <i class="bi bi-clock me-1"></i>@hist.ModifiedAt.ToString("HH:mm dd/MM/yyyy")
+                                                @hist.ModifiedAt.ToString("HH:mm dd/MM/yyyy")
                                             </span>
                                         </div>
                                         <div class="row g-2 small mb-2 bg-light p-2 rounded">
                                             <div class="col-6">
                                                 <span class="text-muted">@SharedResource.Attendance_AdjDetail_Before</span>
-                                                <div class="fw-semibold text-secondary">
+                                                <div class="fw-medium text-secondary att-time">
                                                     @(hist.OldCheckInTime.HasValue ? hist.OldCheckInTime.Value.ToString(@"hh\:mm") : "--:--")
                                                     ~
                                                     @(hist.OldCheckOutTime.HasValue ? hist.OldCheckOutTime.Value.ToString(@"hh\:mm") : "--:--")
@@ -817,7 +595,7 @@
                                             </div>
                                             <div class="col-6">
                                                 <span class="text-muted">@SharedResource.Attendance_AdjDetail_After</span>
-                                                <div class="fw-bold text-success">
+                                                <div class="fw-medium text-dark att-time">
                                                     @(hist.NewCheckInTime.HasValue ? hist.NewCheckInTime.Value.ToString(@"hh\:mm") : "--:--")
                                                     ~
                                                     @(hist.NewCheckOutTime.HasValue ? hist.NewCheckOutTime.Value.ToString(@"hh\:mm") : "--:--")
@@ -839,8 +617,8 @@
                             </div>
                         }
                     </div>
-                    <div class="modal-footer border-top-0 pt-0 px-4 pb-4">
-                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal" style="border-radius: 8px;">@SharedResource.Button_Close</button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">@SharedResource.Button_Close</button>
                     </div>
                 </div>
             </div>
@@ -848,342 +626,31 @@
     }
 }
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var form = document.getElementById("attendanceForm");
-        var btnCheckIn = document.getElementById("btnCheckIn");
-        var btnCheckOut = document.getElementById("btnCheckOut");
-        var latInput = document.getElementById("userLatitude");
-        var lngInput = document.getElementById("userLongitude");
-        var gpsStatus = document.getElementById("gpsStatus");
-
-        function submitWithGPS(actionName, btnElement) {
-            if (!form) return;
-
-            if (!photoInput.files || photoInput.files.length === 0) {
-                AppToast.warning(`@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_PhotoCheckInRequired"))`);
-                return;
+@section Scripts {
+    <script>
+        window.RWPM = window.RWPM || {};
+        RWPM.attendanceIndex = {
+            urls: {
+                checkIn: '@Url.Action("CheckIn", "Attendance")',
+                checkOut: '@Url.Action("CheckOut", "Attendance")'
+            },
+            // Localized strings for the attendance scripts (follow the current UI language)
+            i18n: {
+                photoRequired: @Json.Serialize(SharedResource.ResourceManager.GetString("Attendance_PhotoCheckInRequired")),
+                gpsLoading: @Json.Serialize(SharedResource.ResourceManager.GetString("Attendance_GPSLoading")),
+                gpsDenied: @Json.Serialize(SharedResource.ResourceManager.GetString("Attendance_GPSPermissionDenied")),
+                gpsUnknown: @Json.Serialize(SharedResource.ResourceManager.GetString("Attendance_GPSUnknownError")),
+                gpsNotSupported: @Json.Serialize(SharedResource.ResourceManager.GetString("Attendance_GPSNotSupported")),
+                camError: @Json.Serialize(SharedResource.ResourceManager.GetString("Attendance_CamError")),
+                processing: @Json.Serialize(SharedResource.Processing),
+                locateFailed: @Json.Serialize(SharedResource.Attendance_Err_LocateFailed),
+                employeeList: @Json.Serialize(SharedResource.Attendance_EmployeeList),
+                today: @Json.Serialize(SharedResource.Attendance_Today),
+                totalRecordBar: @Json.Serialize(SharedResource.TotalRecordBar),
+                paginationPrevious: @Json.Serialize(SharedResource.Pagination_Previous),
+                paginationNext: @Json.Serialize(SharedResource.Pagination_Next)
             }
-
-            var checkInUrl = '@Url.Action("CheckIn", "Attendance")';
-            var checkOutUrl = '@Url.Action("CheckOut", "Attendance")';
-            var targetUrl = actionName === "CheckIn" ? checkInUrl : checkOutUrl;
-
-            // Ngăn chặn click đúp
-            if (btnElement) {
-                btnElement.disabled = true;
-                var originalText = btnElement.innerHTML;
-                btnElement.innerHTML = '<i class="spinner-border spinner-border-sm me-1"></i> ' + @Json.Serialize(SharedResource.Processing);
-            }
-
-            if (gpsStatus) {
-                gpsStatus.className = "alert alert-info small py-1 mb-2";
-                gpsStatus.innerHTML = '<i class="bi bi-geo-alt spinner-grow spinner-grow-sm me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_GPSLoading")';
-                gpsStatus.classList.remove("d-none");
-            }
-
-            function handleGpsSuccess(position) {
-                if (latInput) latInput.value = position.coords.latitude;
-                if (lngInput) lngInput.value = position.coords.longitude;
-                form.action = targetUrl;
-                form.submit();
-            }
-
-            function handleGpsFailure(error) {
-                if (gpsStatus) gpsStatus.classList.add("d-none");
-                if (btnElement) {
-                    btnElement.disabled = false;
-                    btnElement.innerHTML = originalText;
-                }
-
-                var errorMsg = "";
-                if (error && error.code === 1) { // PERMISSION_DENIED
-                    errorMsg = `@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSPermissionDenied"))`;
-                } else if (error) {
-                    var template = `@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSUnknownError"))`;
-                    errorMsg = template.replace("{0}", error.message || @Json.Serialize(SharedResource.Attendance_Err_LocateFailed));
-                } else {
-                    errorMsg = `@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_GPSNotSupported"))`;
-                }
-                AppToast.error(errorMsg);
-            }
-
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    handleGpsSuccess,
-                    handleGpsFailure,
-                    {
-                        enableHighAccuracy: true,
-                        timeout: 10000,
-                        maximumAge: 0
-                    }
-                );
-            } else {
-                handleGpsFailure(null);
-            }
-        }
-
-        if (btnCheckIn && !btnCheckIn.disabled) {
-            btnCheckIn.addEventListener("click", function () {
-                submitWithGPS("CheckIn", this);
-            });
-        }
-
-        if (btnCheckOut && !btnCheckOut.disabled) {
-            btnCheckOut.addEventListener("click", function () {
-                submitWithGPS("CheckOut", this);
-            });
-        }
-
-        // --- CAMERA WEBRTC LOGIC ---
-        var video = document.getElementById('camera-stream');
-        var preview = document.getElementById('camera-preview');
-        var canvas = document.getElementById('camera-canvas');
-        var btnCapture = document.getElementById('btnCapture');
-        var btnRetake = document.getElementById('btnRetake');
-        var photoInput = document.getElementById('photoInput');
-        var cameraLoading = document.getElementById('camera-loading');
-        var personalClockInArea = document.getElementById('personalClockInArea');
-        var cameraStream = null;
-
-        function startCamera() {
-            if (!video || cameraStream) return;
-            // Nếu đã chụp ảnh và đang xem trước thì không bật lại video
-            if (preview && preview.style.display === 'block') {
-                return;
-            }
-            if (cameraLoading) cameraLoading.style.display = 'block';
-
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
-                .then(function (stream) {
-                    cameraStream = stream;
-                    video.srcObject = stream;
-                    if (cameraLoading) cameraLoading.style.display = 'none';
-                })
-                .catch(function (err) {
-                    console.error("Lỗi Camera:", err);
-                    if (cameraLoading) {
-                        cameraLoading.innerHTML = `@Html.Raw(SharedResource.ResourceManager.GetString("Attendance_CamError"))`;
-                    }
-                });
-        }
-
-        function stopCamera() {
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(function (track) {
-                    track.stop();
-                });
-                cameraStream = null;
-            }
-            if (video) {
-                video.srcObject = null;
-            }
-        }
-
-        if (video) {
-            // Chỉ khởi động camera khi khu vực chấm công cá nhân đang hiển thị
-            var isAreaHidden = personalClockInArea && personalClockInArea.classList.contains('d-none');
-            if (!isAreaHidden) {
-                startCamera();
-            }
-
-            if (btnCapture) {
-                btnCapture.addEventListener('click', function () {
-                    var context = canvas.getContext('2d');
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    
-                    var dataUrl = canvas.toDataURL('image/jpeg');
-                    preview.src = dataUrl;
-                    
-                    video.style.display = 'none';
-                    preview.style.display = 'block';
-                    btnCapture.style.display = 'none';
-                    btnRetake.style.display = 'block';
-                    
-                    fetch(dataUrl)
-                        .then(res => res.blob())
-                        .then(blob => {
-                            var file = new File([blob], "capture.jpg", { type: "image/jpeg" });
-                            var dataTransfer = new DataTransfer();
-                            dataTransfer.items.add(file);
-                            photoInput.files = dataTransfer.files;
-                        });
-                });
-            }
-
-            if (btnRetake) {
-                btnRetake.addEventListener('click', function () {
-                    video.style.display = 'block';
-                    preview.style.display = 'none';
-                    btnCapture.style.display = 'block';
-                    btnRetake.style.display = 'none';
-                    photoInput.value = ""; 
-                    startCamera();
-                });
-            }
-        }
-
-        // Xử lý ẩn/hiện camera & danh sách nhân viên khi Quản lý & HR chuyển đổi tab
-        var empTabBtn = document.getElementById("emp-history-tab");
-        var myTabBtn = document.getElementById("my-history-tab");
-        var managerEmpList = document.getElementById("managerEmpListContainer");
-        var leftPanelHeader = document.getElementById("leftPanelHeader");
-        var leftPanelIcon = document.getElementById("leftPanelIcon");
-
-        if (empTabBtn) {
-            empTabBtn.addEventListener("shown.bs.tab", function () {
-                if (personalClockInArea) personalClockInArea.classList.add("d-none");
-                if (managerEmpList) managerEmpList.classList.remove("d-none");
-                if (leftPanelHeader) leftPanelHeader.textContent = @Json.Serialize(SharedResource.Attendance_EmployeeList);
-                if (leftPanelIcon) {
-                    leftPanelIcon.classList.remove("bi-clock");
-                    leftPanelIcon.classList.add("bi-people");
-                }
-                stopCamera();
-            });
-        }
-        if (myTabBtn) {
-            myTabBtn.addEventListener("shown.bs.tab", function () {
-                if (personalClockInArea) personalClockInArea.classList.remove("d-none");
-                if (managerEmpList) managerEmpList.classList.add("d-none");
-                if (leftPanelHeader) leftPanelHeader.textContent = @Json.Serialize(SharedResource.Attendance_Today);
-                if (leftPanelIcon) {
-                    leftPanelIcon.classList.remove("bi-people");
-                    leftPanelIcon.classList.add("bi-clock");
-                }
-                startCamera();
-            });
-        }
-
-        // --- PHÂN TRANG CHO TẤT CẢ CÁC BẢNG LỊCH SỬ (10 DÒNG / TRANG) ---
-        var totalRecordBarTemplate = @Json.Serialize(SharedResource.TotalRecordBar);
-        var previousAriaLabel = @Json.Serialize(SharedResource.Pagination_Previous);
-        var nextAriaLabel = @Json.Serialize(SharedResource.Pagination_Next);
-
-        function initTablePagination(tableId, paginationContainerId, pageSize) {
-            if (!pageSize) pageSize = 10;
-            var table = document.getElementById(tableId);
-            var container = document.getElementById(paginationContainerId);
-            if (!table || !container) return;
-
-            var tbody = table.querySelector('tbody');
-            if (!tbody) return;
-
-            // Lấy tất cả các hàng dữ liệu thực tế (bỏ qua hàng "không có dữ liệu" với td có colspan)
-            var allRows = Array.from(tbody.querySelectorAll('tr')).filter(function (tr) {
-                return !tr.querySelector('td[colspan]');
-            });
-
-            var totalRecords = allRows.length;
-            if (totalRecords === 0) {
-                container.innerHTML = '';
-                container.classList.add('d-none');
-                return;
-            }
-
-            container.classList.remove('d-none');
-            var totalPages = Math.ceil(totalRecords / pageSize);
-            var currentPage = 1;
-
-            function renderPage(page) {
-                currentPage = page;
-                var startIndex = (page - 1) * pageSize;
-                var endIndex = Math.min(startIndex + pageSize, totalRecords);
-
-                // Ẩn/hiện các hàng tương ứng với trang
-                allRows.forEach(function (row, index) {
-                    if (index >= startIndex && index < endIndex) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
-
-                // Tạo text thông tin bản ghi
-                var startDisplay = startIndex + 1;
-                var endDisplay = endIndex;
-                var infoText = totalRecordBarTemplate
-                    .replace('{0}', startDisplay)
-                    .replace('{1}', endDisplay)
-                    .replace('{2}', totalRecords);
-
-                var paginationHtml = `
-                    <div class="text-muted small">
-                        ${infoText}
-                    </div>
-                    <nav class="table-pagination">
-                        <ul class="pagination pagination-sm mb-0">
-                            <li class="page-item ${currentPage <= 1 ? 'disabled' : ''}">
-                                <a class="page-link" href="javascript:void(0)" data-page="${currentPage - 1}" aria-label="${previousAriaLabel}">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </a>
-                            </li>
-                `;
-
-                // Thuật toán hiển thị các số trang (tối đa 5 nút, có dấu ... nếu quá dài)
-                var maxButtons = 5;
-                var startPage = Math.max(1, currentPage - 2);
-                var endPage = Math.min(totalPages, startPage + maxButtons - 1);
-                if (endPage - startPage + 1 < maxButtons) {
-                    startPage = Math.max(1, endPage - maxButtons + 1);
-                }
-
-                if (startPage > 1) {
-                    paginationHtml += `<li class="page-item"><a class="page-link" href="javascript:void(0)" data-page="1">1</a></li>`;
-                    if (startPage > 2) {
-                        paginationHtml += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
-                    }
-                }
-
-                for (var p = startPage; p <= endPage; p++) {
-                    paginationHtml += `
-                        <li class="page-item ${p === currentPage ? 'active' : ''}">
-                            <a class="page-link" href="javascript:void(0)" data-page="${p}">${p}</a>
-                        </li>
-                    `;
-                }
-
-                if (endPage < totalPages) {
-                    if (endPage < totalPages - 1) {
-                        paginationHtml += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
-                    }
-                    paginationHtml += `<li class="page-item"><a class="page-link" href="javascript:void(0)" data-page="${totalPages}">${totalPages}</a></li>`;
-                }
-
-                paginationHtml += `
-                            <li class="page-item ${currentPage >= totalPages ? 'disabled' : ''}">
-                                <a class="page-link" href="javascript:void(0)" data-page="${currentPage + 1}" aria-label="${nextAriaLabel}">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                `;
-
-                container.innerHTML = paginationHtml;
-
-                // Gán sự kiện click cho các link phân trang
-                var pageLinks = container.querySelectorAll('a.page-link');
-                pageLinks.forEach(function (link) {
-                    link.addEventListener('click', function (e) {
-                        e.preventDefault();
-                        var targetPage = parseInt(this.getAttribute('data-page'));
-                        if (!isNaN(targetPage) && targetPage >= 1 && targetPage <= totalPages && targetPage !== currentPage) {
-                            renderPage(targetPage);
-                        }
-                    });
-                });
-            }
-
-            renderPage(1);
-        }
-
-        // Khởi tạo phân trang (10 dòng/trang) cho tất cả các bảng
-        initTablePagination("adminAttendanceTable", "adminAttendancePagination", 10);
-        initTablePagination("myAttendanceTable", "myAttendancePagination", 10);
-        initTablePagination("empAttendanceTable", "empAttendancePagination", 10);
-        initTablePagination("employeeSelfAttendanceTable", "employeeSelfAttendancePagination", 10);
-    });
-</script>
+        };
+    </script>
+    <script src="~/js/attendance/index.js" asp-append-version="true"></script>
+}

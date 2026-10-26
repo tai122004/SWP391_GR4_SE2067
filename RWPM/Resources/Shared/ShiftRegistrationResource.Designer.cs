@@ -106,29 +106,11 @@ namespace RWPM.Resources.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error: .
-        /// </summary>
-        public static string ErrorPrefix {
-            get {
-                return ResourceManager.GetString("ErrorPrefix", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Filter.
         /// </summary>
         public static string Filter {
             get {
                 return ResourceManager.GetString("Filter", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Filter by Employee ID....
-        /// </summary>
-        public static string FilterByEmployeeId {
-            get {
-                return ResourceManager.GetString("FilterByEmployeeId", resourceCulture);
             }
         }
         
@@ -151,15 +133,6 @@ namespace RWPM.Resources.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Register shift.
-        /// </summary>
-        public static string RegisterShift {
-            get {
-                return ResourceManager.GetString("RegisterShift", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Reject.
         /// </summary>
         public static string Reject {
@@ -174,24 +147,6 @@ namespace RWPM.Resources.Shared {
         public static string Save {
             get {
                 return ResourceManager.GetString("Save", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to -- Select employee --.
-        /// </summary>
-        public static string SelectEmployee {
-            get {
-                return ResourceManager.GetString("SelectEmployee", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to -- Select shift --.
-        /// </summary>
-        public static string SelectShift {
-            get {
-                return ResourceManager.GetString("SelectShift", resourceCulture);
             }
         }
         
@@ -232,29 +187,11 @@ namespace RWPM.Resources.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Status updated successfully!.
-        /// </summary>
-        public static string SuccessStatus {
-            get {
-                return ResourceManager.GetString("SuccessStatus", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Time.
         /// </summary>
         public static string Time {
             get {
                 return ResourceManager.GetString("Time", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Update failed: .
-        /// </summary>
-        public static string UpdateFailed {
-            get {
-                return ResourceManager.GetString("UpdateFailed", resourceCulture);
             }
         }
         
@@ -273,12 +210,6 @@ namespace RWPM.Resources.Shared {
             }
         }
 
-        public static string AttendanceFilter {
-            get {
-                return ResourceManager.GetString("AttendanceFilter", resourceCulture);
-            }
-        }
-
         public static string ActiveEmployees {
             get {
                 return ResourceManager.GetString("ActiveEmployees", resourceCulture);
@@ -288,30 +219,6 @@ namespace RWPM.Resources.Shared {
         public static string SearchBtn {
             get {
                 return ResourceManager.GetString("SearchBtn", resourceCulture);
-            }
-        }
-
-        public static string NotYetShifted {
-            get {
-                return ResourceManager.GetString("NotYetShifted", resourceCulture);
-            }
-        }
-
-        public static string OnTimeAttendance {
-            get {
-                return ResourceManager.GetString("OnTimeAttendance", resourceCulture);
-            }
-        }
-
-        public static string LateEarly {
-            get {
-                return ResourceManager.GetString("LateEarly", resourceCulture);
-            }
-        }
-
-        public static string NotCheckedInOut {
-            get {
-                return ResourceManager.GetString("NotCheckedInOut", resourceCulture);
             }
         }
 
@@ -333,12 +240,6 @@ namespace RWPM.Resources.Shared {
             }
         }
 
-        public static string Subtitle {
-            get {
-                return ResourceManager.GetString("Subtitle", resourceCulture);
-            }
-        }
-    
 
         public static string Header_Branch {
             get {
@@ -1093,6 +994,90 @@ namespace RWPM.Resources.Shared {
         public static string Swap_DeleteNoPermission {
             get {
                 return ResourceManager.GetString("Swap_DeleteNoPermission", resourceCulture);
+            }
+        }
+
+        /// <summary>Cannot register: these shifts do not match your availability: {0}</summary>
+        public static string Err_AvailabilityBlocked {
+            get {
+                return ResourceManager.GetString("Err_AvailabilityBlocked", resourceCulture);
+            }
+        }
+
+        /// <summary>• {0} – {1}: {2}</summary>
+        public static string Avail_IssueLine {
+            get {
+                return ResourceManager.GetString("Avail_IssueLine", resourceCulture);
+            }
+        }
+
+        /// <summary>• {0} – {1} {2}: {3}</summary>
+        public static string Warn_AvailabilityLine {
+            get {
+                return ResourceManager.GetString("Warn_AvailabilityLine", resourceCulture);
+            }
+        }
+
+        /// <summary>Scheduling warnings</summary>
+        public static string Warn_ConfirmTitle {
+            get {
+                return ResourceManager.GetString("Warn_ConfirmTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>Do you still want to continue?</summary>
+        public static string Warn_ConfirmContinue {
+            get {
+                return ResourceManager.GetString("Warn_ConfirmContinue", resourceCulture);
+            }
+        }
+
+        /// <summary>Unavailable</summary>
+        public static string Slot_BlockedBadge {
+            get {
+                return ResourceManager.GetString("Slot_BlockedBadge", resourceCulture);
+            }
+        }
+
+        /// <summary>This pending shift no longer matches your availability: {0}</summary>
+        public static string Slot_BlockedPendingHint {
+            get {
+                return ResourceManager.GetString("Slot_BlockedPendingHint", resourceCulture);
+            }
+        }
+
+        /// <summary>Coverage (approved/required)</summary>
+        public static string Coverage_Title {
+            get {
+                return ResourceManager.GetString("Coverage_Title", resourceCulture);
+            }
+        }
+
+        /// <summary>View week coverage</summary>
+        public static string Coverage_Link {
+            get {
+                return ResourceManager.GetString("Coverage_Link", resourceCulture);
+            }
+        }
+
+        /// <summary>Approved {0} / required {1} · pending {2}</summary>
+        public static string Coverage_Tooltip {
+            get {
+                return ResourceManager.GetString("Coverage_Tooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>No demand configured · approved {0} · pending {1}</summary>
+        public static string Coverage_NotConfigured {
+            get {
+                return ResourceManager.GetString("Coverage_NotConfigured", resourceCulture);
+            }
+        }
+
+        /// <summary>Shift not applicable on this day</summary>
+        public static string Coverage_NotApplicable {
+            get {
+                return ResourceManager.GetString("Coverage_NotApplicable", resourceCulture);
             }
         }
     }

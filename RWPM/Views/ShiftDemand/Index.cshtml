@@ -1,0 +1,344 @@
+@model RWPM.Models.ViewModels.ShiftDemand.ShiftDemandIndexVM
+@using RWPM.Models.ViewModels.ShiftDemand
+@using R = RWPM.Resources.Shared.ShiftDemandResource
+
+@{
+    ViewData["Title"] = R.Index_Title;
+    var weekDays = new[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday };
+    var dayLabels = new[] { R.Day_Mon, R.Day_Tue, R.Day_Wed, R.Day_Thu, R.Day_Fri, R.Day_Sat, R.Day_Sun };
+    string DayShort(DateTime d) => dayLabels[((int)d.DayOfWeek + 6) % 7];
+    var otherStores = Model.Stores.Where(s => s.StoreId != Model.StoreId).ToList();
+    var upcomingCount = Model.Overrides.Count(o => !o.IsPast);
+}
+
+<form id="antiForgeryForm" style="display:none;">@Html.AntiForgeryToken()</form>
+
+<div class="container-fluid px-0 shift-demand-page">
+    <!-- Header -->
+    <div class="app-page-header">
+        <div>
+            <h4 class="mb-1">@R.Index_Title</h4>
+            <div class="text-muted small">
+                @if (Model.IsStoreManager)
+                {
+                    <i class="bi bi-geo-alt me-1"></i>@R.Scope_Label <strong>@(Model.StoreName ?? "—")</strong>
+                }
+                else
+                {
+                    @R.Index_Subtitle
+                }
+            </div>
+        </div>
+        <div class="app-page-actions">
+            <a class="btn btn-outline-secondary d-flex align-items-center" asp-action="Coverage" asp-route-storeId="@(Model.IsStoreManager ? null : Model.StoreId)">
+                <i class="bi bi-grid-3x3-gap me-1"></i> @R.Btn_ViewCoverage
+            </a>
+        </div>
+    </div>
+
+    @if (!Model.IsStoreManager)
+    {
+        <div class="app-filter-panel">
+            <form asp-action="Index" method="get" class="row g-2 align-items-center">
+                <div class="col-md-4">
+                    <label class="form-label text-muted fw-semibold" for="filterStore">@R.Label_Store</label>
+                    <select id="filterStore" name="storeId" class="form-select form-select-sm" onchange="this.form.submit()">
+                        @foreach (var st in Model.Stores)
+                        {
+                            <option value="@st.StoreId" selected="@(st.StoreId == Model.StoreId)">@st.StoreName (@st.StoreCode)</option>
+                        }
+                    </select>
+                </div>
+                @if (Model.StoreId.HasValue && otherStores.Any() && Model.Template.Shifts.Any())
+                {
+                    <div class="col-auto ms-md-auto">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#copyModal">
+                            <i class="bi bi-copy me-1"></i> @R.Btn_CopyFromStore
+                        </button>
+                    </div>
+                }
+            </form>
+        </div>
+    }
+
+    @if (!Model.StoreId.HasValue)
+    {
+        <div class="app-content-card mb-3">
+            <div class="card-body text-center text-muted py-5">
+                <i class="bi bi-shop fs-3 d-block mb-2 text-muted"></i>
+                @R.Store_None
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Weekly template -->
+        <div class="app-content-card management-table-card mb-3">
+            <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <span class="fw-semibold">@R.Template_Title</span>
+                <span class="text-muted small"><i class="bi bi-info-circle me-1"></i>@R.Template_Hint</span>
+            </div>
+            @if (Model.Template.Shifts.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table modern-table align-middle mb-0" id="templateTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="min-width:180px">@R.Col_Shift</th>
+                                @foreach (var label in dayLabels)
+                                {
+                                    <th class="text-center" style="min-width:84px">@label</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var shift in Model.Template.Shifts)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold text-dark">@shift.ShiftName</div>
+                                        <div class="small text-muted"><i class="bi bi-clock me-1"></i>@shift.TimeRange</div>
+                                        @if (shift.EffectiveTo.HasValue)
+                                        {
+                                            <div class="small text-warning">@string.Format(R.Shift_EffectiveTo, shift.EffectiveTo.Value.ToString("dd/MM/yyyy"))</div>
+                                        }
+                                    </td>
+                                    @foreach (var dow in weekDays)
+                                    {
+                                        var value = Model.Template.Get(shift.ShiftId, dow);
+                                        <td class="text-center">
+                                            <input type="number" class="form-control form-control-sm text-center demand-input mx-auto"
+                                                   style="max-width:76px" min="0" max="100" step="1" inputmode="numeric"
+                                                   placeholder="–" title="@R.Template_CellTitle"
+                                                   data-shift="@shift.ShiftId" data-dow="@((int)dow)"
+                                                   data-original="@(value?.ToString() ?? "")" value="@(value?.ToString() ?? "")" />
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer bg-white d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <span class="small text-muted" id="templateDirtyHint" style="visibility:hidden">
+                        <i class="bi bi-pencil-square me-1 text-warning"></i>@R.Template_Unsaved
+                    </span>
+                    <button type="button" class="btn btn-sm btn-primary" id="btnSaveTemplate">
+                        <i class="bi bi-save me-1"></i> @R.Btn_SaveTemplate
+                    </button>
+                </div>
+            }
+            else
+            {
+                <div class="card-body text-center text-muted py-4">
+                    <i class="bi bi-inbox fs-3 d-block mb-2 text-muted"></i>
+                    @R.Template_Empty
+                </div>
+            }
+        </div>
+
+        <!-- Date overrides -->
+        <div class="app-content-card management-table-card mb-3">
+            <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div>
+                    <span class="fw-semibold">@R.Override_Title</span>
+                    <span class="app-badge app-badge-neutral ms-1">@upcomingCount</span>
+                    <div class="small text-muted">@R.Override_Hint</div>
+                </div>
+                @if (Model.Template.Shifts.Any())
+                {
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="btnAddOverride">
+                        <i class="bi bi-plus-lg me-1"></i> @R.Btn_AddOverride
+                    </button>
+                }
+            </div>
+            <div class="table-responsive">
+                <table class="table modern-table align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>@R.Col_Date</th>
+                            <th>@R.Col_Shift</th>
+                            <th class="text-end">@R.Col_Required</th>
+                            <th class="text-end">@R.Col_TemplateValue</th>
+                            <th>@R.Col_Note</th>
+                            <th>@R.Col_UpdatedBy</th>
+                            <th class="text-end">@SharedResource.Button_Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Overrides.Any())
+                        {
+                            foreach (var o in Model.Overrides)
+                            {
+                                <tr class="@(o.IsPast ? "text-muted" : "")">
+                                    <td class="text-nowrap">
+                                        <div class="fw-semibold @(o.IsPast ? "" : "text-dark")">@o.Date.ToString("dd/MM/yyyy")</div>
+                                        <div class="small text-muted">
+                                            @DayShort(o.Date)
+                                            @if (o.Date == Model.Today)
+                                            {
+                                                <span class="app-badge app-badge-info ms-1">@R.Coverage_Today</span>
+                                            }
+                                            else if (o.IsPast)
+                                            {
+                                                <span class="app-badge app-badge-neutral ms-1">@R.Override_Past</span>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="@(o.IsPast ? "" : "text-dark")">@o.ShiftName</div>
+                                        <div class="small text-muted">@o.TimeRange</div>
+                                    </td>
+                                    <td class="text-end fw-semibold @(o.RequiredCount == 0 ? "text-muted" : "")">@o.RequiredCount</td>
+                                    <td class="text-end">@(o.TemplateValue?.ToString() ?? "—")</td>
+                                    <td class="small" style="max-width:280px; white-space:pre-line">@(o.Note ?? "")</td>
+                                    <td class="small text-muted text-nowrap">
+                                        @o.ModifiedBy
+                                        @if (o.ModifiedAt.HasValue)
+                                        {
+                                            <div>@o.ModifiedAt.Value.ToString("dd/MM/yyyy HH:mm")</div>
+                                        }
+                                    </td>
+                                    <td class="text-end text-nowrap">
+                                        @if (!o.IsPast)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-secondary btn-edit-override" title="@SharedResource.Button_Edit" aria-label="@SharedResource.Button_Edit"
+                                                    data-id="@o.ShiftDemandId" data-shift="@o.ShiftId" data-date="@o.Date.ToString("yyyy-MM-dd")"
+                                                    data-required="@o.RequiredCount" data-note="@(o.Note ?? "")">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger btn-delete-override" title="@SharedResource.Button_Delete" aria-label="@SharedResource.Button_Delete"
+                                                    data-id="@o.ShiftDemandId" data-label="@($"{o.Date:dd/MM/yyyy} · {o.ShiftName}")">
+                                                <i class="bi bi-trash3"></i>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <span class="small text-muted" title="@R.Err_OverridePastLocked"><i class="bi bi-lock" aria-hidden="true"></i><span class="visually-hidden">@R.Err_OverridePastLocked</span></span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    <i class="bi bi-inbox fs-3 d-block mb-2 text-muted"></i>
+                                    @R.Override_Empty
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+@if (Model.StoreId.HasValue && Model.Template.Shifts.Any())
+{
+    <!-- Modal: add / edit override -->
+    <div class="modal fade" id="overrideModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="overrideForm" novalidate>
+                    <div class="modal-header">
+                        <h5 class="modal-title"><span id="overrideModalTitle">@R.Modal_AddOverride</span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@SharedResource.Button_Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="ovId" value="" />
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label class="form-label required" for="ovDate">@R.Field_Date</label>
+                                <input type="date" id="ovDate" class="form-control" min="@Model.Today.ToString("yyyy-MM-dd")"
+                                       max="@Model.Today.AddDays(366).ToString("yyyy-MM-dd")" required />
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label required" for="ovRequired">@R.Field_Required</label>
+                                <input type="number" id="ovRequired" class="form-control" min="0" max="100" step="1" required />
+                                <div class="form-text">@R.Field_RequiredHint</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label required" for="ovShift">@R.Field_Shift</label>
+                                <select id="ovShift" class="form-select" required>
+                                    @foreach (var shift in Model.Template.Shifts)
+                                    {
+                                        <option value="@shift.ShiftId">@shift.ShiftName (@shift.TimeRange)</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="ovNote">@R.Field_Note</label>
+                                <textarea id="ovNote" class="form-control" rows="2" maxlength="255" placeholder="@R.Field_NotePlaceholder"></textarea>
+                                <div class="form-text text-end"><span id="ovNoteCount">0</span>/255</div>
+                            </div>
+                        </div>
+                        <div id="overrideError" class="alert alert-danger py-2 px-3 small mt-3 mb-0 d-none"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">@SharedResource.Button_Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="btnSubmitOverride">
+                            <i class="bi bi-save me-1"></i>@SharedResource.Button_Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.IsStoreManager && otherStores.Any())
+    {
+        <!-- Modal: copy template -->
+        <div class="modal fade" id="copyModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">@R.Copy_Title</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@SharedResource.Button_Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning py-2 px-3 small d-flex align-items-start">
+                            <i class="bi bi-exclamation-triangle me-2 mt-1"></i><div>@R.Copy_Hint</div>
+                        </div>
+                        <label class="form-label" for="copySource">@R.Copy_Source</label>
+                        <select id="copySource" class="form-select">
+                            @foreach (var st in otherStores)
+                            {
+                                <option value="@st.StoreId">@st.StoreName (@st.StoreCode)</option>
+                            }
+                        </select>
+                        <div class="form-text">@string.Format(R.Copy_Target, Model.StoreName)</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">@SharedResource.Button_Cancel</button>
+                        <button type="button" class="btn btn-primary" id="btnSubmitCopy"><i class="bi bi-copy me-1"></i>@R.Btn_Copy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@section Scripts {
+    <script>
+        window.RWPM = window.RWPM || {};
+        RWPM.shiftDemandIndex = {
+            storeId: @Json.Serialize(Model.StoreId),
+            today: @Json.Serialize(Model.Today.ToString("yyyy-MM-dd")),
+            i18n: {
+                saved: @Json.Serialize(R.Template_Saved),
+                invalidCell: @Json.Serialize(string.Format(R.Err_RequiredRange, 0, 100)),
+                error: @Json.Serialize(R.Common_Error),
+                addTitle: @Json.Serialize(R.Modal_AddOverride),
+                editTitle: @Json.Serialize(R.Modal_EditOverride),
+                dateRequired: @Json.Serialize(R.Err_DateRequired),
+                confirmDelete: @Json.Serialize(R.Override_ConfirmDelete),
+                confirmCopy: @Json.Serialize(R.Copy_Confirm),
+                leaveUnsaved: @Json.Serialize(R.Template_Unsaved)
+            }
+        };
+    </script>
+    <script src="~/js/shift-demand/index.js" asp-append-version="true"></script>
+}

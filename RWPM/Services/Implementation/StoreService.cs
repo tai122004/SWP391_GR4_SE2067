@@ -1,14 +1,12 @@
 using RWPM.Common.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
 using RWPM.Common;
 using RWPM.Common.Exceptions;
 using RWPM.Common.Helper;
 using RWPM.Common.Models;
 using RWPM.Infrastructure.Data;
 using RWPM.Models.ViewModels.Store;
-using RWPM.Resources.Shared;
 using RWPM.Services.Abstraction;
 
 namespace RWPM.Services.Implementation
@@ -17,16 +15,13 @@ namespace RWPM.Services.Implementation
     {
         private readonly DefaultDatabaseContext _ctx;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IStringLocalizer<Store> _localizer;
 
         public StoreService(
             DefaultDatabaseContext ctx,
-            IHttpContextAccessor httpContextAccessor,
-            IStringLocalizer<Store> localizer)
+            IHttpContextAccessor httpContextAccessor)
         {
             _ctx = ctx;
             _httpContextAccessor = httpContextAccessor;
-            _localizer = localizer;
         }
 
         public async Task<global::Store?> GetByIdAsync(int storeId, QueryOptions<global::Store>? options = null)
@@ -267,7 +262,6 @@ namespace RWPM.Services.Implementation
                 .FirstOrDefaultAsync(x => x.StoreId == storeId);
 
             if (store == null) return null;
-
 
             var employees = await _ctx.Employee.AsNoTracking()
                 .Include(e => e.Account)

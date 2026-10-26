@@ -17,16 +17,7 @@
     <resheader name="version">2.0</resheader>
     <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
     <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
+                        
     There are any number of "resheader" rows that contain simple 
     name/value pairs.
     
@@ -165,9 +156,6 @@
   <data name="Placeholder_Search" xml:space="preserve">
     <value>Enter Employee ID, Full Name, Account ...</value>
   </data>
-  <data name="Placeholder_Store" xml:space="preserve">
-    <value>--- Select store ---</value>
-  </data>
   <data name="Search" xml:space="preserve">
     <value>Search</value>
   </data>
@@ -216,9 +204,6 @@
   <data name="Column_JoinDate" xml:space="preserve">
     <value>Start Date</value>
   </data>
-  <data name="Edit_SectionTitle" xml:space="preserve">
-    <value>Job Information &amp; Store</value>
-  </data>
   <data name="Edit_ActiveLabel" xml:space="preserve">
     <value>Currently working (Active)</value>
   </data>
@@ -233,9 +218,6 @@
   </data>
   <data name="Unassigned" xml:space="preserve">
     <value>Unassigned</value>
-  </data>
-  <data name="NoEmail" xml:space="preserve">
-    <value>No email</value>
   </data>
   <data name="ExportExcel" xml:space="preserve">
     <value>Export Excel</value>
@@ -288,9 +270,6 @@
   <data name="Badge_Resigned" xml:space="preserve">
     <value>Resigned</value>
   </data>
-  <data name="Badge_Probation" xml:space="preserve">
-    <value>Probation</value>
-  </data>
   <data name="Excel_Action" xml:space="preserve">
     <value>Excel</value>
   </data>
@@ -305,15 +284,6 @@
   </data>
   <data name="Excel_SelectFile" xml:space="preserve">
     <value>Select Excel file (.xlsx)</value>
-  </data>
-  <data name="Excel_UploadAndImport" xml:space="preserve">
-    <value>Start Import</value>
-  </data>
-  <data name="Excel_TemplateNote" xml:space="preserve">
-    <value>Please download the template to ensure correct column format. Default password after import will be: Aa@123456</value>
-  </data>
-  <data name="Excel_Close" xml:space="preserve">
-    <value>Close</value>
   </data>
   <data name="Excel_Btn_Preview" xml:space="preserve">
     <value>Verify Data</value>
@@ -408,50 +378,11 @@
   <data name="Import_SessionExpired" xml:space="preserve">
     <value>The import session has expired or no valid data was found. Please upload the file again.</value>
   </data>
-  <data name="Import_NoSheet" xml:space="preserve">
-    <value>The Excel file has an invalid format or no data sheet.</value>
-  </data>
   <data name="Import_NoWorksheet" xml:space="preserve">
     <value>The Excel file has an invalid format or no data worksheet.</value>
   </data>
-  <data name="Import_NoRows" xml:space="preserve">
-    <value>The Excel file has no data rows to import.</value>
-  </data>
   <data name="Import_NoRowsPreview" xml:space="preserve">
     <value>The Excel file contains no data rows.</value>
-  </data>
-  <data name="Import_RowError" xml:space="preserve">
-    <value>Row {0}: {1}</value>
-  </data>
-  <data name="Import_FullNameRequired" xml:space="preserve">
-    <value>Full name must not be empty.</value>
-  </data>
-  <data name="Import_UsernameRequired" xml:space="preserve">
-    <value>Username must not be empty.</value>
-  </data>
-  <data name="Import_EmailRequired" xml:space="preserve">
-    <value>Email must not be empty.</value>
-  </data>
-  <data name="Import_UsernameExistsInSystem" xml:space="preserve">
-    <value>Username '{0}' already exists in the system.</value>
-  </data>
-  <data name="Import_UsernameExists" xml:space="preserve">
-    <value>Username '{0}' already exists.</value>
-  </data>
-  <data name="Import_StoreInvalid" xml:space="preserve">
-    <value>Store ID '{0}' is invalid or does not exist. Please see the '{1}' sheet.</value>
-  </data>
-  <data name="Import_StoreNotFound" xml:space="preserve">
-    <value>Store ID '{0}' does not exist. Please see the '{1}' sheet.</value>
-  </data>
-  <data name="Import_EmpCodeExistsInSystem" xml:space="preserve">
-    <value>Employee code '{0}' already exists in the system.</value>
-  </data>
-  <data name="Import_EmpCodeExists" xml:space="preserve">
-    <value>Employee code '{0}' already exists.</value>
-  </data>
-  <data name="Import_StoreNotRequired" xml:space="preserve">
-    <value>Not required</value>
   </data>
   <data name="Err_EmployeeNotFound" xml:space="preserve">
     <value>Employee with ID {0} was not found.</value>
@@ -609,7 +540,7 @@
   <data name="Create_SubTitle" xml:space="preserve">
     <value>Add a new employee profile and assign them to a store</value>
   </data>
-  <data name="Import_PhoneInvalid" xml:space="preserve">
-    <value>Phone number '{0}' is invalid (it must have exactly 10 digits and start with 0).</value>
+  <data name="Aria_Breadcrumb" xml:space="preserve">
+    <value>Breadcrumb</value>
   </data>
 </root>

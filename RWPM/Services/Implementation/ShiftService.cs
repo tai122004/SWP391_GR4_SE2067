@@ -26,7 +26,7 @@ public class ShiftService : IShiftService
         var username = _accessor.HttpContext?.User.Identity?.Name;
         if (string.IsNullOrWhiteSpace(username)) return null;
         return await _ctx.Employee.AsNoTracking()
-            .Where(x => x.Username == username && x.IsActive && x.Store.IsActive
+            .Where(x => x.Username == username && x.IsActive && x.Store!.IsActive
                 && x.Account.IsActive && x.Account.Role == AccountRole.StoreManager)
             .Select(x => (int?)x.StoreId).FirstOrDefaultAsync();
     }
@@ -39,14 +39,6 @@ public class ShiftService : IShiftService
         await GetByIdAsync(id, options) ?? throw new KeyNotFoundException(string.Format(RWPM.Resources.Shared.Shift.Err_ShiftNotFound, id));
     public async Task<List<Shift>> GetAllAsync(QueryOptions<Shift>? options = null) =>
         await QueryHelper.ApplyQueryOptions(Query(), options).ToListAsync();
-    public Task<List<Shift>> GetAvailableForDateAsync(DateTime date, int storeId)
-    {
-        var day = date.Date;
-        return Query().AsNoTracking().Where(s => s.IsActive && s.EffectiveFrom <= day
-            && (s.EffectiveTo == null || s.EffectiveTo >= day)
-            && s.StoreShifts.Any(x => x.StoreId == storeId && x.IsActive && x.Store.IsActive))
-            .OrderBy(s => s.StartTime).ThenBy(s => s.ShiftName).ToListAsync();
-    }
     public async Task<PaginationRes<Shift>> SearchAsync(ShiftSearch search, QueryOptions<Shift>? options = null)
     {
         var query = Query();

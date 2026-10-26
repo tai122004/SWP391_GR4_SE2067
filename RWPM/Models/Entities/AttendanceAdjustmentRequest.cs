@@ -1,6 +1,5 @@
 using RWPM.Common.Enums;
 using RWPM.Models.Common;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

@@ -90,5 +90,17 @@ namespace RWPM.Resources.Shared {
                 return ResourceManager.GetString("RequestId", resourceCulture);
             }
         }
+
+        public static string BackHome {
+            get {
+                return ResourceManager.GetString("BackHome", resourceCulture);
+            }
+        }
+
+        public static string Description {
+            get {
+                return ResourceManager.GetString("Description", resourceCulture);
+            }
+        }
     }
 }

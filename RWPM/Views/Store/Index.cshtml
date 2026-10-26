@@ -13,7 +13,7 @@
 <div class="container-fluid px-0">
     <div class="app-page-header">
         <div>
-            <h1 class="fw-bold text-dark mb-1">@StoreSharedResource.Index_PageHeader</h1>
+            <h4 class="mb-1">@StoreSharedResource.Index_PageHeader</h4>
             <div class="text-muted small">@StoreSharedResource.Index_Subtitle</div>
         </div>
         <div class="app-page-actions">
@@ -29,7 +29,7 @@
             <div class="col-md-6 col-lg-5">
                 <label class="form-label">@SharedResource.Button_Search</label>
                 <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                    <span class="input-group-text border-end-0 text-muted"><i class="bi bi-search"></i></span>
                     <input type="text" asp-for="Search" class="form-control border-start-0 ps-0" placeholder="@StoreSharedResource.Placeholder_Search" />
                 </div>
             </div>
@@ -44,10 +44,10 @@
             </div>
 
             <div class="col-auto d-flex gap-2">
-                <button type="submit" class="btn btn-sm btn-primary">
+                <button type="submit" class="btn btn-sm btn-outline-secondary">
                     <i class="bi bi-funnel me-1"></i> @SharedResource.Button_Search
                 </button>
-                <a asp-action="Index" class="btn btn-sm btn-outline-secondary" title="@SharedResource.Button_Reset">
+                <a asp-action="Index" class="btn btn-sm btn-link text-decoration-none text-muted" title="@SharedResource.Button_Reset">
                     <i class="bi bi-arrow-clockwise"></i> @SharedResource.Button_Reset
                 </a>
             </div>
@@ -77,18 +77,18 @@
                         {
                             <tr>
                                 <td>
-                                    <a asp-action="Details" asp-route-id="@store.StoreId" class="text-decoration-none text-dark">
+                                    <a asp-action="Details" asp-route-id="@store.StoreId" class="text-decoration-none font-monospace small">
                                         @store.StoreCode
                                     </a>
                                 </td>
                                 <td>
-                                    <a asp-action="Details" asp-route-id="@store.StoreId" class="text-decoration-none text-dark">
+                                    <a asp-action="Details" asp-route-id="@store.StoreId" class="text-decoration-none text-body fw-medium">
                                         @store.StoreName
                                     </a>
                                     @if (store.OpeningTime.HasValue && store.ClosingTime.HasValue)
                                     {
-                                        var openStr = $"{store.OpeningTime.Value.Hours:D2}h{store.OpeningTime.Value.Minutes:D2}";
-                                        var closeStr = $"{store.ClosingTime.Value.Hours:D2}h{store.ClosingTime.Value.Minutes:D2}";
+                                        var openStr = $"{store.OpeningTime.Value.Hours:D2}:{store.OpeningTime.Value.Minutes:D2}";
+                                        var closeStr = $"{store.ClosingTime.Value.Hours:D2}:{store.ClosingTime.Value.Minutes:D2}";
                                         <div class="small text-muted">@openStr - @closeStr</div>
                                     }
                                 </td>
@@ -107,11 +107,11 @@
                                 <td class="text-center small">
                                     @if (store.Latitude.HasValue && store.Longitude.HasValue)
                                     {
-                                        <span>@StoreSharedResource.Range &le; @(store.AllowedRadiusMeters > 0 ? store.AllowedRadiusMeters : 100)m</span>
+                                        <span class="app-status"><span class="app-dot app-dot-success"></span>@StoreSharedResource.Range &le; @(store.AllowedRadiusMeters > 0 ? store.AllowedRadiusMeters : 100)m</span>
                                     }
                                     else
                                     {
-                                        <span class="text-muted">@StoreSharedResource.Badge_NoGPS</span>
+                                        <span class="app-status text-muted"><span class="app-dot app-dot-warning"></span>@StoreSharedResource.Badge_NoGPS</span>
                                     }
                                 </td>
                                 <td class="text-center">
@@ -126,13 +126,13 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group btn-action-group" role="group">
-                                        <a asp-action="Details" asp-route-id="@store.StoreId" class="btn btn-sm btn-outline-info" title="@StoreSharedResource.Tooltip_ViewDetails">
+                                        <a asp-action="Details" asp-route-id="@store.StoreId" class="btn btn-sm btn-outline-secondary" title="@StoreSharedResource.Tooltip_ViewDetails" aria-label="@StoreSharedResource.Tooltip_ViewDetails">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <a asp-action="Edit" asp-route-id="@store.StoreId" class="btn btn-sm btn-outline-primary" title="@SharedResource.Button_Edit">
+                                        <a asp-action="Edit" asp-route-id="@store.StoreId" class="btn btn-sm btn-outline-secondary" title="@SharedResource.Button_Edit" aria-label="@SharedResource.Button_Edit">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
-                                        <button type="submit" form="deleteStoreForm_@store.StoreId" class="btn btn-sm btn-outline-danger" title="@SharedResource.Button_Delete">
+                                        <button type="submit" form="deleteStoreForm_@store.StoreId" class="btn btn-sm btn-outline-danger" title="@SharedResource.Button_Delete" aria-label="@SharedResource.Button_Delete">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -153,7 +153,7 @@
                 {
                     <tr>
                         <td colspan="8" class="text-center text-muted py-4">
-                            <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                            <i class="bi bi-inbox fs-3 d-block mb-2 text-muted"></i>
                             @SharedResource.NoDataFound
                         </td>
                     </tr>
@@ -172,35 +172,16 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function () {
-            $('.active-toggle').change(function () {
-                var checkbox = $(this);
-                var storeId = checkbox.data('id');
-                var isActive = checkbox.is(':checked');
-
-                $.ajax({
-                    url: '/Store/UpdateActiveStatus/' + storeId,
-                    type: 'POST',
-                    contentType: 'application/json',
-                    headers: {
-                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-                    },
-                    data: JSON.stringify({
-                        storeId: storeId,
-                        isActive: isActive
-                    }),
-                    success: function () {
-                        var choice = checkbox.closest('.status-choice');
-                        choice.find('.status-dot').toggleClass('is-active', isActive).toggleClass('is-inactive', !isActive);
-                        choice.find('.status-choice-text').text(isActive ? '@Html.Raw(SharedResource.ObjectStatus_IsActive)' : '@Html.Raw(SharedResource.ObjectStatus_IsInactive)');
-                        AppToast.success('@Html.Raw(StoreSharedResource.StatusUpdateSuccess)');
-                    },
-                    error: function (xhr) {
-                        checkbox.prop('checked', !isActive);
-                        AppToast.error('@Html.Raw(StoreSharedResource.StatusUpdateFailed) ' + (xhr.responseText || ''));
-                    }
-                });
-            });
-        });
+        window.RWPM = window.RWPM || {};
+        RWPM.storeIndex = {
+            urls: { updateActiveStatus: '@Url.Action("UpdateActiveStatus", "Store")' },
+            i18n: {
+                active: @Json.Serialize(SharedResource.ObjectStatus_IsActive),
+                inactive: @Json.Serialize(SharedResource.ObjectStatus_IsInactive),
+                updated: @Json.Serialize(StoreSharedResource.StatusUpdateSuccess),
+                failed: @Json.Serialize(StoreSharedResource.StatusUpdateFailed)
+            }
+        };
     </script>
+    <script src="~/js/store/index.js" asp-append-version="true"></script>
 }

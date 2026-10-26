@@ -47,9 +47,6 @@
   <data name="Ui_MarkAllRead" xml:space="preserve">
     <value>Đánh dấu tất cả đã đọc</value>
   </data>
-  <data name="Ui_MarkRead" xml:space="preserve">
-    <value>Đánh dấu đã đọc</value>
-  </data>
   <data name="Ui_ViewAll" xml:space="preserve">
     <value>Xem tất cả</value>
   </data>
@@ -172,5 +169,38 @@
   </data>
   <data name="Body_PayslipAvailable" xml:space="preserve">
     <value>Phiếu lương kỳ {0}–{1} đã có.</value>
+  </data>
+  <data name="Title_AvailabilitySubmitted" xml:space="preserve">
+    <value>Khung giờ có thể làm mới cần duyệt</value>
+  </data>
+  <data name="Body_AvailabilitySubmitted" xml:space="preserve">
+    <value>{0} đã khai {1} khung giờ có thể làm hằng tuần: {2}.</value>
+  </data>
+  <data name="Title_AvailabilityApproved" xml:space="preserve">
+    <value>Khung giờ có thể làm đã được duyệt</value>
+  </data>
+  <data name="Body_AvailabilityApproved" xml:space="preserve">
+    <value>{0} khung giờ có thể làm hằng tuần đã được duyệt: {1}.</value>
+  </data>
+  <data name="Title_AvailabilityRejected" xml:space="preserve">
+    <value>Khung giờ có thể làm bị từ chối</value>
+  </data>
+  <data name="Body_AvailabilityRejected" xml:space="preserve">
+    <value>{0} khung giờ có thể làm hằng tuần bị từ chối: {1}. Lý do: {2}</value>
+  </data>
+  <data name="Title_ShiftShortage" xml:space="preserve">
+    <value>Ca thiếu người</value>
+  </data>
+  <data name="Body_ShiftShortage_Leave" xml:space="preserve">
+    <value>Đơn nghỉ của {0} làm {1}</value>
+  </data>
+  <data name="Body_ShiftShortage_Swap" xml:space="preserve">
+    <value>Đơn đổi ca của {0} làm {1}</value>
+  </data>
+  <data name="ShiftShortage_Item" xml:space="preserve">
+    <value>ca {0} {1} thiếu {2} người</value>
+  </data>
+  <data name="ShiftShortage_More" xml:space="preserve">
+    <value> (+{0} ca khác)</value>
   </data>
 </root>

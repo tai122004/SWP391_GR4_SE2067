@@ -6,7 +6,7 @@ using Microsoft.Extensions.Localization;
 using RWPM.Common;
 using RWPM.Common.Attributes;
 using RWPM.Common.Exceptions;
-using RWPM.Common.Helper;
+using RWPM.Common.Security;
 using RWPM.Infrastructure.Data;
 using RWPM.Models.ViewModels.Employee;
 using RWPM.Services.Abstraction;
@@ -15,7 +15,7 @@ using EmpRes = RWPM.Resources.Shared.Employee;
 
 namespace RWPM.Controllers
 {
-    [Authorize(Roles = "Admin,HR,AreaManager,StoreManager,SuperAdmin")]
+    [Authorize(Roles = AppRoles.Managers)]
     public class EmployeeController : Controller
     {
         private readonly IStringLocalizer _localizer;
@@ -35,8 +35,7 @@ namespace RWPM.Controllers
             _context = context;
         }
 
-        private bool IsStoreManagerOnly =>
-            User.IsInRole("StoreManager") && !User.IsInRole("Admin") && !User.IsInRole("HR") && !User.IsInRole("SuperAdmin");
+        private bool IsStoreManagerOnly => User.IsStoreScoped();
 
         private Task<RWPM.Models.Entities.Employee?> GetCurrentEmployeeAsync()
         {
@@ -47,13 +46,31 @@ namespace RWPM.Controllers
         /// <summary>
         /// Quản lý cửa hàng chỉ được thao tác trên nhân viên (vai trò Employee) cùng chi nhánh, không phải chính mình.
         /// </summary>
-        private async Task<bool> StoreManagerCanManageAsync(int employeeId)
+        private async Task<bool> StoreManagerCanManageAsync(int employeeId, RWPM.Models.Entities.Employee? currentEmp = null)
         {
-            var currentEmp = await GetCurrentEmployeeAsync();
+            currentEmp ??= await GetCurrentEmployeeAsync();
             if (currentEmp?.StoreId == null || currentEmp.EmployeeId == employeeId) return false;
             return await _context.Employee.AsNoTracking().AnyAsync(e => e.EmployeeId == employeeId
                 && e.StoreId == currentEmp.StoreId
                 && e.Account.Role == RWPM.Common.Enums.AccountRole.Employee);
+        }
+
+        /// <summary>
+        /// Quản lý cửa hàng chỉ xem được nhân viên chi nhánh mình: ép StoreId của bộ lọc. Trả về false nếu QLCH chưa gán chi nhánh.
+        /// </summary>
+        private async Task<bool> ApplyStoreScopeAsync(EmployeeSearch searchObject)
+        {
+            if (!IsStoreManagerOnly) return true;
+            var currentEmp = await GetCurrentEmployeeAsync();
+            if (currentEmp?.StoreId == null) return false;
+            searchObject.StoreId = currentEmp.StoreId;
+            return true;
+        }
+
+        private async Task PopulateFormListsAsync(string? username)
+        {
+            ViewBag.AccountList = await _employeeService.GetAvailableAccountsSelectListAsync(username);
+            ViewBag.StoreList = await _storeService.GetSelectListAsync();
         }
 
         private static string StoreManagerEditDeniedMessage => InputRules.Text(
@@ -64,22 +81,16 @@ namespace RWPM.Controllers
         [RemoveEmptyQueryString]
         public async Task<IActionResult> Index(EmployeeSearch searchObject)
         {
-            var isStoreManager = IsStoreManagerOnly;
-            if (isStoreManager)
+            if (!await ApplyStoreScopeAsync(searchObject))
             {
-                var currentEmp = await GetCurrentEmployeeAsync();
-                if (currentEmp?.StoreId == null)
-                {
-                    return Forbid();
-                }
-                searchObject.StoreId = currentEmp.StoreId;
+                return Forbid();
             }
 
             var result = await _employeeService.SearchAsync(searchObject);
             var storeSelectList = await _storeService.GetSelectListAsync();
 
             ViewBag.Statistics = await _employeeService.GetStatisticsAsync(searchObject.StoreId);
-            ViewBag.IsStoreManager = isStoreManager;
+            ViewBag.IsStoreManager = IsStoreManagerOnly;
 
             return View(new EmployeeListVM(result, searchObject, storeSelectList));
         }
@@ -88,33 +99,27 @@ namespace RWPM.Controllers
         [HttpGet]
         public async Task<IActionResult> ExportExcel(EmployeeSearch searchObject)
         {
-            var isStoreManager = IsStoreManagerOnly;
-            if (isStoreManager)
+            if (!await ApplyStoreScopeAsync(searchObject))
             {
-                var currentEmp = await GetCurrentEmployeeAsync();
-                if (currentEmp?.StoreId == null)
-                {
-                    return Forbid();
-                }
-                searchObject.StoreId = currentEmp.StoreId;
+                return Forbid();
             }
 
             var fileBytes = await _employeeService.ExportToExcelAsync(searchObject);
-            var fileName = $"Employees_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+            var fileName = $"{InputRules.Text("Danh_Sach_Nhan_Vien", "Employees")}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
             return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
 
         // GET: Employee/DownloadTemplate
-        [Authorize(Roles = "Admin,HR,AreaManager,SuperAdmin")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         [HttpGet]
         public async Task<IActionResult> DownloadTemplate()
         {
             var fileBytes = await _employeeService.GenerateImportTemplateAsync();
-            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Mau_Nhap_Nhan_Vien_{DateTime.Now:yyyyMMdd}.xlsx");
+            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{InputRules.Text("Mau_Nhap_Nhan_Vien", "Employee_Import_Template")}_{DateTime.Now:yyyyMMdd}.xlsx");
         }
 
         // POST: Employee/ImportExcel
-        [Authorize(Roles = "Admin,HR,AreaManager,SuperAdmin")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ImportExcel(IFormFile? file)
@@ -151,14 +156,14 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                AlertHelper.AddErrorMessage(TempData, string.Format(EmpRes.Import_ProcessError, ex.Message));
+                AlertHelper.AddErrorMessage(TempData, string.Format(EmpRes.Import_ProcessError, InputRules.UserMessage(ex)));
             }
 
             return RedirectToAction(nameof(Index));
         }
 
         // POST: Employee/PreviewImportExcel
-        [Authorize(Roles = "Admin,HR,AreaManager,SuperAdmin")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PreviewImportExcel(IFormFile? file)
@@ -181,12 +186,12 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new { success = false, message = InputRules.UserMessage(ex) });
             }
         }
 
         // POST: Employee/ConfirmImportExcel
-        [Authorize(Roles = "Admin,HR,AreaManager,SuperAdmin")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmImportExcel([FromBody] ConfirmImportRequest request)
@@ -203,29 +208,27 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new { success = false, message = InputRules.UserMessage(ex) });
             }
         }
 
         // GET: Employee/Create
-        [Authorize(Roles = "Admin,HR,AreaManager,SuperAdmin")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         public async Task<IActionResult> Create()
         {
-            ViewBag.AccountList = await _employeeService.GetAvailableAccountsSelectListAsync();
-            ViewBag.StoreList = await _storeService.GetSelectListAsync();
+            await PopulateFormListsAsync(null);
             return View(new EmployeeCreateVM());
         }
 
         // POST: Employee/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,HR,AreaManager,SuperAdmin")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         public async Task<IActionResult> Create(EmployeeCreateVM viewModel)
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.AccountList = await _employeeService.GetAvailableAccountsSelectListAsync(viewModel.Username);
-                ViewBag.StoreList = await _storeService.GetSelectListAsync();
+                await PopulateFormListsAsync(viewModel.Username);
                 return View(viewModel);
             }
 
@@ -246,17 +249,15 @@ namespace RWPM.Controllers
             catch (ModelValidationException ex)
             {
                 AlertHelper.AddErrorMessage(TempData, ex.GetErrorString(_localizer));
-                ViewBag.AccountList = await _employeeService.GetAvailableAccountsSelectListAsync(viewModel.Username);
-                ViewBag.StoreList = await _storeService.GetSelectListAsync();
+                await PopulateFormListsAsync(viewModel.Username);
                 return View(viewModel);
             }
             catch (Exception ex)
             {
                 if (ex is InputValidationException input) ModelState.AddModelError(input.Field, input.Message);
                 else if (InputRules.Duplicate(ex) is { } duplicate) ModelState.AddModelError(duplicate.Field, duplicate.Message);
-                else AlertHelper.AddErrorMessage(TempData, ex.Message);
-                ViewBag.AccountList = await _employeeService.GetAvailableAccountsSelectListAsync(viewModel.Username);
-                ViewBag.StoreList = await _storeService.GetSelectListAsync();
+                else AlertHelper.AddErrorMessage(TempData, InputRules.UserMessage(ex));
+                await PopulateFormListsAsync(viewModel.Username);
                 return View(viewModel);
             }
         }
@@ -279,15 +280,14 @@ namespace RWPM.Controllers
                 {
                     return Forbid();
                 }
-                if (!await StoreManagerCanManageAsync(employee.EmployeeId))
+                if (!await StoreManagerCanManageAsync(employee.EmployeeId, currentEmp))
                 {
                     AlertHelper.AddErrorMessage(TempData, StoreManagerEditDeniedMessage);
                     return RedirectToAction(nameof(Index));
                 }
             }
 
-            ViewBag.AccountList = await _employeeService.GetAvailableAccountsSelectListAsync(employee.Username);
-            ViewBag.StoreList = await _storeService.GetSelectListAsync();
+            await PopulateFormListsAsync(employee.Username);
             ViewBag.IsStoreManager = isStoreManager;
             return View(new EmployeeEditVM(employee));
         }
@@ -313,7 +313,7 @@ namespace RWPM.Controllers
                 {
                     return Forbid();
                 }
-                if (!await StoreManagerCanManageAsync(id))
+                if (!await StoreManagerCanManageAsync(id, currentEmp))
                 {
                     AlertHelper.AddErrorMessage(TempData, StoreManagerEditDeniedMessage);
                     return RedirectToAction(nameof(Index));
@@ -339,8 +339,7 @@ namespace RWPM.Controllers
 
             if (!ModelState.IsValid)
             {
-                ViewBag.AccountList = await _employeeService.GetAvailableAccountsSelectListAsync(viewModel.Username);
-                ViewBag.StoreList = await _storeService.GetSelectListAsync();
+                await PopulateFormListsAsync(viewModel.Username);
                 return View(viewModel);
             }
 
@@ -355,17 +354,15 @@ namespace RWPM.Controllers
             catch (ModelValidationException ex)
             {
                 AlertHelper.AddErrorMessage(TempData, ex.GetErrorString(_localizer));
-                ViewBag.AccountList = await _employeeService.GetAvailableAccountsSelectListAsync(viewModel.Username);
-                ViewBag.StoreList = await _storeService.GetSelectListAsync();
+                await PopulateFormListsAsync(viewModel.Username);
                 return View(viewModel);
             }
             catch (Exception ex)
             {
                 if (ex is InputValidationException input) ModelState.AddModelError(input.Field, input.Message);
                 else if (InputRules.Duplicate(ex) is { } duplicate) ModelState.AddModelError(duplicate.Field, duplicate.Message);
-                else AlertHelper.AddErrorMessage(TempData, ex.Message);
-                ViewBag.AccountList = await _employeeService.GetAvailableAccountsSelectListAsync(viewModel.Username);
-                ViewBag.StoreList = await _storeService.GetSelectListAsync();
+                else AlertHelper.AddErrorMessage(TempData, InputRules.UserMessage(ex));
+                await PopulateFormListsAsync(viewModel.Username);
                 return View(viewModel);
             }
         }
@@ -388,13 +385,13 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                AlertHelper.AddErrorMessage(TempData, ex.Message);
+                AlertHelper.AddErrorMessage(TempData, InputRules.UserMessage(ex));
             }
             return RedirectToAction(nameof(Index));
         }
 
         // GET: Employee/Delete/5
-        [Authorize(Roles = "Admin,HR,AreaManager,SuperAdmin")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         public async Task<IActionResult> Delete(int id)
         {
             var employee = await _employeeService.GetByIdAsync(id);
@@ -409,7 +406,7 @@ namespace RWPM.Controllers
         // POST: Employee/DeleteConfirmed
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,HR,AreaManager,SuperAdmin")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         public async Task<IActionResult> DeleteConfirmed(int employeeId)
         {
             var isAjax = Request.Headers["X-Requested-With"] == "XMLHttpRequest";
@@ -422,8 +419,8 @@ namespace RWPM.Controllers
             }
             catch (InputValidationException ex)
             {
-                if (isAjax) return Conflict(new { message = ex.Message });
-                AlertHelper.AddErrorMessage(TempData, ex.Message);
+                if (isAjax) return Conflict(new { message = InputRules.UserMessage(ex) });
+                AlertHelper.AddErrorMessage(TempData, InputRules.UserMessage(ex));
                 return RedirectToAction(nameof(Delete), new { id = employeeId });
             }
             catch (ModelValidationException ex)
@@ -433,8 +430,9 @@ namespace RWPM.Controllers
                 AlertHelper.AddErrorMessage(TempData, message);
                 return RedirectToAction(nameof(Delete), new { id = employeeId });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
+                // Lỗi khác (thường là ràng buộc khóa ngoại): hướng người dùng ngừng hoạt động/thôi việc thay vì xóa
                 var message = InputRules.Text("Không thể xóa nhân viên vì còn dữ liệu liên quan. Hãy ngừng hoạt động hoặc cho thôi việc để giữ lịch sử.",
                     "Cannot delete the employee because related records exist. Deactivate or resign the employee to preserve history.");
                 if (isAjax) return Conflict(new { message });
@@ -477,7 +475,7 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(InputRules.UserMessage(ex));
             }
         }
     }

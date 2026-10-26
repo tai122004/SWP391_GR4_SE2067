@@ -1,6 +1,7 @@
-﻿@using System.Text.Json
+@using System.Text.Json
 @{
-    // Mọi thông báo (TempData) đều hiển thị dạng toast ở góc dưới bên phải, thông qua AppToast (wwwroot/js/site.js)
+    // Mọi thông báo (TempData) đều hiển thị dạng toast ở góc dưới bên phải, thông qua AppToast (wwwroot/js/site.js).
+    // Tiêu đề toast (Thành công / Có lỗi xảy ra...) lấy từ SharedResource.Toast_* qua _AppClientConfig.
     var now = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
     var flashMessages = new List<object>();
     void Add(string key, string type)
@@ -26,7 +27,7 @@
             var items = @Html.Raw(JsonSerializer.Serialize(flashMessages));
             items.forEach(function (it) {
                 if (window.AppToast) {
-                    AppToast.show(it.type, it.message, { time: '@now' });
+                    AppToast.show(it.type, it.message, { time: @Html.Raw(JsonSerializer.Serialize(now)) });
                 }
             });
         });

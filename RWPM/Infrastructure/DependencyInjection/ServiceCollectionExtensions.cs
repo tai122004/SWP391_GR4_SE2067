@@ -5,12 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using RWPM.Common.Localization;
 using RWPM.Hubs.Config;
 using RWPM.Infrastructure.Data;
-//using RWPM.Infrastructure.Services.Abstraction;
-//using RWPM.Infrastructure.Services.Implementation;
 using RWPM.Infrastructure.Storage;
 using RWPM.Services.Abstraction;
 using RWPM.Services.Implementation;
-using RWPM.Services;
 
 namespace RWPM.Infrastructure.DependencyInjection
 {
@@ -18,7 +15,6 @@ namespace RWPM.Infrastructure.DependencyInjection
     {
         public static IServiceCollection RegisterServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddControllers();
             services.AddMemoryCache();
 
             #region Hub
@@ -108,7 +104,8 @@ namespace RWPM.Infrastructure.DependencyInjection
             services.AddScoped<IPerformanceService, PerformanceService>();
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<INotificationService, NotificationService>();
-            //services.AddScoped<IIdCounterService, IdCounterService>();
+            services.AddScoped<IAvailabilityService, AvailabilityService>();
+            services.AddScoped<IShiftDemandService, ShiftDemandService>();
 
             return services;
         }

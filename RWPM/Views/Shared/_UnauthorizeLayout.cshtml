@@ -1,9 +1,14 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="@System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - RWPM</title>
+
+    <!-- Font: Be Vietnam Pro (giống _Layout); không có mạng sẽ tự dùng font hệ thống -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&display=swap" />
 
     <!-- Bootstrap -->
     <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
@@ -12,18 +17,47 @@
     <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/lib/flag-icons/css/flag-icons.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/RWPM.styles.css" asp-append-version="true" />
+    @* Trang chưa đăng nhập (đăng nhập...) theo design system v2: thẻ phẳng, bo 6px, không đổ bóng, điểm nhấn navy như thanh bên.
+       Chọn theo body.app-auth để thắng các style cục bộ cũ trong view. *@
+    <style>
+        body.app-auth { min-height: 100vh; background: var(--app-bg); color: var(--app-text); }
+        body.app-auth .login-wrapper { min-height: 100vh; background: var(--app-bg); }
+        body.app-auth .login-left { background: var(--app-bg) !important; box-shadow: none !important; }
+        body.app-auth .login-left > .w-100 {
+            background: var(--app-surface); border: 1px solid var(--app-border); border-top: 3px solid var(--app-navy);
+            border-radius: var(--app-radius); padding: 2rem 2rem 1.75rem;
+        }
+        body.app-auth .login-left h3, body.app-auth .login-left .text-primary { color: var(--app-text) !important; font-size: 1.55rem; font-weight: 600; letter-spacing: -.01em; }
+        body.app-auth .login-right { background: var(--app-navy) !important; }
+        body.app-auth .login-right h2 { font-weight: 600; letter-spacing: .04em; }
+        body.app-auth .login-right .lead { color: #C9D3E0; font-size: 1rem; }
+        body.app-auth .shadow, body.app-auth .shadow-sm, body.app-auth .shadow-lg { box-shadow: none !important; }
+        body.app-auth .btn-lg { font-size: 1rem; }
+        body.app-auth .btn-primary { background: var(--app-blue); border: 1px solid var(--app-blue); }
+        body.app-auth .btn-primary:hover, body.app-auth .btn-primary:focus { background: var(--app-blue-hover); border-color: var(--app-blue-hover); }
+        body.app-auth .form-control, body.app-auth .form-select { border-color: var(--app-border-strong); }
+        body.app-auth .form-control:focus, body.app-auth .form-select:focus { border-color: var(--app-blue); box-shadow: 0 0 0 3px #DCE7F8; }
+        body.app-auth .form-floating > label { color: var(--app-muted); }
+        body.app-auth .form-label { color: var(--app-text); font-weight: 500; }
+        body.app-auth .app-auth-card {
+            width: 100%; max-width: 420px; margin: 0 auto; background: var(--app-surface); border: 1px solid var(--app-border);
+            border-top: 3px solid var(--app-navy); border-radius: var(--app-radius); padding: 2rem;
+        }
+        @@media (max-width: 575px) {
+            body.app-auth .login-left { padding: 1rem !important; }
+            body.app-auth .login-left > .w-100 { padding: 1.5rem 1.25rem; }
+        }
+    </style>
 </head>
-<body>
-    <div class="container-fluid p-0">
-        <main role="main" class="pb-3">
+<body class="app-auth">
+    <main role="main" class="app-auth-main">
+        <partial name="_AleartMessagePartial" />
 
-            <partial name="_AleartMessagePartial" />
+        @RenderBody()
+    </main>
 
-            @RenderBody()
-        </main>
-    </div>
-
-    <script type="text/javascript" src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery/jquery.min.js"></script>
     <script type="text/javascript" src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
     <partial name="_AppClientConfig" />
     <script type="text/javascript" src="~/js/site.js" asp-append-version="true"></script>

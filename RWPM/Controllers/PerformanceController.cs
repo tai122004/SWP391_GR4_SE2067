@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RWPM.Common;
 using RWPM.Common.Enums;
 using RWPM.Common.Models;
+using RWPM.Common.Security;
 using RWPM.Models.Entities;
 using RWPM.Models.ViewModels.Performance;
 using RWPM.Services.Abstraction;
@@ -13,8 +14,8 @@ namespace RWPM.Controllers
 {
     /// <summary>
     /// Đánh giá hiệu suất theo tháng.
-    /// Admin/HR: xem & đánh giá mọi nhân viên (trừ chính mình).
-    /// Quản lý cửa hàng: xem & đánh giá nhân viên (vai trò Employee) cùng chi nhánh, trừ chính mình.
+    /// Admin/HR: xem và đánh giá mọi nhân viên (trừ chính mình).
+    /// Quản lý cửa hàng: xem và đánh giá nhân viên (vai trò Employee) cùng chi nhánh, trừ chính mình.
     /// Mọi người có hồ sơ nhân viên: xem thẻ điểm của chính mình (My/MyDetail, chỉ đọc).
     /// </summary>
     [Authorize]
@@ -30,8 +31,8 @@ namespace RWPM.Controllers
         }
 
         private string CurrentUsername => User.FindFirstValue(ClaimTypes.Name) ?? User.Identity?.Name ?? string.Empty;
-        private bool IsAdminOrHR => User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin");
-        private bool IsStoreManagerOnly => User.IsInRole("StoreManager") && !IsAdminOrHR;
+        private bool IsAdminOrHR => User.IsChainManager();
+        private bool IsStoreManagerOnly => User.IsStoreScoped();
 
         /// <summary>Chuẩn hóa tháng được chọn: mặc định / không hợp lệ / tương lai -> tháng hiện tại.</summary>
         private static (int Year, int Month) NormalizeMonth(int? year, int? month)
@@ -42,6 +43,14 @@ namespace RWPM.Controllers
             if (year.Value * 12 + month.Value > today.Year * 12 + today.Month)
                 return (today.Year, today.Month);
             return (year.Value, month.Value);
+        }
+
+        /// <summary>Chuẩn hóa từ khóa tìm kiếm: rỗng -> null, cắt khoảng trắng, tối đa 100 ký tự.</summary>
+        private static string? NormalizeSearch(string? search)
+        {
+            if (string.IsNullOrWhiteSpace(search)) return null;
+            var s = search.Trim();
+            return s.Length > 100 ? s[..100] : s;
         }
 
         private static List<int> AvailableYears(int selectedYear)
@@ -95,8 +104,7 @@ namespace RWPM.Controllers
 
             var (year, month) = NormalizeMonth(filter.Year, filter.Month);
             var storeId = scope.ForcedStoreId ?? (filter.StoreId > 0 ? filter.StoreId : null);
-            var search = string.IsNullOrWhiteSpace(filter.Search) ? null : filter.Search.Trim();
-            if (search?.Length > 100) search = search[..100];
+            var search = NormalizeSearch(filter.Search);
 
             var rows = await _performanceService.GetRowsAsync(scope, year, month, storeId, search);
             var pageSize = filter.PageSize > 0 ? filter.PageSize : 10;
@@ -128,8 +136,7 @@ namespace RWPM.Controllers
 
             var (year, month) = NormalizeMonth(filter.Year, filter.Month);
             var storeId = scope.ForcedStoreId ?? (filter.StoreId > 0 ? filter.StoreId : null);
-            var search = string.IsNullOrWhiteSpace(filter.Search) ? null : filter.Search.Trim();
-            if (search?.Length > 100) search = search[..100];
+            var search = NormalizeSearch(filter.Search);
 
             try
             {
@@ -159,8 +166,8 @@ namespace RWPM.Controllers
             if (string.Equals(target.Username, CurrentUsername, StringComparison.OrdinalIgnoreCase))
                 return RedirectToAction(nameof(MyDetail), new { year = y, month = m });
 
+            // CanManage cũng chặn Store Manager chưa được gán chi nhánh
             var current = await _performanceService.GetEmployeeByUsernameAsync(CurrentUsername);
-            if (IsStoreManagerOnly && current?.StoreId == null) return Forbid();
             if (!CanManage(target, current)) return Forbid();
 
             var vm = await _performanceService.GetDetailAsync(employeeId, y, m);

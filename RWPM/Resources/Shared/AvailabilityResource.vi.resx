@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+    <data name="Menu_MyAvailability" xml:space="preserve">
+    <value>Thời gian có thể làm</value>
+  </data>
+  <data name="Menu_ReviewAvailability" xml:space="preserve">
+    <value>Duyệt thời gian có thể làm</value>
+  </data>
+  <data name="Action_AddDate" xml:space="preserve">
+    <value>Thêm ngày</value>
+  </data>
+  <data name="Action_Approve" xml:space="preserve">
+    <value>Duyệt</value>
+  </data>
+  <data name="Action_ApproveSelected" xml:space="preserve">
+    <value>Duyệt đã chọn</value>
+  </data>
+  <data name="Action_BackToReview" xml:space="preserve">
+    <value>Về danh sách duyệt</value>
+  </data>
+  <data name="Action_Delete" xml:space="preserve">
+    <value>Xóa</value>
+  </data>
+  <data name="Action_MyAvailability" xml:space="preserve">
+    <value>Thời gian của tôi</value>
+  </data>
+  <data name="Action_Reject" xml:space="preserve">
+    <value>Từ chối</value>
+  </data>
+  <data name="Action_RejectSelected" xml:space="preserve">
+    <value>Từ chối đã chọn</value>
+  </data>
+  <data name="Action_SubmitWindows" xml:space="preserve">
+    <value>Gửi duyệt</value>
+  </data>
+  <data name="Action_ViewEmployee" xml:space="preserve">
+    <value>Xem thời gian của nhân viên</value>
+  </data>
+  <data name="Bulk_SelectAll" xml:space="preserve">
+    <value>Chọn tất cả khung chờ duyệt trên trang</value>
+  </data>
+  <data name="Bulk_Selected" xml:space="preserve">
+    <value>Đã chọn:</value>
+  </data>
+  <data name="Card_Approved" xml:space="preserve">
+    <value>Đã duyệt</value>
+  </data>
+  <data name="Card_Dates" xml:space="preserve">
+    <value>Ngày không thể làm</value>
+  </data>
+  <data name="Card_Pending" xml:space="preserve">
+    <value>Chờ duyệt</value>
+  </data>
+  <data name="Card_Rejected" xml:space="preserve">
+    <value>Từ chối</value>
+  </data>
+  <data name="Card_UpcomingDates" xml:space="preserve">
+    <value>Ngày không thể làm ({0} ngày tới)</value>
+  </data>
+  <data name="Card_Windows" xml:space="preserve">
+    <value>Khung giờ có thể làm hằng tuần</value>
+  </data>
+  <data name="Check_NoWindowThatDay" xml:space="preserve">
+    <value>không có khung giờ nào</value>
+  </data>
+  <data name="Check_OutsideAvailability" xml:space="preserve">
+    <value>Ca {0} ({1}) nằm ngoài khung giờ có thể làm đã được duyệt của nhân viên ({2}: {3}).</value>
+  </data>
+  <data name="Check_Unavailable" xml:space="preserve">
+    <value>Nhân viên đã khai báo không thể làm ngày {0}.</value>
+  </data>
+  <data name="Check_UnavailableWithReason" xml:space="preserve">
+    <value>Nhân viên đã khai báo không thể làm ngày {0}. Lý do: {1}</value>
+  </data>
+  <data name="Col_Date" xml:space="preserve">
+    <value>Ngày</value>
+  </data>
+  <data name="Col_Day" xml:space="preserve">
+    <value>Thứ</value>
+  </data>
+  <data name="Col_Employee" xml:space="preserve">
+    <value>Nhân viên</value>
+  </data>
+  <data name="Col_Note" xml:space="preserve">
+    <value>Ghi chú</value>
+  </data>
+  <data name="Col_Reason" xml:space="preserve">
+    <value>Lý do</value>
+  </data>
+  <data name="Col_Status" xml:space="preserve">
+    <value>Trạng thái</value>
+  </data>
+  <data name="Col_Store" xml:space="preserve">
+    <value>Chi nhánh</value>
+  </data>
+  <data name="Col_SubmittedAt" xml:space="preserve">
+    <value>Gửi lúc</value>
+  </data>
+  <data name="Col_TimeRange" xml:space="preserve">
+    <value>Khung giờ</value>
+  </data>
+  <data name="Confirm_ApproveMany" xml:space="preserve">
+    <value>Duyệt {0} khung giờ đã chọn?</value>
+  </data>
+  <data name="Confirm_ApproveOne" xml:space="preserve">
+    <value>Duyệt khung giờ: {0}?</value>
+  </data>
+  <data name="Confirm_ApproveTitle" xml:space="preserve">
+    <value>Duyệt khung giờ có thể làm</value>
+  </data>
+  <data name="Confirm_DeleteDate" xml:space="preserve">
+    <value>Xóa ngày không thể làm {0}?</value>
+  </data>
+  <data name="Confirm_DeleteWindow" xml:space="preserve">
+    <value>Xóa khung giờ {0} {1}? Thay đổi có hiệu lực ngay.</value>
+  </data>
+  <data name="Dates_Count" xml:space="preserve">
+    <value>{0} ngày sắp tới</value>
+  </data>
+  <data name="Dates_Empty" xml:space="preserve">
+    <value>Bạn chưa khai ngày không thể làm nào.</value>
+  </data>
+  <data name="Dates_EmptyEmployee" xml:space="preserve">
+    <value>Không có ngày không thể làm sắp tới.</value>
+  </data>
+  <data name="Dates_NoReason" xml:space="preserve">
+    <value>Không ghi lý do</value>
+  </data>
+  <data name="Day_0" xml:space="preserve">
+    <value>Chủ nhật</value>
+  </data>
+  <data name="Day_1" xml:space="preserve">
+    <value>Thứ Hai</value>
+  </data>
+  <data name="Day_2" xml:space="preserve">
+    <value>Thứ Ba</value>
+  </data>
+  <data name="Day_3" xml:space="preserve">
+    <value>Thứ Tư</value>
+  </data>
+  <data name="Day_4" xml:space="preserve">
+    <value>Thứ Năm</value>
+  </data>
+  <data name="Day_5" xml:space="preserve">
+    <value>Thứ Sáu</value>
+  </data>
+  <data name="Day_6" xml:space="preserve">
+    <value>Thứ Bảy</value>
+  </data>
+  <data name="DayShort_0" xml:space="preserve">
+    <value>CN</value>
+  </data>
+  <data name="DayShort_1" xml:space="preserve">
+    <value>T2</value>
+  </data>
+  <data name="DayShort_2" xml:space="preserve">
+    <value>T3</value>
+  </data>
+  <data name="DayShort_3" xml:space="preserve">
+    <value>T4</value>
+  </data>
+  <data name="DayShort_4" xml:space="preserve">
+    <value>T5</value>
+  </data>
+  <data name="DayShort_5" xml:space="preserve">
+    <value>T6</value>
+  </data>
+  <data name="DayShort_6" xml:space="preserve">
+    <value>T7</value>
+  </data>
+  <data name="Employee_AnyTime" xml:space="preserve">
+    <value>Làm được mọi lúc</value>
+  </data>
+  <data name="Employee_NoWindows" xml:space="preserve">
+    <value>Nhân viên chưa khai khung giờ hằng tuần nên được coi là làm được mọi lúc.</value>
+  </data>
+  <data name="Employee_OnlyPendingHint" xml:space="preserve">
+    <value>Mới có khung giờ chờ duyệt; cho tới khi được duyệt, nhân viên vẫn được coi là làm được mọi lúc.</value>
+  </data>
+  <data name="Employee_ReviewPending" xml:space="preserve">
+    <value>Duyệt {0} khung chờ</value>
+  </data>
+  <data name="Employee_Title" xml:space="preserve">
+    <value>Thời gian có thể làm của nhân viên</value>
+  </data>
+  <data name="Employee_WeekTitle" xml:space="preserve">
+    <value>Khung giờ hằng tuần</value>
+  </data>
+  <data name="Employee_WindowList" xml:space="preserve">
+    <value>Danh sách khung giờ</value>
+  </data>
+  <data name="Err_AlreadyProcessed" xml:space="preserve">
+    <value>Các khung giờ đã chọn đã được xử lý trước đó.</value>
+  </data>
+  <data name="Err_ApproveOverlap" xml:space="preserve">
+    <value>Không thể duyệt: khung {1} {2} của {0} chồng lấn với một khung đã duyệt khác.</value>
+  </data>
+  <data name="Err_DateDuplicate" xml:space="preserve">
+    <value>Bạn đã khai ngày này rồi.</value>
+  </data>
+  <data name="Err_DateHasApprovedShift" xml:space="preserve">
+    <value>Bạn đã có ca được duyệt ngày {0} ({1}). Vui lòng dùng đơn nghỉ phép hoặc đổi ca.</value>
+  </data>
+  <data name="Err_DateHasPendingShift" xml:space="preserve">
+    <value>Bạn có đăng ký ca đang chờ duyệt ngày {0} ({1}). Vui lòng hủy đăng ký đó trước.</value>
+  </data>
+  <data name="Err_DateLead" xml:space="preserve">
+    <value>Ngày không thể làm phải khai trước ít nhất {0} ngày (từ {1}).</value>
+  </data>
+  <data name="Err_DateNotFound" xml:space="preserve">
+    <value>Không tìm thấy ngày không thể làm.</value>
+  </data>
+  <data name="Err_DatePastDelete" xml:space="preserve">
+    <value>Không thể xóa ngày đã qua.</value>
+  </data>
+  <data name="Err_DateRequired" xml:space="preserve">
+    <value>Vui lòng chọn ngày hợp lệ.</value>
+  </data>
+  <data name="Err_DateTooFar" xml:space="preserve">
+    <value>Chỉ được khai tối đa {0} ngày tới (đến {1}).</value>
+  </data>
+  <data name="Err_DaysInvalid" xml:space="preserve">
+    <value>Thứ trong tuần không hợp lệ.</value>
+  </data>
+  <data name="Err_DaysRequired" xml:space="preserve">
+    <value>Vui lòng chọn ít nhất một thứ trong tuần.</value>
+  </data>
+  <data name="Err_DecisionInvalid" xml:space="preserve">
+    <value>Chỉ được chọn duyệt hoặc từ chối.</value>
+  </data>
+  <data name="Err_EmployeeNotFound" xml:space="preserve">
+    <value>Không tìm thấy nhân viên.</value>
+  </data>
+  <data name="Err_MaxPerDay" xml:space="preserve">
+    <value>{0} đã có tối đa {1} khung giờ (chờ duyệt + đã duyệt).</value>
+  </data>
+  <data name="Err_MaxTotal" xml:space="preserve">
+    <value>Bạn chỉ được có tối đa {0} khung giờ (chờ duyệt + đã duyệt).</value>
+  </data>
+  <data name="Err_NoProfile" xml:space="preserve">
+    <value>Tài khoản của bạn chưa có hồ sơ nhân viên đang hoạt động.</value>
+  </data>
+  <data name="Err_NoReviewPermission" xml:space="preserve">
+    <value>Bạn không có quyền duyệt thời gian có thể làm.</value>
+  </data>
+  <data name="Err_NotOwner" xml:space="preserve">
+    <value>Bạn chỉ được thay đổi khai báo của chính mình.</value>
+  </data>
+  <data name="Err_NoteTooLong" xml:space="preserve">
+    <value>Ghi chú không được vượt quá 255 ký tự.</value>
+  </data>
+  <data name="Err_NothingSelected" xml:space="preserve">
+    <value>Vui lòng chọn ít nhất một khung giờ.</value>
+  </data>
+  <data name="Err_OperationFailed" xml:space="preserve">
+    <value>Thao tác thất bại. Vui lòng thử lại.</value>
+  </data>
+  <data name="Err_OutOfScope" xml:space="preserve">
+    <value>Bạn không được duyệt nhân viên ngoài chi nhánh của mình.</value>
+  </data>
+  <data name="Err_Overlap" xml:space="preserve">
+    <value>Khung {0} {1} chồng lấn với khung đã có ({2} {3}).</value>
+  </data>
+  <data name="Err_OverlapSelected" xml:space="preserve">
+    <value>Khung giờ ngày {0} chồng lấn với ngày {1} (do qua nửa đêm).</value>
+  </data>
+  <data name="Err_ReasonTooLong" xml:space="preserve">
+    <value>Lý do không được vượt quá 255 ký tự.</value>
+  </data>
+  <data name="Err_RejectReason" xml:space="preserve">
+    <value>Lý do từ chối phải có từ 1 đến 255 ký tự.</value>
+  </data>
+  <data name="Err_SelfApprove" xml:space="preserve">
+    <value>Không được tự duyệt/từ chối khung giờ của chính mình.</value>
+  </data>
+  <data name="Err_TimeInvalid" xml:space="preserve">
+    <value>Vui lòng nhập giờ hợp lệ (HH:mm).</value>
+  </data>
+  <data name="Err_TimeSame" xml:space="preserve">
+    <value>Giờ bắt đầu và kết thúc phải khác nhau.</value>
+  </data>
+  <data name="Err_TooManySelected" xml:space="preserve">
+    <value>Chọn quá nhiều khung giờ (tối đa 500).</value>
+  </data>
+  <data name="Err_WindowNotFound" xml:space="preserve">
+    <value>Không tìm thấy khung giờ.</value>
+  </data>
+  <data name="Filter_AllStatuses" xml:space="preserve">
+    <value>Tất cả trạng thái</value>
+  </data>
+  <data name="Filter_AllStores" xml:space="preserve">
+    <value>Tất cả chi nhánh</value>
+  </data>
+  <data name="Filter_Search" xml:space="preserve">
+    <value>Tìm kiếm</value>
+  </data>
+  <data name="Filter_SearchPlaceholder" xml:space="preserve">
+    <value>Tên, mã hoặc tài khoản...</value>
+  </data>
+  <data name="Filter_Status" xml:space="preserve">
+    <value>Trạng thái</value>
+  </data>
+  <data name="Filter_Store" xml:space="preserve">
+    <value>Chi nhánh</value>
+  </data>
+  <data name="Form_AddWindow" xml:space="preserve">
+    <value>Thêm khung giờ hằng tuần</value>
+  </data>
+  <data name="Form_Date" xml:space="preserve">
+    <value>Ngày</value>
+  </data>
+  <data name="Form_DateRangeHint" xml:space="preserve">
+    <value>Từ {0} đến {1}</value>
+  </data>
+  <data name="Form_Days" xml:space="preserve">
+    <value>Thứ trong tuần</value>
+  </data>
+  <data name="Form_From" xml:space="preserve">
+    <value>Từ</value>
+  </data>
+  <data name="Form_LimitHint" xml:space="preserve">
+    <value>Tối đa {0} khung/thứ; các khung không được chồng lấn.</value>
+  </data>
+  <data name="Form_Note" xml:space="preserve">
+    <value>Ghi chú</value>
+  </data>
+  <data name="Form_NotePlaceholder" xml:space="preserve">
+    <value>VD: sau giờ học</value>
+  </data>
+  <data name="Form_PickAll" xml:space="preserve">
+    <value>Cả tuần</value>
+  </data>
+  <data name="Form_PickNone" xml:space="preserve">
+    <value>Bỏ chọn</value>
+  </data>
+  <data name="Form_PickWeekdays" xml:space="preserve">
+    <value>T2–T6</value>
+  </data>
+  <data name="Form_PickWeekend" xml:space="preserve">
+    <value>Cuối tuần</value>
+  </data>
+  <data name="Form_Reason" xml:space="preserve">
+    <value>Lý do (không bắt buộc)</value>
+  </data>
+  <data name="Form_ReasonPlaceholder" xml:space="preserve">
+    <value>VD: thi, việc gia đình</value>
+  </data>
+  <data name="Form_To" xml:space="preserve">
+    <value>Đến</value>
+  </data>
+  <data name="Grid_CarryHint" xml:space="preserve">
+    <value>nối tiếp từ hôm trước (khung qua đêm)</value>
+  </data>
+  <data name="Hint_CrossesMidnight" xml:space="preserve">
+    <value>Giờ kết thúc nhỏ hơn giờ bắt đầu nghĩa là khung giờ kéo qua nửa đêm sang ngày hôm sau.</value>
+  </data>
+  <data name="Hint_Dates" xml:space="preserve">
+    <value>Ngày không thể làm không cần duyệt nhưng phải khai trước ít nhất {0} ngày (tối đa {1} ngày tới). Không khai được ngày đã có ca — hãy dùng đơn nghỉ phép/đổi ca, hoặc hủy đăng ký đang chờ.</value>
+  </data>
+  <data name="Hint_NoWindows" xml:space="preserve">
+    <value>Khi chưa có khung giờ nào được duyệt, bạn được coi là làm được mọi lúc.</value>
+  </data>
+  <data name="Hint_NotLeave" xml:space="preserve">
+    <value>Đây chỉ là thông tin xếp lịch: không phải nghỉ phép, không trừ quỹ phép, không ảnh hưởng lương.</value>
+  </data>
+  <data name="Hint_Title" xml:space="preserve">
+    <value>Cách hoạt động</value>
+  </data>
+  <data name="Hint_Windows" xml:space="preserve">
+    <value>Khung giờ hằng tuần cần Quản lý cửa hàng (hoặc HR) duyệt. Chỉ khung đã duyệt được dùng khi xếp ca: ca phải nằm trọn trong một khung.</value>
+  </data>
+  <data name="My_AnyTime" xml:space="preserve">
+    <value>Chưa khai khung giờ hằng tuần — bạn được coi là làm được mọi lúc.</value>
+  </data>
+  <data name="My_NoProfile" xml:space="preserve">
+    <value>Tài khoản chưa có hồ sơ nhân viên nên không thể khai thời gian có thể làm.</value>
+  </data>
+  <data name="My_Subtitle" xml:space="preserve">
+    <value>Khai báo thời gian bạn có thể và không thể làm việc</value>
+  </data>
+  <data name="My_Title" xml:space="preserve">
+    <value>Thời gian có thể làm việc</value>
+  </data>
+  <data name="NextDaySuffix" xml:space="preserve">
+    <value>(+1)</value>
+  </data>
+  <data name="Reject_Many" xml:space="preserve">
+    <value>{0} khung giờ đã chọn</value>
+  </data>
+  <data name="Reject_Placeholder" xml:space="preserve">
+    <value>Nêu lý do để nhân viên điều chỉnh...</value>
+  </data>
+  <data name="Reject_Prompt" xml:space="preserve">
+    <value>Lý do từ chối</value>
+  </data>
+  <data name="Reject_Title" xml:space="preserve">
+    <value>Từ chối khung giờ</value>
+  </data>
+  <data name="Review_Empty" xml:space="preserve">
+    <value>Không có khung giờ nào phù hợp bộ lọc.</value>
+  </data>
+  <data name="Review_ListTitle" xml:space="preserve">
+    <value>Khung giờ có thể làm hằng tuần</value>
+  </data>
+  <data name="Review_ScopeLabel" xml:space="preserve">
+    <value>Chi nhánh:</value>
+  </data>
+  <data name="Review_Subtitle" xml:space="preserve">
+    <value>Duyệt hoặc từ chối khung giờ có thể làm hằng tuần của nhân viên</value>
+  </data>
+  <data name="Review_Title" xml:space="preserve">
+    <value>Duyệt thời gian có thể làm</value>
+  </data>
+  <data name="Status_Approved" xml:space="preserve">
+    <value>Đã duyệt</value>
+  </data>
+  <data name="Status_ApprovedBy" xml:space="preserve">
+    <value>Duyệt bởi {0} lúc {1}</value>
+  </data>
+  <data name="Status_Pending" xml:space="preserve">
+    <value>Chờ duyệt</value>
+  </data>
+  <data name="Status_Rejected" xml:space="preserve">
+    <value>Từ chối</value>
+  </data>
+  <data name="Status_RejectedBy" xml:space="preserve">
+    <value>Từ chối bởi {0} lúc {1}</value>
+  </data>
+  <data name="Toast_Approved" xml:space="preserve">
+    <value>Đã duyệt {0} khung giờ.</value>
+  </data>
+  <data name="Toast_DateAdded" xml:space="preserve">
+    <value>Đã thêm ngày không thể làm.</value>
+  </data>
+  <data name="Toast_DateDeleted" xml:space="preserve">
+    <value>Đã xóa ngày không thể làm.</value>
+  </data>
+  <data name="Toast_Rejected" xml:space="preserve">
+    <value>Đã từ chối {0} khung giờ.</value>
+  </data>
+  <data name="Toast_Skipped" xml:space="preserve">
+    <value>Bỏ qua {0} khung đã được xử lý trước đó.</value>
+  </data>
+  <data name="Toast_WindowDeleted" xml:space="preserve">
+    <value>Đã xóa khung giờ.</value>
+  </data>
+  <data name="Toast_WindowsAdded" xml:space="preserve">
+    <value>Đã gửi duyệt {0} khung giờ.</value>
+  </data>
+  <data name="Unassigned" xml:space="preserve">
+    <value>Chưa có chi nhánh</value>
+  </data>
+  <data name="Employee_ListEmpty" xml:space="preserve">
+    <value>Không có khung giờ đã duyệt hoặc chờ duyệt.</value>
+  </data>
+</root>

@@ -17,16 +17,7 @@
     <resheader name="version">2.0</resheader>
     <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
     <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
+                        
     There are any number of "resheader" rows that contain simple 
     name/value pairs.
     
@@ -150,15 +141,6 @@
   <data name="TotalRecordBar" xml:space="preserve">
     <value>Hiển thị từ {0}–{1} của {2} dòng dữ liệu</value>
   </data>
-  <data name="Dropdown_SelectFactory" xml:space="preserve">
-    <value>--- Chọn nhà máy ---</value>
-  </data>
-  <data name="Dropdown_SelectDocTypeCat" xml:space="preserve">
-    <value>--- Chọn loại giấy tờ ---</value>
-  </data>
-  <data name="Dropdown_SelectDepartment" xml:space="preserve">
-    <value>--- Chọn bộ phận ---</value>
-  </data>
   <data name="Required" xml:space="preserve">
     <value>{0} là trường bắt buộc.</value>
   </data>
@@ -186,14 +168,8 @@
   <data name="RequiredIntegerSelection" xml:space="preserve">
     <value>Hãy chọn 1 giá trị.</value>
   </data>
-  <data name="Button_Info" xml:space="preserve">
-    <value>Thông tin</value>
-  </data>
   <data name="Dropdown_SelectAccount" xml:space="preserve">
     <value>--- Chọn tài khoản ---</value>
-  </data>
-  <data name="Dropdown_SelectDocFlow" xml:space="preserve">
-    <value>--- Chọn luồng xử lý giấy tờ ---</value>
   </data>
   <data name="Detail" xml:space="preserve">
     <value>Chi tiết</value>
@@ -204,23 +180,11 @@
   <data name="Logout" xml:space="preserve">
     <value>Đăng xuất</value>
   </data>
-  <data name="InitData" xml:space="preserve">
-    <value>Khởi tạo dữ liệu</value>
-  </data>
-  <data name="InitDataSuccess" xml:space="preserve">
-    <value>Khởi tạo dữ liệu thành công.</value>
-  </data>
   <data name="CreatedDate" xml:space="preserve">
     <value>Ngày tạo</value>
   </data>
   <data name="Status" xml:space="preserve">
     <value>Trạng thái</value>
-  </data>
-  <data name="DownloadAttachedFile" xml:space="preserve">
-    <value>Tải xuống tệp đính kèm</value>
-  </data>
-  <data name="NoFileAttached" xml:space="preserve">
-    <value>Không có file đính kèm</value>
   </data>
   <data name="CreatedBy" xml:space="preserve">
     <value>Người tạo</value>
@@ -228,14 +192,8 @@
   <data name="Submit" xml:space="preserve">
     <value>Nộp</value>
   </data>
-  <data name="Button_View" xml:space="preserve">
-    <value>Xem</value>
-  </data>
   <data name="Button_SaveChanges" xml:space="preserve">
     <value>Lưu thay đổi</value>
-  </data>
-  <data name="Button_ChangePassword" xml:space="preserve">
-    <value>Đổi mật khẩu</value>
   </data>
   <data name="UserInfo" xml:space="preserve">
     <value>Thông tin người dùng</value>
@@ -252,9 +210,6 @@
   <data name="Active" xml:space="preserve">
     <value>Hoạt động</value>
   </data>
-  <data name="Dropdown_SelectDocGrpCat" xml:space="preserve">
-    <value>--- Chọn nhóm giấy tờ ---</value>
-  </data>
   <data name="ObjectStatus_IsActive" xml:space="preserve">
     <value>Đang hoạt động</value>
   </data>
@@ -266,9 +221,6 @@
   </data>
   <data name="ObjectStatus" xml:space="preserve">
     <value>Trạng thái hoạt động</value>
-  </data>
-  <data name="Button_ExportExcel" xml:space="preserve">
-    <value>Xuất ra file excel</value>
   </data>
   <data name="RegularExpression_UsernameRegex" xml:space="preserve">
     <value>{0} phải bắt đầu bằng chữ cái và chỉ chứa chữ cái, số, dấu gạch dưới (_) hoặc dấu gạch ngang (-).</value>
@@ -300,21 +252,6 @@
   <data name="Today" xml:space="preserve">
     <value>Hôm nay</value>
   </data>
-  <data name="Yesterday" xml:space="preserve">
-    <value>Hôm qua</value>
-  </data>
-  <data name="Last2Days" xml:space="preserve">
-    <value>2 ngày trước</value>
-  </data>
-  <data name="ThisWeek" xml:space="preserve">
-    <value>Tuần này</value>
-  </data>
-  <data name="LastWeek" xml:space="preserve">
-    <value>Tuần trước</value>
-  </data>
-  <data name="Last30Days" xml:space="preserve">
-    <value>30 ngày trước</value>
-  </data>
   <data name="Notification_CreatedSuccessfully" xml:space="preserve">
     <value>Thêm mới thành công!</value>
   </data>
@@ -324,20 +261,11 @@
   <data name="Notification_DeletedSuccessfully" xml:space="preserve">
     <value>Xóa thành công!</value>
   </data>
-  <data name="Button_Apply" xml:space="preserve">
-    <value>Áp dụng dữ liệu</value>
-  </data>
   <data name="Button_ImportExcel" xml:space="preserve">
     <value>Nhập file Excel</value>
   </data>
-  <data name="Label_SelectFileExcel" xml:space="preserve">
-    <value>Chọn hoặc kéo thả một tệp Excel</value>
-  </data>
   <data name="Button_BrowseFile" xml:space="preserve">
     <value>Chọn tệp</value>
-  </data>
-  <data name="DownloadTemplateFile" xml:space="preserve">
-    <value>Tải file mẫu</value>
   </data>
   <data name="Data" xml:space="preserve">
     <value>Dữ liệu</value>
@@ -348,20 +276,11 @@
   <data name="DragOrDropFile" xml:space="preserve">
     <value>Kéo và thả file của bạn vào đây hoặc</value>
   </data>
-  <data name="DropDown_SelectYear" xml:space="preserve">
-    <value>--- Chọn năm ---</value>
-  </data>
-  <data name="NoDataAvailable" xml:space="preserve">
-    <value>Chưa có dữ liệu</value>
-  </data>
   <data name="Attendance_Title" xml:space="preserve">
     <value>Chấm công &amp; Lịch sử</value>
   </data>
   <data name="Attendance_Today" xml:space="preserve">
     <value>Chấm công hôm nay</value>
-  </data>
-  <data name="Attendance_Completed" xml:space="preserve">
-    <value>Bạn đã hoàn thành chấm công ngày hôm nay.</value>
   </data>
   <data name="Attendance_CheckInTime" xml:space="preserve">
     <value>Giờ đến:</value>
@@ -372,12 +291,6 @@
   <data name="Attendance_MyHistory" xml:space="preserve">
     <value>Lịch sử chấm công của tôi</value>
   </data>
-  <data name="Attendance_TooLate" xml:space="preserve">
-    <value>Bạn đã đến muộn quá 30 phút, không thể chấm công ca này!</value>
-  </data>
-  <data name="Attendance_SelectShift" xml:space="preserve">
-    <value>Chọn ca làm việc</value>
-  </data>
   <data name="Attendance_CheckInCol" xml:space="preserve">
     <value>Giờ vào làm</value>
   </data>
@@ -386,15 +299,6 @@
   </data>
   <data name="Attendance_NoData" xml:space="preserve">
     <value>Chưa có dữ liệu chấm công nào.</value>
-  </data>
-  <data name="Attendance_AlreadyCheckedIn" xml:space="preserve">
-    <value>Bạn đã check-in ngày hôm nay rồi.</value>
-  </data>
-  <data name="Attendance_NotCheckedIn" xml:space="preserve">
-    <value>Bạn chưa check-in ngày hôm nay.</value>
-  </data>
-  <data name="Attendance_AlreadyCheckedOut" xml:space="preserve">
-    <value>Bạn đã check-out ngày hôm nay rồi.</value>
   </data>
   <data name="Attendance_CheckInSuccess" xml:space="preserve">
     <value>Vào làm thành công!</value>
@@ -413,12 +317,6 @@
   </data>
   <data name="Attendance_EmployeeCol" xml:space="preserve">
     <value>Nhân viên</value>
-  </data>
-  <data name="Attendance_AdminNoNeed" xml:space="preserve">
-    <value>Tài khoản Quản trị viên không cần chấm công.</value>
-  </data>
-  <data name="Attendance_AllHistory" xml:space="preserve">
-    <value>Lịch sử chấm công</value>
   </data>
   <data name="Attendance_AllEmployees" xml:space="preserve">
     <value>Tất cả nhân viên</value>
@@ -468,9 +366,6 @@
   <data name="Attendance_Err_TooEarlyIn" xml:space="preserve">
     <value>Chưa đến giờ chấm công ca {0}! Bạn chỉ được phép chấm công trước giờ làm {1} phút.</value>
   </data>
-  <data name="Attendance_Err_TooLateIn" xml:space="preserve">
-    <value>Bạn đã đến quá muộn cho ca {0}! Hệ thống chỉ cho phép đi muộn tối đa {1} phút.</value>
-  </data>
   <data name="Attendance_Err_AlreadyCompleted" xml:space="preserve">
     <value>Bạn đã hoàn thành chấm công cho ca '{0}' rồi!</value>
   </data>
@@ -491,9 +386,6 @@
   </data>
   <data name="Attendance_Err_AlreadyCheckedOut" xml:space="preserve">
     <value>Bạn đã chấm công tan làm cho ca này rồi!</value>
-  </data>
-  <data name="Attendance_Err_TooEarlyOut" xml:space="preserve">
-    <value>Chưa đến giờ tan làm! Bạn chỉ được phép chấm công về sớm nhất vào lúc {0} (Sớm tối đa {1} phút trước khi kết thúc ca {2}).</value>
   </data>
   <data name="Attendance_WarningNoShift" xml:space="preserve">
     <value>Bạn chưa đăng ký ca làm.</value>
@@ -516,35 +408,11 @@
   <data name="Attendance_AllCompletedToday" xml:space="preserve">
     <value>Hoàn thành toàn bộ ca làm hôm nay!</value>
   </data>
-  <data name="Attendance_AdjustButton" xml:space="preserve">
-    <value>Điều chỉnh</value>
-  </data>
   <data name="Attendance_AdjustedTooltip" xml:space="preserve">
     <value>Đã được quản lý điều chỉnh</value>
   </data>
-  <data name="Attendance_AdjustTitle" xml:space="preserve">
-    <value>Điều chỉnh chấm công - {0}</value>
-  </data>
-  <data name="Attendance_AdjustNewCheckIn" xml:space="preserve">
-    <value>Giờ Check-in mới (Hiện tại: {0})</value>
-  </data>
-  <data name="Attendance_AdjustNewCheckOut" xml:space="preserve">
-    <value>Giờ Check-out mới (Hiện tại: {0})</value>
-  </data>
-  <data name="Attendance_Empty" xml:space="preserve">
-    <value>Trống</value>
-  </data>
-  <data name="Attendance_AdjustReason" xml:space="preserve">
-    <value>Lý do điều chỉnh</value>
-  </data>
-  <data name="Attendance_AdjustReasonPlaceholder" xml:space="preserve">
-    <value>Nhập lý do chi tiết...</value>
-  </data>
   <data name="Attendance_PhotoCheckInRequired" xml:space="preserve">
     <value>Vui lòng BẤM NÚT CHỤP ẢNH TRÊN MÀN HÌNH trước khi chấm công!</value>
-  </data>
-  <data name="Attendance_GPSRequired" xml:space="preserve">
-    <value>Không thể xác định vị trí GPS. Vui lòng cho phép truy cập vị trí.</value>
   </data>
   <data name="Attendance_GPSPermissionDenied" xml:space="preserve">
     <value>BẠN ĐÃ CHẶN QUYỀN VỊ TRÍ TRÊN TRÌNH DUYỆT!
@@ -560,44 +428,8 @@ Cách bật lại nhanh:
   <data name="Attendance_GPSNotSupported" xml:space="preserve">
     <value>Trình duyệt của bạn không hỗ trợ Geolocation GPS.</value>
   </data>
-  <data name="Shift_InactiveEmployees" xml:space="preserve">
-    <value>Nhân viên đã nghỉ</value>
-  </data>
-  <data name="Shift_Refresh" xml:space="preserve">
-    <value>Làm mới</value>
-  </data>
-  <data name="Shift_Warning" xml:space="preserve">
-    <value>Cảnh báo</value>
-  </data>
-  <data name="Shift_Tools" xml:space="preserve">
-    <value>Công cụ</value>
-  </data>
-  <data name="Shift_Settings" xml:space="preserve">
-    <value>Cài đặt</value>
-  </data>
-  <data name="Shift_CopyPrev" xml:space="preserve">
-    <value>Sao chép tuần trước</value>
-  </data>
   <data name="Shift_RegisterWeek" xml:space="preserve">
     <value>Đăng ký tuần</value>
-  </data>
-  <data name="Shift_NotArrived" xml:space="preserve">
-    <value>Chưa đến ca</value>
-  </data>
-  <data name="Shift_OnTime" xml:space="preserve">
-    <value>Chấm công đúng giờ</value>
-  </data>
-  <data name="Shift_LateEarly" xml:space="preserve">
-    <value>Vào trễ, ra sớm</value>
-  </data>
-  <data name="Shift_NotChecked" xml:space="preserve">
-    <value>Chưa vào/ra ca</value>
-  </data>
-  <data name="Shift_OnLeave" xml:space="preserve">
-    <value>Nghỉ phép</value>
-  </data>
-  <data name="Shift_Reload" xml:space="preserve">
-    <value>Tải lại ca</value>
   </data>
   <data name="Shift_Me" xml:space="preserve">
     <value>Tôi</value>
@@ -611,32 +443,11 @@ Cách bật lại nhanh:
   <data name="Shift_SysError" xml:space="preserve">
     <value>Lỗi hệ thống</value>
   </data>
-  <data name="Shift_Week" xml:space="preserve">
-    <value>Tuần </value>
-  </data>
-  <data name="Shift_Shift" xml:space="preserve">
-    <value>Ca làm việc</value>
-  </data>
   <data name="Shift_ErrLoadShift" xml:space="preserve">
     <value>Lỗi tải dữ liệu ca làm việc</value>
   </data>
   <data name="Shift_NoShifts" xml:space="preserve">
     <value>Bạn chưa có ca làm</value>
-  </data>
-  <data name="Shift_Approved" xml:space="preserve">
-    <value>Đã duyệt</value>
-  </data>
-  <data name="Shift_Pending" xml:space="preserve">
-    <value>Chờ duyệt</value>
-  </data>
-  <data name="Shift_ApprovedCannotChange" xml:space="preserve">
-    <value>Ca này đã được duyệt, bạn không thể thay đổi.</value>
-  </data>
-  <data name="Shift_Overdue" xml:space="preserve">
-    <value>Quá hạn</value>
-  </data>
-  <data name="Shift_ErrPast" xml:space="preserve">
-    <value>Không thể đăng ký ca trong quá khứ.</value>
   </data>
   <data name="Shift_RegSuccess" xml:space="preserve">
     <value>Đăng ký tuần thành công!</value>
@@ -647,14 +458,8 @@ Cách bật lại nhanh:
   <data name="Shift_ErrNoPrevShifts" xml:space="preserve">
     <value>Không có ca làm việc nào trong tuần trước để sao chép.</value>
   </data>
-  <data name="Shift_CopiedValid" xml:space="preserve">
-    <value>Đã sao chép ${checkedCount} ca hợp lệ. Vui lòng bấm 'Đăng ký tuần' để lưu lại.</value>
-  </data>
   <data name="Shift_ErrLoadPrev" xml:space="preserve">
     <value>Lỗi tải dữ liệu tuần trước</value>
-  </data>
-  <data name="Store_LocationRadius" xml:space="preserve">
-    <value>Định vị Chi nhánh &amp; Bán kính Chấm công</value>
   </data>
   <data name="Store_Loc_HN" xml:space="preserve">
     <value>Hà Nội</value>
@@ -682,9 +487,6 @@ Cách bật lại nhanh:
   </data>
   <data name="Store_MapOSM" xml:space="preserve">
     <value>Bản đồ OpenStreetMap</value>
-  </data>
-  <data name="Req_HR" xml:space="preserve">
-    <value>Nhân sự</value>
   </data>
   <data name="Req_CreateReq" xml:space="preserve">
     <value>Tạo Yêu Cầu</value>
@@ -724,15 +526,6 @@ Cách bật lại nhanh:
   </data>
   <data name="Req_SalaryAdv" xml:space="preserve">
     <value>Tạm ứng lương</value>
-  </data>
-  <data name="Req_AdvanceRefund" xml:space="preserve">
-    <value>Tạm ứng - Hoàn ứng</value>
-  </data>
-  <data name="Req_Proposal" xml:space="preserve">
-    <value>Phiếu đề nghị</value>
-  </data>
-  <data name="Req_Payment" xml:space="preserve">
-    <value>Thanh toán</value>
   </data>
   <data name="Req_ExpensePay" xml:space="preserve">
     <value>Thanh toán chi phí</value>
@@ -779,23 +572,11 @@ Cách bật lại nhanh:
   <data name="Req_Rejected" xml:space="preserve">
     <value>Từ chối</value>
   </data>
-  <data name="Req_ConfirmAction" xml:space="preserve">
-    <value>Bạn có chắc chắn muốn </value>
-  </data>
-  <data name="Req_ConfirmReq" xml:space="preserve">
-    <value> yêu cầu này?</value>
-  </data>
   <data name="Req_UpdateStatusSuccess" xml:space="preserve">
     <value>Cập nhật trạng thái thành công</value>
   </data>
-  <data name="Req_Delete" xml:space="preserve">
-    <value>xóa</value>
-  </data>
   <data name="Req_DeleteSuccess" xml:space="preserve">
     <value>Xóa yêu cầu thành công</value>
-  </data>
-  <data name="Req_ApproveAction" xml:space="preserve">
-    <value>chấp thuận</value>
   </data>
   <data name="Req_BulkActionSuccess" xml:space="preserve">
     <value>Thao tác hàng loạt thành công</value>
@@ -808,9 +589,6 @@ Cách bật lại nhanh:
   </data>
   <data name="Unit_VndPerHour" xml:space="preserve">
     <value>VNĐ/h</value>
-  </data>
-  <data name="Unit_VndPerMonth" xml:space="preserve">
-    <value>VNĐ/tháng</value>
   </data>
   <data name="Unit_Days" xml:space="preserve">
     <value>ngày</value>
@@ -1074,5 +852,35 @@ Cách bật lại nhanh:
   </data>
   <data name="Attendance_Err_LocateFailed" xml:space="preserve">
     <value>Lỗi xác định vị trí</value>
+  </data>
+  <data name="Dropdown_Choose" xml:space="preserve">
+    <value>--- Chọn ---</value>
+  </data>
+  <data name="Js_Range" xml:space="preserve">
+    <value>Vui lòng nhập giá trị từ {0} đến {1}.</value>
+  </data>
+  <data name="Js_RangeLength" xml:space="preserve">
+    <value>Vui lòng nhập từ {0} đến {1} ký tự.</value>
+  </data>
+  <data name="Js_CreditCard" xml:space="preserve">
+    <value>Vui lòng nhập số thẻ hợp lệ.</value>
+  </data>
+  <data name="Toast_Success" xml:space="preserve">
+    <value>Thành công</value>
+  </data>
+  <data name="Toast_Error" xml:space="preserve">
+    <value>Có lỗi xảy ra</value>
+  </data>
+  <data name="Toast_Warning" xml:space="preserve">
+    <value>Cảnh báo</value>
+  </data>
+  <data name="Toast_Info" xml:space="preserve">
+    <value>Thông báo</value>
+  </data>
+  <data name="Language_Select" xml:space="preserve">
+    <value>Ngôn ngữ</value>
+  </data>
+  <data name="Pagination_Label" xml:space="preserve">
+    <value>Phân trang</value>
   </data>
 </root>

@@ -1,0 +1,26 @@
+@model RWPM.Models.ViewModels.Availability.AvailabilityWindowVM
+@using R = RWPM.Resources.Shared.AvailabilityResource
+@switch (Model.Status)
+{
+    case RegistrationStatus.Approved:
+        <span class="app-badge app-badge-success"
+              title="@(Model.ApprovedAt.HasValue ? string.Format(R.Status_ApprovedBy, Model.ApprovedByName ?? Model.ApprovedBy, Model.ApprovedAt.Value.ToString("dd/MM/yyyy HH:mm")) : null)">
+            @R.Status_Approved
+        </span>
+        break;
+    case RegistrationStatus.Rejected:
+        <span class="app-badge app-badge-danger"
+              title="@(Model.ApprovedAt.HasValue ? string.Format(R.Status_RejectedBy, Model.ApprovedByName ?? Model.ApprovedBy, Model.ApprovedAt.Value.ToString("dd/MM/yyyy HH:mm")) : null)">
+            @R.Status_Rejected
+        </span>
+        @if (!string.IsNullOrWhiteSpace(Model.RejectionReason))
+        {
+            <div class="small text-danger mt-1"><i class="bi bi-chat-left-text me-1"></i>@Model.RejectionReason</div>
+        }
+        break;
+    default:
+        <span class="app-badge app-badge-warning">
+            @R.Status_Pending
+        </span>
+        break;
+}

@@ -63,6 +63,30 @@ namespace RWPM.Resources.Shared {
         /// <summary>
         ///   Looks up a localized string similar to Account management.
         /// </summary>
+        public static string Group_People {
+            get {
+                return ResourceManager.GetString("Group_People", resourceCulture);
+            }
+        }
+
+        public static string Group_Scheduling {
+            get {
+                return ResourceManager.GetString("Group_Scheduling", resourceCulture);
+            }
+        }
+
+        public static string Group_AttendanceRequests {
+            get {
+                return ResourceManager.GetString("Group_AttendanceRequests", resourceCulture);
+            }
+        }
+
+        public static string Group_PayPerformance {
+            get {
+                return ResourceManager.GetString("Group_PayPerformance", resourceCulture);
+            }
+        }
+
         public static string AccountManagement {
             get {
                 return ResourceManager.GetString("AccountManagement", resourceCulture);
@@ -88,38 +112,11 @@ namespace RWPM.Resources.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Categories management.
-        /// </summary>
-        public static string Categories {
-            get {
-                return ResourceManager.GetString("Categories", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Change password.
         /// </summary>
         public static string ChangePassword {
             get {
                 return ResourceManager.GetString("ChangePassword", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Day Off.
-        /// </summary>
-        public static string DayOff {
-            get {
-                return ResourceManager.GetString("DayOff", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Declared data.
-        /// </summary>
-        public static string DeclaredData {
-            get {
-                return ResourceManager.GetString("DeclaredData", resourceCulture);
             }
         }
         
@@ -133,47 +130,11 @@ namespace RWPM.Resources.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Functions.
-        /// </summary>
-        public static string Functions {
-            get {
-                return ResourceManager.GetString("Functions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Home.
         /// </summary>
         public static string Home {
             get {
                 return ResourceManager.GetString("Home", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to LotNo Management.
-        /// </summary>
-        public static string LotNoManagement {
-            get {
-                return ResourceManager.GetString("LotNoManagement", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Other functions.
-        /// </summary>
-        public static string OrtherFunctions {
-            get {
-                return ResourceManager.GetString("OrtherFunctions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Purchase Order.
-        /// </summary>
-        public static string PurchaseOrder {
-            get {
-                return ResourceManager.GetString("PurchaseOrder", resourceCulture);
             }
         }
         

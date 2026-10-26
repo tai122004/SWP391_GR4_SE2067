@@ -1,5 +1,4 @@
 using RWPM.Common.Attributes;
-using RWPM.Common;
 using System.ComponentModel.DataAnnotations;
 
 namespace RWPM.Models.ViewModels.Acc.ChangePassword

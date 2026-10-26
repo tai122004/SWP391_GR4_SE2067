@@ -69,12 +69,6 @@ namespace RWPM.Resources.Shared {
             }
         }
 
-        public static string ForgotPassword {
-            get {
-                return ResourceManager.GetString("ForgotPassword", resourceCulture);
-            }
-        }
-        
         /// <summary>
         ///   Looks up a localized string similar to Login.
         /// </summary>

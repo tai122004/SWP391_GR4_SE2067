@@ -15,12 +15,41 @@
     window.AppText = t;
 
     var TOAST_DURATION = 7000;
+    // Kiểu "design system v2": nền trắng, viền mảnh, bo 6px; màu chỉ nằm ở biểu tượng trạng thái
     var TOAST_STYLES = {
-        success: { bg: 'bg-success text-white', icon: 'bi-check-circle-fill', close: 'btn-close-white', sub: 'text-white-50' },
-        error:   { bg: 'bg-danger text-white',  icon: 'bi-exclamation-triangle-fill', close: 'btn-close-white', sub: 'text-white-50' },
-        warning: { bg: 'bg-warning text-dark',  icon: 'bi-exclamation-circle-fill', close: '', sub: 'text-dark text-opacity-75' },
-        info:    { bg: 'bg-primary text-white', icon: 'bi-info-circle-fill', close: 'btn-close-white', sub: 'text-white-50' }
+        success: { icon: 'bi-check-circle-fill', title: 'toastSuccess', fallback: 'Success' },
+        error:   { icon: 'bi-x-circle-fill', title: 'toastError', fallback: 'Error' },
+        warning: { icon: 'bi-exclamation-triangle-fill', title: 'toastWarning', fallback: 'Warning' },
+        info:    { icon: 'bi-info-circle-fill', title: 'toastInfo', fallback: 'Information' }
     };
+
+    // CSS của toast + popup xác nhận (dùng token của site.css, có giá trị dự phòng)
+    function ensureStyles() {
+        if (document.getElementById('appUiKitStyle')) return;
+        var css =
+            '#appToastContainer{display:flex;flex-direction:column;align-items:flex-end;gap:8px}' +
+            '.app-toast{display:flex;align-items:flex-start;gap:10px;width:360px;max-width:calc(100vw - 2rem);padding:12px 12px 12px 14px;' +
+            'background:var(--app-surface,#fff);color:var(--app-text,#17202B);border:1px solid var(--app-border,#E3E6EA);border-radius:var(--app-radius,6px);' +
+            'box-shadow:var(--app-overlay-shadow,0 8px 24px rgba(23,32,43,.12));font-size:.93rem;line-height:1.4;transition:opacity .2s ease}' +
+            '.app-toast:not(.show){opacity:0}' +
+            '.app-toast-icon{font-size:1.05rem;line-height:1.35;flex:0 0 auto}' +
+            '.app-toast-success .app-toast-icon{color:var(--app-success,#1F7A4D)}' +
+            '.app-toast-error .app-toast-icon{color:var(--app-danger,#B42318)}' +
+            '.app-toast-warning .app-toast-icon{color:#C27A0E}' +
+            '.app-toast-info .app-toast-icon{color:var(--app-info,#2F6FB3)}' +
+            '.app-toast-body{flex:1 1 auto;min-width:0}' +
+            '.app-toast-title{font-weight:600}' +
+            '.app-toast-msg{color:var(--app-text-2,#5B6573);white-space:pre-line;overflow-wrap:anywhere}' +
+            '.app-toast-time{margin-top:2px;color:var(--app-muted,#6B7480);font-size:.75rem;font-variant-numeric:tabular-nums}' +
+            '.app-toast-close{flex:0 0 auto;font-size:.65rem;padding:.35rem;margin:-2px -2px 0 0}' +
+            '#appConfirmModal .modal-body{display:flex;gap:12px;align-items:flex-start}' +
+            '#appConfirmModal .app-confirm-icon{font-size:1.15rem;line-height:1.4;flex:0 0 auto}' +
+            '#appConfirmModal .app-confirm-message{color:var(--app-text-2,#5B6573);white-space:pre-line;margin:0}';
+        var style = document.createElement('style');
+        style.id = 'appUiKitStyle';
+        style.appendChild(document.createTextNode(css));
+        (document.head || document.documentElement).appendChild(style);
+    }
 
     function pad(n) { return n < 10 ? '0' + n : '' + n; }
     function nowText() {
@@ -43,45 +72,44 @@
 
     function show(type, message, options) {
         if (message === undefined || message === null || message === '') return null;
-        var style = TOAST_STYLES[type] || TOAST_STYLES.info;
+        if (!TOAST_STYLES[type]) type = 'info';
+        var style = TOAST_STYLES[type];
         var opts = options || {};
+        ensureStyles();
 
         var el = document.createElement('div');
-        el.className = 'alert app-toast ' + style.bg + ' rounded shadow-sm p-3 mb-2 position-relative fade show';
+        el.className = 'app-toast app-toast-' + type + ' fade show';
         el.setAttribute('role', type === 'error' ? 'alert' : 'status');
-        el.style.minWidth = '300px';
-        el.style.maxWidth = '420px';
+        el.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
+        el.setAttribute('data-toast-type', type);
 
-        var row = document.createElement('div');
-        row.className = 'd-flex justify-content-between';
-
-        var left = document.createElement('div');
-        left.className = 'd-flex align-items-center';
         var icon = document.createElement('i');
-        icon.className = 'bi ' + style.icon + ' me-2';
-        var text = document.createElement('span');
-        text.style.whiteSpace = 'pre-line';
-        text.textContent = String(message);
-        left.appendChild(icon);
-        left.appendChild(text);
+        icon.className = 'bi ' + style.icon + ' app-toast-icon';
+        icon.setAttribute('aria-hidden', 'true');
 
-        var right = document.createElement('div');
-        right.className = 'd-flex flex-column align-items-end ms-3';
+        var body = document.createElement('div');
+        body.className = 'app-toast-body';
+        var title = document.createElement('div');
+        title.className = 'app-toast-title';
+        title.textContent = opts.title || t(style.title, style.fallback);
+        var text = document.createElement('div');
+        text.className = 'app-toast-msg';
+        text.textContent = String(message);
+        var time = document.createElement('div');
+        time.className = 'app-toast-time';
+        time.textContent = opts.time || nowText();
+        body.appendChild(title);
+        body.appendChild(text);
+        body.appendChild(time);
+
         var btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'btn-close ' + style.close + ' mt-1';
+        btn.className = 'btn-close app-toast-close';
         btn.setAttribute('aria-label', t('close', 'Close'));
-        right.appendChild(btn);
 
-        row.appendChild(left);
-        row.appendChild(right);
-
-        var time = document.createElement('div');
-        time.innerHTML = '<small class="' + style.sub + '"></small>';
-        time.firstChild.textContent = opts.time || nowText();
-
-        el.appendChild(row);
-        el.appendChild(time);
+        el.appendChild(icon);
+        el.appendChild(body);
+        el.appendChild(btn);
         getContainer().appendChild(el);
 
         var removed = false;
@@ -107,35 +135,39 @@
     };
 
     // ---------- Popup xác nhận (thay cho confirm() của trình duyệt) ----------
+    // Một nút chính duy nhất: btn-primary, riêng thao tác phá hủy (xóa, từ chối...) dùng btn-danger
     var CONFIRM_TYPES = {
-        danger:  { icon: 'bi-trash3', color: 'danger',  btn: 'btn-danger' },
-        warning: { icon: 'bi-exclamation-triangle', color: 'warning', btn: 'btn-warning' },
+        danger:  { icon: 'bi-exclamation-octagon', color: 'danger',  btn: 'btn-danger' },
+        warning: { icon: 'bi-exclamation-triangle', color: 'warning', btn: 'btn-primary' },
         primary: { icon: 'bi-question-circle', color: 'primary', btn: 'btn-primary' },
-        success: { icon: 'bi-check2-circle', color: 'success', btn: 'btn-success' }
+        success: { icon: 'bi-check2-circle', color: 'success', btn: 'btn-primary' }
     };
 
     var confirmModalEl = null;
     function ensureConfirmModal() {
         if (confirmModalEl) return confirmModalEl;
+        ensureStyles();
         confirmModalEl = document.createElement('div');
         confirmModalEl.className = 'modal fade';
         confirmModalEl.id = 'appConfirmModal';
         confirmModalEl.tabIndex = -1;
         confirmModalEl.setAttribute('aria-hidden', 'true');
+        confirmModalEl.setAttribute('aria-labelledby', 'appConfirmModalTitle');
         confirmModalEl.style.zIndex = '1070';
         confirmModalEl.innerHTML =
-            '<div class="modal-dialog modal-dialog-centered" style="max-width:440px">' +
-            '  <div class="modal-content border-0 shadow">' +
-            '    <div class="modal-body text-center px-4 pt-4 pb-3">' +
-            '      <div class="app-confirm-icon rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:64px;height:64px">' +
-            '        <i class="bi fs-2"></i>' +
-            '      </div>' +
-            '      <h5 class="fw-bold mb-2 app-confirm-title"></h5>' +
-            '      <p class="text-muted mb-0 app-confirm-message" style="white-space:pre-line"></p>' +
+            '<div class="modal-dialog modal-dialog-centered" style="max-width:460px">' +
+            '  <div class="modal-content">' +
+            '    <div class="modal-header">' +
+            '      <h5 class="modal-title app-confirm-title" id="appConfirmModalTitle"></h5>' +
+            '      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>' +
             '    </div>' +
-            '    <div class="modal-footer border-0 justify-content-center gap-2 pb-4 pt-0">' +
-            '      <button type="button" class="btn btn-light border px-4 app-confirm-cancel" data-bs-dismiss="modal"></button>' +
-            '      <button type="button" class="btn px-4 app-confirm-ok"></button>' +
+            '    <div class="modal-body">' +
+            '      <i class="bi app-confirm-icon" aria-hidden="true"></i>' +
+            '      <p class="app-confirm-message"></p>' +
+            '    </div>' +
+            '    <div class="modal-footer">' +
+            '      <button type="button" class="btn btn-outline-secondary app-confirm-cancel" data-bs-dismiss="modal"></button>' +
+            '      <button type="button" class="btn btn-primary app-confirm-ok"></button>' +
             '    </div>' +
             '  </div>' +
             '</div>';
@@ -162,13 +194,14 @@
         }
 
         var el = ensureConfirmModal();
-        var iconWrap = el.querySelector('.app-confirm-icon');
-        iconWrap.className = 'app-confirm-icon rounded-circle d-inline-flex align-items-center justify-content-center mb-3 bg-' + cfg.color + ' bg-opacity-10 text-' + cfg.color;
-        iconWrap.querySelector('i').className = 'bi ' + (options.icon || cfg.icon) + ' fs-2';
+        var icon = el.querySelector('.app-confirm-icon');
+        icon.className = 'bi app-confirm-icon ' + (options.icon || cfg.icon) + ' text-' + cfg.color;
         el.querySelector('.app-confirm-title').textContent = options.title || t('confirmTitle', 'Please confirm');
         el.querySelector('.app-confirm-message').textContent = options.message || '';
+        el.querySelector('.modal-body').style.display = options.message ? '' : 'none';
+        el.querySelector('.modal-header .btn-close').setAttribute('aria-label', t('close', 'Close'));
         var okBtn = el.querySelector('.app-confirm-ok');
-        okBtn.className = 'btn px-4 app-confirm-ok ' + cfg.btn;
+        okBtn.className = 'btn app-confirm-ok ' + cfg.btn;
         okBtn.textContent = options.confirmText || t('confirmOk', 'Confirm');
         el.querySelector('.app-confirm-cancel').textContent = options.cancelText || t('cancel', 'Cancel');
 
@@ -351,6 +384,38 @@
     document.addEventListener('input', revalidate, true);
     document.addEventListener('change', revalidate, true);
 
+    // Thông báo mặc định của jQuery Validation theo ngôn ngữ hiện tại (chuỗi lấy từ SharedResource qua window.AppI18n).
+    // Gọi ngay sau khi nạp jquery.validate (_ValidationScriptsPartial) và lại lúc DOM ready; gọi nhiều lần không sao.
+    function applyValidatorMessages() {
+        if (!$ || !$.validator) return false;
+        var fmt = $.validator.format;
+        $.extend($.validator.messages, {
+            required: t('required'),
+            remote: t('remote'),
+            email: t('email'),
+            url: t('url'),
+            date: t('date'),
+            dateISO: t('date'),
+            number: t('number'),
+            digits: t('digits'),
+            creditcard: t('creditcard'),
+            equalTo: t('equalTo'),
+            maxlength: fmt(t('maxlength')),
+            minlength: fmt(t('minlength')),
+            rangelength: fmt(t('rangelength')),
+            range: fmt(t('range')),
+            max: fmt(t('max')),
+            min: fmt(t('min')),
+            step: fmt(t('step'))
+        });
+        // Số kiểu Việt Nam (25.000 / 25000,5) vẫn được chấp nhận ở phía client
+        $.validator.methods.number = function (value, element) {
+            return this.optional(element) || /^-?\d+([.,]\d+)?$/.test(String(value).replace(/\s/g, ''));
+        };
+        return true;
+    }
+    window.AppValidationI18n = { apply: applyValidatorMessages };
+
     function prepareForms() {
         // (1) Tạo chỗ hiển thị lỗi cho mọi ô có data-val nhưng chưa có <span asp-validation-for>
         document.querySelectorAll('form [data-val="true"][name]').forEach(function (field) {
@@ -359,29 +424,7 @@
         });
 
         // Dịch thông báo mặc định của jQuery Validation
-        if ($ && $.validator) {
-            var fmt = $.validator.format;
-            $.extend($.validator.messages, {
-                required: t('required'),
-                remote: t('remote'),
-                email: t('email'),
-                url: t('url'),
-                date: t('date'),
-                dateISO: t('date'),
-                number: t('number'),
-                digits: t('digits'),
-                equalTo: t('equalTo'),
-                maxlength: fmt(t('maxlength')),
-                minlength: fmt(t('minlength')),
-                max: fmt(t('max')),
-                min: fmt(t('min')),
-                step: fmt(t('step'))
-            });
-            // Số kiểu Việt Nam (25.000 / 25000,5) vẫn được chấp nhận ở phía client
-            $.validator.methods.number = function (value, element) {
-                return this.optional(element) || /^-?\d+([.,]\d+)?$/.test(String(value).replace(/\s/g, ''));
-            };
-        }
+        applyValidatorMessages();
 
         // (3) Lỗi từ server: gắn vào đúng ô nhập
         var serverErrors = window.AppServerErrors || {};

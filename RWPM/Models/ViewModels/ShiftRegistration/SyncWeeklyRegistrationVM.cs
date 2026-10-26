@@ -1,10 +1,10 @@
-using System.ComponentModel.DataAnnotations;
+using RWPM.Common.Attributes;
 
 namespace RWPM.Models.ViewModels.ShiftRegistration
 {
     public class SyncWeeklyRegistrationVM
     {
-        [Required]
+        [RequiredLocalization]
         public DateTime StartOfWeek { get; set; }
         
         public List<ShiftRegistrationCreateVM> Registrations { get; set; } = new List<ShiftRegistrationCreateVM>();

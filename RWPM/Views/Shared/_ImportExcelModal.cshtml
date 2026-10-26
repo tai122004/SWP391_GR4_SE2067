@@ -1,20 +1,20 @@
-﻿@using ImportEmployeeResource = RWPM.Resources.Shared.Employee
+@using ImportEmployeeResource = RWPM.Resources.Shared.Employee
 <div class="modal fade" id="importExcelModal" tabindex="-1" aria-labelledby="importExcelModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen">
-        <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="importExcelModalLabel">📁 @SharedResource.Button_ImportExcel</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="@SharedResource.Button_Cancel"></button>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importExcelModalLabel">@SharedResource.Button_ImportExcel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@SharedResource.Button_Close"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">@SharedResource.SelectExcelFile</label>
-                    <div class="border border-2 border-dashed rounded-3 p-2 text-center bg-light" data-role="drop-area">
+                    <label class="form-label">@SharedResource.SelectExcelFile</label>
+                    <div class="p-4 text-center" style="border: 1px dashed var(--app-border-strong); border-radius: var(--app-radius); background: var(--app-surface-2);" data-role="drop-area">
                         <input type="file" class="form-control visually-hidden" data-role="excel-input" name="excelFile" accept=".xlsx,.xls" />
-                        <p class="mb-2">@SharedResource.DragOrDropFile</p>
-                        <button type="button" class="btn btn-outline-primary btn-sm" data-role="browse-btn">@SharedResource.Button_BrowseFile</button>
+                        <p class="mb-2 text-muted">@SharedResource.DragOrDropFile</p>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-role="browse-btn">@SharedResource.Button_BrowseFile</button>
                         <!-- File name display -->
-                        <div data-role="file-name" class="mt-2 text-success fw-semibold" style="display:none;"></div>
+                        <div data-role="file-name" class="mt-2 fw-medium" style="display:none;"></div>
                     </div>
                 </div>
 
@@ -23,20 +23,20 @@
 
                     <ul class="list-group mb-3">
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <strong class="text-primary">@ImportEmployeeResource.ImportModal_ProcessedRows</strong>
-                            <strong data-role="processedRow">0</strong>
+                            <span class="text-muted">@ImportEmployeeResource.ImportModal_ProcessedRows</span>
+                            <strong class="tabular" data-role="processedRow">0</strong>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <strong class="text-danger">@ImportEmployeeResource.ImportModal_FailedRows</strong>
-                            <strong data-role="errors">0</strong>
+                            <span class="text-muted">@ImportEmployeeResource.ImportModal_FailedRows</span>
+                            <strong class="tabular text-danger" data-role="errors">0</strong>
                         </li>
                     </ul>
 
-                    <div style="max-height: 500px; overflow-y: auto;">
-                        <table class="table table-bordered table-sm table-striped table-hover mb-0">
-                            <thead class="table-danger" style="position: sticky; top: 0;">
+                    <div class="border" style="max-height: 500px; overflow-y: auto; border-radius: var(--app-radius);">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead style="position: sticky; top: 0;">
                                 <tr>
-                                    <th>@ImportEmployeeResource.ImportModal_RowNumber</th>
+                                    <th class="text-end">@ImportEmployeeResource.ImportModal_RowNumber</th>
                                     <th>@ImportEmployeeResource.ImportModal_Reason</th>
                                     <th>@ImportEmployeeResource.ImportModal_Value</th>
                                 </tr>
@@ -48,11 +48,11 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" data-role="apply-btn" class="btn btn-success" disabled>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">@SharedResource.Button_Cancel</button>
+                <button type="button" data-role="apply-btn" class="btn btn-primary" disabled>
                     <span class="spinner-border spinner-border-sm me-2" style="display: none" role="status" id="applySpinner"></span>
                     @ImportEmployeeResource.ImportModal_ApplyData
                 </button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@SharedResource.Button_Cancel</button>
             </div>
         </div>
     </div>

@@ -17,31 +17,31 @@
     <!-- Header -->
     <div class="app-page-header">
         <div>
-            <h1 class="fw-bold text-dark mb-1">@AccountSharedResource.Index_PageHeader</h1>
+            <h4 class="mb-1">@AccountSharedResource.Index_PageHeader</h4>
             <div class="text-muted small">@AccountSharedResource.Index_SubTitle</div>
         </div>
         <div class="app-page-actions">
             <!-- Dropdown Excel -->
             <div class="dropdown">
-                <button class="btn btn-outline-success btn-sm dropdown-toggle shadow-sm px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn btn-outline-secondary btn-sm dropdown-toggle px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-file-earmark-excel me-1"></i> @AccountSharedResource.Excel_Action
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow">
+                <ul class="dropdown-menu dropdown-menu-end">
                     <li>
                         <a class="dropdown-item d-flex align-items-center" asp-action="DownloadTemplate">
-                            <i class="bi bi-file-earmark-arrow-down text-primary me-2 fs-6"></i> @AccountSharedResource.Excel_DownloadTemplate
+                            <i class="bi bi-file-earmark-arrow-down text-muted me-2"></i> @AccountSharedResource.Excel_DownloadTemplate
                         </a>
                     </li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <a class="dropdown-item d-flex align-items-center" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#importExcelModal">
-                            <i class="bi bi-file-earmark-arrow-up text-success me-2 fs-6"></i> @AccountSharedResource.Excel_Import
+                            <i class="bi bi-file-earmark-arrow-up text-muted me-2"></i> @AccountSharedResource.Excel_Import
                         </a>
                     </li>
                 </ul>
             </div>
 
-            <a asp-action="Create" class="btn btn-primary btn-sm px-3 shadow-sm">
+            <a asp-action="Create" class="btn btn-primary btn-sm px-3">
                 <i class="bi bi-person-plus-fill me-1"></i> @SharedResource.Button_Create
             </a>
         </div>
@@ -50,19 +50,19 @@
     <!-- Thông báo khi vừa tạo tài khoản/nhân viên mới -->
     @if (TempData["CreatedAccountNotice"] != null)
     {
-        <div class="alert alert-success fade show d-flex align-items-center justify-content-between gap-3 p-3 mb-3 shadow-sm" role="alert">
+        <div class="alert alert-success fade show d-flex align-items-center justify-content-between gap-3 p-3 mb-3" role="alert">
             <div class="d-flex align-items-center">
-                <i class="bi bi-check-circle-fill fs-4 text-success me-3"></i>
+                <i class="bi bi-check-circle-fill fs-5 text-success me-3"></i>
                 <div>
-            <strong>@AccountSharedResource.Notice_CreatedSuccess</strong>
+                    <strong>@AccountSharedResource.Notice_CreatedSuccess</strong>
                     <div class="small mt-1 text-secondary font-monospace">@TempData["CreatedAccountNotice"]</div>
                 </div>
             </div>
             <div class="d-flex align-items-center flex-shrink-0">
-                <button type="button" class="btn btn-sm btn-outline-success me-3" data-copy="@TempData["CreatedAccountNotice"]" onclick="copyToClipboard(this.dataset.copy, '@Html.Raw(AccountSharedResource.Toast_CopiedAccountPassword)')">
+                <button type="button" class="btn btn-sm btn-outline-secondary me-3" data-copy="@TempData["CreatedAccountNotice"]" onclick="copyToClipboard(this.dataset.copy, RWPM.accIndex.i18n.copied)">
                     <i class="bi bi-copy me-1"></i> @AccountSharedResource.Button_Copy
                 </button>
-                <button type="button" class="btn-close position-static p-2" data-bs-dismiss="alert" aria-label="@AccountSharedResource.Excel_Close"></button>
+                <button type="button" class="btn-close position-static p-2" data-bs-dismiss="alert" aria-label="@SharedResource.Button_Close"></button>
             </div>
         </div>
     }
@@ -75,7 +75,7 @@
             <div class="col-md-6 col-lg-5">
                 <label class="form-label">@SharedResource.Button_Search</label>
                 <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                    <span class="input-group-text border-end-0 text-muted"><i class="bi bi-search"></i></span>
                     <input type="text" asp-for="Search" class="form-control border-start-0 ps-0" placeholder="@AccountSharedResource.Placeholder_Search" />
                 </div>
             </div>
@@ -90,10 +90,10 @@
             </div>
 
             <div class="col-auto d-flex gap-2">
-                <button type="submit" class="btn btn-sm btn-primary">
+                <button type="submit" class="btn btn-sm btn-outline-secondary">
                     <i class="bi bi-funnel me-1"></i> @SharedResource.Button_Search
                 </button>
-                <a asp-action="Index" class="btn btn-sm btn-outline-secondary" title="@SharedResource.Button_Reset">
+                <a asp-action="Index" class="btn btn-sm btn-link text-decoration-none text-muted" title="@SharedResource.Button_Reset">
                     <i class="bi bi-arrow-clockwise"></i> @SharedResource.Button_Reset
                 </a>
             </div>
@@ -120,42 +120,14 @@
                     {
                         foreach (var category in Model.PanigationResponse.Data)
                         {
-                            var roleBadgeClass = category.Role switch
-                            {
-                                AccountRole.Admin => "bg-danger text-white",
-                                AccountRole.HR => "bg-warning text-dark",
-                                AccountRole.StoreManager => "bg-success text-white",
-                                AccountRole.Employee => "bg-info text-dark",
-                                _ => "bg-secondary text-white"
-                            };
-
-                            var initials = "U";
-                            if (!string.IsNullOrWhiteSpace(category.FullName))
-                            {
-                                var parts = category.FullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                                if (parts.Length > 1)
-                                {
-                                    initials = $"{parts[0][0]}{parts[^1][0]}".ToUpper();
-                                }
-                                else if (parts.Length == 1 && parts[0].Length > 0)
-                                {
-                                    initials = parts[0].Substring(0, Math.Min(2, parts[0].Length)).ToUpper();
-                                }
-                            }
-                            var colorIndex = Math.Abs(category.Username.GetHashCode()) % 6;
-
                             <tr>
                                 <td>
-                                    <div class="d-flex align-items-center">
-                                        <div>
-                                            <div class="text-dark">@category.FullName</div>
-                                            <small class="text-muted">@(string.IsNullOrEmpty(category.Email) ? "-" : category.Email)</small>
-                                        </div>
-                                    </div>
+                                    <div class="fw-medium">@category.FullName</div>
+                                    <small class="text-muted">@(string.IsNullOrEmpty(category.Email) ? "-" : category.Email)</small>
                                 </td>
-                                <td><span class="text-dark">@category.Username</span></td>
+                                <td><span class="font-monospace small">@category.Username</span></td>
                                 <td class="text-center">
-                                    <span>@category.Role.GetDisplayName()</span>
+                                    <span class="app-badge app-badge-neutral">@category.Role.GetDisplayName()</span>
                                 </td>
                                 <td class="text-end small text-muted">
                                     @category.CreatedDate.ToString("dd/MM/yyyy HH:mm")
@@ -179,22 +151,22 @@
                                     <div class="btn-group btn-action-group" role="group">
                                         <a asp-action="Edit"
                                            asp-route-id="@category.Username"
-                                           class="btn btn-sm btn-outline-primary"
-                                           title="@SharedResource.Button_Edit">
+                                           class="btn btn-sm btn-outline-secondary"
+                                           title="@SharedResource.Button_Edit" aria-label="@SharedResource.Button_Edit">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
 
                                         <button type="button"
-                                                class="btn btn-sm btn-outline-warning"
+                                                class="btn btn-sm btn-outline-secondary"
                                                 data-username="@category.Username" data-fullname="@category.FullName" onclick="openQuickResetPassword(this.dataset.username, this.dataset.fullname)"
-                                                title="@AccountSharedResource.Modal_QuickResetTitle">
+                                                title="@AccountSharedResource.Modal_QuickResetTitle" aria-label="@AccountSharedResource.Modal_QuickResetTitle">
                                             <i class="bi bi-key"></i>
                                         </button>
 
                                         <button type="submit"
                                                 form="deleteAccForm_@category.Username"
                                                 class="btn btn-sm btn-outline-danger"
-                                                title="@SharedResource.Button_Delete">
+                                                title="@SharedResource.Button_Delete" aria-label="@SharedResource.Button_Delete">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -215,7 +187,7 @@
                     {
                         <tr>
                             <td colspan="7" class="text-center text-muted py-4">
-                                <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary"></i>
+                                <i class="bi bi-inbox fs-3 d-block mb-2 text-muted"></i>
                                 @SharedResource.NoDataFound
                             </td>
                         </tr>
@@ -243,23 +215,21 @@
      data-toast-success="@AccountSharedResource.Toast_ResetPasswordSuccess"
      tabindex="-1" aria-labelledby="modalQuickResetPasswordLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content shadow-lg border-0">
-            <div class="modal-header bg-primary text-white py-3">
-                <h5 class="modal-title fs-6 d-flex align-items-center" id="modalQuickResetPasswordLabel">
-                    <i class="bi bi-key-fill me-2 fs-5"></i> @AccountSharedResource.Modal_QuickResetTitle
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="@AccountSharedResource.Excel_Close"></button>
+        <div class="modal-content">
+            <div class="modal-header py-3">
+                <h5 class="modal-title" id="modalQuickResetPasswordLabel">@AccountSharedResource.Modal_QuickResetTitle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@SharedResource.Button_Close"></button>
             </div>
             <div class="modal-body p-4">
                 <input type="hidden" id="quickResetModal_Username" />
                 
                 <div class="alert alert-info py-2 px-3 small d-flex align-items-center mb-3">
-                    <i class="bi bi-person-check fs-5 me-2"></i>
+                    <i class="bi bi-person-check me-2"></i>
                     <div>@AccountSharedResource.Modal_QuickResetFor <strong id="quickResetModal_DisplayUser"></strong></div>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold text-secondary">@AccountSharedResource.Modal_QuickResetNewPass</label>
+                    <label class="form-label required" for="quickResetModal_NewPassword">@AccountSharedResource.Modal_QuickResetNewPass</label>
                     <div class="input-group">
                         <input type="text" id="quickResetModal_NewPassword" class="form-control" placeholder="@AccountSharedResource.Placeholder_Password" autocomplete="off" />
                         <button class="btn btn-outline-secondary" type="button" onclick="regenerateQuickResetPassword()" title="@AccountSharedResource.Create_GeneratePassHint">
@@ -269,23 +239,23 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold text-secondary">@AccountSharedResource.Modal_QuickResetConfirmPass</label>
+                    <label class="form-label required" for="quickResetModal_ConfirmPassword">@AccountSharedResource.Modal_QuickResetConfirmPass</label>
                     <input type="text" id="quickResetModal_ConfirmPassword" class="form-control" placeholder="@AccountSharedResource.Modal_QuickResetPlaceholderConfirmPass" autocomplete="off" />
                 </div>
 
-                <div class="p-3 bg-light rounded border d-flex justify-content-between align-items-center mb-1">
+                <div class="p-2 px-3 border rounded d-flex justify-content-between align-items-center mb-1" style="background: var(--app-surface-2);">
                     <div class="small text-truncate me-2">
                         <i class="bi bi-clipboard me-1 text-muted"></i>
                         <span id="quickResetModal_CopyText" class="text-secondary font-monospace"></span>
                     </div>
-                    <button type="button" class="btn btn-sm btn-outline-dark text-nowrap" onclick="copyToClipboard($('#quickResetModal_CopyText').text(), '@Html.Raw(AccountSharedResource.Toast_CopiedAccountPassword)')">
+                    <button type="button" class="btn btn-sm btn-outline-secondary text-nowrap" onclick="copyToClipboard($('#quickResetModal_CopyText').text(), RWPM.accIndex.i18n.copied)">
                         <i class="bi bi-copy me-1"></i> @AccountSharedResource.Button_Copy
                     </button>
                 </div>
-                <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>@AccountSharedResource.Modal_QuickResetHint</small>
+                <div class="form-text">@AccountSharedResource.Modal_QuickResetHint</div>
             </div>
-            <div class="modal-footer bg-light py-2">
-                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">@SharedResource.Button_Cancel</button>
+            <div class="modal-footer py-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">@SharedResource.Button_Cancel</button>
                 <button type="button" id="quickResetModal_BtnSubmit" class="btn btn-sm btn-primary" onclick="submitQuickResetPassword()">
                     <i class="bi bi-check2-circle me-1"></i> @AccountSharedResource.Modal_QuickResetSaveBtn
                 </button>
@@ -297,26 +267,24 @@
 <!-- Modal Import Excel (2 bước: Chọn file -> Xem trước & Kiểm tra -> Chấp thuận) -->
 <div class="modal fade" id="importExcelModal" tabindex="-1" aria-labelledby="importExcelModalLabel" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
-        <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header bg-light py-3 border-bottom">
-                <h5 class="modal-title fw-bold text-dark d-flex align-items-center" id="importExcelModalLabel">
-                    <i class="bi bi-file-earmark-excel-fill text-success me-2 fs-5"></i> @AccountSharedResource.Excel_ImportTitle
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@AccountSharedResource.Excel_Close"></button>
+        <div class="modal-content">
+            <div class="modal-header py-3">
+                <h5 class="modal-title" id="importExcelModalLabel">@AccountSharedResource.Excel_ImportTitle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@SharedResource.Button_Close"></button>
             </div>
             
             <div class="modal-body p-4">
                 <!-- BƯỚC 1: Chọn file Excel -->
                 <div id="accImportStep1">
                     <div class="alert alert-info py-2 px-3 small mb-3 d-flex align-items-center">
-                        <i class="bi bi-info-circle-fill me-2 fs-5 flex-shrink-0"></i>
+                        <i class="bi bi-info-circle me-2 flex-shrink-0"></i>
                         <span>@AccountSharedResource.Excel_Step1_Note</span>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-semibold small required">@AccountSharedResource.Excel_SelectFile</label>
-                        <input type="file" id="accImportFileInput" class="form-control form-control-lg" accept=".xlsx" />
-                        <div class="form-text small mt-1">@AccountSharedResource.Excel_SupportedFormat</div>
+                        <label class="form-label required" for="accImportFileInput">@AccountSharedResource.Excel_SelectFile</label>
+                        <input type="file" id="accImportFileInput" class="form-control" accept=".xlsx" />
+                        <div class="form-text">@AccountSharedResource.Excel_SupportedFormat</div>
                     </div>
 
                     <div id="accImportStep1Error" class="alert alert-danger py-2 px-3 small d-none"></div>
@@ -325,40 +293,34 @@
                 <!-- BƯỚC 2: Xem trước dữ liệu & Kiểm tra trùng lặp -->
                 <div id="accImportStep2" class="d-none">
                     <!-- Thống kê kết quả kiểm tra -->
-                    <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between p-3 bg-light rounded border mb-3">
+                    <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
                         <div class="d-flex flex-wrap gap-2 align-items-center">
-                            <span class="badge bg-secondary px-3 py-2 fs-6">
-                                <i class="bi bi-list-ol me-1"></i> @AccountSharedResource.Excel_Summary_Total <strong id="accPreviewTotal" class="ms-1">0</strong>
-                            </span>
-                            <span class="badge bg-success px-3 py-2 fs-6">
-                                <i class="bi bi-check-circle me-1"></i> @AccountSharedResource.Excel_Summary_Valid <strong id="accPreviewValid" class="ms-1">0</strong>
-                            </span>
-                            <span class="badge bg-danger px-3 py-2 fs-6">
-                                <i class="bi bi-exclamation-octagon me-1"></i> @AccountSharedResource.Excel_Summary_Invalid <strong id="accPreviewInvalid" class="ms-1">0</strong>
-                            </span>
+                            <span class="app-badge app-badge-neutral">@AccountSharedResource.Excel_Summary_Total <strong id="accPreviewTotal">0</strong></span>
+                            <span class="app-badge app-badge-success">@AccountSharedResource.Excel_Summary_Valid <strong id="accPreviewValid">0</strong></span>
+                            <span class="app-badge app-badge-danger">@AccountSharedResource.Excel_Summary_Invalid <strong id="accPreviewInvalid">0</strong></span>
                         </div>
                         <div class="small text-muted">
-                            <i class="bi bi-shield-check text-primary me-1"></i> @AccountSharedResource.Excel_AutoValidated
+                            <i class="bi bi-shield-check me-1"></i> @AccountSharedResource.Excel_AutoValidated
                         </div>
                     </div>
 
                     <!-- Cảnh báo nếu có dòng lỗi / trùng -->
                     <div id="accPreviewWarning" class="alert alert-warning py-2 px-3 small mb-3 d-none">
-                        <i class="bi bi-exclamation-triangle-fill me-1"></i> @AccountSharedResource.Excel_Preview_Warning_HasErrors
+                        <i class="bi bi-exclamation-triangle me-1"></i> @AccountSharedResource.Excel_Preview_Warning_HasErrors
                     </div>
                     <div id="accPreviewSuccessNotice" class="alert alert-success py-2 px-3 small mb-3 d-none">
-                        <i class="bi bi-check-circle-fill me-1"></i> @AccountSharedResource.Excel_Preview_All_Valid
+                        <i class="bi bi-check-circle me-1"></i> @AccountSharedResource.Excel_Preview_All_Valid
                     </div>
                     <div id="accPreviewDangerNotice" class="alert alert-danger py-2 px-3 small mb-3 d-none">
-                        <i class="bi bi-x-circle-fill me-1"></i> @AccountSharedResource.Excel_Preview_No_Valid
+                        <i class="bi bi-x-circle me-1"></i> @AccountSharedResource.Excel_Preview_No_Valid
                     </div>
 
                     <!-- Bảng Preview dữ liệu -->
                     <div class="table-responsive border rounded" style="max-height: 420px; overflow-y: auto;">
-                        <table class="table table-sm table-hover table-bordered align-middle mb-0 text-nowrap">
-                            <thead class="table-light sticky-top">
+                        <table class="table table-sm align-middle mb-0 text-nowrap">
+                            <thead class="sticky-top">
                                 <tr>
-                                    <th class="text-center" style="width: 50px;">@AccountSharedResource.Excel_Col_Row</th>
+                                    <th class="text-end" style="width: 50px;">@AccountSharedResource.Excel_Col_Row</th>
                                     <th class="text-center" style="width: 120px;">@AccountSharedResource.Excel_Col_Status</th>
                                     <th>@AccountSharedResource.Excel_Col_Username</th>
                                     <th>@AccountSharedResource.Excel_Col_FullName</th>
@@ -377,10 +339,10 @@
                 </div>
             </div>
 
-            <div class="modal-footer bg-light py-2 border-top">
+            <div class="modal-footer py-2">
                 <!-- Footer buttons cho Bước 1 -->
                 <div id="accStep1Footer" class="d-flex gap-2">
-                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">@AccountSharedResource.Excel_Close</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">@SharedResource.Button_Close</button>
                     <button type="button" id="accBtnPreview" class="btn btn-sm btn-primary px-3" onclick="previewAccImport()">
                         <i class="bi bi-search me-1"></i> @AccountSharedResource.Excel_Btn_Preview
                     </button>
@@ -391,8 +353,8 @@
                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="backToAccStep1()">
                         <i class="bi bi-arrow-left me-1"></i> @AccountSharedResource.Excel_Btn_Back
                     </button>
-                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">@AccountSharedResource.Excel_Close</button>
-                    <button type="button" id="accBtnConfirm" class="btn btn-sm btn-success px-3 fw-bold" onclick="confirmAccImport()">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">@SharedResource.Button_Close</button>
+                    <button type="button" id="accBtnConfirm" class="btn btn-sm btn-primary px-3" onclick="confirmAccImport()">
                         <i class="bi bi-check2-circle me-1"></i> @AccountSharedResource.Excel_Btn_Confirm
                     </button>
                 </div>
@@ -403,226 +365,28 @@
 
 @section Scripts{
     <script>
-        let currentAccImportToken = '';
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            return text.toString()
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
-        function previewAccImport() {
-            const fileInput = document.getElementById('accImportFileInput');
-            const errBox = $('#accImportStep1Error');
-            errBox.addClass('d-none').text('');
-
-            if (!fileInput.files || fileInput.files.length === 0) {
-                errBox.removeClass('d-none').text('@Html.Raw(AccountSharedResource.Excel_SelectFile)');
-                return;
+        window.RWPM = window.RWPM || {};
+        RWPM.accIndex = {
+            urls: {
+                previewImport: '@Url.Action("PreviewImportExcel", "Acc")',
+                confirmImport: '@Url.Action("ConfirmImportExcel", "Acc")',
+                updateActiveStatus: '@Url.Action("UpdateActiveStatus", "Acc")'
+            },
+            i18n: {
+                copied: @Json.Serialize(AccountSharedResource.Toast_CopiedAccountPassword),
+                selectFile: @Json.Serialize(AccountSharedResource.Excel_SelectFile),
+                verifying: @Json.Serialize(AccountSharedResource.Excel_Btn_Verifying),
+                preview: @Json.Serialize(AccountSharedResource.Excel_Btn_Preview),
+                saving: @Json.Serialize(AccountSharedResource.Excel_Btn_Saving),
+                confirm: @Json.Serialize(AccountSharedResource.Excel_Btn_Confirm),
+                valid: @Json.Serialize(AccountSharedResource.Excel_Status_Valid),
+                invalid: @Json.Serialize(AccountSharedResource.Excel_Status_Invalid),
+                failed: @Json.Serialize(SharedResource.OperationFailed),
+                active: @Json.Serialize(SharedResource.ObjectStatus_IsActive),
+                inactive: @Json.Serialize(SharedResource.ObjectStatus_IsInactive)
             }
-
-            const file = fileInput.files[0];
-            if (!file.name.toLowerCase().endsWith('.xlsx')) {
-                errBox.removeClass('d-none').text('@Html.Raw(AccountSharedResource.Excel_SelectFile)');
-                return;
-            }
-
-            const btn = $('#accBtnPreview');
-            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> @Html.Raw(AccountSharedResource.Excel_Btn_Verifying)');
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            const token = $('input[name="__RequestVerificationToken"]').first().val();
-
-            fetch('/Acc/PreviewImportExcel', {
-                method: 'POST',
-                headers: {
-                    'RequestVerificationToken': token
-                },
-                body: formData
-            })
-            .then(r => r.json())
-            .then(res => {
-                if (!res.success) {
-                    errBox.removeClass('d-none').text(res.message || '@Html.Raw(SharedResource.OperationFailed)');
-                    return;
-                }
-
-                const data = res.data;
-                currentAccImportToken = data.importToken;
-
-                $('#accPreviewTotal').text(data.totalRows);
-                $('#accPreviewValid').text(data.validCount);
-                $('#accPreviewInvalid').text(data.invalidCount);
-
-                $('#accPreviewWarning').addClass('d-none');
-                $('#accPreviewSuccessNotice').addClass('d-none');
-                $('#accPreviewDangerNotice').addClass('d-none');
-
-                if (data.validCount === 0) {
-                    $('#accPreviewDangerNotice').removeClass('d-none');
-                    $('#accBtnConfirm').prop('disabled', true);
-                } else if (data.invalidCount > 0) {
-                    $('#accPreviewWarning').removeClass('d-none');
-                    $('#accBtnConfirm').prop('disabled', false);
-                } else {
-                    $('#accPreviewSuccessNotice').removeClass('d-none');
-                    $('#accBtnConfirm').prop('disabled', false);
-                }
-
-                const tbody = $('#accPreviewTableBody');
-                tbody.empty();
-
-                (data.rows || []).forEach(row => {
-                    const tr = $('<tr>');
-                    if (row.isValid) {
-                        tr.addClass('table-success bg-opacity-10');
-                    } else {
-                        tr.addClass('table-danger bg-opacity-10');
-                    }
-
-                    const statusBadge = row.isValid
-                        ? `<span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>@Html.Raw(AccountSharedResource.Excel_Status_Valid)</span>`
-                        : `<span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>@Html.Raw(AccountSharedResource.Excel_Status_Invalid)</span>`;
-
-                    const errHtml = row.isValid
-                        ? `<span class="text-success small"><i class="bi bi-check2 me-1"></i>@Html.Raw(AccountSharedResource.Excel_Status_Valid)</span>`
-                        : `<span class="text-danger small fw-semibold"><i class="bi bi-exclamation-circle me-1"></i>${escapeHtml(row.errorMessage || '')}</span>`;
-
-                    tr.html(`
-                        <td class="text-center fw-bold text-muted">${row.rowNum}</td>
-                        <td class="text-center">${statusBadge}</td>
-                        <td class="fw-semibold text-dark">${escapeHtml(row.username)}</td>
-                        <td>${escapeHtml(row.fullName)}</td>
-                        <td class="small text-muted">${escapeHtml(row.email)}</td>
-                        <td class="small text-muted">${escapeHtml(row.phone || '')}</td>
-                        <td><span class="badge bg-primary bg-opacity-75">${escapeHtml(row.roleDisplay)}</span></td>
-                        <td><span class="badge bg-secondary bg-opacity-75">${escapeHtml(row.storeDisplay)}</span></td>
-                        <td class="small fw-semibold text-secondary">${escapeHtml(row.empCode)}</td>
-                        <td>${errHtml}</td>
-                    `);
-
-                    tbody.append(tr);
-                });
-
-                $('#accImportStep1').addClass('d-none');
-                $('#accImportStep2').removeClass('d-none');
-                $('#accStep1Footer').addClass('d-none');
-                $('#accStep2Footer').removeClass('d-none');
-            })
-            .catch(err => {
-                errBox.removeClass('d-none').text('@Html.Raw(SharedResource.OperationFailed): ' + err.message);
-            })
-            .finally(() => {
-                btn.prop('disabled', false).html('<i class="bi bi-search me-1"></i> @Html.Raw(AccountSharedResource.Excel_Btn_Preview)');
-            });
-        }
-
-        function backToAccStep1() {
-            $('#accImportStep2').addClass('d-none');
-            $('#accImportStep1').removeClass('d-none');
-            $('#accStep2Footer').addClass('d-none');
-            $('#accStep1Footer').removeClass('d-none');
-        }
-
-        function confirmAccImport() {
-            if (!currentAccImportToken) return;
-
-            const btn = $('#accBtnConfirm');
-            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> @Html.Raw(AccountSharedResource.Excel_Btn_Saving)');
-
-            const token = $('input[name="__RequestVerificationToken"]').first().val();
-
-            fetch('/Acc/ConfirmImportExcel', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': token
-                },
-                body: JSON.stringify({ importToken: currentAccImportToken })
-            })
-            .then(r => r.json())
-            .then(res => {
-                if (res.success) {
-                    if (typeof AppToast !== 'undefined') {
-                        AppToast.success(res.message);
-                    }
-                    const modalEl = document.getElementById('importExcelModal');
-                    if (modalEl) {
-                        bootstrap.Modal.getInstance(modalEl)?.hide();
-                    }
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 800);
-                } else {
-                    if (typeof AppToast !== 'undefined') {
-                        AppToast.error(res.message || '@Html.Raw(SharedResource.OperationFailed)');
-                    } else {
-                        AppToast.error(res.message || '@Html.Raw(SharedResource.OperationFailed)');
-                    }
-                    btn.prop('disabled', false).html('<i class="bi bi-check2-circle me-1"></i> @Html.Raw(AccountSharedResource.Excel_Btn_Confirm)');
-                }
-            })
-            .catch(err => {
-                if (typeof AppToast !== 'undefined') {
-                    AppToast.error('@Html.Raw(SharedResource.OperationFailed): ' + err.message);
-                } else {
-                    AppToast.error('@Html.Raw(SharedResource.OperationFailed): ' + err.message);
-                }
-                btn.prop('disabled', false).html('<i class="bi bi-check2-circle me-1"></i> @Html.Raw(AccountSharedResource.Excel_Btn_Confirm)');
-            });
-        }
-
-        $('#importExcelModal').on('hidden.bs.modal', function () {
-            backToAccStep1();
-            $('#accImportFileInput').val('');
-            $('#accImportStep1Error').addClass('d-none').text('');
-        });
-
-        function onToggleAccountStatus(username, isActive) {
-            const token = $('input[name="__RequestVerificationToken"]').val();
-            const checkbox = document.getElementById("isActiveSwitch_" + username);
-
-            fetch('/Acc/UpdateActiveStatus/' + username, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': token
-                },
-                body: JSON.stringify({
-                    username: username,
-                    isActive: isActive
-                })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => { throw new Error(text); });
-                }
-                if (typeof AppToast !== 'undefined') {
-                    AppToast.success(isActive ? `@Html.Raw(SharedResource.ObjectStatus_IsActive): ${username}` : `@Html.Raw(SharedResource.ObjectStatus_IsInactive): ${username}`);
-                }
-                if (checkbox) {
-                    const choice = checkbox.closest('.status-choice');
-                    choice?.querySelector('.status-dot')?.classList.toggle('is-active', isActive);
-                    choice?.querySelector('.status-dot')?.classList.toggle('is-inactive', !isActive);
-                    const text = choice?.querySelector('.status-choice-text');
-                    if (text) text.textContent = isActive ? '@Html.Raw(SharedResource.ObjectStatus_IsActive)' : '@Html.Raw(SharedResource.ObjectStatus_IsInactive)';
-                }
-            })
-            .catch(error => {
-                if (typeof AppToast !== 'undefined') {
-                    AppToast.error(error.message || '@Html.Raw(SharedResource.OperationFailed)');
-                } else {
-                    AppToast.error(error.message || '@Html.Raw(SharedResource.OperationFailed)');
-                }
-                if (checkbox) checkbox.checked = !isActive;
-            });
-        }
+        };
     </script>
+    <script src="~/js/acc/index.js" asp-append-version="true"></script>
 }
 

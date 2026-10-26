@@ -13,31 +13,31 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Create_PageHeader" xml:space="preserve">
-    <value>Thêm Cửa hàng Mới</value>
+    <value>Thêm chi nhánh mới</value>
   </data>
   <data name="Create_PageTitle" xml:space="preserve">
-    <value>Thêm Cửa hàng Mới</value>
+    <value>Thêm chi nhánh mới</value>
   </data>
   <data name="Delete_PageHeader" xml:space="preserve">
-    <value>Xác nhận Xóa Cửa hàng</value>
+    <value>Xóa chi nhánh</value>
   </data>
   <data name="Delete_PageTitle" xml:space="preserve">
-    <value>Xác nhận Xóa Cửa hàng</value>
+    <value>Xóa chi nhánh</value>
   </data>
   <data name="Delete_Warning" xml:space="preserve">
     <value>Bạn có chắc chắn muốn xóa cửa hàng này khỏi hệ thống? Thao tác này không thể hoàn tác.</value>
   </data>
   <data name="Edit_PageHeader" xml:space="preserve">
-    <value>Chỉnh sửa Cửa hàng</value>
+    <value>Chỉnh sửa chi nhánh</value>
   </data>
   <data name="Edit_PageTitle" xml:space="preserve">
-    <value>Chỉnh sửa Cửa hàng</value>
+    <value>Chỉnh sửa chi nhánh</value>
   </data>
   <data name="Index_PageHeader" xml:space="preserve">
-    <value>Chi Nhánh</value>
+    <value>Chi nhánh</value>
   </data>
   <data name="Index_PageTitle" xml:space="preserve">
-    <value>Chi Nhánh</value>
+    <value>Chi nhánh</value>
   </data>
   <data name="Placeholder_Address" xml:space="preserve">
     <value>Nhập địa chỉ cửa hàng</value>
@@ -64,10 +64,10 @@
     <value>--- Chọn cửa hàng ---</value>
   </data>
   <data name="GeoHeader" xml:space="preserve">
-    <value>Định Vị Chi Nhánh &amp; Khoảng Cách Chấm Công</value>
+    <value>Định vị &amp; khoảng cách chấm công</value>
   </data>
   <data name="Placeholder_MapSearch" xml:space="preserve">
-    <value>🔍 Nhập tên thành phố / quận huyện / tên đường (VD: Hà Nội, 50 Hoàng Quốc Việt...)</value>
+    <value>Nhập thành phố / quận huyện / tên đường (VD: Hà Nội, 50 Hoàng Quốc Việt)</value>
   </data>
   <data name="Btn_SearchAddress" xml:space="preserve">
     <value>Tìm địa chỉ</value>
@@ -105,11 +105,8 @@
   <data name="Range" xml:space="preserve">
     <value>Phạm vi:</value>
   </data>
-  <data name="NotLocated" xml:space="preserve">
-    <value>Chưa định vị</value>
-  </data>
   <data name="ConfigHeader_Management" xml:space="preserve">
-    <value>Cấu Hình Quản Lý &amp; Giờ Hoạt Động Chi Nhánh</value>
+    <value>Quản lý &amp; giờ hoạt động</value>
   </data>
   <data name="Dropdown_SelectManager" xml:space="preserve">
     <value>-- Chọn Quản lý Chi nhánh --</value>
@@ -193,7 +190,7 @@
     <value>Bán Kính Chấm Công GPS:</value>
   </data>
   <data name="Details_AllowedDistance" xml:space="preserve">
-    <value>Cho phép &amp;le; {0} mét</value>
+    <value>Cho phép ≤ {0} mét</value>
   </data>
   <data name="Details_BranchStatus" xml:space="preserve">
     <value>Trạng Thái Chi Nhánh:</value>
@@ -240,9 +237,6 @@
   <data name="EmpTable_Empty" xml:space="preserve">
     <value>Chưa có nhân viên nào thuộc chi nhánh này.</value>
   </data>
-  <data name="ShiftTable_Code" xml:space="preserve">
-    <value>Mã Ca</value>
-  </data>
   <data name="ShiftTable_Name" xml:space="preserve">
     <value>Tên Ca Làm Việc</value>
   </data>
@@ -252,17 +246,8 @@
   <data name="ShiftTable_BreakMinutes" xml:space="preserve">
     <value>Phút Nghỉ Giữa Ca</value>
   </data>
-  <data name="ShiftTable_Scope" xml:space="preserve">
-    <value>Phạm Vi Phân Ca</value>
-  </data>
   <data name="Unit_Minutes" xml:space="preserve">
     <value>phút</value>
-  </data>
-  <data name="ShiftScope_SystemTemplate" xml:space="preserve">
-    <value>Ca mẫu toàn hệ thống</value>
-  </data>
-  <data name="ShiftScope_BranchSpecific" xml:space="preserve">
-    <value>Ca riêng chi nhánh</value>
   </data>
   <data name="ShiftTable_Empty" xml:space="preserve">
     <value>Chưa có ca làm việc nào được thiết lập.</value>
@@ -294,10 +279,22 @@
   <data name="Search_DefaultLocationSuffix" xml:space="preserve">
     <value>{0} (Vị trí mặc định)</value>
   </data>
-  <data name="Search_DefaultFallbackName" xml:space="preserve">
-    <value>Hà Nội, Việt Nam</value>
-  </data>
   <data name="Delete_WarningLabel" xml:space="preserve">
     <value>Cảnh báo:</value>
+  </data>
+  <data name="Create_SubTitle" xml:space="preserve">
+    <value>Thêm chi nhánh cùng người quản lý, giờ hoạt động và vị trí GPS để chấm công.</value>
+  </data>
+  <data name="Edit_SubTitle" xml:space="preserve">
+    <value>Cập nhật thông tin, giờ hoạt động và vị trí GPS của chi nhánh.</value>
+  </data>
+  <data name="Section_General" xml:space="preserve">
+    <value>Thông tin chung</value>
+  </data>
+  <data name="Map_SelectLocationPrompt" xml:space="preserve">
+    <value>Hãy chọn vị trí chi nhánh trên bản đồ trước khi kích hoạt.</value>
+  </data>
+  <data name="Aria_Breadcrumb" xml:space="preserve">
+    <value>Đường dẫn trang</value>
   </data>
 </root>

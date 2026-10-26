@@ -123,13 +123,6 @@ namespace RWPM.Resources.Shared {
             }
         }
 
-        /// <summary>Shift assignments today</summary>
-        public static string Card_TodayAssignments {
-            get {
-                return ResourceManager.GetString("Card_TodayAssignments", resourceCulture);
-            }
-        }
-
         /// <summary>{0} on shift now</summary>
         public static string Card_CheckedInNow {
             get {
@@ -382,13 +375,6 @@ namespace RWPM.Resources.Shared {
             }
         }
 
-        /// <summary>No employees in this shift.</summary>
-        public static string Empty_ShiftEmployees {
-            get {
-                return ResourceManager.GetString("Empty_ShiftEmployees", resourceCulture);
-            }
-        }
-
         /// <summary>On approved leave today</summary>
         public static string Section_OnLeave {
             get {
@@ -435,13 +421,6 @@ namespace RWPM.Resources.Shared {
         public static string NoStore {
             get {
                 return ResourceManager.GetString("NoStore", resourceCulture);
-            }
-        }
-
-        /// <summary>Payroll</summary>
-        public static string Section_Payroll {
-            get {
-                return ResourceManager.GetString("Section_Payroll", resourceCulture);
             }
         }
 
@@ -592,13 +571,6 @@ namespace RWPM.Resources.Shared {
             }
         }
 
-        /// <summary>All payslips</summary>
-        public static string My_AllPayslips {
-            get {
-                return ResourceManager.GetString("My_AllPayslips", resourceCulture);
-            }
-        }
-
         /// <summary>Your account is not linked to an employee profile yet. Please contact HR.</summary>
         public static string My_NoProfile {
             get {
@@ -617,6 +589,83 @@ namespace RWPM.Resources.Shared {
         public static string Today {
             get {
                 return ResourceManager.GetString("Today", resourceCulture);
+            }
+        }
+
+        /// <summary>Understaffed shifts (next 7 days)</summary>
+        public static string Card_ShortShifts {
+            get {
+                return ResourceManager.GetString("Card_ShortShifts", resourceCulture);
+            }
+        }
+
+        /// <summary>{0} people missing</summary>
+        public static string Card_ShortPeople {
+            get {
+                return ResourceManager.GetString("Card_ShortPeople", resourceCulture);
+            }
+        }
+
+        /// <summary>Fully staffed vs. demand</summary>
+        public static string Card_ShortNone {
+            get {
+                return ResourceManager.GetString("Card_ShortNone", resourceCulture);
+            }
+        }
+
+        /// <summary>No staffing demand configured</summary>
+        public static string Card_ShortNoDemand {
+            get {
+                return ResourceManager.GetString("Card_ShortNoDemand", resourceCulture);
+            }
+        }
+
+        /// <summary>Understaffed shifts – next 7 days</summary>
+        public static string Section_ShortShifts {
+            get {
+                return ResourceManager.GetString("Section_ShortShifts", resourceCulture);
+            }
+        }
+
+        /// <summary>Approved/Required</summary>
+        public static string Col_Coverage {
+            get {
+                return ResourceManager.GetString("Col_Coverage", resourceCulture);
+            }
+        }
+
+        /// <summary>Short (7 days)</summary>
+        public static string Col_Short7Days {
+            get {
+                return ResourceManager.GetString("Col_Short7Days", resourceCulture);
+            }
+        }
+
+        /// <summary>No understaffed shifts in the next 7 days.</summary>
+        public static string Empty_ShortShifts {
+            get {
+                return ResourceManager.GetString("Empty_ShortShifts", resourceCulture);
+            }
+        }
+
+        /// <summary>View coverage</summary>
+        public static string Short_ViewCoverage {
+            get {
+                return ResourceManager.GetString("Short_ViewCoverage", resourceCulture);
+            }
+        }
+
+        /// <summary>{0} shifts · {1} people</summary>
+        public static string Short_ShiftsPeople {
+            get {
+                return ResourceManager.GetString("Short_ShiftsPeople", resourceCulture);
+            }
+        }
+
+        /// <summary>Availability awaiting review</summary>
+        public static string Card_PendingAvailability {
+            get {
+                return ResourceManager.GetString("Card_PendingAvailability", resourceCulture);
             }
         }
     }

@@ -16,13 +16,11 @@
     <!-- Header with Breadcrumb -->
     <div class="app-page-header">
         <div>
-            <h4 class="fw-bold text-dark d-flex align-items-center mb-1">
-                <i class="bi bi-person-gear text-primary me-2"></i> @AccountSharedResource.Update_PageHeader
-            </h4>
+            <h4 class="mb-1">@AccountSharedResource.Update_PageHeader</h4>
             <div class="text-muted small">@AccountSharedResource.Update_SubTitle <strong>@Model.Username</strong></div>
         </div>
 
-        <nav aria-label="breadcrumb" class="d-none d-md-block">
+        <nav aria-label="@RWPM.Resources.Shared.Acc.Aria_Breadcrumb" class="d-none d-md-block">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a asp-action="Index">@RWPM.Resources.Shared.Acc.Index_PageHeader</a></li>
                 <li class="breadcrumb-item active" aria-current="page">@AccountSharedResource.Update_PageHeader</li>
@@ -31,7 +29,7 @@
     </div>
 
     <!-- Main Card -->
-    <div class="modern-card p-4">
+    <div class="app-content-card p-4">
         <form asp-action="Edit" method="post">
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="Username" />
@@ -39,34 +37,32 @@
             <input type="hidden" asp-for="EmployeeId" />
 
             <!-- Account identity badge -->
-            <div class="d-flex align-items-center p-3 bg-light rounded border mb-4">
-                <div class="avatar-initials avatar-color-0 me-3 fs-5" style="width: 46px; height: 46px;">
+            <div class="d-flex align-items-center p-3 border rounded mb-4" style="background: var(--app-surface-2);">
+                <div class="avatar-initials avatar-color-0 me-3" style="width: 40px; height: 40px;">
                     @(string.IsNullOrWhiteSpace(Model.FullName) ? "U" : Model.FullName.Substring(0, 1).ToUpper())
                 </div>
                 <div>
-                    <div class="fw-bold fs-6 text-dark">@Model.FullName</div>
+                    <div class="fw-semibold">@Model.FullName</div>
                     <div class="small text-muted font-monospace"><i class="bi bi-at"></i>@Model.Username</div>
                 </div>
                 <div class="ms-auto">
-                    <button type="button" class="btn btn-outline-primary btn-sm" data-username="@Model.Username" data-fullname="@Model.FullName" onclick="openQuickResetPassword(this.dataset.username, this.dataset.fullname)">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-username="@Model.Username" data-fullname="@Model.FullName" onclick="openQuickResetPassword(this.dataset.username, this.dataset.fullname)">
                         <i class="bi bi-key me-1"></i> @AccountSharedResource.Modal_QuickResetTitle
                     </button>
                 </div>
             </div>
 
-            <div class="form-section-title">
-                <i class="bi bi-person-badge text-primary"></i> @AccountSharedResource.Create_Section_AccountInfo
-            </div>
+            <div class="form-section-title">@AccountSharedResource.Create_Section_AccountInfo</div>
 
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold small required" asp-for="FullName">@AccountModelResource.Fullname</label>
+                    <label class="form-label required" asp-for="FullName">@AccountModelResource.Fullname</label>
                     <input class="form-control" asp-for="FullName" placeholder="@AccountSharedResource.Placeholder_FullName" />
                     <span asp-validation-for="FullName" class="text-danger small"></span>
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold small required" asp-for="Email">@AccountSharedResource.Email</label>
+                    <label class="form-label required" asp-for="Email">@AccountSharedResource.Email</label>
                     <input class="form-control" asp-for="Email" placeholder="@AccountSharedResource.Placeholder_Email" />
                     <span asp-validation-for="Email" class="text-danger small"></span>
                 </div>
@@ -74,30 +70,28 @@
 
             <div class="row g-3 mb-3">
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small" asp-for="PhoneNumber">@AccountModelResource.PhoneNumber</label>
+                    <label class="form-label" asp-for="PhoneNumber">@AccountModelResource.PhoneNumber</label>
                     <input class="form-control" asp-for="PhoneNumber" type="tel" inputmode="numeric" maxlength="10" data-phone-input autocomplete="off" placeholder="0901234567" />
                     <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small required" asp-for="DateOfBirth">@AccountModelResource.DateOfBirth</label>
+                    <label class="form-label required" asp-for="DateOfBirth">@AccountModelResource.DateOfBirth</label>
                     <input class="form-control" type="date" asp-for="DateOfBirth" value="@(Model.DateOfBirth.HasValue ? Model.DateOfBirth.Value.ToString("yyyy-MM-dd") : "")" />
                     <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small" asp-for="Gender">@AccountModelResource.Gender</label>
+                    <label class="form-label" asp-for="Gender">@AccountModelResource.Gender</label>
                     <select class="form-select" asp-for="Gender" asp-items="Html.GetEnumSelectList<RWPM.Common.Enums.Gender>()">
                         <option value="">@SharedResource.Dropdown_SelectGender</option>
                     </select>
                 </div>
             </div>
 
-            <div class="form-section-title mt-4">
-                <i class="bi bi-shield-check text-primary"></i> @AccountSharedResource.Update_Section_Role
-            </div>
+            <div class="form-section-title mt-4">@AccountSharedResource.Update_Section_Role</div>
 
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold small required" asp-for="Role">@AccountModelResource.Role</label>
+                    <label class="form-label required" asp-for="Role">@AccountModelResource.Role</label>
                     <select asp-for="Role" asp-items="Model.AccountRoleSelectList" class="form-select system-select2" id="accRoleSelect">
                     </select>
                     <span asp-validation-for="Role" class="text-danger small"></span>
@@ -106,41 +100,41 @@
 
             <!-- KHỐI THÔNG TIN CỬA HÀNG & HỒ SƠ NHÂN VIÊN (TỰ ĐỘNG HIỂN THỊ KHI CHỌN VAI TRÒ NHÂN SỰ CỬA HÀNG HOẶC HR) -->
             <div id="storeAssignmentSection">
-                <div class="form-section-title mt-4 text-primary">
-                    <i class="bi bi-person-badge"></i> <span id="employeeSectionTitleText">@AccountSharedResource.Create_Section_StoreInfo</span>
+                <div class="form-section-title mt-4">
+                    <span id="employeeSectionTitleText">@AccountSharedResource.Create_Section_StoreInfo</span>
                 </div>
 
                 @if (Model.HasExistingEmployee)
                 {
-                    <div class="alert alert-success bg-success bg-opacity-10 border-0 py-2 px-3 small mb-3 text-dark d-flex align-items-center">
-                        <i class="bi bi-check-circle-fill text-success me-2 fs-5 flex-shrink-0"></i>
+                    <div class="alert alert-success py-2 px-3 small mb-3 d-flex align-items-center">
+                        <i class="bi bi-check-circle me-2 flex-shrink-0"></i>
                         <div id="storeInfoLinkedText">@AccountSharedResource.Edit_StoreInfoLinked</div>
                     </div>
                 }
                 else
                 {
-                    <div class="alert alert-warning bg-warning bg-opacity-10 border-0 py-2 px-3 small mb-3 text-dark d-flex align-items-center">
-                        <i class="bi bi-exclamation-triangle-fill text-warning me-2 fs-5 flex-shrink-0"></i>
+                    <div class="alert alert-warning py-2 px-3 small mb-3 d-flex align-items-center">
+                        <i class="bi bi-exclamation-triangle me-2 flex-shrink-0"></i>
                         <div id="storeInfoNotLinkedText">@AccountSharedResource.Edit_StoreInfoNotLinked</div>
                     </div>
                 }
 
                 <div class="row g-3 mb-3">
                     <div class="col-md-4" id="empCodeCol">
-                        <label class="form-label fw-semibold small required" asp-for="EmployeeCode">@EmployeeSharedResource.Column_EmployeeCode</label>
+                        <label class="form-label required" asp-for="EmployeeCode">@EmployeeSharedResource.Column_EmployeeCode</label>
                         <input class="form-control font-monospace" asp-for="EmployeeCode" id="empCodeInput" placeholder="NV..." autocomplete="off" />
                         <span asp-validation-for="EmployeeCode" class="text-danger small"></span>
                     </div>
 
                     <div class="col-md-4" id="storeSelectCol">
-                        <label class="form-label fw-semibold small required" asp-for="StoreId">@EmployeeSharedResource.Column_Store</label>
+                        <label class="form-label required" asp-for="StoreId">@EmployeeSharedResource.Column_Store</label>
                         <select class="form-select" asp-for="StoreId" asp-items="Model.StoreSelectList" id="storeSelectInput">
                         </select>
                         <span asp-validation-for="StoreId" class="text-danger small"></span>
                     </div>
 
                     <div class="col-md-4" id="joinDateCol">
-                        <label class="form-label fw-semibold small required" asp-for="JoinDate">@EmployeeSharedResource.Column_JoinDate</label>
+                        <label class="form-label required" asp-for="JoinDate">@EmployeeSharedResource.Column_JoinDate</label>
                         <input class="form-control" type="date" asp-for="JoinDate" value="@(Model.JoinDate.HasValue ? Model.JoinDate.Value.ToString("yyyy-MM-dd") : "")" />
                         <span asp-validation-for="JoinDate" class="text-danger small"></span>
                     </div>
@@ -148,7 +142,7 @@
 
                 <div class="row g-3 mb-3">
                     <div class="col-md-4" id="citizenIdCol">
-                        <label class="form-label fw-semibold small required" asp-for="CitizenId">@EmployeeModelResource.CitizenId</label>
+                        <label class="form-label required" asp-for="CitizenId">@EmployeeModelResource.CitizenId</label>
                         <input class="form-control font-monospace" asp-for="CitizenId" type="text" inputmode="numeric" maxlength="12" autocomplete="off"
                                data-citizen-id-input placeholder="@EmployeeModelResource.CitizenId"
                                data-val-regex="@RWPM.Common.Validation.InputRules.Text("Số CCCD/CMND phải gồm 12 chữ số (CCCD) hoặc 9 chữ số (CMND).", "Citizen ID must contain 12 digits (CCCD) or 9 digits (old ID card).")"
@@ -156,26 +150,24 @@
                         <span asp-validation-for="CitizenId" class="text-danger small"></span>
                     </div>
                     <div class="col-md-4" id="employmentTypeCol">
-                        <label class="form-label fw-semibold small" asp-for="EmploymentType">@EmployeeModelResource.EmploymentType</label>
+                        <label class="form-label" asp-for="EmploymentType">@EmployeeModelResource.EmploymentType</label>
                         <select class="form-select" asp-for="EmploymentType" asp-items="Html.GetEnumSelectList<RWPM.Common.Enums.EmploymentType>()">
                         </select>
                     </div>
                     <div class="col-md-4" id="hourlyRateCol">
-                        <label class="form-label fw-semibold small required" asp-for="HourlyRate">@EmployeeModelResource.HourlyRate</label>
+                        <label class="form-label required" asp-for="HourlyRate">@EmployeeModelResource.HourlyRate</label>
                         <div class="input-group">
                             <input class="form-control" asp-for="HourlyRate" asp-format="{0:0}" type="number" min="0" step="1000" placeholder="25000" />
-                            <span class="input-group-text small">@SharedResource.Unit_VndPerHour</span>
+                            <span class="input-group-text">@SharedResource.Unit_VndPerHour</span>
                         </div>
                         <span asp-validation-for="HourlyRate" class="text-danger small"></span>
                     </div>
                 </div>
             </div>
 
-            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-                <a asp-action="Index" class="btn btn-outline-secondary px-3">
-                    <i class="bi bi-arrow-left me-1"></i> @SharedResource.Button_GoBack
-                </a>
-                <button type="submit" class="btn btn-primary px-4 shadow-sm">
+            <div class="d-flex justify-content-end align-items-center gap-2 mt-4 pt-3 border-top">
+                <a asp-action="Index" class="btn btn-outline-secondary px-3">@SharedResource.Button_Cancel</a>
+                <button type="submit" class="btn btn-primary px-4">
                     <i class="bi bi-floppy me-1"></i> @SharedResource.Button_SaveChanges
                 </button>
             </div>
@@ -194,23 +186,21 @@
      data-toast-success="@AccountSharedResource.Toast_ResetPasswordSuccess"
      tabindex="-1" aria-labelledby="modalQuickResetPasswordLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content shadow-lg border-0">
-            <div class="modal-header bg-primary text-white py-3">
-                <h5 class="modal-title fs-6 d-flex align-items-center" id="modalQuickResetPasswordLabel">
-                    <i class="bi bi-key-fill me-2 fs-5"></i> @AccountSharedResource.Modal_QuickResetTitle
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="@AccountSharedResource.Excel_Close"></button>
+        <div class="modal-content">
+            <div class="modal-header py-3">
+                <h5 class="modal-title" id="modalQuickResetPasswordLabel">@AccountSharedResource.Modal_QuickResetTitle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@SharedResource.Button_Close"></button>
             </div>
             <div class="modal-body p-4">
                 <input type="hidden" id="quickResetModal_Username" />
                 
                 <div class="alert alert-info py-2 px-3 small d-flex align-items-center mb-3">
-                    <i class="bi bi-person-check fs-5 me-2"></i>
+                    <i class="bi bi-person-check me-2"></i>
                     <div>@AccountSharedResource.Modal_QuickResetFor <strong id="quickResetModal_DisplayUser"></strong></div>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold text-secondary">@AccountSharedResource.Modal_QuickResetNewPass</label>
+                    <label class="form-label required" for="quickResetModal_NewPassword">@AccountSharedResource.Modal_QuickResetNewPass</label>
                     <div class="input-group">
                         <input type="text" id="quickResetModal_NewPassword" class="form-control" placeholder="@AccountSharedResource.Placeholder_Password" autocomplete="off" />
                         <button class="btn btn-outline-secondary" type="button" onclick="regenerateQuickResetPassword()" title="@AccountSharedResource.Create_GeneratePassHint">
@@ -220,23 +210,23 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold text-secondary">@AccountSharedResource.Modal_QuickResetConfirmPass</label>
+                    <label class="form-label required" for="quickResetModal_ConfirmPassword">@AccountSharedResource.Modal_QuickResetConfirmPass</label>
                     <input type="text" id="quickResetModal_ConfirmPassword" class="form-control" placeholder="@AccountSharedResource.Modal_QuickResetPlaceholderConfirmPass" autocomplete="off" />
                 </div>
 
-                <div class="p-3 bg-light rounded border d-flex justify-content-between align-items-center mb-1">
+                <div class="p-2 px-3 border rounded d-flex justify-content-between align-items-center mb-1" style="background: var(--app-surface-2);">
                     <div class="small text-truncate me-2">
                         <i class="bi bi-clipboard me-1 text-muted"></i>
                         <span id="quickResetModal_CopyText" class="text-secondary font-monospace"></span>
                     </div>
-                    <button type="button" class="btn btn-sm btn-outline-dark text-nowrap" onclick="copyToClipboard($('#quickResetModal_CopyText').text(), '@Html.Raw(AccountSharedResource.Toast_CopiedAccountPassword)')">
+                    <button type="button" class="btn btn-sm btn-outline-secondary text-nowrap" onclick="copyToClipboard($('#quickResetModal_CopyText').text(), this.closest('.modal').dataset.toastCopied)">
                         <i class="bi bi-copy me-1"></i> @AccountSharedResource.Button_Copy
                     </button>
                 </div>
-                <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>@AccountSharedResource.Modal_QuickResetHint</small>
+                <div class="form-text">@AccountSharedResource.Modal_QuickResetHint</div>
             </div>
-            <div class="modal-footer bg-light py-2">
-                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">@SharedResource.Button_Cancel</button>
+            <div class="modal-footer py-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">@SharedResource.Button_Cancel</button>
                 <button type="button" id="quickResetModal_BtnSubmit" class="btn btn-sm btn-primary" onclick="submitQuickResetPassword()">
                     <i class="bi bi-check2-circle me-1"></i> @AccountSharedResource.Modal_QuickResetSaveBtn
                 </button>
@@ -249,46 +239,14 @@
     <partial name="_ValidationScriptsPartial" />
     <script src="~/js/personnel-input.js" asp-append-version="true"></script>
     <script>
-        function updateStoreSectionVisibility() {
-            const roleVal = $('#accRoleSelect').val();
-            // StoreManager = 4, Employee = 6
-            const isStoreRole = (roleVal == '4' || roleVal == '6' || roleVal == 'StoreManager' || roleVal == 'Employee');
-            const isHrRole = (roleVal == '2' || roleVal == 'HR');
-
-            if (isStoreRole) {
-                $('#storeAssignmentSection').slideDown(200);
-                $('#storeSelectCol').show();
-                $('#employmentTypeCol').show();
-
-                $('#empCodeCol').removeClass('col-md-6').addClass('col-md-4');
-                $('#joinDateCol').removeClass('col-md-6').addClass('col-md-4');
-                $('#hourlyRateCol').removeClass('col-md-6 col-md-8').addClass('col-md-4');
-
-                $('#storeSelectInput').prop('disabled', false);
-                $('#employeeSectionTitleText').text('@Html.Raw(AccountSharedResource.Create_Section_StoreInfo)');
-            } else if (isHrRole) {
-                $('#storeAssignmentSection').slideDown(200);
-                // HR có thể chọn chi nhánh làm việc để chấm công và đăng ký ca
-                $('#storeSelectCol').show();
-                $('#employmentTypeCol').hide();
-
-                $('#empCodeCol').removeClass('col-md-6').addClass('col-md-4');
-                $('#joinDateCol').removeClass('col-md-6').addClass('col-md-4');
-                // HR không có hình thức làm việc -> ô lương theo giờ chiếm phần còn lại của hàng
-                $('#hourlyRateCol').removeClass('col-md-4 col-md-6').addClass('col-md-8');
-
-                $('#storeSelectInput').prop('disabled', false);
-                $('#employeeSectionTitleText').text(@Json.Serialize(AccountSharedResource.Create_Section_HrInfo));
-            } else {
-                $('#storeAssignmentSection').slideUp(200);
-                $('#storeSelectInput').prop('disabled', true);
+        window.RWPM = window.RWPM || {};
+        RWPM.accForm = {
+            isCreate: false,
+            i18n: {
+                storeSectionTitle: @Json.Serialize(AccountSharedResource.Create_Section_StoreInfo),
+                hrSectionTitle: @Json.Serialize(AccountSharedResource.Create_Section_HrInfo)
             }
-        }
-
-        $('#accRoleSelect').on('change', updateStoreSectionVisibility);
-
-        $(document).ready(function () {
-            updateStoreSectionVisibility();
-        });
+        };
     </script>
+    <script src="~/js/acc/form.js" asp-append-version="true"></script>
 }

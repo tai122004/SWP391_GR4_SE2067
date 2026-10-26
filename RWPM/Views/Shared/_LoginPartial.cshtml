@@ -36,14 +36,14 @@
                 #appNotif .app-notif-badge { position: absolute; top: 2px; right: 0; font-size: .65rem; min-width: 1.15rem; padding: .2em .35em; }
                 #appNotif .app-notif-menu { width: 360px; max-width: calc(100vw - 1.5rem); padding: 0; overflow: hidden; }
                 #appNotif .app-notif-list { max-height: 420px; overflow-y: auto; }
-                #appNotif .app-notif-item { display: flex; gap: .7rem; padding: .65rem .9rem; border-bottom: 1px solid #eef1f5; color: inherit; text-decoration: none; white-space: normal; }
-                #appNotif .app-notif-item:hover { background: #f5f8fc; }
-                #appNotif .app-notif-item.is-unread { background: #f0f6ff; }
-                #appNotif .app-notif-item.is-unread .app-notif-title { font-weight: 700; color: #1f2d3d; }
-                #appNotif .app-notif-title { font-weight: 500; font-size: .87rem; color: #5c6d82; }
-                #appNotif .app-notif-msg { font-size: .8rem; color: #5c6d82; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-                #appNotif .app-notif-item.is-unread .app-notif-msg { color: #243950; }
-                #appNotif .app-notif-time { font-size: .72rem; color: #8a97a8; }
+                #appNotif .app-notif-item { display: flex; gap: .7rem; padding: .65rem .9rem; border-bottom: 1px solid var(--app-border, #E3E6EA); color: inherit; text-decoration: none; white-space: normal; }
+                #appNotif .app-notif-item:hover { background: var(--app-surface-2, #F9FAFB); }
+                #appNotif .app-notif-item.is-unread { background: var(--app-blue-soft, #EEF3FB); }
+                #appNotif .app-notif-item.is-unread .app-notif-title { font-weight: 600; color: var(--app-text, #17202B); }
+                #appNotif .app-notif-title { font-weight: 500; font-size: .87rem; color: var(--app-text-2, #5B6573); }
+                #appNotif .app-notif-msg { font-size: .8rem; color: var(--app-text-2, #5B6573); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+                #appNotif .app-notif-item.is-unread .app-notif-msg { color: var(--app-text, #17202B); }
+                #appNotif .app-notif-time { font-size: .72rem; color: var(--app-muted, #6B7480); }
                 #appNotif .app-notif-icon { width: 34px; height: 34px; flex-shrink: 0; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; }
                 #appNotif .app-notif-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--bs-primary); flex-shrink: 0; margin-top: .4rem; }
             </style>
@@ -51,10 +51,10 @@
             <a class="nav-link app-notif-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"
                aria-label="@RWPM.Resources.Shared.NotificationResource.Ui_Notifications" title="@RWPM.Resources.Shared.NotificationResource.Ui_Notifications">
                 <i class="bi bi-bell fs-5"></i>
-                <span class="badge rounded-pill bg-danger app-notif-badge d-none" data-notif-badge>0</span>
+                <span class="badge bg-danger app-notif-badge d-none" data-notif-badge>0</span>
             </a>
-            <div class="dropdown-menu dropdown-menu-end shadow app-notif-menu">
-                <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom bg-light">
+            <div class="dropdown-menu dropdown-menu-end app-notif-menu">
+                <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
                     <strong class="small">@RWPM.Resources.Shared.NotificationResource.Ui_Notifications</strong>
                     <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none" data-notif-mark-all>
                         <i class="bi bi-check2-all"></i> @RWPM.Resources.Shared.NotificationResource.Ui_MarkAllRead
@@ -63,39 +63,27 @@
                 <div class="app-notif-list" data-notif-list>
                     <div class="text-center text-muted small py-4">@RWPM.Resources.Shared.NotificationResource.Ui_Loading</div>
                 </div>
-                <a class="d-block text-center small fw-semibold py-2 border-top text-decoration-none" asp-controller="Notification" asp-action="Index">
+                <a class="d-block text-center small fw-medium py-2 border-top text-decoration-none" asp-controller="Notification" asp-action="Index">
                     @RWPM.Resources.Shared.NotificationResource.Ui_ViewAll
                 </a>
             </div>
         </li>
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-person-circle me-1 fs-4"></i>
+                <i class="bi bi-person-circle me-1 fs-5" aria-hidden="true"></i>
                 <span class="ms-1">@SharedResource.Hello, <strong>@user.Identity?.Name</strong></span>
             </a>
-            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+            <ul class="dropdown-menu dropdown-menu-end">
                 <li>
                     <a class="dropdown-item" asp-controller="Acc" asp-action="MyProfile">
-                        <i class="bi bi-person"></i>
+                        <i class="bi bi-person me-2" aria-hidden="true"></i>
                         @RWPM.Resources.Shared.NavigationBarResource.AccountProfile
                     </a>
                     <a class="dropdown-item" asp-controller="Acc" asp-action="ChangePassword">
-                        <i class="bi bi-shield-lock"></i>
+                        <i class="bi bi-shield-lock me-2" aria-hidden="true"></i>
                         @RWPM.Resources.Shared.NavigationBarResource.ChangePassword
                     </a>
                 </li>
-                @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin"))
-                {
-                    <li>
-                        <form asp-controller="Home" asp-action="InitData" method="post" class="m-0 p-0">
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="dropdown-item text-success d-flex align-items-center">
-                                <i class="bi bi-database-up me-2"></i> @SharedResource.InitData
-                            </button>
-                        </form>
-                    </li>
-                }
-               
                 <li><hr class="dropdown-divider"></li>
                 <li>
                     <form asp-controller="Auth" asp-action="Logout" method="post" class="m-0 p-0">

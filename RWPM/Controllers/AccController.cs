@@ -16,6 +16,7 @@ using RWPM.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using RWPM.Models.ViewModels.Employee;
 using RWPM.Common.Enums;
+using RWPM.Common.Security;
 using AccRes = RWPM.Resources.Shared.Acc;
 using EmpRes = RWPM.Resources.Shared.Employee;
 
@@ -47,8 +48,24 @@ namespace RWPM.Controllers
             _context = context;
         }
 
+        /// <summary>Nạp lại danh sách vai trò / chi nhánh rồi hiển thị lại form tạo tài khoản.</summary>
+        private async Task<IActionResult> CreateFormView(AccCreateVM viewModel)
+        {
+            viewModel.AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync();
+            viewModel.StoreSelectList = await _storeService.GetSelectListAsync();
+            return View(viewModel);
+        }
+
+        /// <summary>Nạp lại danh sách vai trò / chi nhánh rồi hiển thị lại form sửa tài khoản.</summary>
+        private async Task<IActionResult> EditFormView(AccUpdateVM viewModel)
+        {
+            viewModel.AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync();
+            viewModel.StoreSelectList = await _storeService.GetSelectListAsync();
+            return View(viewModel);
+        }
+
         // GET: Acc
-        [Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         [RemoveEmptyQueryString]
         public async Task<IActionResult> Index(AccSearch searchObject)
         {
@@ -57,15 +74,15 @@ namespace RWPM.Controllers
             return View(new AccListVM(result, searchObject));
         }
 
-        [Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         [HttpGet]
         public async Task<IActionResult> DownloadTemplate()
         {
             var fileBytes = await _employeeService.GenerateImportTemplateAsync();
-            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Mau_Nhap_Nhan_Vien_{DateTime.Now:yyyyMMdd}.xlsx");
+            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{InputRules.Text("Mau_Nhap_Nhan_Vien", "Employee_Import_Template")}_{DateTime.Now:yyyyMMdd}.xlsx");
         }
 
-        [Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ImportExcel(IFormFile? file)
@@ -102,13 +119,13 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                AlertHelper.AddErrorMessage(TempData, string.Format(EmpRes.Import_ProcessError, ex.Message));
+                AlertHelper.AddErrorMessage(TempData, string.Format(EmpRes.Import_ProcessError, InputRules.UserMessage(ex)));
             }
 
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PreviewImportExcel(IFormFile? file)
@@ -131,11 +148,11 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new { success = false, message = InputRules.UserMessage(ex) });
             }
         }
 
-        [Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmImportExcel([FromBody] ConfirmImportRequest request)
@@ -152,7 +169,7 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new { success = false, message = InputRules.UserMessage(ex) });
             }
         }
 
@@ -171,7 +188,7 @@ namespace RWPM.Controllers
             return View(currentAcc);
         }
 
-        [Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         public async Task<IActionResult> Create()
         {
             var storeList = await _storeService.GetSelectListAsync();
@@ -185,14 +202,14 @@ namespace RWPM.Controllers
             });
         }
 
-        [Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AccCreateVM viewModel)
         {
-            var isStoreRole = viewModel.Role == RWPM.Common.Enums.AccountRole.StoreManager ||
-                              viewModel.Role == RWPM.Common.Enums.AccountRole.Employee;
-            var isHrRole = viewModel.Role == RWPM.Common.Enums.AccountRole.HR;
+            var isStoreRole = viewModel.Role == AccountRole.StoreManager ||
+                              viewModel.Role == AccountRole.Employee;
+            var isHrRole = viewModel.Role == AccountRole.HR;
 
             if (isStoreRole)
             {
@@ -226,7 +243,7 @@ namespace RWPM.Controllers
                 {
                     viewModel.StoreId = await _context.Store.Where(s => s.IsActive).Select(s => (int?)s.StoreId).FirstOrDefaultAsync();
                 }
-                viewModel.EmploymentType = RWPM.Common.Enums.EmploymentType.FullTime;
+                viewModel.EmploymentType = EmploymentType.FullTime;
 
                 if (string.IsNullOrWhiteSpace(viewModel.EmployeeCode))
                 {
@@ -287,9 +304,7 @@ namespace RWPM.Controllers
 
             if (!ModelState.IsValid)
             {
-                viewModel.AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync();
-                viewModel.StoreSelectList = await _storeService.GetSelectListAsync();
-                return View(viewModel);
+                return await CreateFormView(viewModel);
             }
 
             try
@@ -306,7 +321,7 @@ namespace RWPM.Controllers
                         Username = createdAcc.Username,
                         StoreId = viewModel.StoreId,
                         JoinDate = viewModel.JoinDate?.Date ?? DateTime.Today,
-                        EmploymentType = isHrRole ? RWPM.Common.Enums.EmploymentType.FullTime : viewModel.EmploymentType,
+                        EmploymentType = isHrRole ? EmploymentType.FullTime : viewModel.EmploymentType,
                         HourlyRate = viewModel.HourlyRate,
                         CitizenId = viewModel.CitizenId,
                         IsActive = true
@@ -321,24 +336,20 @@ namespace RWPM.Controllers
             catch (ModelValidationException ex)
             {
                 AlertHelper.AddErrorMessage(TempData, ex.GetErrorString(_localizer));
-                viewModel.AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync();
-                viewModel.StoreSelectList = await _storeService.GetSelectListAsync();
-                return View(viewModel);
+                return await CreateFormView(viewModel);
             }
             catch (Exception ex)
             {
                 if (ex is InputValidationException input) ModelState.AddModelError(input.Field, input.Message);
                 else if (InputRules.Duplicate(ex) is { } duplicate) ModelState.AddModelError(duplicate.Field, duplicate.Message);
-                else AlertHelper.AddErrorMessage(TempData, ex.Message);
-                viewModel.AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync();
-                viewModel.StoreSelectList = await _storeService.GetSelectListAsync();
-                return View(viewModel);
+                else AlertHelper.AddErrorMessage(TempData, InputRules.UserMessage(ex));
+                return await CreateFormView(viewModel);
             }
 
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         public async Task<IActionResult> Edit(string id)
         {
             var account = await _accService.GetByIdAsync(id);
@@ -374,7 +385,7 @@ namespace RWPM.Controllers
             return View(vm);
         }
 
-        [Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, AccUpdateVM viewModel)
@@ -490,9 +501,7 @@ namespace RWPM.Controllers
 
             if (!ModelState.IsValid)
             {
-                viewModel.AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync();
-                viewModel.StoreSelectList = await _storeService.GetSelectListAsync();
-                return View(viewModel);
+                return await EditFormView(viewModel);
             }
 
             try
@@ -563,24 +572,20 @@ namespace RWPM.Controllers
             catch (ModelValidationException ex)
             {
                 AlertHelper.AddErrorMessage(TempData, ex.GetErrorString(_localizer));
-                viewModel.AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync();
-                viewModel.StoreSelectList = await _storeService.GetSelectListAsync();
-                return View(viewModel);
+                return await EditFormView(viewModel);
             }
             catch (Exception ex)
             {
                 if (ex is InputValidationException input) ModelState.AddModelError(input.Field, input.Message);
                 else if (InputRules.Duplicate(ex) is { } duplicate) ModelState.AddModelError(duplicate.Field, duplicate.Message);
-                else AlertHelper.AddErrorMessage(TempData, ex.Message);
-                viewModel.AccountRoleSelectList = _accService.GetAccountRoleSelectListAsync();
-                viewModel.StoreSelectList = await _storeService.GetSelectListAsync();
-                return View(viewModel);
+                else AlertHelper.AddErrorMessage(TempData, InputRules.UserMessage(ex));
+                return await EditFormView(viewModel);
             }
 
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         public async Task<IActionResult> Delete(string id)
         {
             var account = await _accService.GetByIdAsync(id);
@@ -589,7 +594,7 @@ namespace RWPM.Controllers
             return View(new AccCreateVM(account));
         }
 
-        [Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string username)
@@ -609,12 +614,12 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                AlertHelper.AddErrorMessage(TempData, ex.Message);
+                AlertHelper.AddErrorMessage(TempData, InputRules.UserMessage(ex));
             }
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         public async Task<IActionResult> ChangePasswordAccount(string id)
         {
             var account = await _accService.GetByIdAsync(id);
@@ -624,7 +629,7 @@ namespace RWPM.Controllers
             return View(new ChangePasswordAccVM(account));
         }
 
-        [Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePasswordAccount(string id, ChangePasswordAccVM viewModel)
@@ -703,7 +708,7 @@ namespace RWPM.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateActiveStatus(string id, [FromBody] AccUpdateActiveStatusVM viewModel)
@@ -730,11 +735,11 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(InputRules.UserMessage(ex));
             }
         }
 
-        [Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> QuickResetPassword([FromBody] QuickResetPasswordVM request)
@@ -763,7 +768,7 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(InputRules.UserMessage(ex));
             }
         }
     }

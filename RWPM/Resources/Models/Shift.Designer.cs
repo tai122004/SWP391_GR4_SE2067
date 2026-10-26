@@ -41,75 +41,9 @@ namespace RWPM.Resources.Models {
             }
         }
         
-        public static string ShiftCode {
-            get {
-                return ResourceManager.GetString("ShiftCode", resourceCulture);
-            }
-        }
-        
         public static string ShiftName {
             get {
                 return ResourceManager.GetString("ShiftName", resourceCulture);
-            }
-        }
-        
-        public static string ShiftName_S {
-            get {
-                return ResourceManager.GetString("ShiftName_S", resourceCulture);
-            }
-        }
-        
-        public static string ShiftName_C {
-            get {
-                return ResourceManager.GetString("ShiftName_C", resourceCulture);
-            }
-        }
-        
-        public static string ShiftName_G {
-            get {
-                return ResourceManager.GetString("ShiftName_G", resourceCulture);
-            }
-        }
-        
-        public static string ShiftName_HC {
-            get {
-                return ResourceManager.GetString("ShiftName_HC", resourceCulture);
-            }
-        }
-        
-        public static string ShiftType {
-            get {
-                return ResourceManager.GetString("ShiftType", resourceCulture);
-            }
-        }
-        
-        public static string ShiftType_Morning {
-            get {
-                return ResourceManager.GetString("ShiftType_Morning", resourceCulture);
-            }
-        }
-        
-        public static string ShiftType_Afternoon {
-            get {
-                return ResourceManager.GetString("ShiftType_Afternoon", resourceCulture);
-            }
-        }
-        
-        public static string ShiftType_Split {
-            get {
-                return ResourceManager.GetString("ShiftType_Split", resourceCulture);
-            }
-        }
-        
-        public static string ShiftType_Peak {
-            get {
-                return ResourceManager.GetString("ShiftType_Peak", resourceCulture);
-            }
-        }
-        
-        public static string ShiftType_FullDay {
-            get {
-                return ResourceManager.GetString("ShiftType_FullDay", resourceCulture);
             }
         }
         
@@ -122,18 +56,6 @@ namespace RWPM.Resources.Models {
         public static string EndTime {
             get {
                 return ResourceManager.GetString("EndTime", resourceCulture);
-            }
-        }
-        
-        public static string StartTime2 {
-            get {
-                return ResourceManager.GetString("StartTime2", resourceCulture);
-            }
-        }
-        
-        public static string EndTime2 {
-            get {
-                return ResourceManager.GetString("EndTime2", resourceCulture);
             }
         }
         
@@ -161,60 +83,6 @@ namespace RWPM.Resources.Models {
             }
         }
         
-        public static string TimeDisplay {
-            get {
-                return ResourceManager.GetString("TimeDisplay", resourceCulture);
-            }
-        }
-        
-        public static string Invalid_TimeRange {
-            get {
-                return ResourceManager.GetString("Invalid_TimeRange", resourceCulture);
-            }
-        }
-        
-        public static string Invalid_SplitShift_Required {
-            get {
-                return ResourceManager.GetString("Invalid_SplitShift_Required", resourceCulture);
-            }
-        }
-        
-        public static string Invalid_SplitShift_TimeRange {
-            get {
-                return ResourceManager.GetString("Invalid_SplitShift_TimeRange", resourceCulture);
-            }
-        }
-        
-        public static string Invalid_SplitShift_Overlap {
-            get {
-                return ResourceManager.GetString("Invalid_SplitShift_Overlap", resourceCulture);
-            }
-        }
-        
-        public static string Invalid_BreakMinutes {
-            get {
-                return ResourceManager.GetString("Invalid_BreakMinutes", resourceCulture);
-            }
-        }
-        
-        public static string Invalid_MinShiftDuration {
-            get {
-                return ResourceManager.GetString("Invalid_MinShiftDuration", resourceCulture);
-            }
-        }
-        
-        public static string Invalid_MinSplitPeriodDuration {
-            get {
-                return ResourceManager.GetString("Invalid_MinSplitPeriodDuration", resourceCulture);
-            }
-        }
-        
-        public static string Invalid_MaxBreakMinutes {
-            get {
-                return ResourceManager.GetString("Invalid_MaxBreakMinutes", resourceCulture);
-            }
-        }
-        
         public static string GracePeriodMinutes {
             get {
                 return ResourceManager.GetString("GracePeriodMinutes", resourceCulture);
@@ -236,54 +104,6 @@ namespace RWPM.Resources.Models {
         public static string LateThresholdMinutes {
             get {
                 return ResourceManager.GetString("LateThresholdMinutes", resourceCulture);
-            }
-        }
-        
-        public static string IsTemplate {
-            get {
-                return ResourceManager.GetString("IsTemplate", resourceCulture);
-            }
-        }
-        
-        public static string ShiftClassification {
-            get {
-                return ResourceManager.GetString("ShiftClassification", resourceCulture);
-            }
-        }
-        
-        public static string ShiftType_Overtime {
-            get {
-                return ResourceManager.GetString("ShiftType_Overtime", resourceCulture);
-            }
-        }
-        
-        public static string ShiftType_Flexible {
-            get {
-                return ResourceManager.GetString("ShiftType_Flexible", resourceCulture);
-            }
-        }
-        
-        public static string Invalid_GracePeriodMinutes {
-            get {
-                return ResourceManager.GetString("Invalid_GracePeriodMinutes", resourceCulture);
-            }
-        }
-        
-        public static string Invalid_EarlyCheckInMinutes {
-            get {
-                return ResourceManager.GetString("Invalid_EarlyCheckInMinutes", resourceCulture);
-            }
-        }
-        
-        public static string Invalid_LateThresholdMinutes {
-            get {
-                return ResourceManager.GetString("Invalid_LateThresholdMinutes", resourceCulture);
-            }
-        }
-        
-        public static string Invalid_GracePeriodThreshold {
-            get {
-                return ResourceManager.GetString("Invalid_GracePeriodThreshold", resourceCulture);
             }
         }
         

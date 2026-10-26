@@ -1,15 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using RWPM.Models.Entities;
 using RWPM.Resources.Shared;
 using RWPM.Services.Abstraction;
-using System.Collections.Generic;
 using System.Security.Claims;
 using RWPM.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using RWPM.Common.Security;
 using RWPM.Common.Validation;
-using System.Linq;
 
 namespace RWPM.Controllers
 {
@@ -17,42 +15,35 @@ namespace RWPM.Controllers
     public class AttendanceController : Controller
     {
         private readonly IAttendanceService _attendanceService;
-        private readonly IAttendanceAdjustmentService _attendanceAdjustmentService;
-        private readonly IAccService _accService;
         private readonly DefaultDatabaseContext _context;
         private readonly Microsoft.AspNetCore.Hosting.IWebHostEnvironment _env;
 
         public AttendanceController(
             IAttendanceService attendanceService,
-            IAttendanceAdjustmentService attendanceAdjustmentService,
-            IAccService accService,
             DefaultDatabaseContext context,
             Microsoft.AspNetCore.Hosting.IWebHostEnvironment env)
         {
             _env = env;
             _attendanceService = attendanceService;
-            _attendanceAdjustmentService = attendanceAdjustmentService;
-            _accService = accService;
             _context = context;
         }
 
+        private string? CurrentUsername => User.Identity?.Name ?? User.FindFirstValue(ClaimTypes.Name);
+
         public async Task<IActionResult> Index(string? searchQuery = null, string? view = null)
         {
-            var username = User.Identity?.Name ?? User.FindFirstValue(ClaimTypes.Name);
+            var username = CurrentUsername;
             if (string.IsNullOrEmpty(username)) return Challenge();
 
-            ViewBag.TodayRecord = await _attendanceService.GetTodayRecordAsync(username);
-            
             // Pure System Admin has no requirement to clock in or manage daily attendance.
-            bool isSystemAdmin = (User.IsInRole("Admin") || User.IsInRole("SuperAdmin")) && !User.IsInRole("HR") && !User.IsInRole("StoreManager");
-            if (isSystemAdmin)
+            if (User.IsAdmin() && !User.IsHR() && !User.IsStoreManager())
             {
                 return RedirectToAction("Index", "Acc");
             }
 
-            bool canManage = User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("StoreManager") || User.IsInRole("SuperAdmin");
-            
-            ViewBag.IsAdmin = isSystemAdmin;
+            ViewBag.TodayRecord = await _attendanceService.GetTodayRecordAsync(username);
+
+            bool canManage = User.IsManager();
             ViewBag.CanManage = canManage;
 
             var today = DateTime.Today;
@@ -86,12 +77,11 @@ namespace RWPM.Controllers
             }
             
             ViewBag.SearchQuery = searchQuery;
-            ViewBag.CurrentView = view;
             bool isEmployeeTab = view == "employees" || !string.IsNullOrWhiteSpace(searchQuery);
             ViewBag.ActiveTab = isEmployeeTab ? "employees" : "my";
 
-            // 1. Luôn tải lịch sử cá nhân của người đang đăng nhập (trừ Quản trị viên hệ thống không chấm công)
-            var myHistory = isSystemAdmin ? new List<AttendanceRecord>() : await _attendanceService.GetHistoryAsync(username);
+            // 1. Luôn tải lịch sử cá nhân của người đang đăng nhập (Quản trị viên hệ thống đã được chuyển hướng ở trên)
+            var myHistory = await _attendanceService.GetHistoryAsync(username);
             ViewBag.MyHistory = myHistory;
 
             // 2. Nếu có quyền quản lý (HR, Quản lý cửa hàng, Admin): Tải lịch sử nhân viên
@@ -110,19 +100,21 @@ namespace RWPM.Controllers
                     .Where(e => e.IsActive);
 
                 // Nếu là StoreManager (không phải Admin/HR): Chỉ xem nhân viên thuộc cùng cửa hàng
-                if (User.IsInRole("StoreManager") && !User.IsInRole("Admin") && !User.IsInRole("SuperAdmin") && !User.IsInRole("HR"))
+                if (User.IsStoreScoped())
                 {
                     if (currentEmployee != null && currentEmployee.StoreId.HasValue)
                     {
-                        var storeUsernames = await _context.Employee
-                            .Where(e => e.StoreId == currentEmployee.StoreId)
-                            .Select(e => e.Username)
-                            .ToListAsync();
+                        var managerStoreId = currentEmployee.StoreId;
+                        // Subquery (IN (SELECT ...)) thay vì tải danh sách username về rồi Contains
+                        var storeUsernames = _context.Employee
+                            .Where(e => e.StoreId == managerStoreId)
+                            .Select(e => e.Username);
 
                         empQuery = empQuery.Where(x => storeUsernames.Contains(x.Username));
-                        empListQuery = empListQuery.Where(e => e.StoreId == currentEmployee.StoreId);
+                        empListQuery = empListQuery.Where(e => e.StoreId == managerStoreId);
 
-                        var store = await _context.Store.FirstOrDefaultAsync(s => s.StoreId == currentEmployee.StoreId);
+                        // Store đã được Include khi tải currentEmployee
+                        var store = currentEmployee.Store;
                         ViewBag.ScopeTitle = store != null ? string.Format(SharedResource.Attendance_Scope_Branch, store.StoreName) : SharedResource.Attendance_Scope_YourStore;
                     }
                     else
@@ -162,7 +154,7 @@ namespace RWPM.Controllers
             ViewBag.EmployeeHistory = employeeHistory;
             ViewBag.Employees = empList;
 
-            return View(isSystemAdmin ? employeeHistory : myHistory);
+            return View(myHistory);
         }
 
         /// <summary>
@@ -171,7 +163,7 @@ namespace RWPM.Controllers
         [HttpGet]
         public async Task<IActionResult> Photo(int id, string type)
         {
-            var username = User.Identity?.Name ?? User.FindFirstValue(ClaimTypes.Name);
+            var username = CurrentUsername;
             if (string.IsNullOrEmpty(username)) return Challenge();
 
             var record = await _context.AttendanceRecord.AsNoTracking()
@@ -180,9 +172,8 @@ namespace RWPM.Controllers
                 .FirstOrDefaultAsync();
             if (record == null) return NotFound();
 
-            var allowed = record.Username == username
-                || User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin");
-            if (!allowed && User.IsInRole("StoreManager"))
+            var allowed = record.Username == username || User.IsChainManager();
+            if (!allowed && User.IsStoreManager())
             {
                 var managerStoreId = await _context.Employee.Where(e => e.Username == username).Select(e => e.StoreId).FirstOrDefaultAsync();
                 var ownerStoreId = await _context.Employee.Where(e => e.Username == record.Username).Select(e => e.StoreId).FirstOrDefaultAsync();
@@ -203,7 +194,7 @@ namespace RWPM.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CheckIn(string? userLatitude = null, string? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
         {
-            var username = User.Identity?.Name ?? User.FindFirstValue(ClaimTypes.Name);
+            var username = CurrentUsername;
             if (string.IsNullOrEmpty(username)) return Challenge();
 
             try
@@ -221,7 +212,7 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["ErrorMessage"] = InputRules.UserMessage(ex);
             }
 
             return RedirectToAction(nameof(Index));
@@ -231,7 +222,7 @@ namespace RWPM.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CheckOut(string? userLatitude = null, string? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
         {
-            var username = User.Identity?.Name ?? User.FindFirstValue(ClaimTypes.Name);
+            var username = CurrentUsername;
             if (string.IsNullOrEmpty(username)) return Challenge();
 
             try
@@ -249,7 +240,7 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["ErrorMessage"] = InputRules.UserMessage(ex);
             }
 
             return RedirectToAction(nameof(Index));
@@ -257,7 +248,7 @@ namespace RWPM.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,HR,SuperAdmin")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -267,7 +258,7 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["ErrorMessage"] = InputRules.UserMessage(ex);
             }
 
             return RedirectToAction(nameof(Index));
@@ -275,7 +266,7 @@ namespace RWPM.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,HR,SuperAdmin")]
+        [Authorize(Roles = AppRoles.ChainManagers)]
         public async Task<IActionResult> Adjust(int recordId, TimeSpan? newCheckInTime, TimeSpan? newCheckOutTime, string reason)
         {
             try
@@ -285,7 +276,7 @@ namespace RWPM.Controllers
                 var username = User.Identity?.Name ?? "System";
                 if (string.IsNullOrWhiteSpace(reason))
                 {
-                    throw new Exception(SharedResource.Attendance_Err_AdjustReasonRequired);
+                    throw new InvalidOperationException(SharedResource.Attendance_Err_AdjustReasonRequired);
                 }
 
                 await _attendanceService.AdjustAttendanceAsync(recordId, newCheckInTime, newCheckOutTime, reason, username);
@@ -293,7 +284,7 @@ namespace RWPM.Controllers
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["ErrorMessage"] = InputRules.UserMessage(ex);
             }
 
             return RedirectToAction(nameof(Index));

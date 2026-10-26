@@ -734,4 +734,10 @@
   <data name="Excel_Total" xml:space="preserve">
     <value>TỔNG CỘNG</value>
   </data>
+  <data name="Warn_LegacyLeaveNoEvidence" xml:space="preserve">
+    <value>Đơn nghỉ có lương cũ thiếu dữ liệu ca gốc, cần rà soát.</value>
+  </data>
+  <data name="Note_UnlockedBy" xml:space="preserve">
+    <value>[Mở khóa bởi {0} lúc {1}]: {2}</value>
+  </data>
 </root>

@@ -1,0 +1,54 @@
+@model IEnumerable<RWPM.Models.ViewModels.Availability.AvailabilityWindowVM>
+@using System.Globalization
+@using RWPM.Common.Validation
+@using RWPM.Models.ViewModels.Availability
+@using R = RWPM.Resources.Shared.AvailabilityResource
+@{
+    // Lưới 7 ngày x 24 giờ: khung qua đêm được vẽ thành 2 đoạn (phần còn lại của ngày + đầu ngày kế tiếp)
+    var windows = Model.Where(w => w.Status != RegistrationStatus.Rejected).ToList();
+    string Pct(double minutes) => (minutes / 1440d * 100d).ToString("0.###", CultureInfo.InvariantCulture) + "%";
+}
+<div class="avail-grid">
+    <div class="avail-grid-row avail-grid-scale">
+        <div class="avail-grid-day"></div>
+        <div class="avail-grid-track border-0 bg-transparent">
+            @foreach (var h in new[] { 0, 6, 12, 18, 24 })
+            {
+                <span class="avail-grid-tick" style="left:@Pct(h * 60)">@h.ToString("00"):00</span>
+            }
+        </div>
+    </div>
+    @foreach (var day in AvailabilityRules.WeekOrder)
+    {
+        var prev = (DayOfWeek)(((int)day + 6) % 7);
+        var segments = new List<(double From, double To, AvailabilityWindowVM W, bool Carry)>();
+        foreach (var w in windows.Where(x => x.DayOfWeek == day))
+        {
+            var to = w.CrossesMidnight ? 1440 : w.EndTime.TotalMinutes;
+            segments.Add((w.StartTime.TotalMinutes, to, w, false));
+        }
+        foreach (var w in windows.Where(x => x.DayOfWeek == prev && x.CrossesMidnight && x.EndTime > TimeSpan.Zero))
+        {
+            segments.Add((0, w.EndTime.TotalMinutes, w, true));
+        }
+        <div class="avail-grid-row">
+            <div class="avail-grid-day fw-semibold small text-dark">@AvailabilityRules.DayName(day)</div>
+            <div class="avail-grid-track">
+                @foreach (var s in segments)
+                {
+                    var cls = s.W.Status == RegistrationStatus.Approved ? "avail-seg-approved" : "avail-seg-pending";
+                    var label = (s.Carry ? AvailabilityRules.DayShortName(s.W.DayOfWeek) + " " : string.Empty) + s.W.TimeRange
+                        + (s.W.Status == RegistrationStatus.Pending ? " · " + R.Status_Pending : string.Empty);
+                    <div class="avail-seg @cls" style="left:@Pct(s.From);width:@Pct(Math.Max(s.To - s.From, 1))" title="@label">
+                        <span class="avail-seg-label">@(s.Carry ? "↳ " : "")@AvailabilityRules.FormatTime(s.W.StartTime)–@AvailabilityRules.FormatTime(s.W.EndTime)</span>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    <div class="d-flex flex-wrap gap-3 small text-muted mt-2">
+        <span><span class="avail-legend avail-seg-approved"></span>@R.Status_Approved</span>
+        <span><span class="avail-legend avail-seg-pending"></span>@R.Status_Pending</span>
+        <span><i class="bi bi-arrow-return-right me-1"></i>@R.Grid_CarryHint</span>
+    </div>
+</div>

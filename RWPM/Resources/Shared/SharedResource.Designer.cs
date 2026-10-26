@@ -70,47 +70,11 @@ namespace RWPM.Resources.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Admin accounts do not need to check in..
-        /// </summary>
-        public static string Attendance_AdminNoNeed {
-            get {
-                return ResourceManager.GetString("Attendance_AdminNoNeed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to All Employees.
         /// </summary>
         public static string Attendance_AllEmployees {
             get {
                 return ResourceManager.GetString("Attendance_AllEmployees", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Attendance History.
-        /// </summary>
-        public static string Attendance_AllHistory {
-            get {
-                return ResourceManager.GetString("Attendance_AllHistory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You have already checked in today..
-        /// </summary>
-        public static string Attendance_AlreadyCheckedIn {
-            get {
-                return ResourceManager.GetString("Attendance_AlreadyCheckedIn", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You have already checked out today..
-        /// </summary>
-        public static string Attendance_AlreadyCheckedOut {
-            get {
-                return ResourceManager.GetString("Attendance_AlreadyCheckedOut", resourceCulture);
             }
         }
         
@@ -187,15 +151,6 @@ namespace RWPM.Resources.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You have completed today&apos;s attendance..
-        /// </summary>
-        public static string Attendance_Completed {
-            get {
-                return ResourceManager.GetString("Attendance_Completed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Employee.
         /// </summary>
         public static string Attendance_EmployeeCol {
@@ -232,29 +187,11 @@ namespace RWPM.Resources.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You haven&apos;t checked in today..
-        /// </summary>
-        public static string Attendance_NotCheckedIn {
-            get {
-                return ResourceManager.GetString("Attendance_NotCheckedIn", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Search username....
         /// </summary>
         public static string Attendance_SearchPlaceholder {
             get {
                 return ResourceManager.GetString("Attendance_SearchPlaceholder", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Select shift.
-        /// </summary>
-        public static string Attendance_SelectShift {
-            get {
-                return ResourceManager.GetString("Attendance_SelectShift", resourceCulture);
             }
         }
         
@@ -277,29 +214,11 @@ namespace RWPM.Resources.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You are more than 30 minutes late and cannot check-in for this shift!.
-        /// </summary>
-        public static string Attendance_TooLate {
-            get {
-                return ResourceManager.GetString("Attendance_TooLate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Action.
         /// </summary>
         public static string Button_Action {
             get {
                 return ResourceManager.GetString("Button_Action", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Apply Data.
-        /// </summary>
-        public static string Button_Apply {
-            get {
-                return ResourceManager.GetString("Button_Apply", resourceCulture);
             }
         }
         
@@ -318,15 +237,6 @@ namespace RWPM.Resources.Shared {
         public static string Button_Cancel {
             get {
                 return ResourceManager.GetString("Button_Cancel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Change password.
-        /// </summary>
-        public static string Button_ChangePassword {
-            get {
-                return ResourceManager.GetString("Button_ChangePassword", resourceCulture);
             }
         }
         
@@ -358,15 +268,6 @@ namespace RWPM.Resources.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Export excel.
-        /// </summary>
-        public static string Button_ExportExcel {
-            get {
-                return ResourceManager.GetString("Button_ExportExcel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Go back.
         /// </summary>
         public static string Button_GoBack {
@@ -381,15 +282,6 @@ namespace RWPM.Resources.Shared {
         public static string Button_ImportExcel {
             get {
                 return ResourceManager.GetString("Button_ImportExcel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Info.
-        /// </summary>
-        public static string Button_Info {
-            get {
-                return ResourceManager.GetString("Button_Info", resourceCulture);
             }
         }
         
@@ -426,15 +318,6 @@ namespace RWPM.Resources.Shared {
         public static string Button_Search {
             get {
                 return ResourceManager.GetString("Button_Search", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to View.
-        /// </summary>
-        public static string Button_View {
-            get {
-                return ResourceManager.GetString("Button_View", resourceCulture);
             }
         }
         
@@ -511,24 +394,6 @@ namespace RWPM.Resources.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Download attached file.
-        /// </summary>
-        public static string DownloadAttachedFile {
-            get {
-                return ResourceManager.GetString("DownloadAttachedFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Download template file.
-        /// </summary>
-        public static string DownloadTemplateFile {
-            get {
-                return ResourceManager.GetString("DownloadTemplateFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Drag &amp; drop your file here or.
         /// </summary>
         public static string DragOrDropFile {
@@ -547,65 +412,11 @@ namespace RWPM.Resources.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to --- Select department ---.
-        /// </summary>
-        public static string Dropdown_SelectDepartment {
-            get {
-                return ResourceManager.GetString("Dropdown_SelectDepartment", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to --- Select document processing flow ---.
-        /// </summary>
-        public static string Dropdown_SelectDocFlow {
-            get {
-                return ResourceManager.GetString("Dropdown_SelectDocFlow", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to --- Select document group ---.
-        /// </summary>
-        public static string Dropdown_SelectDocGrpCat {
-            get {
-                return ResourceManager.GetString("Dropdown_SelectDocGrpCat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to --- Select document type ---.
-        /// </summary>
-        public static string Dropdown_SelectDocTypeCat {
-            get {
-                return ResourceManager.GetString("Dropdown_SelectDocTypeCat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to --- Select factory ---.
-        /// </summary>
-        public static string Dropdown_SelectFactory {
-            get {
-                return ResourceManager.GetString("Dropdown_SelectFactory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to --- Select store ---.
         /// </summary>
         public static string Dropdown_SelectStore {
             get {
                 return ResourceManager.GetString("Dropdown_SelectStore", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to --- Select year ---.
-        /// </summary>
-        public static string DropDown_SelectYear {
-            get {
-                return ResourceManager.GetString("DropDown_SelectYear", resourceCulture);
             }
         }
         
@@ -624,60 +435,6 @@ namespace RWPM.Resources.Shared {
         public static string Hello {
             get {
                 return ResourceManager.GetString("Hello", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Init data.
-        /// </summary>
-        public static string InitData {
-            get {
-                return ResourceManager.GetString("InitData", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Init data success..
-        /// </summary>
-        public static string InitDataSuccess {
-            get {
-                return ResourceManager.GetString("InitDataSuccess", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Select or drag-and-drop an Excel file.
-        /// </summary>
-        public static string Label_SelectFileExcel {
-            get {
-                return ResourceManager.GetString("Label_SelectFileExcel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Last 2 days.
-        /// </summary>
-        public static string Last2Days {
-            get {
-                return ResourceManager.GetString("Last2Days", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Last 30 days.
-        /// </summary>
-        public static string Last30Days {
-            get {
-                return ResourceManager.GetString("Last30Days", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Last week.
-        /// </summary>
-        public static string LastWeek {
-            get {
-                return ResourceManager.GetString("LastWeek", resourceCulture);
             }
         }
         
@@ -727,29 +484,11 @@ namespace RWPM.Resources.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No data available.
-        /// </summary>
-        public static string NoDataAvailable {
-            get {
-                return ResourceManager.GetString("NoDataAvailable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to No data found.
         /// </summary>
         public static string NoDataFound {
             get {
                 return ResourceManager.GetString("NoDataFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No file attached.
-        /// </summary>
-        public static string NoFileAttached {
-            get {
-                return ResourceManager.GetString("NoFileAttached", resourceCulture);
             }
         }
         
@@ -907,15 +646,6 @@ namespace RWPM.Resources.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This week.
-        /// </summary>
-        public static string ThisWeek {
-            get {
-                return ResourceManager.GetString("ThisWeek", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Timestamp.
         /// </summary>
         public static string Timestamp {
@@ -978,41 +708,9 @@ namespace RWPM.Resources.Shared {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to Yesterday.
-        /// </summary>
-        public static string Yesterday {
-            get {
-                return ResourceManager.GetString("Yesterday", resourceCulture);
-            }
-        }
-        
         public static string RegularExpression_DigitsOnly {
             get {
                 return ResourceManager.GetString("RegularExpression_DigitsOnly", resourceCulture);
-            }
-        }
-        public static string Name1 {
-            get {
-                return ResourceManager.GetString("Name1", resourceCulture);
-            }
-        }
-
-        public static string Color1 {
-            get {
-                return ResourceManager.GetString("Color1", resourceCulture);
-            }
-        }
-
-        public static string Bitmap1 {
-            get {
-                return ResourceManager.GetString("Bitmap1", resourceCulture);
-            }
-        }
-
-        public static string Icon1 {
-            get {
-                return ResourceManager.GetString("Icon1", resourceCulture);
             }
         }
 
@@ -1094,12 +792,6 @@ namespace RWPM.Resources.Shared {
             }
         }
 
-        public static string Attendance_Err_TooLateIn {
-            get {
-                return ResourceManager.GetString("Attendance_Err_TooLateIn", resourceCulture);
-            }
-        }
-
         public static string Attendance_Err_AlreadyCompleted {
             get {
                 return ResourceManager.GetString("Attendance_Err_AlreadyCompleted", resourceCulture);
@@ -1139,12 +831,6 @@ namespace RWPM.Resources.Shared {
         public static string Attendance_Err_AlreadyCheckedOut {
             get {
                 return ResourceManager.GetString("Attendance_Err_AlreadyCheckedOut", resourceCulture);
-            }
-        }
-
-        public static string Attendance_Err_TooEarlyOut {
-            get {
-                return ResourceManager.GetString("Attendance_Err_TooEarlyOut", resourceCulture);
             }
         }
 
@@ -1190,63 +876,15 @@ namespace RWPM.Resources.Shared {
             }
         }
 
-        public static string Attendance_AdjustButton {
-            get {
-                return ResourceManager.GetString("Attendance_AdjustButton", resourceCulture);
-            }
-        }
-
         public static string Attendance_AdjustedTooltip {
             get {
                 return ResourceManager.GetString("Attendance_AdjustedTooltip", resourceCulture);
             }
         }
 
-        public static string Attendance_AdjustTitle {
-            get {
-                return ResourceManager.GetString("Attendance_AdjustTitle", resourceCulture);
-            }
-        }
-
-        public static string Attendance_AdjustNewCheckIn {
-            get {
-                return ResourceManager.GetString("Attendance_AdjustNewCheckIn", resourceCulture);
-            }
-        }
-
-        public static string Attendance_AdjustNewCheckOut {
-            get {
-                return ResourceManager.GetString("Attendance_AdjustNewCheckOut", resourceCulture);
-            }
-        }
-
-        public static string Attendance_Empty {
-            get {
-                return ResourceManager.GetString("Attendance_Empty", resourceCulture);
-            }
-        }
-
-        public static string Attendance_AdjustReason {
-            get {
-                return ResourceManager.GetString("Attendance_AdjustReason", resourceCulture);
-            }
-        }
-
-        public static string Attendance_AdjustReasonPlaceholder {
-            get {
-                return ResourceManager.GetString("Attendance_AdjustReasonPlaceholder", resourceCulture);
-            }
-        }
-
         public static string Attendance_PhotoCheckInRequired {
             get {
                 return ResourceManager.GetString("Attendance_PhotoCheckInRequired", resourceCulture);
-            }
-        }
-
-        public static string Attendance_GPSRequired {
-            get {
-                return ResourceManager.GetString("Attendance_GPSRequired", resourceCulture);
             }
         }
 
@@ -1268,81 +906,9 @@ namespace RWPM.Resources.Shared {
             }
         }
 
-        public static string Shift_InactiveEmployees {
-            get {
-                return ResourceManager.GetString("Shift_InactiveEmployees", resourceCulture);
-            }
-        }
-
-        public static string Shift_Refresh {
-            get {
-                return ResourceManager.GetString("Shift_Refresh", resourceCulture);
-            }
-        }
-
-        public static string Shift_Warning {
-            get {
-                return ResourceManager.GetString("Shift_Warning", resourceCulture);
-            }
-        }
-
-        public static string Shift_Tools {
-            get {
-                return ResourceManager.GetString("Shift_Tools", resourceCulture);
-            }
-        }
-
-        public static string Shift_Settings {
-            get {
-                return ResourceManager.GetString("Shift_Settings", resourceCulture);
-            }
-        }
-
-        public static string Shift_CopyPrev {
-            get {
-                return ResourceManager.GetString("Shift_CopyPrev", resourceCulture);
-            }
-        }
-
         public static string Shift_RegisterWeek {
             get {
                 return ResourceManager.GetString("Shift_RegisterWeek", resourceCulture);
-            }
-        }
-
-        public static string Shift_NotArrived {
-            get {
-                return ResourceManager.GetString("Shift_NotArrived", resourceCulture);
-            }
-        }
-
-        public static string Shift_OnTime {
-            get {
-                return ResourceManager.GetString("Shift_OnTime", resourceCulture);
-            }
-        }
-
-        public static string Shift_LateEarly {
-            get {
-                return ResourceManager.GetString("Shift_LateEarly", resourceCulture);
-            }
-        }
-
-        public static string Shift_NotChecked {
-            get {
-                return ResourceManager.GetString("Shift_NotChecked", resourceCulture);
-            }
-        }
-
-        public static string Shift_OnLeave {
-            get {
-                return ResourceManager.GetString("Shift_OnLeave", resourceCulture);
-            }
-        }
-
-        public static string Shift_Reload {
-            get {
-                return ResourceManager.GetString("Shift_Reload", resourceCulture);
             }
         }
 
@@ -1370,18 +936,6 @@ namespace RWPM.Resources.Shared {
             }
         }
 
-        public static string Shift_Week {
-            get {
-                return ResourceManager.GetString("Shift_Week", resourceCulture);
-            }
-        }
-
-        public static string Shift_Shift {
-            get {
-                return ResourceManager.GetString("Shift_Shift", resourceCulture);
-            }
-        }
-
         public static string Shift_ErrLoadShift {
             get {
                 return ResourceManager.GetString("Shift_ErrLoadShift", resourceCulture);
@@ -1391,36 +945,6 @@ namespace RWPM.Resources.Shared {
         public static string Shift_NoShifts {
             get {
                 return ResourceManager.GetString("Shift_NoShifts", resourceCulture);
-            }
-        }
-
-        public static string Shift_Approved {
-            get {
-                return ResourceManager.GetString("Shift_Approved", resourceCulture);
-            }
-        }
-
-        public static string Shift_Pending {
-            get {
-                return ResourceManager.GetString("Shift_Pending", resourceCulture);
-            }
-        }
-
-        public static string Shift_ApprovedCannotChange {
-            get {
-                return ResourceManager.GetString("Shift_ApprovedCannotChange", resourceCulture);
-            }
-        }
-
-        public static string Shift_Overdue {
-            get {
-                return ResourceManager.GetString("Shift_Overdue", resourceCulture);
-            }
-        }
-
-        public static string Shift_ErrPast {
-            get {
-                return ResourceManager.GetString("Shift_ErrPast", resourceCulture);
             }
         }
 
@@ -1442,21 +966,9 @@ namespace RWPM.Resources.Shared {
             }
         }
 
-        public static string Shift_CopiedValid {
-            get {
-                return ResourceManager.GetString("Shift_CopiedValid", resourceCulture);
-            }
-        }
-
         public static string Shift_ErrLoadPrev {
             get {
                 return ResourceManager.GetString("Shift_ErrLoadPrev", resourceCulture);
-            }
-        }
-
-        public static string Store_LocationRadius {
-            get {
-                return ResourceManager.GetString("Store_LocationRadius", resourceCulture);
             }
         }
 
@@ -1511,12 +1023,6 @@ namespace RWPM.Resources.Shared {
         public static string Store_MapOSM {
             get {
                 return ResourceManager.GetString("Store_MapOSM", resourceCulture);
-            }
-        }
-
-        public static string Req_HR {
-            get {
-                return ResourceManager.GetString("Req_HR", resourceCulture);
             }
         }
 
@@ -1595,24 +1101,6 @@ namespace RWPM.Resources.Shared {
         public static string Req_SalaryAdv {
             get {
                 return ResourceManager.GetString("Req_SalaryAdv", resourceCulture);
-            }
-        }
-
-        public static string Req_AdvanceRefund {
-            get {
-                return ResourceManager.GetString("Req_AdvanceRefund", resourceCulture);
-            }
-        }
-
-        public static string Req_Proposal {
-            get {
-                return ResourceManager.GetString("Req_Proposal", resourceCulture);
-            }
-        }
-
-        public static string Req_Payment {
-            get {
-                return ResourceManager.GetString("Req_Payment", resourceCulture);
             }
         }
 
@@ -1706,39 +1194,15 @@ namespace RWPM.Resources.Shared {
             }
         }
 
-        public static string Req_ConfirmAction {
-            get {
-                return ResourceManager.GetString("Req_ConfirmAction", resourceCulture);
-            }
-        }
-
-        public static string Req_ConfirmReq {
-            get {
-                return ResourceManager.GetString("Req_ConfirmReq", resourceCulture);
-            }
-        }
-
         public static string Req_UpdateStatusSuccess {
             get {
                 return ResourceManager.GetString("Req_UpdateStatusSuccess", resourceCulture);
             }
         }
 
-        public static string Req_Delete {
-            get {
-                return ResourceManager.GetString("Req_Delete", resourceCulture);
-            }
-        }
-
         public static string Req_DeleteSuccess {
             get {
                 return ResourceManager.GetString("Req_DeleteSuccess", resourceCulture);
-            }
-        }
-
-        public static string Req_ApproveAction {
-            get {
-                return ResourceManager.GetString("Req_ApproveAction", resourceCulture);
             }
         }
 
@@ -1761,7 +1225,6 @@ namespace RWPM.Resources.Shared {
         }
 
         public static string Unit_VndPerHour => ResourceManager.GetString("Unit_VndPerHour", resourceCulture);
-        public static string Unit_VndPerMonth => ResourceManager.GetString("Unit_VndPerMonth", resourceCulture);
         public static string Unit_Days => ResourceManager.GetString("Unit_Days", resourceCulture);
     
 
@@ -2296,5 +1759,66 @@ namespace RWPM.Resources.Shared {
                 return ResourceManager.GetString("Js_TimeClear", resourceCulture);
             }
         }
+
+        public static string Dropdown_Choose {
+            get {
+                return ResourceManager.GetString("Dropdown_Choose", resourceCulture);
+            }
+        }
+
+        public static string Js_Range {
+            get {
+                return ResourceManager.GetString("Js_Range", resourceCulture);
+            }
+        }
+
+        public static string Js_RangeLength {
+            get {
+                return ResourceManager.GetString("Js_RangeLength", resourceCulture);
+            }
+        }
+
+        public static string Js_CreditCard {
+            get {
+                return ResourceManager.GetString("Js_CreditCard", resourceCulture);
+            }
+        }
+
+        public static string Toast_Success {
+            get {
+                return ResourceManager.GetString("Toast_Success", resourceCulture);
+            }
+        }
+
+        public static string Toast_Error {
+            get {
+                return ResourceManager.GetString("Toast_Error", resourceCulture);
+            }
+        }
+
+        public static string Toast_Warning {
+            get {
+                return ResourceManager.GetString("Toast_Warning", resourceCulture);
+            }
+        }
+
+        public static string Toast_Info {
+            get {
+                return ResourceManager.GetString("Toast_Info", resourceCulture);
+            }
+        }
+
+        public static string Language_Select {
+            get {
+                return ResourceManager.GetString("Language_Select", resourceCulture);
+            }
+        }
+
+        public static string Pagination_Label {
+            get {
+                return ResourceManager.GetString("Pagination_Label", resourceCulture);
+            }
+        }
+
     }
 }

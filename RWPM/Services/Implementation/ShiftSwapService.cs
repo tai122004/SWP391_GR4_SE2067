@@ -12,13 +12,11 @@ namespace RWPM.Services.Implementation
     public class ShiftSwapService : IShiftSwapService
     {
         private readonly DefaultDatabaseContext _context;
-        private readonly IHttpContextAccessor _accessor;
         private readonly IShiftRegistrationService _schedules;
 
-        public ShiftSwapService(DefaultDatabaseContext context, IHttpContextAccessor accessor, IShiftRegistrationService schedules)
+        public ShiftSwapService(DefaultDatabaseContext context, IShiftRegistrationService schedules)
         {
             _context = context;
-            _accessor = accessor;
             _schedules = schedules;
         }
 
@@ -234,9 +232,9 @@ namespace RWPM.Services.Implementation
             var endExclusive = end.Date.AddDays(1);
             var query = _context.ShiftSwapRequest
                 .Include(x => x.RequesterEmployee).ThenInclude(e => e.Account)
-                .Include(x => x.TargetEmployee).ThenInclude(e => e.Account)
+                .Include(x => x.TargetEmployee).ThenInclude(e => e!.Account)
                 .Include(x => x.SourceRegistration).ThenInclude(r => r.Shift)
-                .Include(x => x.TargetRegistration).ThenInclude(r => r.Shift)
+                .Include(x => x.TargetRegistration).ThenInclude(r => r!.Shift)
                 .Include(x => x.TargetShift)
                 .Include(x => x.Store)
                 .Where(x => x.CreatedDate >= startDay && x.CreatedDate < endExclusive);
@@ -258,9 +256,9 @@ namespace RWPM.Services.Implementation
         {
             return await _context.ShiftSwapRequest
                 .Include(x => x.RequesterEmployee).ThenInclude(e => e.Account)
-                .Include(x => x.TargetEmployee).ThenInclude(e => e.Account)
+                .Include(x => x.TargetEmployee).ThenInclude(e => e!.Account)
                 .Include(x => x.SourceRegistration).ThenInclude(r => r.Shift)
-                .Include(x => x.TargetRegistration).ThenInclude(r => r.Shift)
+                .Include(x => x.TargetRegistration).ThenInclude(r => r!.Shift)
                 .Include(x => x.TargetShift)
                 .Include(x => x.Store)
                 .FirstOrDefaultAsync(x => x.ShiftSwapRequestId == id);

@@ -18,6 +18,30 @@
         }
     }
     bool isManager = (ViewBag.IsManager == true);
+
+    // Dữ liệu cho js/shift-registration/* (null = máy chủ không gửi danh sách)
+    object? shiftsData = null;
+    if (ViewBag.Shifts != null)
+    {
+        shiftsData = ((IEnumerable<RWPM.Models.Entities.Shift>)ViewBag.Shifts).Select(s => new {
+            id = s.ShiftId,
+            name = s.ShiftName,
+            from = s.EffectiveFrom.ToString("yyyy-MM-dd"),
+            to = s.EffectiveTo?.ToString("yyyy-MM-dd"),
+            start = s.StartTime.ToString(@"hh\:mm"),
+            end = s.EndTime.ToString(@"hh\:mm") + (s.EndDayOffset > 0 ? " (+1)" : ""),
+            hours = s.ScheduledWorkHours
+        }).ToList();
+    }
+    object? employeesData = null;
+    if (ViewBag.Employees != null)
+    {
+        employeesData = ((IEnumerable<RWPM.Models.Entities.Employee>)ViewBag.Employees).Select(emp => new {
+            id = emp.EmployeeId.ToString(),
+            code = emp.EmployeeCode,
+            name = emp.Account?.FullName ?? emp.Username
+        }).ToList();
+    }
 }
 
 <div class="container-fluid px-0 shift-registration-page">
@@ -27,10 +51,10 @@
     <div class="app-page-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
         <div>
             <div class="d-flex align-items-center gap-2 mb-1">
-                <h1 class="h3 fw-bold text-dark mb-0">@ShiftRegistrationResource.ShiftRegistration</h1>
+                <h4 class="mb-0">@ShiftRegistrationResource.ShiftRegistration</h4>
                 @if (!string.IsNullOrEmpty(currentStoreName))
                 {
-                    <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 fs-7 fw-semibold d-inline-flex align-items-center gap-1">
+                    <span class="app-badge app-badge-neutral">
                         <i class="bi bi-shop"></i>
                         <span>@ShiftRegistrationResource.Header_Branch <strong>@currentStoreName</strong></span>
                     </span>
@@ -40,7 +64,7 @@
         </div>
 
         <!-- Legend / Chú thích trạng thái -->
-        <div class="status-legend-bar d-flex flex-wrap align-items-center gap-2 p-2 bg-white rounded-3 border shadow-xs small">
+        <div class="status-legend-bar d-flex flex-wrap align-items-center gap-3 px-3 py-2 bg-white border small">
             <span class="legend-item"><span class="legend-dot dot-available"></span> @ShiftRegistrationResource.Status_NotRegistered</span>
             <span class="legend-item"><span class="legend-dot dot-selected"></span> @ShiftRegistrationResource.Status_NewlySelected</span>
             <span class="legend-item"><span class="legend-dot dot-pending"></span> @ShiftRegistrationResource.Status_Pending</span>
@@ -50,25 +74,25 @@
     </div>
 
     <!-- Main Content Card -->
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 shift-main-card">
+    <div class="card overflow-hidden mb-4 shift-main-card">
         @if (isManager)
         {
-            <div class="d-flex align-items-center justify-content-between px-3 pt-3 pb-2 border-bottom flex-wrap gap-2 bg-light bg-opacity-50">
-                <div class="nav nav-pills gap-2" id="shiftModeTabs" role="tablist">
-                    <button class="btn btn-sm btn-primary rounded-pill px-3 py-1 fw-semibold text-sm shadow-none" id="tabMyRegistration" type="button" onclick="switchViewMode('my')">
+            <div class="d-flex align-items-center justify-content-between px-3 pt-3 pb-2 border-bottom flex-wrap gap-2">
+                <div class="d-flex gap-2 shift-mode-tabs" id="shiftModeTabs" role="tablist">
+                    <button class="btn btn-sm btn-outline-secondary active px-3" id="tabMyRegistration" type="button" role="tab" aria-selected="true" onclick="switchViewMode('my')">
                         <i class="bi bi-person-badge me-1"></i> @ShiftRegistrationResource.Tab_MyRegistration
                     </button>
-                    <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-semibold text-sm shadow-none" id="tabManagerSchedule" type="button" onclick="switchViewMode('manager')">
+                    <button class="btn btn-sm btn-outline-secondary px-3" id="tabManagerSchedule" type="button" role="tab" aria-selected="false" onclick="switchViewMode('manager')">
                         <i class="bi bi-people-fill me-1"></i> @ShiftRegistrationResource.Tab_ManagerSchedule
                     </button>
                 </div>
-                @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin"))
+                @if (User.IsChainManager())
                 {
                     @if (ViewBag.AllStores != null)
                     {
                         <div class="d-flex align-items-center gap-2">
                             <span class="small text-muted fw-semibold"><i class="bi bi-shop me-1"></i>@ShiftRegistrationResource.Label_Store</span>
-                            <select id="switchStoreSelect" class="form-select form-select-sm py-1" style="min-width: 180px;" onchange="changeStoreFilter(this.value)">
+                            <select id="switchStoreSelect" class="form-select form-select-sm py-1" style="min-width: 180px;" aria-label="@ShiftRegistrationResource.Label_Store" onchange="changeStoreFilter(this.value)">
                                 @foreach (var st in ViewBag.AllStores)
                                 {
                                     <option value="@st.StoreId" selected="@(st.StoreId == ViewBag.CurrentStoreId ? "selected" : null)">@st.StoreName</option>
@@ -85,38 +109,38 @@
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
                 <!-- Left: Week Navigation Controls -->
                 <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <div class="btn-group btn-group-sm shadow-xs" role="group">
-                        <button type="button" class="btn btn-outline-secondary" id="btnPrevWeek" title="@ShiftRegistrationResource.Nav_PrevWeek">
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-secondary" id="btnPrevWeek" title="@ShiftRegistrationResource.Nav_PrevWeek" aria-label="@ShiftRegistrationResource.Nav_PrevWeek">
                             <i class="bi bi-chevron-left"></i>
                         </button>
                         <button type="button" class="btn btn-outline-secondary fw-semibold px-2 px-md-3" id="btnTodayWeek" title="@ShiftRegistrationResource.Nav_GoToCurrentWeek">
                             @ShiftRegistrationResource.Nav_ThisWeek
                         </button>
-                        <button type="button" class="btn btn-outline-secondary" id="btnNextWeek" title="@ShiftRegistrationResource.Nav_NextWeek">
+                        <button type="button" class="btn btn-outline-secondary" id="btnNextWeek" title="@ShiftRegistrationResource.Nav_NextWeek" aria-label="@ShiftRegistrationResource.Nav_NextWeek">
                             <i class="bi bi-chevron-right"></i>
                         </button>
                     </div>
 
                     <!-- Week Display Pill with Popover Picker -->
                     <div class="position-relative">
-                        <button type="button" class="btn btn-sm btn-light border d-flex align-items-center gap-2 px-3 py-1 text-dark shadow-xs" id="btnToggleWeekPicker">
-                            <i class="bi bi-calendar3 text-primary"></i>
-                            <span id="currentWeekDisplay" class="fw-bold"></span>
+                        <button type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2 px-3 py-1" id="btnToggleWeekPicker" aria-haspopup="true" aria-controls="weekPickerDropdown">
+                            <i class="bi bi-calendar3 text-muted"></i>
+                            <span id="currentWeekDisplay" class="fw-semibold"></span>
                             <span id="currentWeekRangeDisplay" class="text-muted small"></span>
                             <i class="bi bi-chevron-down text-muted small ms-1"></i>
                         </button>
 
                         <!-- Custom Calendar Popover Dropdown -->
-                        <div id="weekPickerDropdown" class="week-picker-dropdown shadow-lg rounded-3 border bg-white p-3" style="display: none;">
+                        <div id="weekPickerDropdown" class="week-picker-dropdown border bg-white p-3" style="display: none;">
                             <div class="wp-header d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
                                 <div class="btn-group btn-group-sm">
-                                    <button type="button" class="btn btn-light wp-prev-year px-2" title="@ShiftRegistrationResource.Picker_PrevYear"><i class="bi bi-chevron-double-left"></i></button>
-                                    <button type="button" class="btn btn-light wp-prev-month px-2" title="@ShiftRegistrationResource.Picker_PrevMonth"><i class="bi bi-chevron-left"></i></button>
+                                    <button type="button" class="btn btn-light wp-prev-year px-2" title="@ShiftRegistrationResource.Picker_PrevYear" aria-label="@ShiftRegistrationResource.Picker_PrevYear"><i class="bi bi-chevron-double-left"></i></button>
+                                    <button type="button" class="btn btn-light wp-prev-month px-2" title="@ShiftRegistrationResource.Picker_PrevMonth" aria-label="@ShiftRegistrationResource.Picker_PrevMonth"><i class="bi bi-chevron-left"></i></button>
                                 </div>
-                                <strong id="wpMonthYearDisplay" class="text-dark fs-6"></strong>
+                                <strong id="wpMonthYearDisplay" class="fs-6"></strong>
                                 <div class="btn-group btn-group-sm">
-                                    <button type="button" class="btn btn-light wp-next-month px-2" title="@ShiftRegistrationResource.Picker_NextMonth"><i class="bi bi-chevron-right"></i></button>
-                                    <button type="button" class="btn btn-light wp-next-year px-2" title="@ShiftRegistrationResource.Picker_NextYear"><i class="bi bi-chevron-double-right"></i></button>
+                                    <button type="button" class="btn btn-light wp-next-month px-2" title="@ShiftRegistrationResource.Picker_NextMonth" aria-label="@ShiftRegistrationResource.Picker_NextMonth"><i class="bi bi-chevron-right"></i></button>
+                                    <button type="button" class="btn btn-light wp-next-year px-2" title="@ShiftRegistrationResource.Picker_NextYear" aria-label="@ShiftRegistrationResource.Picker_NextYear"><i class="bi bi-chevron-double-right"></i></button>
                                 </div>
                             </div>
                             <div class="wp-body">
@@ -141,7 +165,7 @@
                     @if (isManager)
                     {
                         <div id="managerFilterEmployeeContainer" style="display: none;">
-                            <select id="filterEmployeeId" class="form-select form-select-sm" style="min-width: 170px;">
+                            <select id="filterEmployeeId" class="form-select form-select-sm" style="min-width: 170px;" aria-label="@ShiftRegistrationResource.FilterByEmployee">
                                 <option value="">@ShiftRegistrationResource.FilterByEmployee</option>
                                 @if (ViewBag.Employees != null)
                                 {
@@ -157,7 +181,7 @@
 
                 <!-- Right: Action Buttons -->
                 <div class="d-flex align-items-center gap-2 ms-auto">
-                    <button type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 shadow-xs" onclick="fetchEvents()" title="@ShiftRegistrationResource.Toolbar_ReloadTitle">
+                    <button type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" onclick="fetchEvents()" title="@ShiftRegistrationResource.Toolbar_ReloadTitle">
                         <i class="bi bi-arrow-clockwise" id="iconRefresh"></i>
                         <span class="d-none d-sm-inline">@ShiftRegistrationResource.Toolbar_Refresh</span>
                     </button>
@@ -165,7 +189,10 @@
                     @if (isManager)
                     {
                         <div id="managerActionBtns" class="d-flex align-items-center gap-2" style="display: none;">
-                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="copyPreviousWeek()">
+                            <a id="btnCoverageLink" href="#" class="btn btn-sm btn-outline-secondary" style="display: none;" title="@ShiftRegistrationResource.Coverage_Title">
+                                <i class="bi bi-bar-chart-steps me-1"></i> @ShiftRegistrationResource.Coverage_Link
+                            </a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyPreviousWeek()">
                                 <i class="bi bi-copy me-1"></i> @ShiftRegistrationResource.Toolbar_CopyWeek
                             </button>
                             <button type="button" class="btn btn-sm btn-primary" onclick="openCreateModal(new Date())">
@@ -186,6 +213,9 @@
                             <!-- Column headers generated by JS -->
                         </tr>
                     </thead>
+                    <tbody id="coverageBody" class="coverage-tbody">
+                        <!-- Coverage rows (manager schedule) generated by JS -->
+                    </tbody>
                     <tbody id="gridBody">
                         <!-- Employee or Shift rows generated by JS -->
                     </tbody>
@@ -197,21 +227,21 @@
         <div class="weekly-summary-bar p-3 bg-white border-top d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div class="d-flex align-items-center gap-3 flex-wrap">
                 <div class="d-flex align-items-center gap-2">
-                    <span class="text-muted small fw-bold text-uppercase">@ShiftRegistrationResource.Summary_Title</span>
-                    <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">
-                        <i class="bi bi-plus-circle me-1"></i><strong id="summaryNewCount">0</strong> @ShiftRegistrationResource.Summary_NewSelected
+                    <span class="text-muted small fw-semibold">@ShiftRegistrationResource.Summary_Title</span>
+                    <span class="app-badge app-badge-info">
+                        <strong id="summaryNewCount" class="num">0</strong> @ShiftRegistrationResource.Summary_NewSelected
                     </span>
-                    <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1">
-                        <i class="bi bi-hourglass-split me-1"></i><strong id="summaryPendingCount">0</strong> @ShiftRegistrationResource.Summary_Pending
+                    <span class="app-badge app-badge-warning">
+                        <strong id="summaryPendingCount" class="num">0</strong> @ShiftRegistrationResource.Summary_Pending
                     </span>
-                    <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2 py-1">
-                        <i class="bi bi-check-circle-fill me-1"></i><strong id="summaryApprovedCount">0</strong> @ShiftRegistrationResource.Summary_Approved
+                    <span class="app-badge app-badge-success">
+                        <strong id="summaryApprovedCount" class="num">0</strong> @ShiftRegistrationResource.Summary_Approved
                     </span>
                 </div>
                 <div class="vr text-secondary d-none d-md-block" style="height: 20px;"></div>
-                <div class="d-flex align-items-center gap-1 small text-dark">
-                    <i class="bi bi-clock-history text-primary"></i>
-                    <span>@ShiftRegistrationResource.Summary_TotalHours <strong id="summaryTotalHours" class="text-primary">@string.Format(ShiftRegistrationResource.Summary_HoursFormat, "0.0")</strong></span>
+                <div class="d-flex align-items-center gap-1 small">
+                    <i class="bi bi-clock-history text-muted"></i>
+                    <span>@ShiftRegistrationResource.Summary_TotalHours <strong id="summaryTotalHours" class="num">@string.Format(ShiftRegistrationResource.Summary_HoursFormat, "0.0")</strong></span>
                 </div>
             </div>
 
@@ -219,7 +249,7 @@
                 <button type="button" class="btn btn-outline-secondary btn-sm px-3" onclick="fetchEvents()" title="@ShiftRegistrationResource.Summary_ResetTitle">
                     <i class="bi bi-arrow-counterclockwise me-1"></i> @ShiftRegistrationResource.Summary_Reset
                 </button>
-                <button type="button" id="btnSubmitWeekly" class="btn btn-primary btn-sm px-4 fw-semibold shadow-xs" onclick="syncWeeklySchedule()">
+                <button type="button" id="btnSubmitWeekly" class="btn btn-primary btn-sm px-4" onclick="syncWeeklySchedule()">
                     <i class="bi bi-send-fill me-1"></i> @SharedResource.ResourceManager.GetString("Shift_RegisterWeek")
                 </button>
             </div>
@@ -230,21 +260,18 @@
 <!-- Modal: Đăng ký ca đơn lẻ theo ngày (#shiftModal) -->
 <div class="modal fade" id="shiftModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 460px;">
-        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-            <div class="modal-header bg-light border-bottom py-3">
+        <div class="modal-content overflow-hidden">
+            <div class="modal-header py-3">
                 <div class="d-flex align-items-center gap-2">
-                    <div class="modal-icon-badge bg-primary text-white rounded-3 p-2 d-flex align-items-center justify-content-center">
-                        <i class="bi bi-calendar-plus fs-5"></i>
-                    </div>
                     <div>
-                        <h5 class="modal-title fw-bold text-dark mb-0">@ShiftRegistrationResource.Modal_RegisterTitle</h5>
+                        <h5 class="modal-title mb-0">@ShiftRegistrationResource.Modal_RegisterTitle</h5>
                         <small class="text-muted" id="modalDateDisplay"></small>
                     </div>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@ShiftRegistrationResource.Close"></button>
             </div>
             <div class="modal-body p-4">
-                <div class="mb-3 d-flex align-items-center justify-content-between p-2 rounded-3 bg-light border">
+                <div class="mb-3 d-flex align-items-center justify-content-between p-2 bg-light border">
                     <span class="small text-muted">@ShiftRegistrationResource.Modal_EmployeeLabel</span>
                     <strong class="text-dark small" id="modalEmpName">@SharedResource.Shift_Me</strong>
                 </div>
@@ -252,7 +279,7 @@
                 <div class="mb-3">
                     <div class="input-group input-group-sm">
                         <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
-                        <input type="text" class="form-control border-start-0 ps-0" id="searchShiftInput" placeholder="@ShiftRegistrationResource.SearchBtn" onkeyup="filterShifts(this.value)">
+                        <input type="text" class="form-control border-start-0 ps-0" id="searchShiftInput" placeholder="@ShiftRegistrationResource.SearchBtn" aria-label="@ShiftRegistrationResource.SearchBtn" onkeyup="filterShifts(this.value)">
                     </div>
                 </div>
 
@@ -269,7 +296,7 @@
                     @if (isManager)
                     {
                         <div class="mt-3 pt-2 border-top">
-                            <a href="@Url.Action("Create", "Shift")" class="text-primary small text-decoration-none fw-semibold">
+                            <a href="@Url.Action("Create", "Shift")" class="small text-decoration-none fw-semibold">
                                 <i class="bi bi-plus-circle me-1"></i> @ShiftRegistrationResource.CreateNewShift
                             </a>
                         </div>
@@ -277,7 +304,7 @@
 
                     <div class="mt-4 d-flex justify-content-end gap-2" id="saveShiftBtnContainer" style="display: none;">
                         <button type="button" class="btn btn-sm btn-outline-secondary px-3" data-bs-dismiss="modal">@SharedResource.Button_Cancel</button>
-                        <button type="submit" class="btn btn-sm btn-primary px-4 fw-semibold">
+                        <button type="submit" class="btn btn-sm btn-primary px-4">
                             <i class="bi bi-check-lg me-1"></i> @ShiftRegistrationResource.Save
                         </button>
                     </div>
@@ -290,14 +317,11 @@
 <!-- Modal: Xem chi tiết ca / Hủy ca / Đổi ca (#viewModal) -->
 <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
-        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-            <div class="modal-header bg-light border-bottom py-3">
+        <div class="modal-content overflow-hidden">
+            <div class="modal-header py-3">
                 <div class="d-flex align-items-center gap-2">
-                    <div class="modal-icon-badge bg-primary text-white rounded-3 p-2 d-flex align-items-center justify-content-center">
-                        <i class="bi bi-card-checklist fs-5"></i>
-                    </div>
                     <div>
-                        <h5 class="modal-title fw-bold text-dark mb-0">@ShiftRegistrationResource.ShiftDetails</h5>
+                        <h5 class="modal-title mb-0">@ShiftRegistrationResource.ShiftDetails</h5>
                         <small class="text-muted">@ShiftRegistrationResource.View_Subtitle</small>
                     </div>
                 </div>
@@ -315,7 +339,7 @@
                     </div>
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="text-muted small"><i class="bi bi-clock-history me-1"></i> @ShiftRegistrationResource.Shift:</span>
-                        <strong class="text-primary" id="vShift"></strong>
+                        <strong id="vShift"></strong>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="text-muted small"><i class="bi bi-calendar-event me-1"></i> @ShiftRegistrationResource.Time:</span>
@@ -343,31 +367,31 @@
                     <span id="vRejectionReason" class="ms-1"></span>
                 </div>
 
-                <div id="vApproverRow" class="p-2 bg-light rounded-3 small text-muted mb-0" style="display: none;">
-                    <i class="bi bi-person-check me-1 text-success"></i>
+                <div id="vApproverRow" class="p-2 bg-light border small text-muted mb-0" style="display: none;">
+                    <i class="bi bi-person-check me-1"></i>
                     <span>@ShiftRegistrationResource.View_Approver <strong id="vApprover" class="text-dark"></strong></span>
                     <span id="vApprovedAt" class="ms-1"></span>
                 </div>
             </div>
-            <div class="modal-footer bg-light border-top py-2 px-4 d-flex justify-content-between">
+            <div class="modal-footer py-2 px-4 d-flex justify-content-between">
                 <input type="hidden" id="vRegistrationId" />
                 @if (isManager)
                 {
                     <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteRegistration()">@ShiftRegistrationResource.View_CancelShift</button>
-                    <button type="button" class="btn btn-sm btn-secondary ms-auto" data-bs-dismiss="modal">@ShiftRegistrationResource.Close</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary ms-auto" data-bs-dismiss="modal">@ShiftRegistrationResource.Close</button>
                 }
                 else
                 {
-                    <a href="/Request" class="btn btn-sm btn-outline-warning text-dark" id="btnGoToSwapShift" style="display: none;">
+                    <a href="/Request" class="btn btn-sm btn-outline-secondary" id="btnGoToSwapShift" style="display: none;">
                         <i class="bi bi-arrow-left-right me-1"></i> @SharedResource.Req_ChangeShift
                     </a>
-                    <button type="button" class="btn btn-sm btn-danger" id="btnCancelRegistration" onclick="deleteRegistration()">
+                    <button type="button" class="btn btn-sm btn-outline-danger" id="btnCancelRegistration" onclick="deleteRegistration()">
                         <i class="bi bi-trash3 me-1"></i> @ShiftRegistrationResource.Cancel
                     </button>
                     <span id="txtApprovedNotice" class="text-muted small" style="display: none;">
                         <i class="bi bi-shield-lock me-1"></i> @ShiftRegistrationResource.View_ApprovedNotice
                     </span>
-                    <button type="button" class="btn btn-sm btn-secondary ms-auto" data-bs-dismiss="modal">@ShiftRegistrationResource.Close</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary ms-auto" data-bs-dismiss="modal">@ShiftRegistrationResource.Close</button>
                 }
             </div>
         </div>
@@ -459,7 +483,6 @@
         padding: 12px 14px;
         border-right: 2px solid #e2e8f0;
         border-bottom: 1px solid #edf2f7;
-        box-shadow: 2px 0 6px rgba(0,0,0,0.02);
     }
     .modern-shift-table td.shift-grid-cell {
         padding: 6px;
@@ -503,7 +526,7 @@
     .shift-slot {
         min-height: 84px;
         height: 100%;
-        border-radius: 10px;
+        border-radius: var(--app-radius, 6px);
         padding: 8px 10px;
         display: flex;
         flex-direction: column;
@@ -541,15 +564,12 @@
     .shift-slot.is-available:hover {
         border-color: #93c5fd;
         background-color: #f8fbff;
-        transform: translateY(-1px);
-        box-shadow: 0 3px 8px rgba(37,99,235,0.08);
     }
 
     /* State: Selected (Mới chọn) */
     .shift-slot.is-selected {
         background-color: var(--slot-selected-bg) !important;
         border: 1.5px solid var(--slot-selected-border) !important;
-        box-shadow: 0 2px 6px rgba(37,99,235,0.12);
     }
 
     /* State: Pending (Chờ duyệt) */
@@ -559,7 +579,6 @@
     }
     .shift-slot.is-pending:hover {
         border-color: #f59e0b;
-        box-shadow: 0 3px 8px rgba(245,158,11,0.12);
     }
 
     /* State: Pending but unchecked (Sắp hủy khi lưu) */
@@ -576,7 +595,7 @@
         cursor: pointer;
     }
     .shift-slot.is-approved:hover {
-        box-shadow: 0 3px 8px rgba(16,185,129,0.14);
+        border-color: #10b981;
     }
 
     /* State: Rejected (Bị từ chối) */
@@ -659,7 +678,6 @@
         position: sticky;
         bottom: 0;
         z-index: 10;
-        box-shadow: 0 -4px 14px rgba(18, 38, 61, 0.05);
     }
 
     /* Week Picker Popover */
@@ -669,6 +687,14 @@
         left: 0;
         z-index: 1050;
         width: 320px;
+        border-radius: var(--app-radius, 6px);
+        box-shadow: var(--app-overlay-shadow, 0 8px 24px rgba(23,32,43,.12));
+    }
+    /* Tab chế độ xem: trạng thái chọn dạng nền nhạt, không dùng nút chính */
+    .shift-mode-tabs .btn.active {
+        background: var(--app-blue-soft, #EEF3FB);
+        border-color: #D6E2F5;
+        color: var(--app-blue, #1554BB);
     }
     .wp-table th { padding: 4px; }
     .wp-table td {
@@ -697,948 +723,95 @@
         color: #bfdbfe !important;
     }
 
-    /* Shadow utility */
-    .shadow-xs { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04); }
+    /* Coverage badges (manager schedule) */
+    .coverage-tbody tr td { background: #f8fafc; padding-top: .35rem; padding-bottom: .35rem; }
+    .coverage-tbody .coverage-head td { font-size: 11px; text-transform: uppercase; letter-spacing: .03em; }
+    .coverage-badge { font-size: 11px; font-weight: 600; min-width: 44px; height: 22px; font-variant-numeric: tabular-nums; }
+    .shift-slot.is-blocked .badge-status { white-space: nowrap; }
+
     .cursor-pointer { cursor: pointer; }
 </style>
 
 @section Scripts {
     <script>
-        let currentWeekStart = new Date();
-        // Adjust to Monday
-        let day = currentWeekStart.getDay();
-        let diff = currentWeekStart.getDate() - day + (day === 0 ? -6 : 1); 
-        currentWeekStart = new Date(currentWeekStart.setDate(diff));
-        currentWeekStart.setHours(0, 0, 0, 0);
-
-        let employeesList = [];
-        let wpCurrentMonth = new Date();
-        let isManager = @((isManager).ToString().ToLower());
-        let activeMode = 'my'; // Default to my shift registration
-        let shiftsList = [];
-        let currentFetchedEvents = [];
-
-        // Localized UI texts (HTML-escaped, safe inside generated markup and attributes)
-        const escAttr = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-        const T = {
-            approved: escAttr(@Json.Serialize(ShiftRegistrationResource.Status_Approved)),
-            rejected: escAttr(@Json.Serialize(ShiftRegistrationResource.Status_Rejected)),
-            rejectedLong: escAttr(@Json.Serialize(ShiftRegistrationResource.Status_RejectedLong)),
-            pending: escAttr(@Json.Serialize(ShiftRegistrationResource.Status_Pending)),
-            overdue: escAttr(@Json.Serialize(ShiftRegistrationResource.Status_Overdue)),
-            notApplicable: escAttr(@Json.Serialize(ShiftRegistrationResource.Status_NotApplicable)),
-            notRegistered: escAttr(@Json.Serialize(ShiftRegistrationResource.Status_NotRegistered)),
-            noShiftsTitle: escAttr(@Json.Serialize(ShiftRegistrationResource.Grid_NoShiftsTitle)),
-            noShiftsDesc: escAttr(@Json.Serialize(ShiftRegistrationResource.Grid_NoShiftsDesc)),
-            workHours: escAttr(@Json.Serialize(ShiftRegistrationResource.Grid_WorkHoursFormat)),
-            slotApprovedTitle: escAttr(@Json.Serialize(ShiftRegistrationResource.Slot_ApprovedTitle)),
-            slotRejectedTitle: escAttr(@Json.Serialize(ShiftRegistrationResource.Slot_RejectedTitle)),
-            slotPendingTitle: escAttr(@Json.Serialize(ShiftRegistrationResource.Slot_PendingTitle)),
-            slotPastTitle: escAttr(@Json.Serialize(ShiftRegistrationResource.Slot_PastTitle)),
-            slotUnavailableTitle: escAttr(@Json.Serialize(ShiftRegistrationResource.Slot_UnavailableTitle)),
-            slotAvailableTitle: escAttr(@Json.Serialize(ShiftRegistrationResource.Slot_AvailableTitle)),
-            viewDetails: escAttr(@Json.Serialize(ShiftRegistrationResource.Slot_ViewDetails)),
-            details: escAttr(@Json.Serialize(ShiftRegistrationResource.Slot_Details))
+        window.RWPM = window.RWPM || {};
+        RWPM.shiftRegistrationIndex = {
+            isManager: @Json.Serialize(isManager),
+            coverageStoreId: @Json.Serialize(currentStoreId),
+            shifts: @Json.Serialize(shiftsData),
+            employees: @Json.Serialize(employeesData),
+            urls: { availableShifts: '@Url.Action("AvailableShifts", "ShiftRegistration")' },
+            i18n: {
+                btnSending: @Json.Serialize(ShiftRegistrationResource.Btn_Sending),
+                confirmCancel: @Json.Serialize(ShiftRegistrationResource.ConfirmCancel),
+                coverageNotApplicable: @Json.Serialize(ShiftRegistrationResource.Coverage_NotApplicable),
+                coverageNotConfigured: @Json.Serialize(ShiftRegistrationResource.Coverage_NotConfigured),
+                coverageTitle: @Json.Serialize(ShiftRegistrationResource.Coverage_Title),
+                coverageTooltip: @Json.Serialize(ShiftRegistrationResource.Coverage_Tooltip),
+                dayFri: @Json.Serialize(ShiftRegistrationResource.Day_Fri),
+                dayMon: @Json.Serialize(ShiftRegistrationResource.Day_Mon),
+                daySat: @Json.Serialize(ShiftRegistrationResource.Day_Sat),
+                daySun: @Json.Serialize(ShiftRegistrationResource.Day_Sun),
+                dayThu: @Json.Serialize(ShiftRegistrationResource.Day_Thu),
+                dayTue: @Json.Serialize(ShiftRegistrationResource.Day_Tue),
+                dayWed: @Json.Serialize(ShiftRegistrationResource.Day_Wed),
+                gridNoShiftsDesc: @Json.Serialize(ShiftRegistrationResource.Grid_NoShiftsDesc),
+                gridNoShiftsTitle: @Json.Serialize(ShiftRegistrationResource.Grid_NoShiftsTitle),
+                gridShiftColumn: @Json.Serialize(ShiftRegistrationResource.Grid_ShiftColumn),
+                gridToday: @Json.Serialize(ShiftRegistrationResource.Grid_Today),
+                gridWorkHoursFormat: @Json.Serialize(ShiftRegistrationResource.Grid_WorkHoursFormat),
+                modalDateFormat: @Json.Serialize(ShiftRegistrationResource.Modal_DateFormat),
+                modalLoadShiftsError: @Json.Serialize(ShiftRegistrationResource.Modal_LoadShiftsError),
+                modalLoadingShifts: @Json.Serialize(ShiftRegistrationResource.Modal_LoadingShifts),
+                modalNoShiftsForDay: @Json.Serialize(ShiftRegistrationResource.Modal_NoShiftsForDay),
+                pastDateError: @Json.Serialize(ShiftRegistrationResource.PastDateError),
+                pickerMonthYearFormat: @Json.Serialize(ShiftRegistrationResource.Picker_MonthYearFormat),
+                searchBtn: @Json.Serialize(ShiftRegistrationResource.SearchBtn),
+                shiftErrLoadPrev: @Json.Serialize(SharedResource.ResourceManager.GetString("Shift_ErrLoadPrev")),
+                shiftErrLoadShift: @Json.Serialize(SharedResource.ResourceManager.GetString("Shift_ErrLoadShift")),
+                shiftErrNoPrevShifts: @Json.Serialize(SharedResource.ResourceManager.GetString("Shift_ErrNoPrevShifts")),
+                shiftErrOccurred: @Json.Serialize(SharedResource.ResourceManager.GetString("Shift_ErrOccurred")),
+                shiftErrPrefix: @Json.Serialize(SharedResource.ResourceManager.GetString("Shift_ErrPrefix")),
+                shiftErrSelectOne: @Json.Serialize(SharedResource.ResourceManager.GetString("Shift_ErrSelectOne")),
+                shiftMe: @Json.Serialize(SharedResource.Shift_Me),
+                shiftNoShifts: @Json.Serialize(SharedResource.ResourceManager.GetString("Shift_NoShifts")),
+                shiftRegSuccess: @Json.Serialize(SharedResource.ResourceManager.GetString("Shift_RegSuccess")),
+                shiftSysError: @Json.Serialize(SharedResource.ResourceManager.GetString("Shift_SysError")),
+                slotApprovedTitle: @Json.Serialize(ShiftRegistrationResource.Slot_ApprovedTitle),
+                slotAvailableTitle: @Json.Serialize(ShiftRegistrationResource.Slot_AvailableTitle),
+                slotBlockedBadge: @Json.Serialize(ShiftRegistrationResource.Slot_BlockedBadge),
+                slotBlockedPendingHint: @Json.Serialize(ShiftRegistrationResource.Slot_BlockedPendingHint),
+                slotDetails: @Json.Serialize(ShiftRegistrationResource.Slot_Details),
+                slotPastTitle: @Json.Serialize(ShiftRegistrationResource.Slot_PastTitle),
+                slotPendingTitle: @Json.Serialize(ShiftRegistrationResource.Slot_PendingTitle),
+                slotRejectedTitle: @Json.Serialize(ShiftRegistrationResource.Slot_RejectedTitle),
+                slotUnavailableTitle: @Json.Serialize(ShiftRegistrationResource.Slot_UnavailableTitle),
+                slotViewDetails: @Json.Serialize(ShiftRegistrationResource.Slot_ViewDetails),
+                statusApproved: @Json.Serialize(ShiftRegistrationResource.Status_Approved),
+                statusNewlySelected: @Json.Serialize(ShiftRegistrationResource.Status_NewlySelected),
+                statusNotApplicable: @Json.Serialize(ShiftRegistrationResource.Status_NotApplicable),
+                statusNotRegistered: @Json.Serialize(ShiftRegistrationResource.Status_NotRegistered),
+                statusOverdue: @Json.Serialize(ShiftRegistrationResource.Status_Overdue),
+                statusPending: @Json.Serialize(ShiftRegistrationResource.Status_Pending),
+                statusRejected: @Json.Serialize(ShiftRegistrationResource.Status_Rejected),
+                statusRejectedLong: @Json.Serialize(ShiftRegistrationResource.Status_RejectedLong),
+                statusUnregister: @Json.Serialize(ShiftRegistrationResource.Status_Unregister),
+                summaryHoursFormat: @Json.Serialize(ShiftRegistrationResource.Summary_HoursFormat),
+                toastCancelFailed: @Json.Serialize(ShiftRegistrationResource.Toast_CancelFailed),
+                toastCancelSuccess: @Json.Serialize(ShiftRegistrationResource.Toast_CancelSuccess),
+                toastCopiedFormat: @Json.Serialize(ShiftRegistrationResource.Toast_CopiedFormat),
+                toastRegisterSuccess: @Json.Serialize(ShiftRegistrationResource.Toast_RegisterSuccess),
+                toastSystemError: @Json.Serialize(ShiftRegistrationResource.Toast_SystemError),
+                warnConfirmContinue: @Json.Serialize(ShiftRegistrationResource.Warn_ConfirmContinue),
+                warnConfirmTitle: @Json.Serialize(ShiftRegistrationResource.Warn_ConfirmTitle),
+                weekFormat: @Json.Serialize(ShiftRegistrationResource.Week_Format)
+            }
         };
-
-        function switchViewMode(mode) {
-            activeMode = mode;
-            if (mode === 'my') {
-                $('#tabMyRegistration').removeClass('btn-outline-secondary').addClass('btn-primary');
-                $('#tabManagerSchedule').removeClass('btn-primary').addClass('btn-outline-secondary');
-                $('#managerFilterEmployeeContainer').hide();
-                $('#managerActionBtns').hide();
-                $('.weekly-summary-bar').show();
-            } else {
-                $('#tabMyRegistration').removeClass('btn-primary').addClass('btn-outline-secondary');
-                $('#tabManagerSchedule').removeClass('btn-outline-secondary').addClass('btn-primary');
-                $('#managerFilterEmployeeContainer').show();
-                $('#managerActionBtns').show();
-                $('.weekly-summary-bar').hide();
-            }
-            renderHeader();
-            fetchEvents();
-        }
-
-        function changeStoreFilter(storeId) {
-            window.location.href = '/ShiftRegistration?storeId=' + storeId;
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            @if (ViewBag.Shifts != null)
-            {
-                <text>
-                shiftsList = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(((IEnumerable<RWPM.Models.Entities.Shift>)ViewBag.Shifts).Select(s => new {
-                    id = s.ShiftId,
-                    name = s.ShiftName,
-                    from = s.EffectiveFrom.ToString("yyyy-MM-dd"),
-                    to = s.EffectiveTo?.ToString("yyyy-MM-dd"),
-                    start = s.StartTime.ToString(@"hh\:mm"),
-                    end = s.EndTime.ToString(@"hh\:mm") + (s.EndDayOffset > 0 ? " (+1)" : ""),
-                    hours = s.ScheduledWorkHours
-                })));
-                </text>
-            }
-
-            @if (ViewBag.Employees != null)
-            {
-                <text>
-                employeesList = [
-                    @foreach (var emp in ViewBag.Employees)
-                    {
-                        @:{ id: '@emp.EmployeeId', code: '@emp.EmployeeCode', name: '@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(emp.Account?.FullName ?? emp.Username))' },
-                    }
-                ];
-                </text>
-            }
-            else
-            {
-                <text>
-                employeesList = [{ id: 'me', name: @Json.Serialize(SharedResource.Shift_Me) }];
-                </text>
-            }
-
-            if (isManager) {
-                switchViewMode(activeMode);
-            } else {
-                updateWeekDisplay();
-                fetchEvents();
-            }
-
-            // Week Navigation
-            $('#btnPrevWeek').click(function() {
-                currentWeekStart.setDate(currentWeekStart.getDate() - 7);
-                updateWeekDisplay();
-                fetchEvents();
-            });
-
-            $('#btnNextWeek').click(function() {
-                currentWeekStart.setDate(currentWeekStart.getDate() + 7);
-                updateWeekDisplay();
-                fetchEvents();
-            });
-
-            $('#btnTodayWeek').click(function() {
-                let now = new Date();
-                let day = now.getDay();
-                let diff = now.getDate() - day + (day === 0 ? -6 : 1);
-                currentWeekStart = new Date(now.setDate(diff));
-                currentWeekStart.setHours(0, 0, 0, 0);
-                updateWeekDisplay();
-                fetchEvents();
-            });
-
-            $('#filterEmployeeId').change(function() {
-                fetchEvents();
-            });
-
-            // Single day shift registration form submission
-            $('#shiftForm').submit(function(e) {
-                e.preventDefault();
-                var selectedShifts = [];
-                $('.shift-checkbox:checked').each(function() {
-                    selectedShifts.push($(this).val());
-                });
-
-                if (selectedShifts.length === 0) {
-                    showAppToast('warning', @Json.Serialize(SharedResource.ResourceManager.GetString("Shift_ErrSelectOne")));
-                    return;
-                }
-
-                var empId = $('#EmployeeId').val();
-                var workDate = $('#WorkDate').val();
-                var token = $('input[name="__RequestVerificationToken"]').val();
-
-                var data = {
-                    EmployeeId: empId,
-                    ShiftId: selectedShifts[0],
-                    ShiftIds: selectedShifts.map(id => parseInt(id)),
-                    WorkDate: workDate,
-                    Note: ""
-                };
-
-                $.ajax({
-                    url: '/ShiftRegistration/Create',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(data),
-                    headers: { 'RequestVerificationToken': token },
-                    success: function(res) {
-                        if (res.success) {
-                            $('#shiftModal').modal('hide');
-                            showAppToast('success', @Json.Serialize(ShiftRegistrationResource.Toast_RegisterSuccess));
-                            fetchEvents();
-                            $('#shiftForm')[0].reset();
-                        } else {
-                            showAppToast('error', res.message || '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrOccurred"))');
-                        }
-                    },
-                    error: function(err) {
-                        var msg = err.responseJSON?.message || err.responseText || '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_SysError"))';
-                        showAppToast('error', '@Html.Raw(ShiftRegistrationResource.ErrorPrefix)' + msg);
-                    }
-                });
-            });
-
-            // Toggle single day save button
-            $(document).on('change', '.shift-checkbox', function() {
-                if ($('.shift-checkbox:checked').length > 0) {
-                    $('#saveShiftBtnContainer').fadeIn(150);
-                } else {
-                    $('#saveShiftBtnContainer').fadeOut(150);
-                }
-            });
-
-            // Weekly Checkbox toggle & slot click handlers
-            $(document).on('change', '.weekly-shift-cb', function(e) {
-                updateSlotCardVisual($(this));
-                updateWeeklySummary();
-            });
-
-            // Clicking available slot toggles checkbox
-            $(document).on('click', '.shift-slot.is-available, .shift-slot.is-pending', function(e) {
-                if ($(e.target).is('input[type="checkbox"]') || $(e.target).closest('.btn-view-slot').length > 0 || $(e.target).is('label')) {
-                    return;
-                }
-                let cb = $(this).find('.weekly-shift-cb:not(:disabled)');
-                if (cb.length > 0) {
-                    cb.prop('checked', !cb.prop('checked')).trigger('change');
-                }
-            });
-
-            // Week Picker Popover logic
-            $('#btnToggleWeekPicker').click(function(e) {
-                e.stopPropagation();
-                $('#weekPickerDropdown').toggle();
-                if ($('#weekPickerDropdown').is(':visible')) {
-                    wpCurrentMonth = new Date(currentWeekStart);
-                    wpCurrentMonth.setDate(1);
-                    renderWeekPickerCalendar();
-                }
-            });
-
-            $(document).click(function(e) {
-                if (!$(e.target).closest('#btnToggleWeekPicker, #weekPickerDropdown').length) {
-                    $('#weekPickerDropdown').hide();
-                }
-            });
-
-            $('.wp-prev-month').click(function(e){ e.stopPropagation(); wpCurrentMonth.setMonth(wpCurrentMonth.getMonth() - 1); renderWeekPickerCalendar(); });
-            $('.wp-next-month').click(function(e){ e.stopPropagation(); wpCurrentMonth.setMonth(wpCurrentMonth.getMonth() + 1); renderWeekPickerCalendar(); });
-            $('.wp-prev-year').click(function(e){ e.stopPropagation(); wpCurrentMonth.setFullYear(wpCurrentMonth.getFullYear() - 1); renderWeekPickerCalendar(); });
-            $('.wp-next-year').click(function(e){ e.stopPropagation(); wpCurrentMonth.setFullYear(wpCurrentMonth.getFullYear() + 1); renderWeekPickerCalendar(); });
-        });
-
-        function updateSlotCardVisual(cb) {
-            let slot = cb.closest('.shift-slot');
-            let isChecked = cb.is(':checked');
-
-            if (slot.hasClass('was-pending')) {
-                if (!isChecked) {
-                    slot.addClass('is-pending-cancelled');
-                    slot.find('.badge-status').removeClass('status-pending').addClass('status-unavailable').html('<i class="bi bi-x-circle"></i> ' + @Json.Serialize(ShiftRegistrationResource.Status_Unregister));
-                } else {
-                    slot.removeClass('is-pending-cancelled');
-                    slot.find('.badge-status').removeClass('status-unavailable').addClass('status-pending').html('<i class="bi bi-hourglass-split"></i> ' + @Json.Serialize(ShiftRegistrationResource.Status_Pending));
-                }
-            } else if (!slot.hasClass('is-approved') && !slot.hasClass('is-past') && !slot.hasClass('is-unavailable')) {
-                if (isChecked) {
-                    slot.addClass('is-selected');
-                    slot.find('.badge-status').removeClass('status-available').addClass('status-selected').html('<i class="bi bi-check-circle-fill"></i> ' + @Json.Serialize(ShiftRegistrationResource.Status_NewlySelected));
-                } else {
-                    slot.removeClass('is-selected');
-                    slot.find('.badge-status').removeClass('status-selected').addClass('status-available').html('<i class="bi bi-circle"></i> ' + @Json.Serialize(ShiftRegistrationResource.Status_NotRegistered));
-                }
-            }
-        }
-
-        function updateWeeklySummary() {
-            let newSelectedCount = 0;
-            let pendingCount = 0;
-            let approvedCount = 0;
-            let totalHours = 0;
-
-            let shiftMap = {};
-            shiftsList.forEach(s => { shiftMap[s.id] = s; });
-
-            $('.weekly-shift-cb:checked').each(function() {
-                let slot = $(this).closest('.shift-slot');
-                let val = $(this).val();
-                let shiftId = parseInt(val.split('_')[0]);
-                let sObj = shiftMap[shiftId];
-                let hours = (sObj && sObj.hours) ? sObj.hours : 0;
-
-                totalHours += hours;
-
-                if (slot.hasClass('is-approved') || $(this).prop('disabled')) {
-                    approvedCount++;
-                } else if (slot.hasClass('was-pending')) {
-                    pendingCount++;
-                } else {
-                    newSelectedCount++;
-                }
-            });
-
-            $('#summaryNewCount').text(newSelectedCount);
-            $('#summaryPendingCount').text(pendingCount);
-            $('#summaryApprovedCount').text(approvedCount);
-            $('#summaryTotalHours').text(@(Json.Serialize(ShiftRegistrationResource.Summary_HoursFormat)).replace('{0}', totalHours.toFixed(1)));
-        }
-
-        function renderWeekPickerCalendar() {
-            $('#wpMonthYearDisplay').text(@(Json.Serialize(ShiftRegistrationResource.Picker_MonthYearFormat)).replace('{0}', wpCurrentMonth.getMonth() + 1).replace('{1}', wpCurrentMonth.getFullYear()));
-            
-            let firstDay = new Date(wpCurrentMonth.getFullYear(), wpCurrentMonth.getMonth(), 1);
-            let dayOfWeek = firstDay.getDay();
-            let diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-            let startDate = new Date(firstDay);
-            startDate.setDate(firstDay.getDate() + diffToMonday);
-            
-            let tbody = '';
-            
-            for (let w = 0; w < 6; w++) {
-                let rowMonday = new Date(startDate);
-                let firstDayOfYear = new Date(rowMonday.getFullYear(), 0, 1);
-                let pastDaysOfYear = (rowMonday - firstDayOfYear) / 86400000;
-                let weekNum = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-                let isActive = (rowMonday.getTime() === currentWeekStart.getTime()) ? 'active' : '';
-                
-                tbody += `<tr class="wp-week-row ${isActive}" data-monday="${rowMonday.toISOString()}">`;
-                tbody += `<td class="wp-week-num">${weekNum}</td>`;
-                
-                for (let d = 0; d < 7; d++) {
-                    let cellDate = new Date(startDate);
-                    let isCurrentMonth = cellDate.getMonth() === wpCurrentMonth.getMonth();
-                    let opacity = isCurrentMonth ? '1' : '0.35';
-                    tbody += `<td style="opacity: ${opacity}">${cellDate.getDate()}</td>`;
-                    startDate.setDate(startDate.getDate() + 1);
-                }
-                tbody += `</tr>`;
-            }
-            
-            $('#wpCalendarBody').html(tbody);
-            
-            $('.wp-week-row').click(function(e) {
-                e.stopPropagation();
-                let monIso = $(this).data('monday');
-                currentWeekStart = new Date(monIso);
-                updateWeekDisplay();
-                fetchEvents();
-                $('#weekPickerDropdown').hide();
-            });
-        }
-
-        function updateWeekDisplay() {
-            let weekEnd = new Date(currentWeekStart);
-            weekEnd.setDate(currentWeekStart.getDate() + 6);
-            
-            let firstDayOfYear = new Date(currentWeekStart.getFullYear(), 0, 1);
-            let pastDaysOfYear = (currentWeekStart - firstDayOfYear) / 86400000;
-            let weekNum = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-
-            let startStr = currentWeekStart.getDate().toString().padStart(2, '0') + '/' + (currentWeekStart.getMonth() + 1).toString().padStart(2, '0');
-            let endStr = weekEnd.getDate().toString().padStart(2, '0') + '/' + (weekEnd.getMonth() + 1).toString().padStart(2, '0') + '/' + weekEnd.getFullYear();
-
-            $('#currentWeekDisplay').text(@(Json.Serialize(ShiftRegistrationResource.Week_Format)).replace('{0}', weekNum));
-            $('#currentWeekRangeDisplay').text(`(${startStr} – ${endStr})`);
-
-            renderHeader();
-        }
-
-        function renderHeader() {
-            let tempDate = new Date(currentWeekStart);
-            let today = new Date();
-            let todayIso = getISODateString(today);
-            let days = [@Json.Serialize(ShiftRegistrationResource.Day_Mon), @Json.Serialize(ShiftRegistrationResource.Day_Tue), @Json.Serialize(ShiftRegistrationResource.Day_Wed), @Json.Serialize(ShiftRegistrationResource.Day_Thu), @Json.Serialize(ShiftRegistrationResource.Day_Fri), @Json.Serialize(ShiftRegistrationResource.Day_Sat), @Json.Serialize(ShiftRegistrationResource.Day_Sun)];
-            
-            if (activeMode === 'manager') {
-                let tr = '<th class="th-shift-col"><div class="input-group input-group-sm"><span class="input-group-text bg-transparent border-0"><i class="bi bi-search"></i></span><input type="text" class="form-control border-0 bg-transparent ps-1" placeholder="@Html.Raw(ShiftRegistrationResource.SearchBtn)" onkeyup="filterEmployeesLocally(this.value)"></div></th>';
-                for (let i = 0; i < 7; i++) {
-                    let cellDateIso = getISODateString(tempDate);
-                    let isToday = (cellDateIso === todayIso);
-                    let dateStr = tempDate.getDate().toString().padStart(2, '0') + '/' + (tempDate.getMonth() + 1).toString().padStart(2, '0');
-                    tr += `<th class="${isToday ? 'th-today' : ''}"><div>${days[i]}</div><div class="small fw-normal text-muted">${dateStr}</div></th>`;
-                    tempDate.setDate(tempDate.getDate() + 1);
-                }
-                $('#gridHeaderRow').html(tr);
-            } else {
-                let tr = '<th class="th-shift-col"><div class="d-flex align-items-center gap-1"><i class="bi bi-clock-history text-primary"></i><span>' + escapeHtml(@Json.Serialize(ShiftRegistrationResource.Grid_ShiftColumn)) + '</span></div></th>';
-                for (let i = 0; i < 7; i++) {
-                    let cellDateIso = getISODateString(tempDate);
-                    let isToday = (cellDateIso === todayIso);
-                    let dateStr = tempDate.getDate().toString().padStart(2, '0') + '/' + (tempDate.getMonth() + 1).toString().padStart(2, '0');
-                    let todayBadge = isToday ? '<span class="badge bg-primary rounded-pill px-2 py-0 ms-1" style="font-size: 10px;">' + escapeHtml(@Json.Serialize(ShiftRegistrationResource.Grid_Today)) + '</span>' : '';
-                    tr += `<th class="${isToday ? 'th-today' : ''}"><div>${days[i]} ${todayBadge}</div><div class="small fw-normal text-muted">${dateStr}</div></th>`;
-                    tempDate.setDate(tempDate.getDate() + 1);
-                }
-                $('#gridHeaderRow').html(tr);
-            }
-        }
-
-        function filterEmployeesLocally(text) {
-            text = text.toLowerCase();
-            $('#gridBody tr').each(function() {
-                var empName = $(this).find('.shift-name-col').text().toLowerCase();
-                if (empName.indexOf(text) > -1) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-            });
-        }
-
-        function getISODateString(date) {
-            var tzoffset = date.getTimezoneOffset() * 60000;
-            return (new Date(date - tzoffset)).toISOString().split('T')[0];
-        }
-
-        function escapeHtml(str) {
-            if (!str) return '';
-            return $('<div>').text(str).html();
-        }
-
-        function fetchEvents() {
-            let isMyMode = (activeMode === 'my');
-            let empId = isMyMode ? '' : ($('#filterEmployeeId').val() || '');
-            let startStr = getISODateString(currentWeekStart);
-            let endStr = new Date(currentWeekStart);
-            endStr.setDate(endStr.getDate() + 7);
-
-            $('#iconRefresh').addClass('spin-animation');
-
-            $.ajax({
-                url: '/ShiftRegistration/GetEvents',
-                type: 'GET',
-                data: {
-                    start: startStr,
-                    end: getISODateString(endStr),
-                    employeeId: empId,
-                    myOnly: isMyMode
-                },
-                success: function(events) {
-                    currentFetchedEvents = events;
-                    renderGrid(events);
-                    updateWeeklySummary();
-                },
-                error: function() {
-                    showAppToast('error', '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrLoadShift"))');
-                },
-                complete: function() {
-                    $('#iconRefresh').removeClass('spin-animation');
-                }
-            });
-        }
-
-        function renderGrid(events) {
-            let tbody = '';
-            let today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            if (activeMode === 'manager') {
-                var selectedEmpId = $('#filterEmployeeId').val();
-                var empsToRender = employeesList;
-
-                if (employeesList.length === 1 && employeesList[0].id === 'me') {
-                    let uniqueEmps = {};
-                    events.forEach(e => {
-                        if (!uniqueEmps[e.employeeId]) {
-                            uniqueEmps[e.employeeId] = { id: e.employeeId, name: e.employeeName };
-                        }
-                    });
-                    empsToRender = Object.values(uniqueEmps);
-                    if (empsToRender.length === 0) empsToRender = [{ id: '', name: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(SharedResource.ResourceManager.GetString("Shift_NoShifts"))) }];
-                } else if (selectedEmpId) {
-                    empsToRender = employeesList.filter(e => e.id == selectedEmpId);
-                }
-
-                empsToRender.forEach(emp => {
-                    tbody += `<tr>`;
-                    tbody += `
-                        <td class="shift-name-col">
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="avatar-sm bg-light text-primary rounded-circle d-flex align-items-center justify-content-center p-2" style="width: 32px; height: 32px;">
-                                    <i class="bi bi-person-fill"></i>
-                                </div>
-                                <h6 class="mb-0 text-dark small fw-bold">${escapeHtml(emp.name)}</h6>
-                            </div>
-                        </td>
-                    `;
-
-                    let tempDate = new Date(currentWeekStart);
-                    for (let i = 0; i < 7; i++) {
-                        let cellDateStr = getISODateString(tempDate);
-                        let dayEvents = events.filter(e => {
-                            let eDate = e.start.split('T')[0];
-                            return (e.employeeId == emp.id || !emp.id) && eDate === cellDateStr;
-                        });
-
-                        if (dayEvents.length > 0) {
-                            tbody += `<td class="shift-grid-cell" onclick="openCreateModal(new Date('${cellDateStr}'), '${emp.id}')">`;
-                            tbody += `<div class="d-flex flex-column gap-1 h-100">`;
-                            dayEvents.forEach(dayEvent => {
-                                let eJson = JSON.stringify(dayEvent).replace(/'/g, "&#39;");
-                                let timeDisplay = (dayEvent.startTime && dayEvent.endTime) ? `${dayEvent.startTime} - ${dayEvent.endTime}` : '';
-                                let badgeHtml = dayEvent.statusId === 1 
-                                    ? `<span class="badge-status status-approved"><i class="bi bi-check-circle-fill"></i> ${T.approved}</span>` 
-                                    : (dayEvent.statusId === 2 
-                                        ? `<span class="badge-status status-rejected"><i class="bi bi-x-circle-fill"></i> ${T.rejected}</span>` 
-                                        : `<span class="badge-status status-pending"><i class="bi bi-hourglass-split"></i> ${T.pending}</span>`);
-                                let slotCls = dayEvent.statusId === 1 ? 'is-approved' : (dayEvent.statusId === 2 ? 'is-rejected' : 'is-pending');
-                                tbody += `
-                                    <div class="shift-slot ${slotCls}" style="cursor:pointer" onclick='event.stopPropagation(); openViewModal(${eJson})'>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span class="slot-time-text">${escapeHtml(dayEvent.title)}</span>
-                                            ${badgeHtml}
-                                        </div>
-                                        <div class="slot-sub-text text-muted">${timeDisplay}</div>
-                                    </div>
-                                `;
-                            });
-                            tbody += `</div></td>`;
-                        } else {
-                            tbody += `
-                                <td class="shift-grid-cell" onclick="openCreateModal(new Date('${cellDateStr}'), '${emp.id}')">
-                                    <div class="shift-slot is-available justify-content-center align-items-center text-muted">
-                                        <i class="bi bi-plus-lg fs-5"></i>
-                                    </div>
-                                </td>
-                            `;
-                        }
-                        tempDate.setDate(tempDate.getDate() + 1);
-                    }
-                    tbody += `</tr>`;
-                });
-            } else {
-                // Employee Mode: Shifts List as Rows
-                if (shiftsList.length === 0) {
-                    tbody += `
-                        <tr>
-                            <td colspan="8" class="text-center py-5">
-                                <div class="text-muted mb-2"><i class="bi bi-calendar-x fs-1"></i></div>
-                                <h6 class="text-dark">${T.noShiftsTitle}</h6>
-                                <p class="text-muted small mb-0">${T.noShiftsDesc}</p>
-                            </td>
-                        </tr>
-                    `;
-                } else {
-                    shiftsList.forEach(shift => {
-                        tbody += `<tr>`;
-                        
-                        // Sticky Left Column: Shift Name & Working Hours
-                        tbody += `
-                            <td class="shift-name-col">
-                                <div class="shift-info-card">
-                                    <div class="d-flex align-items-center gap-2 mb-1">
-                                        <span class="shift-color-bar"></span>
-                                        <strong class="shift-name-text text-truncate" title="${escapeHtml(shift.name)}">${escapeHtml(shift.name)}</strong>
-                                    </div>
-                                    <div class="shift-time-text">
-                                        <i class="bi bi-clock me-1 text-primary"></i>${shift.start} – ${shift.end}
-                                    </div>
-                                    ${shift.hours ? `<div class="shift-hours-text"><i class="bi bi-hourglass-split me-1 text-muted"></i>${T.workHours.replace('{0}', shift.hours.toFixed(1))}</div>` : ''}
-                                </div>
-                            </td>
-                        `;
-
-                        // Day Columns
-                        let tempDate = new Date(currentWeekStart);
-                        for (let i = 0; i < 7; i++) {
-                            let cellDateStr = getISODateString(tempDate);
-                            let cellDateObj = new Date(tempDate);
-                            cellDateObj.setHours(0, 0, 0, 0);
-
-                            let dayEvent = events.find(e => {
-                                let eDate = e.start.split('T')[0];
-                                return e.shiftId == shift.id && eDate === cellDateStr;
-                            });
-
-                            let isPast = cellDateObj < today;
-                            let isUnavailable = cellDateStr < shift.from || (shift.to && cellDateStr > shift.to);
-
-                            if (dayEvent) {
-                                let isApproved = (dayEvent.statusId === 1 || dayEvent.statusName === "Approved");
-                                let isRejected = (dayEvent.statusId === 2 || dayEvent.statusName === "Rejected");
-                                let eJson = JSON.stringify(dayEvent).replace(/'/g, "&#39;");
-
-                                if (isApproved) {
-                                    tbody += `
-                                        <td class="shift-grid-cell">
-                                            <div class="shift-slot is-approved" onclick='event.stopPropagation(); openViewModal(${eJson})' title="${T.slotApprovedTitle}">
-                                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                                    <span class="badge-status status-approved">
-                                                        <i class="bi bi-check-circle-fill"></i> ${T.approved}
-                                                    </span>
-                                                    <i class="bi bi-info-circle text-success small btn-view-slot" title="${T.viewDetails}"></i>
-                                                </div>
-                                                <div class="slot-time-text">${shift.start} – ${shift.end}</div>
-                                                <input type="checkbox" class="form-check-input weekly-shift-cb d-none" 
-                                                    value="${shift.id}_${cellDateStr}" checked disabled>
-                                            </div>
-                                        </td>
-                                    `;
-                                } else if (isRejected) {
-                                    tbody += `
-                                        <td class="shift-grid-cell">
-                                            <div class="shift-slot is-rejected" onclick='event.stopPropagation(); openViewModal(${eJson})' title="${T.slotRejectedTitle}">
-                                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                                    <span class="badge-status status-rejected">
-                                                        <i class="bi bi-x-circle-fill"></i> ${T.rejected}
-                                                    </span>
-                                                    <i class="bi bi-info-circle text-danger small btn-view-slot" title="${T.viewDetails}"></i>
-                                                </div>
-                                                <div class="slot-time-text">${shift.start} – ${shift.end}</div>
-                                                <input type="checkbox" class="form-check-input weekly-shift-cb d-none" 
-                                                    value="${shift.id}_${cellDateStr}">
-                                            </div>
-                                        </td>
-                                    `;
-                                } else {
-                                    // Pending
-                                    tbody += `
-                                        <td class="shift-grid-cell">
-                                            <div class="shift-slot is-pending was-pending" title="${T.slotPendingTitle}">
-                                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                                    <div class="form-check mb-0 p-0 d-flex align-items-center">
-                                                        <input type="checkbox" class="form-check-input weekly-shift-cb m-0 me-2" 
-                                                            id="cb_${shift.id}_${cellDateStr}"
-                                                            value="${shift.id}_${cellDateStr}" checked>
-                                                        <label class="form-check-label badge-status status-pending m-0 cursor-pointer" for="cb_${shift.id}_${cellDateStr}">
-                                                            <i class="bi bi-hourglass-split"></i> ${T.pending}
-                                                        </label>
-                                                    </div>
-                                                    <i class="bi bi-info-circle text-warning-emphasis small btn-view-slot" title="${T.details}" onclick='event.stopPropagation(); openViewModal(${eJson})'></i>
-                                                </div>
-                                                <div class="slot-time-text">${shift.start} – ${shift.end}</div>
-                                            </div>
-                                        </td>
-                                    `;
-                                }
-                            } else if (isPast) {
-                                tbody += `
-                                    <td class="shift-grid-cell">
-                                        <div class="shift-slot is-past" title="${T.slotPastTitle}">
-                                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                                <span class="badge-status status-past">
-                                                    <i class="bi bi-lock-fill"></i> ${T.overdue}
-                                                </span>
-                                            </div>
-                                            <div class="slot-time-text text-muted">${shift.start} – ${shift.end}</div>
-                                            <input type="checkbox" class="form-check-input weekly-shift-cb d-none" 
-                                                value="${shift.id}_${cellDateStr}" disabled>
-                                        </div>
-                                    </td>
-                                `;
-                            } else if (isUnavailable) {
-                                tbody += `
-                                    <td class="shift-grid-cell">
-                                        <div class="shift-slot is-unavailable" title="${T.slotUnavailableTitle}">
-                                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                                <span class="badge-status status-unavailable">
-                                                    <i class="bi bi-dash-circle"></i> ${T.notApplicable}
-                                                </span>
-                                            </div>
-                                            <div class="slot-time-text text-muted">${shift.start} – ${shift.end}</div>
-                                            <input type="checkbox" class="form-check-input weekly-shift-cb d-none" 
-                                                value="${shift.id}_${cellDateStr}" disabled>
-                                        </div>
-                                    </td>
-                                `;
-                            } else {
-                                // Available slot
-                                tbody += `
-                                    <td class="shift-grid-cell">
-                                        <div class="shift-slot is-available" title="${T.slotAvailableTitle}">
-                                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                                <div class="form-check mb-0 p-0 d-flex align-items-center">
-                                                    <input type="checkbox" class="form-check-input weekly-shift-cb m-0 me-2" 
-                                                        id="cb_${shift.id}_${cellDateStr}"
-                                                        value="${shift.id}_${cellDateStr}">
-                                                    <label class="form-check-label badge-status status-available m-0 cursor-pointer" for="cb_${shift.id}_${cellDateStr}">
-                                                        <i class="bi bi-circle"></i> ${T.notRegistered}
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="slot-time-text">${shift.start} – ${shift.end}</div>
-                                        </div>
-                                    </td>
-                                `;
-                            }
-                            tempDate.setDate(tempDate.getDate() + 1);
-                        }
-                        tbody += `</tr>`;
-                    });
-                }
-            }
-
-            $('#gridBody').html(tbody);
-        }
-
-        function syncWeeklySchedule() {
-            var token = $('input[name="__RequestVerificationToken"]').val();
-            var registrations = [];
-            
-            $('.weekly-shift-cb:checked:not(:disabled)').each(function() {
-                var parts = $(this).val().split('_');
-                registrations.push({
-                    EmployeeId: 0,
-                    ShiftId: parseInt(parts[0]),
-                    WorkDate: parts[1],
-                    Note: ""
-                });
-            });
-
-            // Retain approved shifts so they aren't removed by sync
-            $('.weekly-shift-cb:checked:disabled').each(function() {
-                var parts = $(this).val().split('_');
-                registrations.push({
-                    EmployeeId: 0,
-                    ShiftId: parseInt(parts[0]),
-                    WorkDate: parts[1],
-                    Note: ""
-                });
-            });
-
-            var data = {
-                StartOfWeek: getISODateString(currentWeekStart),
-                Registrations: registrations
-            };
-
-            var btn = $('#btnSubmitWeekly');
-            var originalBtnHtml = btn.html();
-            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1" role="status"></span> ' + escapeHtml(@Json.Serialize(ShiftRegistrationResource.Btn_Sending)));
-
-            $.ajax({
-                url: '/ShiftRegistration/SyncWeekly',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                headers: { 'RequestVerificationToken': token },
-                success: function(res) {
-                    if (res.success) {
-                        showAppToast('success', @Json.Serialize(SharedResource.ResourceManager.GetString("Shift_RegSuccess")));
-                        fetchEvents();
-                    } else {
-                        showAppToast('error', res.message || '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrOccurred"))');
-                    }
-                },
-                error: function(err) {
-                    var msg = err.responseJSON?.message || err.responseText || '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_SysError"))';
-                    showAppToast('error', '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrPrefix"))' + msg);
-                },
-                complete: function() {
-                    btn.prop('disabled', false).html(originalBtnHtml);
-                }
-            });
-        }
-
-        function copyPreviousWeek() {
-            let prevWeekStart = new Date(currentWeekStart);
-            prevWeekStart.setDate(prevWeekStart.getDate() - 7);
-            
-            let startStr = getISODateString(prevWeekStart);
-            let endStr = new Date(prevWeekStart);
-            endStr.setDate(endStr.getDate() + 7);
-            
-            $.ajax({
-                url: '/ShiftRegistration/GetEvents',
-                type: 'GET',
-                data: {
-                    start: startStr,
-                    end: getISODateString(endStr),
-                    employeeId: '',
-                    myOnly: true
-                },
-                success: function(events) {
-                    if (events.length === 0) {
-                        showAppToast('warning', @Json.Serialize(SharedResource.ResourceManager.GetString("Shift_ErrNoPrevShifts")));
-                        return;
-                    }
-                    
-                    $('.weekly-shift-cb:not(:disabled)').prop('checked', false);
-                    let today = new Date();
-                    today.setHours(0,0,0,0);
-                    let checkedCount = 0;
-
-                    events.forEach(e => {
-                        let eDate = new Date(e.start.split('T')[0]);
-                        eDate.setDate(eDate.getDate() + 7);
-                        let targetDateStr = getISODateString(eDate);
-                        
-                        if (eDate >= today) {
-                            let cb = $(`.weekly-shift-cb[value="${e.shiftId}_${targetDateStr}"]`);
-                            if (cb.length > 0 && !cb.prop('disabled')) {
-                                cb.prop('checked', true).trigger('change');
-                                checkedCount++;
-                            }
-                        }
-                    });
-
-                    showAppToast('success', @(Json.Serialize(ShiftRegistrationResource.Toast_CopiedFormat)).replace('{0}', checkedCount));
-                },
-                error: function() {
-                    showAppToast('error', '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrLoadPrev"))');
-                }
-            });
-        }
-
-        function filterShifts(text) {
-            text = text.toLowerCase();
-            $('.shift-option').each(function() {
-                var shiftName = $(this).data('shift-name').toLowerCase();
-                if (shiftName.indexOf(text) > -1) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-            });
-        }
-
-        function openCreateModal(dateObj, empId) {
-            var today = new Date();
-            today.setHours(0, 0, 0, 0);
-            
-            if (dateObj < today) {
-                showAppToast('warning', '@Html.Raw(ShiftRegistrationResource.PastDateError)');
-                return;
-            }
-
-            $('#WorkDate').val(getISODateString(dateObj));
-            
-            let displayDate = dateObj.getDate().toString().padStart(2, '0') + '/' + 
-                              (dateObj.getMonth() + 1).toString().padStart(2, '0') + '/' + 
-                              dateObj.getFullYear();
-            $('#modalDateDisplay').text(@(Json.Serialize(ShiftRegistrationResource.Modal_DateFormat)).replace('{0}', displayDate));
-
-            if (empId) {
-                $('#EmployeeId').val(empId);
-                let emp = employeesList.find(e => e.id == empId);
-                if (emp) {
-                    $('#modalEmpName').text(emp.name);
-                }
-            } else {
-                if (employeesList.length > 0) {
-                    let firstEmp = employeesList[0];
-                    if (firstEmp.id === 'me') {
-                        $('#EmployeeId').val(0);
-                        $('#modalEmpName').text(@Json.Serialize(SharedResource.Shift_Me));
-                    } else {
-                        $('#EmployeeId').val(firstEmp.id);
-                        $('#modalEmpName').text(firstEmp.name);
-                    }
-                }
-            }
-            
-            $('.shift-checkbox').prop('checked', false);
-            $('#saveShiftBtnContainer').hide();
-            $('#searchShiftInput').val('');
-            $('.shift-list-container').html('<div class="text-center py-3 text-muted small"><span class="spinner-border spinner-border-sm me-1"></span> ' + escapeHtml(@Json.Serialize(ShiftRegistrationResource.Modal_LoadingShifts)) + '</div>');
-
-            $.get('@Url.Action("AvailableShifts", "ShiftRegistration")', { employeeId: $('#EmployeeId').val(), workDate: $('#WorkDate').val() })
-                .done(function(shifts) {
-                    const container = $('.shift-list-container').empty();
-                    if (!shifts.length) {
-                        container.html($('<div class="text-center py-3 text-muted small">').text(@Json.Serialize(ShiftRegistrationResource.Modal_NoShiftsForDay)));
-                        return;
-                    }
-                    shifts.forEach(function(shift) {
-                        const row = $('<div>').addClass('shift-item d-flex justify-content-between align-items-center py-2 px-2 border-bottom shift-option rounded-2').attr('data-shift-name', shift.name);
-                        const label = $('<label>').attr('for', 'shift_' + shift.id).addClass('form-check-label small fw-medium text-dark cursor-pointer mb-0').text(shift.name + ' (' + shift.time + ')');
-                        const input = $('<input>').attr({ type: 'checkbox', id: 'shift_' + shift.id, name: 'ShiftId', value: shift.id }).addClass('form-check-input shift-checkbox m-0');
-                        row.append(label, input);
-                        container.append(row);
-                    });
-                })
-                .fail(function() {
-                    $('.shift-list-container').html($('<div class="text-center py-3 text-danger small">').text(@Json.Serialize(ShiftRegistrationResource.Modal_LoadShiftsError)));
-                });
-
-            var modal = new bootstrap.Modal(document.getElementById('shiftModal'));
-            modal.show();
-        }
-
-        function openViewModal(eventObj) {
-            $('#vEmployee').text(eventObj.employeeName);
-            $('#vStore').text(eventObj.storeName);
-            $('#vShift').text(eventObj.title);
-            let timeText = (eventObj.startTime && eventObj.endTime) ? `${eventObj.startTime} – ${eventObj.endTime}` : (eventObj.start.replace('T', ' ') + ' – ' + eventObj.end.replace('T', ' '));
-            $('#vTime').text(timeText);
-            
-            let statusHtml = '';
-            if (eventObj.statusId === 1 || eventObj.statusName === 'Approved') {
-                statusHtml = `<span class="badge-status status-approved"><i class="bi bi-check-circle-fill"></i> ${T.approved}</span>`;
-            } else if (eventObj.statusId === 2 || eventObj.statusName === 'Rejected') {
-                statusHtml = `<span class="badge-status status-rejected"><i class="bi bi-x-circle-fill"></i> ${T.rejectedLong}</span>`;
-            } else {
-                statusHtml = `<span class="badge-status status-pending"><i class="bi bi-hourglass-split"></i> ${T.pending}</span>`;
-            }
-            $('#vStatusBadge').html(statusHtml);
-            $('#vStatus').text(eventObj.statusName || '');
-            $('#vNote').text(eventObj.note || '-');
-            $('#vRegistrationId').val(eventObj.id);
-            
-            if (eventObj.rejectionReason) {
-                $('#vRejectionReason').text(eventObj.rejectionReason);
-                $('#vRejectionReasonRow').show();
-            } else {
-                $('#vRejectionReasonRow').hide();
-            }
-
-            if (eventObj.approvedBy) {
-                $('#vApprover').text(eventObj.approvedBy);
-                $('#vApprovedAt').text(eventObj.approvedAt ? `(${eventObj.approvedAt})` : '');
-                $('#vApproverRow').show();
-            } else {
-                $('#vApproverRow').hide();
-            }
-
-            if (!isManager || activeMode === 'my') {
-                if (eventObj.statusId === 1 || eventObj.statusName === 'Approved') {
-                    $('#btnCancelRegistration').hide();
-                    $('#txtApprovedNotice').show();
-                    $('#btnGoToSwapShift').show();
-                } else {
-                    $('#btnCancelRegistration').show();
-                    $('#txtApprovedNotice').hide();
-                    $('#btnGoToSwapShift').hide();
-                }
-            }
-            
-            var modal = new bootstrap.Modal(document.getElementById('viewModal'));
-            modal.show();
-        }
-
-        async function deleteRegistration() {
-            if (!(await AppConfirm({ message: '@Html.Raw(ShiftRegistrationResource.ConfirmCancel)', type: 'danger', icon: 'bi-calendar-x' }))) return;
-            var id = $('#vRegistrationId').val();
-            $.ajax({
-                url: '/ShiftRegistration/Delete',
-                type: 'POST',
-                data: { id: id },
-                headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
-                success: function(res) {
-                    if (res.success) {
-                        $('#viewModal').modal('hide');
-                        showAppToast('success', @Json.Serialize(ShiftRegistrationResource.Toast_CancelSuccess));
-                        fetchEvents();
-                    } else {
-                        showAppToast('error', res.message || @Json.Serialize(ShiftRegistrationResource.Toast_CancelFailed));
-                    }
-                },
-                error: function(err) {
-                    var msg = err.responseJSON?.message || err.responseText || @Json.Serialize(ShiftRegistrationResource.Toast_SystemError);
-                    showAppToast('error', '@Html.Raw(SharedResource.ResourceManager.GetString("Shift_ErrPrefix"))' + msg);
-                }
-            });
-        }
-
-        function showAppToast(type, message) {
-            if (typeof AppToast !== 'undefined') {
-                if (type === 'success') AppToast.success(message);
-                else if (type === 'warning') AppToast.warning(message);
-                else AppToast.error(message);
-            } else {
-                AppToast.error(message);
-            }
-        }
     </script>
+    <script src="~/js/shift-registration/core.js" asp-append-version="true"></script>
+    <script src="~/js/shift-registration/grid.js" asp-append-version="true"></script>
+    <script src="~/js/shift-registration/coverage.js" asp-append-version="true"></script>
+    <script src="~/js/shift-registration/week-picker.js" asp-append-version="true"></script>
+    <script src="~/js/shift-registration/modals.js" asp-append-version="true"></script>
+    <script src="~/js/shift-registration/index.js" asp-append-version="true"></script>
 }

@@ -83,17 +83,17 @@ namespace RWPM.Controllers
 
             // Chỉ đánh dấu được thông báo của chính mình (lọc theo Username trong service)
             var item = await _notificationService.MarkReadAsync(id, CurrentUsername);
-            var unreadCount = await _notificationService.GetUnreadCountAsync(CurrentUsername);
-            if (item == null)
-            {
-                if (!IsAjax) return RedirectToAction(nameof(Index));
-                return Json(new { success = false, message = NR.Err_NotFound, unreadCount });
-            }
-
-            var url = !string.IsNullOrEmpty(item.Url) && Url.IsLocalUrl(item.Url) ? item.Url : null;
+            var url = item != null && !string.IsNullOrEmpty(item.Url) && Url.IsLocalUrl(item.Url) ? item.Url : null;
             if (!IsAjax)
             {
                 return url != null ? LocalRedirect(url) : RedirectToAction(nameof(Index));
+            }
+
+            // Số chưa đọc chỉ cần cho phản hồi JSON (cập nhật badge)
+            var unreadCount = await _notificationService.GetUnreadCountAsync(CurrentUsername);
+            if (item == null)
+            {
+                return Json(new { success = false, message = NR.Err_NotFound, unreadCount });
             }
             return Json(new { success = true, unreadCount, url });
         }

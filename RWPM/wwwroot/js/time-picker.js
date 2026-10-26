@@ -87,7 +87,7 @@
 
     function buildMenu(real, display) {
         var menu = document.createElement('div');
-        menu.className = 'dropdown-menu dropdown-menu-end shadow app-time-menu p-2';
+        menu.className = 'dropdown-menu dropdown-menu-end app-time-menu p-2';
 
         function header(text) {
             var h = document.createElement('div');
@@ -193,6 +193,7 @@
         toggle.setAttribute('data-bs-auto-close', 'outside');
         toggle.setAttribute('aria-expanded', 'false');
         toggle.title = t('timeSuggestions', 'Suggested times');
+        toggle.setAttribute('aria-label', toggle.title);
         toggle.innerHTML = '<i class="bi bi-clock"></i>';
         if (real.disabled) toggle.disabled = true;
 
