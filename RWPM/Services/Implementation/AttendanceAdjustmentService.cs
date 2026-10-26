@@ -6,6 +6,7 @@ using RWPM.Models.Entities;
 using RWPM.Models.ViewModels.ShiftRegistration;
 using RWPM.Resources.Shared;
 using RWPM.Services.Abstraction;
+using RWPM.Common.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,8 +54,16 @@ namespace RWPM.Services.Implementation
             {
                 throw new Exception(RequestResource.Adj_ErrEmployeeNotFound);
             }
+            await WorkflowGuard.EmployeeAsync(_context, username, employee.EmployeeId);
+            var reason = InputRules.Reason(model.Reason, 500);
+            var requestedIn = AttendanceInputRules.ParseClockTime(model.RequestedCheckInTime, "RequestedCheckInTime");
+            var requestedOut = AttendanceInputRules.ParseClockTime(model.RequestedCheckOutTime, "RequestedCheckOutTime");
+            InputRules.Require(requestedIn.HasValue || requestedOut.HasValue, "RequestedCheckInTime",
+                "Cần nhập ít nhất một giờ cần điều chỉnh.", "Enter at least one time to adjust.");
+            InputRules.Require(!model.AttendanceRecordId.HasValue || model.AttendanceRecordId.Value > 0, "AttendanceRecordId",
+                "Mã bản ghi chấm công không hợp lệ.", "Invalid attendance record ID.");
 
-            var targetWorkDate = model.WorkDate ?? DateTime.Today;
+            var targetWorkDate = model.WorkDate?.Date ?? DateTime.Today;
 
             InputRules.Require(!string.IsNullOrWhiteSpace(model.Reason), "Reason",
                 "Vui lòng nhập lý do điều chỉnh.", "Please enter the adjustment reason.");
@@ -68,19 +77,25 @@ namespace RWPM.Services.Implementation
                 "RequestedCheckInTime", "Vui lòng nhập giờ vào hoặc giờ ra cần điều chỉnh.", "Please enter the check-in or check-out time to adjust.");
 
             AttendanceRecord? record = null;
-            if (model.AttendanceRecordId.HasValue && model.AttendanceRecordId.Value > 0)
+            if (model.AttendanceRecordId.HasValue)
             {
                 record = await _context.AttendanceRecord
                     .Include(r => r.Shift)
                     .FirstOrDefaultAsync(r => r.AttendanceId == model.AttendanceRecordId.Value);
 
-                if (record != null && record.Username != employee.Username)
-                {
-                    throw new Exception(RequestResource.Adj_ErrOtherEmployeeRecord);
-                }
+                InputRules.Require(record != null, "AttendanceRecordId", "Không tìm thấy bản ghi chấm công.", "Attendance record not found.");
+                InputRules.Require(record!.Username == employee.Username, "AttendanceRecordId",
+                    "Bản ghi công không thuộc nhân viên đã chọn.", "Attendance record does not belong to the selected employee.");
+                InputRules.Require(!model.WorkDate.HasValue || model.WorkDate.Value.Date == record.Date.Date,
+                    "WorkDate", "Ngày làm việc không khớp bản ghi công.", "Work date does not match the attendance record.");
+                InputRules.Require(!model.ShiftId.HasValue || model.ShiftId == record.ShiftId,
+                    "ShiftId", "Ca làm không khớp bản ghi công.", "Shift does not match the attendance record.");
+                targetWorkDate = record.Date.Date;
             }
             else
             {
+                InputRules.Require(model.WorkDate.HasValue && model.ShiftId is > 0, "WorkDate",
+                    "Cần chọn ngày và ca đã được duyệt.", "Select a date and an approved shift.");
                 // Tìm kiếm bản ghi chấm công tương ứng theo ngày và ca nếu có
                 var query = _context.AttendanceRecord
                     .Include(r => r.Shift)
@@ -93,6 +108,22 @@ namespace RWPM.Services.Implementation
 
                 record = await query.OrderByDescending(r => r.AttendanceId).FirstOrDefaultAsync();
             }
+
+            InputRules.Require(targetWorkDate <= DateTime.Today, "WorkDate", "Không thể điều chỉnh công của ngày tương lai.",
+                "Cannot adjust attendance for a future date.");
+            await AttendanceInputRules.EnsureUnlockedAsync(_context, targetWorkDate);
+            var shiftId = record?.ShiftId ?? model.ShiftId;
+            var registration = await _context.ShiftRegistration.Include(x => x.Shift)
+                .FirstOrDefaultAsync(x => x.EmployeeId == employee.EmployeeId && x.WorkDate == targetWorkDate
+                    && x.ShiftId == shiftId && x.Status == RegistrationStatus.Approved);
+            InputRules.Require(record != null || registration != null, "ShiftId",
+                "Không tìm thấy ca đã duyệt cho ngày làm việc.", "No approved shift exists for this work date.");
+            var effectiveIn = requestedIn ?? record?.CheckInTime;
+            var effectiveOut = requestedOut ?? record?.CheckOutTime;
+            AttendanceInputRules.ValidateTimeOrder(targetWorkDate, effectiveIn, effectiveOut,
+                record?.Shift?.EndDayOffset ?? registration?.Shift?.EndDayOffset ?? 0);
+            InputRules.Require(record == null || effectiveIn != record.CheckInTime || effectiveOut != record.CheckOutTime,
+                "RequestedCheckInTime", "Giờ yêu cầu phải khác giờ hiện tại.", "Requested time must differ from the current time.");
 
             // Kiểm tra xem đã có yêu cầu nào đang chờ duyệt cho bản ghi / ca này chưa
             if (record != null)
@@ -153,9 +184,9 @@ namespace RWPM.Services.Implementation
                 ShiftId = requestShiftId,
                 CurrentCheckInTime = record?.CheckInTime,
                 CurrentCheckOutTime = record?.CheckOutTime,
-                RequestedCheckInTime = model.ParsedRequestedCheckInTime,
-                RequestedCheckOutTime = model.ParsedRequestedCheckOutTime,
-                Reason = model.Reason?.Trim() ?? string.Empty,
+                RequestedCheckInTime = requestedIn,
+                RequestedCheckOutTime = requestedOut,
+                Reason = reason,
                 Status = RegistrationStatus.Pending,
                 CreatedBy = username,
                 CreatedDate = DateTime.Now
@@ -213,6 +244,8 @@ namespace RWPM.Services.Implementation
 
         public async Task ApproveAsync(int id, string approverUsername, TimeSpan? finalCheckInTime = null, TimeSpan? finalCheckOutTime = null, string? approverNote = null)
         {
+            await using var transaction = _context.Database.CurrentTransaction == null
+                ? await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable) : null;
             var request = await _context.AttendanceAdjustmentRequest
                 .Include(r => r.Employee)
                 .Include(r => r.AttendanceRecord)
@@ -227,6 +260,9 @@ namespace RWPM.Services.Implementation
             {
                 throw new Exception(RequestResource.Adj_ErrAlreadyProcessed);
             }
+            await AttendanceInputRules.EnsureUnlockedAsync(_context, request.WorkDate);
+            AttendanceInputRules.ValidateClockTime(finalCheckInTime, "ApprovedCheckInTime");
+            AttendanceInputRules.ValidateClockTime(finalCheckOutTime, "ApprovedCheckOutTime");
 
             await EnsurePeriodUnlockedAsync(_context, request.WorkDate.Date);
 
@@ -239,7 +275,21 @@ namespace RWPM.Services.Implementation
             {
                 record = await _context.AttendanceRecord
                     .FirstOrDefaultAsync(r => r.AttendanceId == request.AttendanceRecordId.Value);
+                InputRules.Require(record != null, "AttendanceRecordId", "Bản ghi công của đơn không còn tồn tại.",
+                    "Attendance record for this request no longer exists.");
             }
+            if (record == null)
+                record = await _context.AttendanceRecord.FirstOrDefaultAsync(r => r.Username == request.Employee.Username
+                    && r.Date == request.WorkDate && r.ShiftId == request.ShiftId);
+            approvedIn ??= record?.CheckInTime;
+            approvedOut ??= record?.CheckOutTime;
+            InputRules.Require(approvedIn.HasValue || approvedOut.HasValue, "ApprovedCheckInTime",
+                "Cần ít nhất một giờ được duyệt.", "At least one approved time is required.");
+            var shift = request.ShiftId.HasValue ? await _context.Shift.FindAsync(request.ShiftId.Value) : null;
+            AttendanceInputRules.ValidateTimeOrder(request.WorkDate, approvedIn, approvedOut, shift?.EndDayOffset ?? 0);
+            InputRules.Require(record == null || approvedIn != record.CheckInTime || approvedOut != record.CheckOutTime,
+                "ApprovedCheckInTime", "Giờ được duyệt phải khác giờ công hiện tại.",
+                "Approved time must differ from current attendance.");
 
             if (record == null)
             {
@@ -270,6 +320,7 @@ namespace RWPM.Services.Implementation
 
             if (record != null)
             {
+                request.AttendanceRecordId = record.AttendanceId;
                 // Ghi nhận lịch sử điều chỉnh
                 var history = new AttendanceAdjustmentHistory
                 {

@@ -11,6 +11,7 @@ using Microsoft.Extensions.Localization;
 using RWPM.Resources.Shared;
 using RWPM.Common.Constants;
 using Microsoft.Extensions.Hosting;
+using RWPM.Common.Validation;
 
 namespace RWPM.Services.Implementation
 {
@@ -74,27 +75,15 @@ namespace RWPM.Services.Implementation
 
             var nowAt = DateTime.Now;
             var now = nowAt.TimeOfDay;
-            ShiftRegistration? matchedRegistration = null;
-            bool isValid = false;
-            string errorMessage = SharedResource.Attendance_Err_NotInAllowedTime;
-
-            // Tìm ca phù hợp nhất với giờ hiện tại
-            foreach (var reg in registrations)
-            {
-                var s = reg.Shift;
-                int eCheckIn = ShiftDefaults.EarlyCheckInMinutes;
-                int lThreshold = ShiftDefaults.LateThresholdMinutes;
-                var startAt = reg.WorkDate.Date.Add(s.StartTime);
-                var start1Early = startAt.AddMinutes(-eCheckIn);
-                var start1Late = startAt.AddMinutes(lThreshold);
-                if (nowAt >= start1Early && nowAt <= start1Late)
-                {
-                    matchedRegistration = reg;
-                    isValid = true;
-                    break;
-                }
-            }
-
+            var matchedRegistration = registrations
+                .Where(r => r.Shift != null)
+                .Where(r => {
+                    var range = ShiftTimeHelper.GetDateTimeRange(r.WorkDate.Date, r.Shift);
+                    return nowAt >= range.StartAt.AddMinutes(-ShiftDefaults.EarlyCheckInMinutes)
+                        && nowAt < range.EndAt;
+                })
+                .OrderBy(r => Math.Abs((nowAt - r.WorkDate.Date.Add(r.Shift.StartTime)).TotalMinutes))
+                .FirstOrDefault();
             if (matchedRegistration == null)
             {
                 // Chỉ xét các ca chưa kết thúc và chưa có bản ghi chấm công
@@ -144,6 +133,9 @@ namespace RWPM.Services.Implementation
 
             var matchedShift = matchedRegistration.Shift;
             var targetStore = matchedRegistration.Store ?? employee.Store; // Fallback to employee store if null
+            InputRules.Require(targetStore != null && targetStore.Latitude.HasValue && targetStore.Longitude.HasValue,
+                "Latitude", "Chi nhánh chưa cấu hình GPS để chấm công.", "Store GPS is not configured for attendance.");
+            if (targetStore != null) AttendanceInputRules.ValidateCoordinates(targetStore.Latitude, targetStore.Longitude);
 
             var existingRecordForShift = await _context.AttendanceRecord
                 .FirstOrDefaultAsync(r => r.Username == username && r.Date == matchedRegistration.WorkDate.Date && r.ShiftId == matchedShift.ShiftId);
@@ -175,10 +167,11 @@ namespace RWPM.Services.Implementation
                     throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_FakeGPS"));
                 }
 
-                // Kiểm tra khoảng cách tối thiểu (chỉ áp dụng nếu minDistance > 0 và minDistance < allowedRadius)
+                // Reject invalid store configuration instead of silently skipping the minimum distance.
                 int minDistance = targetStore.MinAllowedDistanceMeters;
-                int allowedRadius = targetStore.AllowedRadiusMeters > 0 ? targetStore.AllowedRadiusMeters : 500;
-                if (minDistance > 0 && minDistance < allowedRadius && distance < minDistance)
+                int allowedRadius = targetStore.AllowedRadiusMeters;
+                AttendanceInputRules.ValidateRadius(minDistance, allowedRadius);
+                if (minDistance > 0 && distance < minDistance)
                 {
                     throw new Exception(string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_MinDistance"), targetStore.StoreName, Math.Round(distance), minDistance));
                 }
@@ -201,7 +194,7 @@ namespace RWPM.Services.Implementation
                 CheckInLatitude = userLatitude,
                 CheckInLongitude = userLongitude,
                 DistanceMeters = calculatedDistance,
-                CheckInPhotoPath = await SavePhotoAsync(photo, username, "CheckIn")
+                CheckInPhotoPath = await SavePhotoAsync(photo!, username, "CheckIn", photoExtension)
             };
 
             _context.AttendanceRecord.Add(record);
@@ -240,6 +233,16 @@ namespace RWPM.Services.Implementation
             {
                 throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_AlreadyCheckedOut"));
             }
+            if (!record.CheckInTime.HasValue)
+                throw new Exception(SharedResource.Attendance_Err_NotCheckedIn);
+            (DateTime StartAt, DateTime EndAt)? checkInRange = record.Shift == null
+                ? null : ShiftTimeHelper.GetDateTimeRange(record.Date, record.Shift);
+            var actualCheckIn = new[] { -1, 0, 1 }
+                .Select(day => record.Date.AddDays(day).Add(record.CheckInTime.Value))
+                .OrderBy(time => Math.Abs((time - (checkInRange?.StartAt ?? record.Date)).TotalMinutes))
+                .First();
+            InputRules.Require(DateTime.Now > actualCheckIn, "CheckOutTime",
+                "Giờ ra phải sau giờ vào.", "Check-out must follow check-in.");
 
             // Time Validation for CheckOut (Early Check-Out)
             // Người dùng có thể check out bất cứ lúc nào. Việc tính lương sẽ phạt nếu về quá sớm.
@@ -253,6 +256,9 @@ namespace RWPM.Services.Implementation
                 .FirstOrDefaultAsync(sr => employee != null && sr.EmployeeId == employee.EmployeeId && sr.WorkDate == record.Date && sr.ShiftId == record.ShiftId && sr.Status == RWPM.Common.Enums.RegistrationStatus.Approved);
             
             var targetStore = registration?.Store ?? employee?.Store;
+            InputRules.Require(targetStore != null && targetStore.Latitude.HasValue && targetStore.Longitude.HasValue,
+                "Latitude", "Chi nhánh chưa cấu hình GPS để chấm công.", "Store GPS is not configured for attendance.");
+            if (targetStore != null) AttendanceInputRules.ValidateCoordinates(targetStore.Latitude, targetStore.Longitude);
 
             if (targetStore != null && targetStore.Latitude.HasValue && targetStore.Longitude.HasValue)
             {
@@ -273,10 +279,11 @@ namespace RWPM.Services.Implementation
                     throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_FakeGPS"));
                 }
 
-                // Kiểm tra khoảng cách tối thiểu (chỉ áp dụng nếu minDistance > 0 và minDistance < allowedRadius)
+                // Reject invalid store configuration instead of silently skipping the minimum distance.
                 int minDistance = targetStore.MinAllowedDistanceMeters;
-                int allowedRadius = targetStore.AllowedRadiusMeters > 0 ? targetStore.AllowedRadiusMeters : 500;
-                if (minDistance > 0 && minDistance < allowedRadius && distance < minDistance)
+                int allowedRadius = targetStore.AllowedRadiusMeters;
+                AttendanceInputRules.ValidateRadius(minDistance, allowedRadius);
+                if (minDistance > 0 && distance < minDistance)
                 {
                     throw new Exception(string.Format(SharedResource.ResourceManager.GetString("Attendance_Err_MinDistance"), targetStore.StoreName, Math.Round(distance), minDistance));
                 }
@@ -291,7 +298,7 @@ namespace RWPM.Services.Implementation
             record.CheckOutTime = DateTime.Now.TimeOfDay;
             record.CheckOutLatitude = userLatitude;
             record.CheckOutLongitude = userLongitude;
-            record.CheckOutPhotoPath = await SavePhotoAsync(photo, username, "CheckOut");
+            record.CheckOutPhotoPath = await SavePhotoAsync(photo!, username, "CheckOut", photoExtension);
 
             await _context.SaveChangesAsync();
 
@@ -345,7 +352,7 @@ namespace RWPM.Services.Implementation
 
         public async Task AdjustAttendanceAsync(int recordId, TimeSpan? newCheckIn, TimeSpan? newCheckOut, string reason, string modifierUsername)
         {
-            var record = await _context.AttendanceRecord
+            var record = await _context.AttendanceRecord.Include(r => r.Shift)
                 .FirstOrDefaultAsync(r => r.AttendanceId == recordId);
 
             if (record == null)
@@ -361,9 +368,9 @@ namespace RWPM.Services.Implementation
                 AttendanceRecordId = recordId,
                 OldCheckInTime = record.CheckInTime,
                 OldCheckOutTime = record.CheckOutTime,
-                NewCheckInTime = newCheckIn,
-                NewCheckOutTime = newCheckOut,
-                Reason = reason,
+                NewCheckInTime = effectiveIn,
+                NewCheckOutTime = effectiveOut,
+                Reason = reason.Trim(),
                 ModifiedBy = modifierUsername,
                 ModifiedAt = DateTime.Now
             };
@@ -371,8 +378,8 @@ namespace RWPM.Services.Implementation
             _context.AttendanceAdjustmentHistory.Add(history);
 
             // Cập nhật bản ghi gốc
-            record.CheckInTime = newCheckIn;
-            record.CheckOutTime = newCheckOut;
+            record.CheckInTime = effectiveIn;
+            record.CheckOutTime = effectiveOut;
             record.IsAdjusted = true;
 
             await _context.SaveChangesAsync();

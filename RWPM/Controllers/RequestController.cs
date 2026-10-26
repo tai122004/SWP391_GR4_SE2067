@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RWPM.Common.Enums;
+using RWPM.Models.Entities;
 using RWPM.Models.ViewModels.ShiftRegistration;
 using RWPM.Resources.Shared;
 using RWPM.Services.Abstraction;
@@ -553,6 +554,7 @@ namespace RWPM.Controllers
                 }
                 else if (requestType == "Attendance")
                 {
+                    InputRules.Decision((RegistrationStatus)status);
                     var request = await _attendanceAdjustmentService.GetByIdAsync(id);
                     if (request == null)
                     {
@@ -592,8 +594,8 @@ namespace RWPM.Controllers
 
                     if (status == 1)
                     {
-                        var parsedIn = AttendanceAdjustmentCreateVM.ParseTime(approvedCheckInTime);
-                        var parsedOut = AttendanceAdjustmentCreateVM.ParseTime(approvedCheckOutTime);
+                        var parsedIn = AttendanceInputRules.ParseClockTime(approvedCheckInTime, "ApprovedCheckInTime");
+                        var parsedOut = AttendanceInputRules.ParseClockTime(approvedCheckOutTime, "ApprovedCheckOutTime");
 
                         await _attendanceAdjustmentService.ApproveAsync(id, currentUsername ?? "manager", parsedIn, parsedOut, approverNote);
                         return Json(new { success = true, message = RequestResource.Adj_ApproveSuccess });
@@ -770,6 +772,9 @@ namespace RWPM.Controllers
 
                 if (model.RequestType == "Attendance")
                 {
+                    InputRules.Decision((RegistrationStatus)model.Status);
+                    InputRules.Require(model.Ids.All(x => x > 0) && model.Ids.Distinct().Count() == model.Ids.Count,
+                        "Ids", "Danh sách đơn không hợp lệ hoặc bị trùng.", "Invalid or duplicate request IDs.");
                     var currentUsername = User.Identity?.Name;
                     var isSuperOrAdmin = User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
                     var isHR = User.IsInRole("HR");
@@ -824,13 +829,15 @@ namespace RWPM.Controllers
                     foreach (var adjId in model.Ids)
                     {
                         if (model.Status == 1)
-                        {
-                            await _attendanceAdjustmentService.ApproveAsync(adjId, currentUsername ?? "manager");
-                        }
+                            await AttendanceInputRules.EnsureUnlockedAsync(_context, request.WorkDate);
+                        requests.Add(request);
+                    }
+                    foreach (var request in requests)
+                    {
+                        if (model.Status == 1)
+                            await _attendanceAdjustmentService.ApproveAsync(request.AttendanceAdjustmentRequestId, currentUsername ?? "manager");
                         else
-                        {
-                            await _attendanceAdjustmentService.RejectAsync(adjId, model.Reason ?? "", currentUsername ?? "manager");
-                        }
+                            await _attendanceAdjustmentService.RejectAsync(request.AttendanceAdjustmentRequestId, model.Reason ?? "", currentUsername ?? "manager");
                     }
                     await adjBatch.CommitAsync();
                     return Json(new { success = true });

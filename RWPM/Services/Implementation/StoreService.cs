@@ -118,6 +118,11 @@ namespace RWPM.Services.Implementation
         private async Task ValidateStoreAsync(global::Store entity)
         {
             InputRules.Require(entity.OpeningTime.HasValue == entity.ClosingTime.HasValue, "ClosingTime", "Phải nhập đủ giờ mở và đóng cửa.", "Provide both opening and closing times.");
+            AttendanceInputRules.ValidateCoordinates(entity.Latitude, entity.Longitude);
+            AttendanceInputRules.ValidateRadius(entity.MinAllowedDistanceMeters, entity.AllowedRadiusMeters);
+            InputRules.Require(!entity.IsActive || entity.Latitude.HasValue, "Latitude",
+                "Vui lòng chọn vị trí chi nhánh trên bản đồ trước khi kích hoạt.",
+                "Select the store location on the map before activating it.");
             if (entity.OpeningTime.HasValue)
                 InputRules.Require(entity.OpeningTime >= TimeSpan.Zero && entity.OpeningTime < TimeSpan.FromDays(1)
                     && entity.ClosingTime >= TimeSpan.Zero && entity.ClosingTime < TimeSpan.FromDays(1)

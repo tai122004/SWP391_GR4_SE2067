@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using RWPM.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using RWPM.Common.Validation;
 using System.Linq;
 
 namespace RWPM.Controllers
@@ -168,13 +169,9 @@ namespace RWPM.Controllers
             var username = User.Identity?.Name ?? User.FindFirstValue(ClaimTypes.Name);
             if (string.IsNullOrEmpty(username)) return Challenge();
 
-            double? parsedLat = null;
-            double? parsedLng = null;
-            if (double.TryParse(userLatitude?.Replace(",", "."), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double lat)) parsedLat = lat;
-            if (double.TryParse(userLongitude?.Replace(",", "."), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double lng)) parsedLng = lng;
-
             try
             {
+                var (parsedLat, parsedLng) = AttendanceInputRules.ParseCoordinates(userLatitude, userLongitude);
                 var result = await _attendanceService.CheckInAsync(username, parsedLat, parsedLng, photo);
                 if (!string.IsNullOrEmpty(result.WarningMessage))
                 {
@@ -200,13 +197,9 @@ namespace RWPM.Controllers
             var username = User.Identity?.Name ?? User.FindFirstValue(ClaimTypes.Name);
             if (string.IsNullOrEmpty(username)) return Challenge();
 
-            double? parsedLat = null;
-            double? parsedLng = null;
-            if (double.TryParse(userLatitude?.Replace(",", "."), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double lat)) parsedLat = lat;
-            if (double.TryParse(userLongitude?.Replace(",", "."), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double lng)) parsedLng = lng;
-
             try
             {
+                var (parsedLat, parsedLng) = AttendanceInputRules.ParseCoordinates(userLatitude, userLongitude);
                 var result = await _attendanceService.CheckOutAsync(username, parsedLat, parsedLng, photo);
                 if (!string.IsNullOrEmpty(result.WarningMessage))
                 {
@@ -228,6 +221,7 @@ namespace RWPM.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,HR,SuperAdmin")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -246,10 +240,13 @@ namespace RWPM.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,HR,SuperAdmin")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Adjust(int recordId, TimeSpan? newCheckInTime, TimeSpan? newCheckOutTime, string reason)
         {
             try
             {
+                if (!ModelState.IsValid)
+                    throw new InputValidationException("Time", InputRules.Text("Giờ điều chỉnh không hợp lệ.", "Invalid adjustment time."));
                 var username = User.Identity?.Name ?? "System";
                 if (string.IsNullOrWhiteSpace(reason))
                 {
