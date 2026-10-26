@@ -219,6 +219,9 @@
   <data name="Employee_NotExists" xml:space="preserve">
     <value>Employee does not exists.</value>
   </data>
+  <data name="Employee_IdNotExists" xml:space="preserve">
+    <value>No employee found with ID</value>
+  </data>
   <data name="DeptCat_CodeNotExists" xml:space="preserve">
     <value>Department code does not exists.</value>
   </data>

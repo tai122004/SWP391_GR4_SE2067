@@ -1,4 +1,5 @@
 ﻿@model ErrorViewModel
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
 @{
     ViewData["Title"] = RWPM.Resources.Shared.ErrorPage.Title;
 }
@@ -13,7 +14,11 @@
             <small>@RWPM.Resources.Shared.ErrorPage.RequestId <code>@Model.RequestId</code></small>
         </p>
     }
-    <p><strong>@SharedResource.Detail: </strong>@Model.Message</p>
+    @* Chỉ hiện chi tiết exception ở môi trường Development, tránh lộ lỗi SQL/đường dẫn cho người dùng *@
+    @if (Env.IsDevelopment())
+    {
+        <p><strong>@SharedResource.Detail: </strong>@Model.Message</p>
+    }
 </div>
 
 

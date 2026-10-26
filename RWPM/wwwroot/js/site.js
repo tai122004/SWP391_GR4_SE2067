@@ -482,7 +482,8 @@ function copyToClipboard(text, successMessage) {
     }
 }
 
-// 3. Chuyển đổi tên tiếng Việt thành username gợi ý (VD: "Nguyễn Văn An" -> "an.nv")
+// 3. Chuyển đổi tên tiếng Việt thành username gợi ý (VD: "Nguyễn Văn An" -> "an_nv")
+// Kết quả khớp UsernameRegex (bắt đầu bằng chữ, chỉ gồm chữ/số/_/-) và dài 5-30 ký tự
 function generateUsernameFromFullName(fullName) {
     if (!fullName) return "";
     let str = fullName.toLowerCase().trim();
@@ -491,11 +492,18 @@ function generateUsernameFromFullName(fullName) {
     str = str.replace(/[^a-z0-9\s]/g, '');
     const parts = str.split(/\s+/).filter(Boolean);
     if (parts.length === 0) return "";
-    if (parts.length === 1) return parts[0];
-    
-    const lastName = parts[parts.length - 1];
-    const initials = parts.slice(0, parts.length - 1).map(p => p[0]).join('');
-    return `${lastName}.${initials}`;
+
+    let result;
+    if (parts.length === 1) {
+        result = parts[0];
+    } else {
+        const lastName = parts[parts.length - 1];
+        const initials = parts.slice(0, parts.length - 1).map(p => p[0]).join('');
+        result = `${lastName}_${initials}`;
+    }
+    if (!/^[a-z]/.test(result)) result = 'u' + result;
+    if (result.length < 5) result = result.padEnd(5, '0');
+    return result.substring(0, 30);
 }
 
 // 4. Modal Đổi Mật Khẩu Nhanh
@@ -616,9 +624,17 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-    const controller = window.location.pathname.split('/').filter(Boolean)[0]?.toLowerCase() || 'home';
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    const controller = pathParts[0]?.toLowerCase() || 'home';
+    const action = pathParts[1]?.toLowerCase() || 'index';
+    const actionList = function (value) { return (value || '').toLowerCase().split(',').map(function (s) { return s.trim(); }).filter(Boolean); };
     document.querySelectorAll('.app-nav-link[data-nav-controller]').forEach(function (link) {
-        if (link.dataset.navController.toLowerCase() === controller) {
+        // data-nav-actions: chỉ active khi action nằm trong danh sách; data-nav-exclude-actions: không active với các action này
+        const onlyActions = actionList(link.dataset.navActions);
+        const excludedActions = actionList(link.dataset.navExcludeActions);
+        if (link.dataset.navController.toLowerCase() === controller
+            && (onlyActions.length === 0 || onlyActions.includes(action))
+            && !excludedActions.includes(action)) {
             link.classList.add('active');
             link.setAttribute('aria-current', 'page');
         }

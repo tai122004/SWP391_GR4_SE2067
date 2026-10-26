@@ -14,7 +14,7 @@ namespace RWPM.Models.ViewModels.Payroll
 
         // Metrics
         public int TotalEmployeesCount => Details.Count;
-        public double TotalHours => Details.Sum(d => d.TotalWorkHours);
+        public double TotalHours => Details.Sum(d => d.TotalWorkHours + d.PaidLeaveHours);
         public decimal TotalAmount => Details.Sum(d => d.TotalSalary);
         public int MissingRateCount => Details.Count(d => d.Status == PayrollDetailStatus.MissingRate);
         public int WarningCount => Details.Count(d => d.Status == PayrollDetailStatus.HasWarnings);

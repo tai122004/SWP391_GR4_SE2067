@@ -565,6 +565,15 @@ namespace RWPM.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No employee found with ID.
+        /// </summary>
+        public static string Employee_IdNotExists {
+            get {
+                return ResourceManager.GetString("Employee_IdNotExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Employee does not exists..
         /// </summary>
         public static string Employee_NotExists {

@@ -48,7 +48,7 @@
                     <div class="small text-muted font-monospace"><i class="bi bi-at"></i>@Model.Username</div>
                 </div>
                 <div class="ms-auto">
-                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="openQuickResetPassword('@Model.Username', '@Model.FullName')">
+                    <button type="button" class="btn btn-outline-primary btn-sm" data-username="@Model.Username" data-fullname="@Model.FullName" onclick="openQuickResetPassword(this.dataset.username, this.dataset.fullname)">
                         <i class="bi bi-key me-1"></i> @AccountSharedResource.Modal_QuickResetTitle
                     </button>
                 </div>
@@ -79,7 +79,7 @@
                     <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small" asp-for="DateOfBirth">@AccountModelResource.DateOfBirth</label>
+                    <label class="form-label fw-semibold small required" asp-for="DateOfBirth">@AccountModelResource.DateOfBirth</label>
                     <input class="form-control" type="date" asp-for="DateOfBirth" value="@(Model.DateOfBirth.HasValue ? Model.DateOfBirth.Value.ToString("yyyy-MM-dd") : "")" />
                     <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
                 </div>
@@ -147,12 +147,20 @@
                 </div>
 
                 <div class="row g-3 mb-3">
-                    <div class="col-md-6" id="employmentTypeCol">
+                    <div class="col-md-4" id="citizenIdCol">
+                        <label class="form-label fw-semibold small required" asp-for="CitizenId">@EmployeeModelResource.CitizenId</label>
+                        <input class="form-control font-monospace" asp-for="CitizenId" type="text" inputmode="numeric" maxlength="12" autocomplete="off"
+                               data-citizen-id-input placeholder="@EmployeeModelResource.CitizenId"
+                               data-val-regex="@RWPM.Common.Validation.InputRules.Text("Số CCCD/CMND phải gồm 12 chữ số (CCCD) hoặc 9 chữ số (CMND).", "Citizen ID must contain 12 digits (CCCD) or 9 digits (old ID card).")"
+                               data-val-regex-pattern="^([0-9]{9}|[0-9]{12})$" />
+                        <span asp-validation-for="CitizenId" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4" id="employmentTypeCol">
                         <label class="form-label fw-semibold small" asp-for="EmploymentType">@EmployeeModelResource.EmploymentType</label>
                         <select class="form-select" asp-for="EmploymentType" asp-items="Html.GetEnumSelectList<RWPM.Common.Enums.EmploymentType>()">
                         </select>
                     </div>
-                    <div class="col-md-6" id="hourlyRateCol">
+                    <div class="col-md-4" id="hourlyRateCol">
                         <label class="form-label fw-semibold small required" asp-for="HourlyRate">@EmployeeModelResource.HourlyRate</label>
                         <div class="input-group">
                             <input class="form-control" asp-for="HourlyRate" asp-format="{0:0}" type="number" min="0" step="1000" placeholder="25000" />
@@ -254,7 +262,7 @@
 
                 $('#empCodeCol').removeClass('col-md-6').addClass('col-md-4');
                 $('#joinDateCol').removeClass('col-md-6').addClass('col-md-4');
-                $('#hourlyRateCol').removeClass('col-md-12').addClass('col-md-6');
+                $('#hourlyRateCol').removeClass('col-md-6 col-md-8').addClass('col-md-4');
 
                 $('#storeSelectInput').prop('disabled', false);
                 $('#employeeSectionTitleText').text('@Html.Raw(AccountSharedResource.Create_Section_StoreInfo)');
@@ -266,7 +274,8 @@
 
                 $('#empCodeCol').removeClass('col-md-6').addClass('col-md-4');
                 $('#joinDateCol').removeClass('col-md-6').addClass('col-md-4');
-                $('#hourlyRateCol').removeClass('col-md-12').addClass('col-md-6');
+                // HR không có hình thức làm việc -> ô lương theo giờ chiếm phần còn lại của hàng
+                $('#hourlyRateCol').removeClass('col-md-4 col-md-6').addClass('col-md-8');
 
                 $('#storeSelectInput').prop('disabled', false);
                 $('#employeeSectionTitleText').text(@Json.Serialize(AccountSharedResource.Create_Section_HrInfo));

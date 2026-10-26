@@ -23,10 +23,12 @@ namespace RWPM.Services.Implementation
 
         public async Task<List<LeaveRequest>> GetLeaveRequestsAsync(DateTime start, DateTime end, int? storeId = null, RegistrationStatus? status = null)
         {
+            var startDay = start.Date;
+            var endExclusive = end.Date.AddDays(1);
             var query = _context.LeaveRequest
                 .Include(x => x.Employee).ThenInclude(e => e.Account)
                 .Include(x => x.Store)
-                .Where(x => (x.StartDate <= end && x.EndDate >= start) || (x.CreatedDate >= start && x.CreatedDate <= end));
+                .Where(x => (x.StartDate <= end && x.EndDate >= start) || (x.CreatedDate >= startDay && x.CreatedDate < endExclusive));
 
             if (storeId.HasValue)
             {
@@ -174,12 +176,16 @@ namespace RWPM.Services.Implementation
                     .Select(x => new LeaveScheduleEntry { RegistrationId = x.ShiftRegistrationId, ShiftId = x.ShiftId,
                         Date = x.WorkDate.Date, ShiftName = x.Shift.ShiftName, StartTime = x.Shift.StartTime,
                         EndTime = x.Shift.EndTime, ScheduledHours = x.Shift.ScheduledWorkHours }).ToList());
-                string leaveTypeText = leaveReq.LeaveType == LeaveType.Paid ? "nghỉ có phép" : "nghỉ không phép";
+                string leaveTypeText = leaveReq.LeaveType == LeaveType.Paid
+                    ? InputRules.Text("nghỉ có phép", "paid leave")
+                    : InputRules.Text("nghỉ không lương", "unpaid leave");
                 foreach (var shift in affectedShifts)
                 {
                     shift.Status = RegistrationStatus.Rejected;
-                    shift.RejectionReason = $"Hủy do {leaveTypeText} (Đơn nghỉ #{leaveReq.LeaveRequestId} từ {leaveReq.StartDate:dd/MM/yyyy} đến {leaveReq.EndDate:dd/MM/yyyy})";
-                    shift.Note = (string.IsNullOrEmpty(shift.Note) ? "" : shift.Note + " | ") + $"[Đã hủy do {leaveTypeText}]";
+                    shift.RejectionReason = InputRules.Text(
+                        $"Hủy do {leaveTypeText} (Đơn nghỉ #{leaveReq.LeaveRequestId} từ {leaveReq.StartDate:dd/MM/yyyy} đến {leaveReq.EndDate:dd/MM/yyyy})",
+                        $"Cancelled due to {leaveTypeText} (Leave request #{leaveReq.LeaveRequestId} from {leaveReq.StartDate:dd/MM/yyyy} to {leaveReq.EndDate:dd/MM/yyyy})");
+                    shift.Note = (string.IsNullOrEmpty(shift.Note) ? "" : shift.Note + " | ") + InputRules.Text($"[Đã hủy do {leaveTypeText}]", $"[Cancelled due to {leaveTypeText}]");
                     shift.UpdatedDate = DateTime.Now;
                     shift.UpdatedBy = approverUsername;
                 }

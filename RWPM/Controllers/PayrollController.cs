@@ -105,7 +105,10 @@ namespace RWPM.Controllers
                 ViewBag.IsAdminOrHR = IsAdminOrHR;
                 ViewBag.IsStoreManager = IsStoreManager;
                 ViewBag.CurrentStoreId = effectiveStoreId;
-                ViewBag.AuditLogs = await _payrollService.GetPayrollAuditLogsAsync(id);
+                // Lịch sử thao tác chứa tổng quỹ lương toàn công ty -> chỉ Admin/HR được xem
+                ViewBag.AuditLogs = IsAdminOrHR
+                    ? await _payrollService.GetPayrollAuditLogsAsync(id)
+                    : new List<RWPM.Models.Entities.PayrollAuditLog>();
                 return View(vm);
             }
             catch (KeyNotFoundException)

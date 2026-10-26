@@ -230,6 +230,8 @@ namespace RWPM.Services.Implementation
 
         public async Task<List<ShiftSwapRequest>> GetSwapRequestsAsync(DateTime start, DateTime end, int? storeId = null, RegistrationStatus? status = null)
         {
+            var startDay = start.Date;
+            var endExclusive = end.Date.AddDays(1);
             var query = _context.ShiftSwapRequest
                 .Include(x => x.RequesterEmployee).ThenInclude(e => e.Account)
                 .Include(x => x.TargetEmployee).ThenInclude(e => e.Account)
@@ -237,7 +239,7 @@ namespace RWPM.Services.Implementation
                 .Include(x => x.TargetRegistration).ThenInclude(r => r.Shift)
                 .Include(x => x.TargetShift)
                 .Include(x => x.Store)
-                .Where(x => x.CreatedDate >= start && x.CreatedDate <= end);
+                .Where(x => x.CreatedDate >= startDay && x.CreatedDate < endExclusive);
 
             if (storeId.HasValue)
             {
@@ -362,13 +364,15 @@ namespace RWPM.Services.Implementation
                     // Hoán đổi nhân viên giữa 2 ca
                     sourceReg.EmployeeId = originalTargetId;
                     sourceReg.Note = (string.IsNullOrEmpty(sourceReg.Note) ? "" : sourceReg.Note + " | ") 
-                                     + $"Nhận đổi ca từ NV {originalRequesterId} (Đơn #{swapReq.ShiftSwapRequestId})";
+                                     + InputRules.Text($"Nhận đổi ca từ NV {originalRequesterId} (Đơn #{swapReq.ShiftSwapRequestId})",
+                                         $"Shift swapped from employee {originalRequesterId} (Request #{swapReq.ShiftSwapRequestId})");
                     sourceReg.UpdatedDate = DateTime.Now;
                     sourceReg.UpdatedBy = approverUsername;
 
                     targetReg.EmployeeId = originalRequesterId;
                     targetReg.Note = (string.IsNullOrEmpty(targetReg.Note) ? "" : targetReg.Note + " | ") 
-                                     + $"Nhận đổi ca từ NV {originalTargetId} (Đơn #{swapReq.ShiftSwapRequestId})";
+                                     + InputRules.Text($"Nhận đổi ca từ NV {originalTargetId} (Đơn #{swapReq.ShiftSwapRequestId})",
+                                         $"Shift swapped from employee {originalTargetId} (Request #{swapReq.ShiftSwapRequestId})");
                     targetReg.UpdatedDate = DateTime.Now;
                     targetReg.UpdatedBy = approverUsername;
                 }
@@ -390,7 +394,7 @@ namespace RWPM.Services.Implementation
                     sourceReg.ShiftId = swapReq.TargetShiftId.Value;
                     sourceReg.WorkDate = swapReq.TargetWorkDate.Value.Date;
                     sourceReg.Note = (string.IsNullOrEmpty(sourceReg.Note) ? "" : sourceReg.Note + " | ") 
-                                     + $"Chuyển ca theo yêu cầu #{swapReq.ShiftSwapRequestId}";
+                                     + InputRules.Text($"Chuyển ca theo yêu cầu #{swapReq.ShiftSwapRequestId}", $"Shift changed per request #{swapReq.ShiftSwapRequestId}");
                     sourceReg.UpdatedDate = DateTime.Now;
                     sourceReg.UpdatedBy = approverUsername;
                 }

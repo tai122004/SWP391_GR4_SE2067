@@ -56,8 +56,9 @@ namespace RWPM.Models.ViewModels.Employee
         public int AnnualLeaveBalance { get; set; } = 12;
 
         [Display(Name = "CitizenId", ResourceType = typeof(Resources.Models.Employee))]
-        [MaxLengthLocalized(20)]
-        public string? CitizenId { get => _citizenId; set => _citizenId = value?.Trim(); }
+        [RequiredLocalization]
+        [MaxLengthLocalized(12)]
+        public string? CitizenId { get => _citizenId; set => _citizenId = InputRules.NormalizeCitizenId(value); }
 
         // Thông tin liên lạc
         [Display(Name = "PhoneNumber", ResourceType = typeof(Resources.Models.Acc))]

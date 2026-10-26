@@ -35,12 +35,13 @@ namespace RWPM.Services.Implementation
                NoTracking = false, 
             }) ?? throw new ModelValidationException("Auth_InvalidCredentials");
 
-            if (!account.IsActive)
-                throw new ModelValidationException("Acc_IsLock", account.Username);
-
             var result = _hasher.VerifyHashedPassword(account, account.Password, viewModel.Password);
             if (result != PasswordVerificationResult.Success)
                 throw new ModelValidationException("Auth_InvalidCredentials");
+
+            // Chỉ báo tài khoản bị khóa sau khi mật khẩu đúng, tránh lộ trạng thái tài khoản
+            if (!account.IsActive)
+                throw new ModelValidationException("Acc_IsLock", account.Username);
 
             var claims = new List<Claim>
             {

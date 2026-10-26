@@ -62,8 +62,9 @@ namespace RWPM.Models.ViewModels.Employee
         public int AnnualLeaveBalance { get; set; } = 12;
 
         [Display(Name = "CitizenId", ResourceType = typeof(Resources.Models.Employee))]
-        [MaxLengthLocalized(20)]
-        public string? CitizenId { get => _citizenId; set => _citizenId = value?.Trim(); }
+        [RequiredLocalization]
+        [MaxLengthLocalized(12)]
+        public string? CitizenId { get => _citizenId; set => _citizenId = InputRules.NormalizeCitizenId(value); }
 
         // Thông tin cá nhân liên kết với Account
         [Display(Name = "PhoneNumber", ResourceType = typeof(Resources.Models.Acc))]
@@ -154,6 +155,11 @@ namespace RWPM.Models.ViewModels.Employee
                 {
                     entity.Account.IsActive = false;
                     entity.IsActive = false;
+                }
+                else
+                {
+                    // Đồng bộ trạng thái tài khoản theo hồ sơ (vd: sửa từ Thôi việc về Chính thức thì mở khóa)
+                    entity.Account.IsActive = IsActive;
                 }
             }
         }

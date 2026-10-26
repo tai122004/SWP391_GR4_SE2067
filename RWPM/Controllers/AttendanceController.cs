@@ -162,6 +162,7 @@ namespace RWPM.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> CheckIn(string? userLatitude = null, string? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
         {
             var username = User.Identity?.Name ?? User.FindFirstValue(ClaimTypes.Name);
@@ -193,6 +194,7 @@ namespace RWPM.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> CheckOut(string? userLatitude = null, string? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
         {
             var username = User.Identity?.Name ?? User.FindFirstValue(ClaimTypes.Name);
@@ -224,6 +226,7 @@ namespace RWPM.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,HR,SuperAdmin")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -241,6 +244,7 @@ namespace RWPM.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,HR,SuperAdmin")]
         public async Task<IActionResult> Adjust(int recordId, TimeSpan? newCheckInTime, TimeSpan? newCheckOutTime, string reason)
         {

@@ -388,8 +388,8 @@
                                 <strong class="text-dark fs-6" id="detailEmployeeName"></strong>
                             </div>
                             <div class="col-sm-6">
-                                <span class="text-muted small d-block mb-1"><i class="bi bi-building me-1"></i>@RequestResource.Department:</span>
-                                <strong class="text-dark fs-6">@SharedResource.Req_HR</strong>
+                                <span class="text-muted small d-block mb-1"><i class="bi bi-building me-1"></i>@RequestResource.Export_ColBranch:</span>
+                                <strong class="text-dark fs-6" id="detailStoreName"></strong>
                             </div>
                         </div>
                     </div>
@@ -1203,7 +1203,8 @@
             adjustmentSummary = x.AdjustmentSummary ?? "",
             requesterUsername = x.RequesterUsername ?? "",
             requesterRole = (int?)x.RequesterRole,
-            storeId = x.StoreId
+            storeId = x.StoreId,
+            storeName = x.StoreName ?? ""
         })));
 
         var currentUsername = '@(User.Identity?.Name ?? "")';
@@ -1509,6 +1510,7 @@
 
             $('#detailTypeName').text(req.requestTypeName);
             $('#detailEmployeeName').text(req.employeeName);
+            $('#detailStoreName').text(req.storeName || '-');
             $('#detailCreatedDate').text(req.createdDateStr);
             $('#detailCode').text(req.code);
             $('#detailWorkDate').text(req.workDateStr);
@@ -1760,6 +1762,7 @@
                     selectedIds.push(parseInt($(this).val()));
                 });
 
+                if (!ensureSingleSelectedType()) return;
                 var firstChecked = $('.request-checkbox:checked').first();
                 var reqType = firstChecked.data('type') || 'ShiftReg';
 
@@ -1791,6 +1794,17 @@
                     }
                 });
             }
+        }
+
+        // Duyệt/từ chối hàng loạt chỉ áp dụng cho một loại đơn mỗi lần (Id các loại đơn có thể trùng nhau)
+        function ensureSingleSelectedType() {
+            var types = new Set();
+            $('.request-checkbox:checked').each(function() { types.add($(this).data('type') || 'ShiftReg'); });
+            if (types.size > 1) {
+                AppToast.warning('@Html.Raw(RWPM.Common.Validation.InputRules.Text("Vui lòng chỉ chọn các đơn cùng một loại để duyệt/từ chối hàng loạt.", "Please select requests of a single type for bulk approve/reject."))');
+                return false;
+            }
+            return true;
         }
 
         async function deleteSelectedRequest() {
@@ -1845,6 +1859,7 @@
             });
 
             if (selectedIds.length === 0) return;
+            if (!ensureSingleSelectedType()) return;
 
             if (status === 2) {
                 pendingRejectType = 'bulk';
@@ -1954,7 +1969,8 @@
             $('#btnSubmitLeave').prop('disabled', false);
             $('#leaveBalanceAlert').addClass('d-none');
 
-            const today = new Date().toISOString().split('T')[0];
+            const nowLocal = new Date();
+            const today = nowLocal.getFullYear() + '-' + String(nowLocal.getMonth() + 1).padStart(2, '0') + '-' + String(nowLocal.getDate()).padStart(2, '0');
             $('#leaveStartDate').val(today);
             $('#leaveEndDate').val(today);
             $('#leaveStartDate').attr('min', today);
@@ -2126,8 +2142,10 @@
             $('#apprModal_ReqInOut').text((req.requestedCheckInTimeStr || '--:--') + ' ~ ' + (req.requestedCheckOutTimeStr || '--:--'));
             $('#apprModal_Reason').text(req.note || @Json.Serialize(RequestResource.Appr_NoReason));
 
-            var inVal = (req.requestedCheckInTimeStr && req.requestedCheckInTimeStr !== '-') ? req.requestedCheckInTimeStr : '';
-            var outVal = (req.requestedCheckOutTimeStr && req.requestedCheckOutTimeStr !== '-') ? req.requestedCheckOutTimeStr : '';
+            // Giờ yêu cầu trống thì điền sẵn giờ hiện tại của bản ghi chấm công để không bị ghi đè thành rỗng khi duyệt
+            var hasTime = function(v) { return v && v !== '-'; };
+            var inVal = hasTime(req.requestedCheckInTimeStr) ? req.requestedCheckInTimeStr : (hasTime(req.actualCheckInTimeStr) ? req.actualCheckInTimeStr : '');
+            var outVal = hasTime(req.requestedCheckOutTimeStr) ? req.requestedCheckOutTimeStr : (hasTime(req.actualCheckOutTimeStr) ? req.actualCheckOutTimeStr : '');
             $('#apprModal_ApprovedCheckIn').val(inVal);
             $('#apprModal_ApprovedCheckOut').val(outVal);
             $('#apprModal_ApproverNote').val('');

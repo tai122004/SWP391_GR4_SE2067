@@ -1952,6 +1952,12 @@ namespace RWPM.Resources.Shared {
             }
         }
 
+        public static string Attendance_Err_LocateFailed {
+            get {
+                return ResourceManager.GetString("Attendance_Err_LocateFailed", resourceCulture);
+            }
+        }
+
         public static string Js_PasswordMinLength {
             get {
                 return ResourceManager.GetString("Js_PasswordMinLength", resourceCulture);

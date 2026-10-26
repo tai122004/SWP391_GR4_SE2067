@@ -24,6 +24,10 @@
 @foreach (var shift in Model.PanigationResponse.Data)
 {
     var stores = string.Join(", ", shift.StoreShifts.Where(x => x.IsActive).Select(x => x.Store.StoreName));
+    int? managedStoreId = ViewBag.ManagedStoreId as int?;
+    var isActive = managedStoreId.HasValue
+        ? shift.IsActive && shift.StoreShifts.Any(x => x.StoreId == managedStoreId.Value && x.IsActive)
+        : shift.IsActive;
     <tr>
     <td class="fw-semibold">@shift.ShiftName</td><td>@stores</td>
     <td class="text-nowrap">@shift.StartTime.ToString(@"hh\:mm") – @shift.EndTime.ToString(@"hh\:mm") @if (shift.EndDayOffset == 1) { <span class="text-muted">(@T("NextDay"))</span> }</td>
@@ -31,13 +35,13 @@
     <td>
         @if (ViewBag.CanManageShifts == true)
         {
-            <button type="button" class="shift-status status-toggle border-0 bg-transparent p-0" data-id="@shift.ShiftId" data-active="@shift.IsActive.ToString().ToLowerInvariant()" data-active-label="@StatusText(true)" data-inactive-label="@StatusText(false)" aria-pressed="@shift.IsActive" title="@StatusText(shift.IsActive)">
-                <span class="status-dot @(shift.IsActive ? "is-active" : "is-inactive")"></span><span>@StatusText(shift.IsActive)</span>
+            <button type="button" class="shift-status status-toggle border-0 bg-transparent p-0" data-id="@shift.ShiftId" data-active="@isActive.ToString().ToLowerInvariant()" data-active-label="@StatusText(true)" data-inactive-label="@StatusText(false)" aria-pressed="@isActive" title="@StatusText(isActive)">
+                <span class="status-dot @(isActive ? "is-active" : "is-inactive")"></span><span>@StatusText(isActive)</span>
             </button>
         }
         else
         {
-            <span class="shift-status"><span class="status-dot @(shift.IsActive ? "is-active" : "is-inactive")"></span><span>@StatusText(shift.IsActive)</span></span>
+            <span class="shift-status"><span class="status-dot @(isActive ? "is-active" : "is-inactive")"></span><span>@StatusText(isActive)</span></span>
         }
     </td>
     <td class="text-end text-nowrap"><button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#detail-@shift.ShiftId" aria-label="@T("ViewAction")"><i class="bi bi-eye"></i></button> @if (ViewBag.CanManageShifts == true) { <a asp-action="Edit" asp-route-id="@shift.ShiftId" class="btn btn-outline-secondary btn-sm" aria-label="@T("EditAction")"><i class="bi bi-pencil-square"></i></a> }</td>

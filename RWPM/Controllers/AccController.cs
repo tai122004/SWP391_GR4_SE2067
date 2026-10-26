@@ -209,6 +209,12 @@ namespace RWPM.Controllers
                         ModelState.AddModelError(nameof(viewModel.EmployeeCode), string.Format(AccRes.Err_EmployeeCodeExists, viewModel.EmployeeCode));
                     }
                 }
+                if (!viewModel.HourlyRate.HasValue || viewModel.HourlyRate <= 0)
+                {
+                    ModelState.AddModelError(nameof(viewModel.HourlyRate), InputRules.Text(
+                        "Vui lòng nhập mức lương theo giờ (lớn hơn 0) để có thể tính lương cho nhân viên.",
+                        "Please enter an hourly rate greater than 0 so that payroll can be calculated."));
+                }
             }
             else if (isHrRole)
             {
@@ -265,9 +271,16 @@ namespace RWPM.Controllers
                 InputRules.ValidateBirthDate(viewModel.DateOfBirth);
                 InputRules.Require(viewModel.JoinDate.HasValue, "JoinDate", "Chưa chọn ngày vào làm.", "Select a join date.");
                 InputRules.ValidateEmployment(viewModel.EmployeeCode ?? "", viewModel.JoinDate ?? default, viewModel.DateOfBirth,
-                    null, viewModel.EmploymentType, EmploymentStatus.Official, viewModel.HourlyRate, null, 12, null);
+                    null, viewModel.EmploymentType, EmploymentStatus.Official, viewModel.HourlyRate, null, 12, viewModel.CitizenId);
             }
             catch (InputValidationException ex) { ModelState.AddModelError(ex.Field, ex.Message); }
+
+            // Kiểm tra trùng số CCCD/CMND
+            if (!string.IsNullOrWhiteSpace(viewModel.CitizenId)
+                && await _context.Employee.AnyAsync(e => e.CitizenId == viewModel.CitizenId))
+            {
+                ModelState.AddModelError(nameof(viewModel.CitizenId), InputRules.Text("Số CCCD/CMND đã được dùng cho nhân viên khác.", "This citizen ID is already used by another employee."));
+            }
 
             if (!ModelState.IsValid)
             {
@@ -292,6 +305,7 @@ namespace RWPM.Controllers
                         JoinDate = viewModel.JoinDate?.Date ?? DateTime.Today,
                         EmploymentType = isHrRole ? RWPM.Common.Enums.EmploymentType.FullTime : viewModel.EmploymentType,
                         HourlyRate = viewModel.HourlyRate,
+                        CitizenId = viewModel.CitizenId,
                         IsActive = true
                     };
                     await _employeeService.CreateAsync(emp);
@@ -344,6 +358,7 @@ namespace RWPM.Controllers
                 vm.JoinDate = existingEmp.JoinDate;
                 vm.EmploymentType = existingEmp.EmploymentType;
                 vm.HourlyRate = existingEmp.HourlyRate;
+                vm.CitizenId = existingEmp.CitizenId;
             }
             else
             {
@@ -385,6 +400,15 @@ namespace RWPM.Controllers
                     {
                         ModelState.AddModelError(nameof(viewModel.EmployeeCode), string.Format(AccRes.Err_EmployeeCodeUsedByOther, viewModel.EmployeeCode));
                     }
+                }
+                // Bắt buộc đơn giá khi tạo mới hồ sơ hoặc khi nhập giá trị không hợp lệ; hồ sơ cũ (import/legacy) chưa có đơn giá vẫn sửa được thông tin khác
+                var hasProfile = await _context.Employee.AnyAsync(e => e.Username == viewModel.Username);
+                if ((!hasProfile && (!viewModel.HourlyRate.HasValue || viewModel.HourlyRate <= 0))
+                    || (viewModel.HourlyRate.HasValue && viewModel.HourlyRate <= 0))
+                {
+                    ModelState.AddModelError(nameof(viewModel.HourlyRate), InputRules.Text(
+                        "Vui lòng nhập mức lương theo giờ (lớn hơn 0) để có thể tính lương cho nhân viên.",
+                        "Please enter an hourly rate greater than 0 so that payroll can be calculated."));
                 }
             }
             else if (isHrRole)
@@ -437,14 +461,29 @@ namespace RWPM.Controllers
                 }
             }
 
-            try
+            if (isStoreRole || isHrRole)
             {
-                InputRules.ValidateBirthDate(viewModel.DateOfBirth);
-                InputRules.Require(viewModel.JoinDate.HasValue, "JoinDate", "Chưa chọn ngày vào làm.", "Select a join date.");
-                InputRules.ValidateEmployment(viewModel.EmployeeCode ?? "", viewModel.JoinDate ?? default, viewModel.DateOfBirth,
-                    null, viewModel.EmploymentType, EmploymentStatus.Official, viewModel.HourlyRate, null, 12, null);
+                try
+                {
+                    InputRules.ValidateBirthDate(viewModel.DateOfBirth);
+                    InputRules.Require(viewModel.JoinDate.HasValue, "JoinDate", "Chưa chọn ngày vào làm.", "Select a join date.");
+                    InputRules.ValidateEmployment(viewModel.EmployeeCode ?? "", viewModel.JoinDate ?? default, viewModel.DateOfBirth,
+                        null, viewModel.EmploymentType, EmploymentStatus.Official, viewModel.HourlyRate, null, 12, viewModel.CitizenId);
+                }
+                catch (InputValidationException ex) { ModelState.AddModelError(ex.Field, ex.Message); }
+
+                // Kiểm tra trùng số CCCD/CMND với nhân viên khác
+                if (!string.IsNullOrWhiteSpace(viewModel.CitizenId)
+                    && await _context.Employee.AnyAsync(e => e.CitizenId == viewModel.CitizenId && e.Username != viewModel.Username))
+                {
+                    ModelState.AddModelError(nameof(viewModel.CitizenId), InputRules.Text("Số CCCD/CMND đã được dùng cho nhân viên khác.", "This citizen ID is already used by another employee."));
+                }
             }
-            catch (InputValidationException ex) { ModelState.AddModelError(ex.Field, ex.Message); }
+            else
+            {
+                try { InputRules.ValidateBirthDate(viewModel.DateOfBirth); }
+                catch (InputValidationException ex) { ModelState.AddModelError(ex.Field, ex.Message); }
+            }
 
             if (!ModelState.IsValid)
             {
@@ -475,6 +514,7 @@ namespace RWPM.Controllers
                         }
                         existingEmp.EmploymentType = isHrRole ? EmploymentType.FullTime : viewModel.EmploymentType;
                         existingEmp.HourlyRate = viewModel.HourlyRate;
+                        existingEmp.CitizenId = viewModel.CitizenId;
                         existingEmp.UpdatedDate = DateTime.Now;
                         existingEmp.UpdatedBy = AccountHelper.GetCurrentUsername(HttpContext.User);
 
@@ -492,9 +532,26 @@ namespace RWPM.Controllers
                         JoinDate = viewModel.JoinDate?.Date ?? DateTime.Today,
                         EmploymentType = isHrRole ? EmploymentType.FullTime : viewModel.EmploymentType,
                         HourlyRate = viewModel.HourlyRate,
+                        CitizenId = viewModel.CitizenId,
                         IsActive = true
                     };
                     await _employeeService.CreateAsync(newEmp);
+                }
+
+                // Vai trò mới không còn quyền quản lý chi nhánh: gỡ khỏi vị trí quản lý các chi nhánh đang phụ trách
+                if (existingEmp != null && viewModel.Role is not (AccountRole.StoreManager or AccountRole.HR or AccountRole.Admin))
+                {
+                    var managedStores = await _context.Store.Where(s => s.ManagerId == existingEmp.EmployeeId).ToListAsync();
+                    if (managedStores.Count > 0)
+                    {
+                        foreach (var managedStore in managedStores)
+                        {
+                            managedStore.ManagerId = null;
+                            managedStore.UpdatedDate = DateTime.Now;
+                            managedStore.UpdatedBy = AccountHelper.GetCurrentUsername(HttpContext.User);
+                        }
+                        await _context.SaveChangesAsync();
+                    }
                 }
 
                 await transaction.CommitAsync();
@@ -661,6 +718,10 @@ namespace RWPM.Controllers
             {
                 await _accService.UpdateActiveStatusAsync(viewModel.Username!, viewModel.IsActive!.Value);
                 return Ok();
+            }
+            catch (ModelValidationException ex)
+            {
+                return BadRequest(ex.GetErrorString(_localizer));
             }
             catch (Exception ex)
             {

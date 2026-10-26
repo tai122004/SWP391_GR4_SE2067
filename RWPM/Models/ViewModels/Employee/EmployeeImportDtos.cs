@@ -35,6 +35,7 @@ namespace RWPM.Models.ViewModels.Employee
         public DateTime JoinDate { get; set; }
         public decimal? HourlyRate { get; set; }
         public decimal? BaseSalary { get; set; }
+        public string? CitizenId { get; set; }
     }
 
     public class EmployeeImportPreviewResultDto

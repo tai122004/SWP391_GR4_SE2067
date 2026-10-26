@@ -97,7 +97,7 @@
     <value>Không tìm thấy địa điểm '{0}'. Vui lòng chọn một trong các nút vị trí gợi ý ở bên dưới!</value>
   </data>
   <data name="Search_ErrorAlert" xml:space="preserve">
-    <value>Không thể tìm kiếm địa chỉ: {0}\nBạn có thể click trực tiếp trên bản đồ hoặc chọn nút 'Vị trí gợi ý'.</value>
+    <value>Không thể tìm kiếm địa chỉ: {0}. Bạn có thể click trực tiếp trên bản đồ hoặc chọn nút 'Vị trí gợi ý'.</value>
   </data>
   <data name="Table_GeoLocation" xml:space="preserve">
     <value>Định vị (Kinh/Vĩ - Bán kính)</value>

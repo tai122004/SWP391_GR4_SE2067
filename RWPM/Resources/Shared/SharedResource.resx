@@ -911,7 +911,7 @@ Quick fix:
     <value>Password</value>
   </data>
   <data name="Js_PasswordMinLength" xml:space="preserve">
-    <value>New password must be at least 6 characters!</value>
+    <value>Password must be 8–100 characters and include uppercase, lowercase and a digit.</value>
   </data>
   <data name="Js_PasswordMismatch" xml:space="preserve">
     <value>Password confirmation does not match!</value>
@@ -1071,5 +1071,8 @@ Quick fix:
   </data>
   <data name="Js_TimeClear" xml:space="preserve">
     <value>Clear</value>
+  </data>
+  <data name="Attendance_Err_LocateFailed" xml:space="preserve">
+    <value>Unable to determine your location</value>
   </data>
 </root>

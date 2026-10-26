@@ -30,11 +30,12 @@
         <a class="app-nav-link" asp-controller="Request" asp-action="Index" data-nav-controller="Request"><i class="bi bi-inbox"></i><span>@RequestResource.RequestsAndApprovals</span></a>
         @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("AreaManager") || User.IsInRole("SuperAdmin") || User.IsInRole("StoreManager"))
         {
-            <a class="app-nav-link" asp-controller="Payroll" asp-action="Index" data-nav-controller="Payroll"><i class="bi bi-cash-stack"></i><span>@NavigationBarResource.Payroll</span></a>
+            <a class="app-nav-link" asp-controller="Payroll" asp-action="Index" data-nav-controller="Payroll" data-nav-exclude-actions="MyPayslips,MyPayslipDetail"><i class="bi bi-cash-stack"></i><span>@NavigationBarResource.Payroll</span></a>
         }
-        else
+        @* HR và Quản lý cửa hàng cũng có hồ sơ nhân viên và được tính lương -> cũng cần xem phiếu lương của chính mình *@
+        @if ((!User.IsInRole("Admin") && !User.IsInRole("SuperAdmin")) || User.IsInRole("HR") || User.IsInRole("StoreManager"))
         {
-            <a class="app-nav-link" asp-controller="Payroll" asp-action="MyPayslips" data-nav-controller="Payroll"><i class="bi bi-receipt"></i><span>@NavigationBarResource.MyPayslips</span></a>
+            <a class="app-nav-link" asp-controller="Payroll" asp-action="MyPayslips" data-nav-controller="Payroll" data-nav-actions="MyPayslips,MyPayslipDetail"><i class="bi bi-receipt"></i><span>@NavigationBarResource.MyPayslips</span></a>
         }
     </nav>
 </aside>

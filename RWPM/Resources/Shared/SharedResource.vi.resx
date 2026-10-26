@@ -911,7 +911,7 @@ Cách bật lại nhanh:
     <value>Mật khẩu</value>
   </data>
   <data name="Js_PasswordMinLength" xml:space="preserve">
-    <value>Mật khẩu mới phải có ít nhất 6 ký tự!</value>
+    <value>Mật khẩu phải có 8–100 ký tự, gồm chữ hoa, chữ thường và số.</value>
   </data>
   <data name="Js_PasswordMismatch" xml:space="preserve">
     <value>Xác nhận mật khẩu không khớp!</value>
@@ -1071,5 +1071,8 @@ Cách bật lại nhanh:
   </data>
   <data name="Js_TimeClear" xml:space="preserve">
     <value>Xóa giờ</value>
+  </data>
+  <data name="Attendance_Err_LocateFailed" xml:space="preserve">
+    <value>Lỗi xác định vị trí</value>
   </data>
 </root>

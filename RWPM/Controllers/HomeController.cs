@@ -37,6 +37,7 @@ namespace RWPM.Controllers
             return View();
         }
 
+        [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
@@ -79,7 +80,8 @@ namespace RWPM.Controllers
                 AlertHelper.AddErrorMessage(TempData, ex.Message);
             }
 
-            return View(nameof(Index));
+            // PRG: tránh gửi lại form khi F5 và lỗi 404/405 khi đổi ngôn ngữ tại URL POST /Home/InitData
+            return RedirectToAction(nameof(Index));
         }
     }
 }

@@ -35,19 +35,44 @@ namespace RWPM.Controllers
             _context = context;
         }
 
+        private bool IsStoreManagerOnly =>
+            User.IsInRole("StoreManager") && !User.IsInRole("Admin") && !User.IsInRole("HR") && !User.IsInRole("SuperAdmin");
+
+        private Task<RWPM.Models.Entities.Employee?> GetCurrentEmployeeAsync()
+        {
+            var username = User.Identity?.Name;
+            return _context.Employee.AsNoTracking().FirstOrDefaultAsync(e => e.Username == username);
+        }
+
+        /// <summary>
+        /// Quản lý cửa hàng chỉ được thao tác trên nhân viên (vai trò Employee) cùng chi nhánh, không phải chính mình.
+        /// </summary>
+        private async Task<bool> StoreManagerCanManageAsync(int employeeId)
+        {
+            var currentEmp = await GetCurrentEmployeeAsync();
+            if (currentEmp?.StoreId == null || currentEmp.EmployeeId == employeeId) return false;
+            return await _context.Employee.AsNoTracking().AnyAsync(e => e.EmployeeId == employeeId
+                && e.StoreId == currentEmp.StoreId
+                && e.Account.Role == RWPM.Common.Enums.AccountRole.Employee);
+        }
+
+        private static string StoreManagerEditDeniedMessage => InputRules.Text(
+            "Quản lý cửa hàng chỉ được sửa hồ sơ nhân viên thuộc chi nhánh của mình, không được sửa hồ sơ của chính mình hoặc của quản lý/nhân sự khác.",
+            "Store managers can only edit employees of their own store, not their own profile or other managers/HR profiles.");
+
         // GET: Employee
         [RemoveEmptyQueryString]
         public async Task<IActionResult> Index(EmployeeSearch searchObject)
         {
-            var isStoreManager = User.IsInRole("StoreManager") && !User.IsInRole("Admin") && !User.IsInRole("HR") && !User.IsInRole("SuperAdmin");
+            var isStoreManager = IsStoreManagerOnly;
             if (isStoreManager)
             {
-                var username = User.Identity?.Name;
-                var currentEmp = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
-                if (currentEmp != null)
+                var currentEmp = await GetCurrentEmployeeAsync();
+                if (currentEmp?.StoreId == null)
                 {
-                    searchObject.StoreId = currentEmp.StoreId;
+                    return Forbid();
                 }
+                searchObject.StoreId = currentEmp.StoreId;
             }
 
             var result = await _employeeService.SearchAsync(searchObject);
@@ -63,15 +88,15 @@ namespace RWPM.Controllers
         [HttpGet]
         public async Task<IActionResult> ExportExcel(EmployeeSearch searchObject)
         {
-            var isStoreManager = User.IsInRole("StoreManager") && !User.IsInRole("Admin") && !User.IsInRole("HR") && !User.IsInRole("SuperAdmin");
+            var isStoreManager = IsStoreManagerOnly;
             if (isStoreManager)
             {
-                var username = User.Identity?.Name;
-                var currentEmp = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
-                if (currentEmp != null)
+                var currentEmp = await GetCurrentEmployeeAsync();
+                if (currentEmp?.StoreId == null)
                 {
-                    searchObject.StoreId = currentEmp.StoreId;
+                    return Forbid();
                 }
+                searchObject.StoreId = currentEmp.StoreId;
             }
 
             var fileBytes = await _employeeService.ExportToExcelAsync(searchObject);
@@ -206,6 +231,14 @@ namespace RWPM.Controllers
 
             try
             {
+                // Lưu thông tin cá nhân (SĐT, ngày sinh, giới tính) vào tài khoản liên kết; được ghi cùng transaction trong CreateAsync
+                var account = await _context.Acc.FirstOrDefaultAsync(a => a.Username == viewModel.Username);
+                if (account != null)
+                {
+                    account.PhoneNumber = string.IsNullOrWhiteSpace(viewModel.PhoneNumber) ? null : viewModel.PhoneNumber.Trim();
+                    account.DateOfBirth = viewModel.DateOfBirth;
+                    account.Gender = viewModel.Gender;
+                }
                 await _employeeService.CreateAsync(viewModel.ToEntity());
                 AlertHelper.CreateSuccess(TempData);
                 return RedirectToAction(nameof(Index));
@@ -238,14 +271,18 @@ namespace RWPM.Controllers
             }
 
             // Check quyền StoreManager
-            var isStoreManager = User.IsInRole("StoreManager") && !User.IsInRole("Admin") && !User.IsInRole("HR") && !User.IsInRole("SuperAdmin");
+            var isStoreManager = IsStoreManagerOnly;
             if (isStoreManager)
             {
-                var username = User.Identity?.Name;
-                var currentEmp = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
-                if (currentEmp != null && currentEmp.StoreId != employee.StoreId)
+                var currentEmp = await GetCurrentEmployeeAsync();
+                if (currentEmp?.StoreId == null || currentEmp.StoreId != employee.StoreId)
                 {
                     return Forbid();
+                }
+                if (!await StoreManagerCanManageAsync(employee.EmployeeId))
+                {
+                    AlertHelper.AddErrorMessage(TempData, StoreManagerEditDeniedMessage);
+                    return RedirectToAction(nameof(Index));
                 }
             }
 
@@ -263,6 +300,31 @@ namespace RWPM.Controllers
             if (id != viewModel.EmployeeId)
             {
                 return NotFound();
+            }
+
+            var isStoreManager = IsStoreManagerOnly;
+            ViewBag.IsStoreManager = isStoreManager;
+            if (isStoreManager)
+            {
+                var stored = await _employeeService.GetByIdAsync(id);
+                if (stored == null) return NotFound();
+                var currentEmp = await GetCurrentEmployeeAsync();
+                if (currentEmp?.StoreId == null || currentEmp.StoreId != stored.StoreId || viewModel.StoreId != stored.StoreId)
+                {
+                    return Forbid();
+                }
+                if (!await StoreManagerCanManageAsync(id))
+                {
+                    AlertHelper.AddErrorMessage(TempData, StoreManagerEditDeniedMessage);
+                    return RedirectToAction(nameof(Index));
+                }
+                // Quản lý cửa hàng không được đổi tài khoản liên kết và chế độ lương: giữ nguyên giá trị trong DB
+                viewModel.Username = stored.Username;
+                viewModel.HourlyRate = stored.HourlyRate;
+                viewModel.BaseSalary = stored.BaseSalary;
+                ModelState.Remove(nameof(viewModel.Username));
+                ModelState.Remove(nameof(viewModel.HourlyRate));
+                ModelState.Remove(nameof(viewModel.BaseSalary));
             }
 
             if (!string.IsNullOrWhiteSpace(viewModel.PhoneNumber))
@@ -285,18 +347,6 @@ namespace RWPM.Controllers
             try
             {
                 var employee = await _employeeService.GetRequiredByIdAsync(id);
-
-                var isStoreManager = User.IsInRole("StoreManager") && !User.IsInRole("Admin") && !User.IsInRole("HR") && !User.IsInRole("SuperAdmin");
-                if (isStoreManager)
-                {
-                    var username = User.Identity?.Name;
-                    var currentEmp = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
-                    if (currentEmp != null && (currentEmp.StoreId != employee.StoreId || viewModel.StoreId != employee.StoreId))
-                    {
-                        return Forbid();
-                    }
-                }
-
                 viewModel.ApplyToEntity(employee);
                 await _employeeService.UpdateAsync(employee);
                 AlertHelper.EditSuccess(TempData);
@@ -325,6 +375,11 @@ namespace RWPM.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Resign(int employeeId, DateTime? resignDate, string? resignReason)
         {
+            if (IsStoreManagerOnly && !await StoreManagerCanManageAsync(employeeId))
+            {
+                return Forbid();
+            }
+
             try
             {
                 var targetDate = resignDate ?? DateTime.Today;
@@ -406,10 +461,19 @@ namespace RWPM.Controllers
                 return BadRequest(errors);
             }
 
+            if (IsStoreManagerOnly && !await StoreManagerCanManageAsync(viewModel.EmployeeId!.Value))
+            {
+                return Forbid();
+            }
+
             try
             {
                 await _employeeService.UpdateActiveStatusAsync(viewModel.EmployeeId!.Value, viewModel.IsActive!.Value);
                 return Ok();
+            }
+            catch (ModelValidationException ex)
+            {
+                return BadRequest(ex.GetErrorString(_localizer));
             }
             catch (Exception ex)
             {

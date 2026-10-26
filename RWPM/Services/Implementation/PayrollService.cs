@@ -286,7 +286,7 @@ namespace RWPM.Services.Implementation
             var employees = await _context.Employee
                 .Include(e => e.Account)
                 .Include(e => e.Store)
-                .Where(e => (e.JoinDate <= endDate && (e.ResignDate == null || e.ResignDate >= startDate))
+                .Where(e => (e.IsActive && e.JoinDate <= endDate && (e.ResignDate == null || e.ResignDate >= startDate))
                          || empUsernamesWithAttendance.Contains(e.Username)
                          || empIdsWithRegistrations.Contains(e.EmployeeId)
                          || empIdsWithLeaves.Contains(e.EmployeeId))
@@ -368,8 +368,33 @@ namespace RWPM.Services.Implementation
                     }
                     else
                     {
-                        bool isLate = ar.Shift != null && ar.CheckInTime.HasValue && (ar.CheckInTime.Value > ar.Shift.StartTime.Add(TimeSpan.FromMinutes(ar.Shift.GracePeriodMinutes ?? RWPM.Common.Constants.ShiftDefaults.GracePeriodMinutes)));
-                        bool isEarly = ar.Shift != null && ar.CheckOutTime.HasValue && (ar.CheckOutTime.Value < ar.Shift.EndTime.Subtract(TimeSpan.FromMinutes(ar.Shift.EarlyCheckOutMinutes ?? RWPM.Common.Constants.ShiftDefaults.EarlyCheckOutMinutes)));
+                        // Quy đổi giờ vào/ra về mốc thời gian thực (hỗ trợ ca qua đêm) giống CheckInAsync/CheckOutAsync
+                        bool isLate = false;
+                        bool isEarly = false;
+                        if (ar.Shift != null)
+                        {
+                            var shiftRange = RWPM.Common.Helper.ShiftTimeHelper.GetDateTimeRange(ar.Date, ar.Shift);
+                            DateTime? checkInAt = ar.CheckInTime.HasValue
+                                ? new[] { -1, 0, 1 }.Select(day => ar.Date.Date.AddDays(day).Add(ar.CheckInTime.Value))
+                                    .OrderBy(time => Math.Abs((time - shiftRange.StartAt).TotalMinutes)).First()
+                                : null;
+                            if (checkInAt.HasValue)
+                            {
+                                int grace = ar.Shift.GracePeriodMinutes ?? RWPM.Common.Constants.ShiftDefaults.GracePeriodMinutes;
+                                isLate = (checkInAt.Value - shiftRange.StartAt).TotalMinutes > grace;
+                            }
+                            if (ar.CheckOutTime.HasValue)
+                            {
+                                var lowerBound = checkInAt ?? shiftRange.StartAt;
+                                var checkOutAt = new[] { -1, 0, 1, 2 }.Select(day => ar.Date.Date.AddDays(day).Add(ar.CheckOutTime.Value))
+                                    .Where(time => time >= lowerBound).OrderBy(time => time).FirstOrDefault();
+                                if (checkOutAt != default)
+                                {
+                                    int earlyOutLimit = ar.Shift.EarlyCheckOutMinutes ?? RWPM.Common.Constants.ShiftDefaults.EarlyCheckOutMinutes;
+                                    isEarly = (shiftRange.EndAt - checkOutAt).TotalMinutes > earlyOutLimit;
+                                }
+                            }
+                        }
 
                         if (isLate && isEarly)
                         {
@@ -534,7 +559,7 @@ namespace RWPM.Services.Implementation
                 if (isEligibleForPaidLeave && empLeaves.Any(x => x.LeaveType == LeaveType.Paid && x.ScheduleSnapshotJson == null))
                 {
                     missingAttendanceCount++;
-                    missingDates.Add(InputRules.Text("Đơn nghỉ có lương cũ thiếu dữ liệu ca gốc, cần rà soát.", "Legacy paid leave has no schedule evidence; review required."));
+                    missingDates.Add(PayrollDisplayText.StoredLegacyLeaveNoEvidence);
                 }
 
                 // Sắp xếp snapshot theo ngày
@@ -639,7 +664,9 @@ namespace RWPM.Services.Implementation
             payroll = await CalculatePayrollAsync(payroll.StartDate, payroll.EndDate, operatorUsername);
             // Kiểm tra phía server trước khi khóa:
             // 1. Chặn nếu có nhân viên thiếu đơn giá (MissingRate)
-            var missingRates = payroll.Details.Where(d => d.Status == PayrollDetailStatus.MissingRate || d.HourlyRate <= 0).ToList();
+            // Chỉ chặn khi nhân viên thiếu đơn giá có phát sinh giờ công/ca/bất thường trong kỳ
+            var missingRates = payroll.Details.Where(d => (d.Status == PayrollDetailStatus.MissingRate || d.HourlyRate <= 0)
+                && (d.TotalWorkHours + d.PaidLeaveHours > 0 || d.MissingAttendanceCount > 0 || d.TotalStandardHours > 0)).ToList();
             if (missingRates.Any())
             {
                 var names = string.Join(", ", missingRates.Take(3).Select(d => d.EmployeeName));

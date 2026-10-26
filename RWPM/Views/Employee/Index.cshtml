@@ -56,13 +56,7 @@
                     }
                 </ul>
             </div>
-
-            @if (canManage)
-            {
-                <a asp-controller="Acc" asp-action="Create" class="btn btn-primary btn-sm shadow-sm d-flex align-items-center">
-                    <i class="bi bi-person-plus-fill me-1"></i> @EmployeeSharedResource.Button_Create
-                </a>
-            }
+            @* Nhân sự mới được tạo tại Quản lý tài khoản (Acc/Create) — không đặt nút "Thêm nhân viên" ở màn hình này *@
         </div>
     </div>
 
@@ -290,7 +284,8 @@
                                         {
                                             <button type="button"
                                                     class="btn btn-sm btn-outline-warning text-dark"
-                                                    onclick="openResignEmployeeModal('@emp.EmployeeId', '@fullName', '@emp.EmployeeCode')"
+                                                    data-id="@emp.EmployeeId" data-name="@fullName" data-code="@emp.EmployeeCode"
+                                                    onclick="openResignEmployeeModal(this.dataset.id, this.dataset.name, this.dataset.code)"
                                                     title="@EmployeeSharedResource.Button_Resign">
                                                 <i class="bi bi-box-arrow-right"></i>
                                             </button>
@@ -300,7 +295,8 @@
                                         {
                                             <button type="button"
                                                     class="btn btn-sm btn-outline-danger"
-                                                    onclick="openDeleteEmployeeModal('@emp.EmployeeId', '@fullName', '@emp.EmployeeCode')"
+                                                    data-id="@emp.EmployeeId" data-name="@fullName" data-code="@emp.EmployeeCode"
+                                                    onclick="openDeleteEmployeeModal(this.dataset.id, this.dataset.name, this.dataset.code)"
                                                     title="@EmployeeSharedResource.Button_Delete">
                                                 <i class="bi bi-trash"></i>
                                             </button>
@@ -359,7 +355,7 @@
                     </div>
                     <div class="mb-2">
                         <label class="form-label small fw-semibold">@EmployeeModelResource.ResignReason</label>
-                        <textarea name="resignReason" class="form-control form-control-sm" rows="3" placeholder="@EmployeeSharedResource.Placeholder_ResignReason"></textarea>
+                        <textarea name="resignReason" class="form-control form-control-sm" rows="3" maxlength="255" placeholder="@EmployeeSharedResource.Placeholder_ResignReason"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer bg-light py-2">
@@ -592,7 +588,7 @@
                     AppToast.error(xhr.responseJSON?.message || '@Html.Raw(SharedResource.OperationFailed)');
                 },
                 complete: function () {
-                    btn.prop('disabled', false).html('<i class="bi bi-trash me-1"></i> @Html.Raw(EmployeeSharedResource.Confirm_Delete)');
+                    btn.prop('disabled', false).html('<i class="bi bi-trash me-1"></i> @Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(EmployeeSharedResource.Modal_DeleteConfirmBtn))');
                 }
             });
         }

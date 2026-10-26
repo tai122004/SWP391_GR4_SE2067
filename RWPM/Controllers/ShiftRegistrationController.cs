@@ -43,19 +43,9 @@ namespace RWPM.Controllers
             ViewBag.IsManager = isAdmin || isStoreManager;
 
             var username = User.Identity?.Name;
-            var currentEmployee = await _context.Employee.FirstOrDefaultAsync(e => e.Username == username);
-            
-            // Tự động đảm bảo HR hoặc nhân viên có liên kết cửa hàng hợp lệ
-            if (currentEmployee != null && !currentEmployee.StoreId.HasValue)
-            {
-                var firstActiveStore = await _context.Store.FirstOrDefaultAsync(s => s.IsActive);
-                if (firstActiveStore != null)
-                {
-                    currentEmployee.StoreId = firstActiveStore.StoreId;
-                    await _context.SaveChangesAsync();
-                }
-            }
+            var currentEmployee = await _context.Employee.AsNoTracking().FirstOrDefaultAsync(e => e.Username == username);
 
+            // Không tự gán chi nhánh cho nhân viên chưa có StoreId; chỉ dùng chi nhánh tạm để hiển thị
             int? userStoreId = storeId ?? currentEmployee?.StoreId;
             if (!userStoreId.HasValue)
             {
@@ -201,12 +191,7 @@ namespace RWPM.Controllers
 
                 if (!employee.StoreId.HasValue)
                 {
-                    var firstStore = await _context.Store.FirstOrDefaultAsync(s => s.IsActive);
-                    if (firstStore != null)
-                    {
-                        employee.StoreId = firstStore.StoreId;
-                        await _context.SaveChangesAsync();
-                    }
+                    return BadRequest(new { success = false, message = RWPM.Common.Validation.InputRules.Text("Nhân viên chưa được gán chi nhánh.", "The employee is not assigned to a store.") });
                 }
 
                 var shiftIds = viewModel.ShiftIds != null && viewModel.ShiftIds.Any() 
@@ -347,28 +332,10 @@ namespace RWPM.Controllers
 
                 if (!employee.StoreId.HasValue)
                 {
-                    var firstStore = await _context.Store.FirstOrDefaultAsync(s => s.IsActive);
-                    if (firstStore != null)
-                    {
-                        employee.StoreId = firstStore.StoreId;
-                        await _context.SaveChangesAsync();
-                    }
+                    return BadRequest(new { success = false, message = RWPM.Common.Validation.InputRules.Text("Nhân viên chưa được gán chi nhánh.", "The employee is not assigned to a store.") });
                 }
 
-                int storeId = employee.StoreId ?? 0;
-                if (storeId == 0)
-                {
-                    var firstShiftId = viewModel.Registrations.FirstOrDefault()?.ShiftId;
-                    if (firstShiftId.HasValue)
-                    {
-                        storeId = await _context.StoreShift.Where(ss => ss.ShiftId == firstShiftId.Value && ss.IsActive && ss.Store.IsActive)
-                            .Select(ss => ss.StoreId).FirstOrDefaultAsync();
-                    }
-                    if (storeId == 0)
-                    {
-                        storeId = await _context.Store.Where(s => s.IsActive).Select(s => s.StoreId).FirstOrDefaultAsync();
-                    }
-                }
+                int storeId = employee.StoreId.Value;
 
                 var entities = viewModel.Registrations.Select(x => x.ToEntity()).ToList();
                 

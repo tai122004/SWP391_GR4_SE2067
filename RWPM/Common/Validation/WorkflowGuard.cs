@@ -18,6 +18,8 @@ public static class WorkflowGuard
         var target = await db.Employee.AsNoTracking().Include(x => x.Account).Include(x => x.Store)
             .SingleOrDefaultAsync(x => x.EmployeeId == employeeId);
         InputRules.Require(target != null, "EmployeeId", "Không tìm thấy nhân viên.", "Employee not found.");
+        if (approval && target!.Username == username)
+            throw new UnauthorizedAccessException(InputRules.Text("Không được tự phê duyệt/từ chối đơn của chính mình.", "You cannot approve or reject your own request."));
         if (!approval && target!.Username == username) return;
         if (actor.Role is AccountRole.Admin or AccountRole.HR) return;
         if (actor.Role == AccountRole.StoreManager)

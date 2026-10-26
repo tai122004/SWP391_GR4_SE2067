@@ -130,7 +130,7 @@
     <value>Hủy</value>
   </data>
   <data name="Confirm_Delete" xml:space="preserve">
-    <value>Xác nhận hủy</value>
+    <value>Xác nhận xóa</value>
   </data>
   <data name="Create_PageHeader" xml:space="preserve">
     <value>Thêm mới nhân viên</value>
@@ -478,7 +478,7 @@
     <value>Giới tính (Nam/Nữ/Khác)</value>
   </data>
   <data name="Template_Col_DateOfBirth" xml:space="preserve">
-    <value>Ngày sinh (dd/MM/yyyy)</value>
+    <value>Ngày sinh (dd/MM/yyyy) (*)</value>
   </data>
   <data name="Template_Col_Role" xml:space="preserve">
     <value>Vai trò (*)</value>
@@ -493,7 +493,7 @@
     <value>Hình thức (Toàn thời gian/Bán thời gian)</value>
   </data>
   <data name="Template_Col_JoinDate" xml:space="preserve">
-    <value>Ngày vào làm (dd/MM/yyyy)</value>
+    <value>Ngày vào làm (dd/MM/yyyy) (*)</value>
   </data>
   <data name="Template_Col_HourlyRate" xml:space="preserve">
     <value>Lương theo giờ (VNĐ)</value>
