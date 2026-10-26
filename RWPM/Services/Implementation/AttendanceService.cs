@@ -47,6 +47,8 @@ namespace RWPM.Services.Implementation
 
         public async Task<(AttendanceRecord Record, string? WarningMessage)> CheckInAsync(string username, double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
         {
+            var errorMessage = SharedResource.ResourceManager.GetString("Attendance_Err_NotInAllowedTime");
+            bool isValid = false;
             if (photo == null || photo.Length == 0)
             {
                 throw new Exception(SharedResource.ResourceManager.GetString("Attendance_Err_NoPhotoIn"));
@@ -194,7 +196,7 @@ namespace RWPM.Services.Implementation
                 CheckInLatitude = userLatitude,
                 CheckInLongitude = userLongitude,
                 DistanceMeters = calculatedDistance,
-                CheckInPhotoPath = await SavePhotoAsync(photo!, username, "CheckIn", photoExtension)
+                CheckInPhotoPath = await SavePhotoAsync(photo!, username, "CheckIn")
             };
 
             _context.AttendanceRecord.Add(record);
@@ -298,7 +300,7 @@ namespace RWPM.Services.Implementation
             record.CheckOutTime = DateTime.Now.TimeOfDay;
             record.CheckOutLatitude = userLatitude;
             record.CheckOutLongitude = userLongitude;
-            record.CheckOutPhotoPath = await SavePhotoAsync(photo!, username, "CheckOut", photoExtension);
+            record.CheckOutPhotoPath = await SavePhotoAsync(photo!, username, "CheckOut");
 
             await _context.SaveChangesAsync();
 
@@ -361,6 +363,9 @@ namespace RWPM.Services.Implementation
             }
 
             await AttendanceAdjustmentService.EnsurePeriodUnlockedAsync(_context, record.Date);
+
+            var effectiveIn = newCheckIn ?? record.CheckInTime;
+            var effectiveOut = newCheckOut ?? record.CheckOutTime;
 
             // Ghi lại lịch sử
             var history = new AttendanceAdjustmentHistory

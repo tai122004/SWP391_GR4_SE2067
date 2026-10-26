@@ -6,7 +6,6 @@ using RWPM.Models.Entities;
 using RWPM.Models.ViewModels.ShiftRegistration;
 using RWPM.Resources.Shared;
 using RWPM.Services.Abstraction;
-using RWPM.Common.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -260,14 +259,13 @@ namespace RWPM.Services.Implementation
             {
                 throw new Exception(RequestResource.Adj_ErrAlreadyProcessed);
             }
+            TimeSpan? approvedIn = finalCheckInTime ?? request.RequestedCheckInTime ?? request.AttendanceRecord?.CheckInTime;
+            TimeSpan? approvedOut = finalCheckOutTime ?? request.RequestedCheckOutTime ?? request.AttendanceRecord?.CheckOutTime;
             await AttendanceInputRules.EnsureUnlockedAsync(_context, request.WorkDate);
             AttendanceInputRules.ValidateClockTime(finalCheckInTime, "ApprovedCheckInTime");
             AttendanceInputRules.ValidateClockTime(finalCheckOutTime, "ApprovedCheckOutTime");
 
             await EnsurePeriodUnlockedAsync(_context, request.WorkDate.Date);
-
-            await using var transaction = _context.Database.CurrentTransaction == null
-                ? await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable) : null;
 
             AttendanceRecord? record = request.AttendanceRecord;
 
@@ -281,16 +279,6 @@ namespace RWPM.Services.Implementation
             if (record == null)
                 record = await _context.AttendanceRecord.FirstOrDefaultAsync(r => r.Username == request.Employee.Username
                     && r.Date == request.WorkDate && r.ShiftId == request.ShiftId);
-            approvedIn ??= record?.CheckInTime;
-            approvedOut ??= record?.CheckOutTime;
-            InputRules.Require(approvedIn.HasValue || approvedOut.HasValue, "ApprovedCheckInTime",
-                "Cần ít nhất một giờ được duyệt.", "At least one approved time is required.");
-            var shift = request.ShiftId.HasValue ? await _context.Shift.FindAsync(request.ShiftId.Value) : null;
-            AttendanceInputRules.ValidateTimeOrder(request.WorkDate, approvedIn, approvedOut, shift?.EndDayOffset ?? 0);
-            InputRules.Require(record == null || approvedIn != record.CheckInTime || approvedOut != record.CheckOutTime,
-                "ApprovedCheckInTime", "Giờ được duyệt phải khác giờ công hiện tại.",
-                "Approved time must differ from current attendance.");
-
             if (record == null)
             {
                 // Trong lúc chờ duyệt, nhân viên có thể đã chấm công cho cùng ngày/ca -> dùng lại bản ghi đó thay vì tạo trùng
@@ -304,14 +292,20 @@ namespace RWPM.Services.Implementation
                 }
             }
 
+            approvedIn ??= record?.CheckInTime;
+            approvedOut ??= record?.CheckOutTime;
+            InputRules.Require(approvedIn.HasValue || approvedOut.HasValue, "ApprovedCheckInTime",
+                "Cần ít nhất một giờ được duyệt.", "At least one approved time is required.");
+            var shift = request.ShiftId.HasValue ? await _context.Shift.FindAsync(request.ShiftId.Value) : null;
+            AttendanceInputRules.ValidateTimeOrder(request.WorkDate, approvedIn, approvedOut, shift?.EndDayOffset ?? 0);
+            InputRules.Require(record == null || approvedIn != record.CheckInTime || approvedOut != record.CheckOutTime,
+                "ApprovedCheckInTime", "Giờ được duyệt phải khác giờ công hiện tại.",
+                "Approved time must differ from current attendance.");
+
             // Lấy giờ thực tế do người phê duyệt quyết định (nếu không truyền thì lấy giờ nhân viên yêu cầu,
             // trường nào nhân viên không yêu cầu thì giữ nguyên giờ hiện tại của bản ghi)
-            TimeSpan? approvedIn = finalCheckInTime ?? request.RequestedCheckInTime ?? record?.CheckInTime;
-            TimeSpan? approvedOut = finalCheckOutTime ?? request.RequestedCheckOutTime ?? record?.CheckOutTime;
-
             InputRules.Require(approvedIn.HasValue || approvedOut.HasValue, "ApprovedCheckInTime",
                 "Vui lòng nhập giờ vào hoặc giờ ra được duyệt.", "Please enter the approved check-in or check-out time.");
-            var shift = request.ShiftId.HasValue ? await _context.Shift.FindAsync(request.ShiftId.Value) : null;
             ValidateTimeOrder(approvedIn, approvedOut, shift);
 
             string auditReason = !string.IsNullOrWhiteSpace(approverNote)

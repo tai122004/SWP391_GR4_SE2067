@@ -221,7 +221,6 @@ namespace RWPM.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,HR,SuperAdmin")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -240,7 +239,6 @@ namespace RWPM.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,HR,SuperAdmin")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Adjust(int recordId, TimeSpan? newCheckInTime, TimeSpan? newCheckOutTime, string reason)
         {
             try

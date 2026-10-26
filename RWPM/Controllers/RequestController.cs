@@ -783,6 +783,7 @@ namespace RWPM.Controllers
                     InputRules.Require(model.Ids.All(x => x > 0) && model.Ids.Distinct().Count() == model.Ids.Count,
                         "Ids", "Danh sách đơn không hợp lệ hoặc bị trùng.", "Invalid or duplicate request IDs.");
                     await using var adjBatch = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+                    var requests = new List<AttendanceAdjustmentRequest>();
 
                     // Vòng 1: kiểm tra toàn bộ đơn và quyền trước khi ghi dữ liệu
                     foreach (var adjId in model.Ids)
@@ -823,14 +824,14 @@ namespace RWPM.Controllers
                                 return Json(new { success = false, message = RequestResource.Err_NoPermissionApproveOtherStoreEmployee });
                             }
                         }
+                        requests.Add(request);
                     }
 
                     // Vòng 2: duyệt/từ chối trong cùng một transaction
-                    foreach (var adjId in model.Ids)
+                    foreach (var request in requests)
                     {
                         if (model.Status == 1)
                             await AttendanceInputRules.EnsureUnlockedAsync(_context, request.WorkDate);
-                        requests.Add(request);
                     }
                     foreach (var request in requests)
                     {
