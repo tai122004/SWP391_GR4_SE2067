@@ -24,6 +24,8 @@ namespace RWPM.Infrastructure.Seeder
                         FullName = "Quản trị viên",
                         Email = "admin@gmail.com",
                         Role = AccountRole.Admin,
+                        // Mật khẩu khởi tạo yếu -> bắt buộc đổi ở lần đăng nhập đầu tiên
+                        MustChangePassword = true,
                         CreatedDate = DateTime.Now,
                         CreatedBy = AccountHelper.SEEDER,
                     }

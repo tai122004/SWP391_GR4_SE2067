@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using RWPM.Common.Security;
 using RWPM.Hubs;
 using RWPM.Infrastructure.Data;
 using RWPM.Infrastructure.DependencyInjection;
@@ -16,6 +17,9 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<DefaultDatabaseContext>();
     await dbContext.Database.MigrateAsync();
+    // Chuyển ảnh chấm công cũ ra khỏi wwwroot (dữ liệu cá nhân nhạy cảm)
+    await RWPM.Infrastructure.Storage.AttendancePhotoStore.MigrateLegacyAsync(dbContext, app.Environment,
+        scope.ServiceProvider.GetRequiredService<ILogger<Program>>());
     // Maintenance/test restarts can preserve all existing data, including attendance demo data.
     if (!builder.Configuration.GetValue<bool>("SkipStartupSeeding"))
     {
@@ -57,6 +61,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+// Tài khoản mới / được cấp lại mật khẩu phải đổi mật khẩu trước khi dùng hệ thống
+app.UseForcePasswordChange();
 
 #region Hub
 app.MapHub<ApplicationHub>("/hub/notifications");

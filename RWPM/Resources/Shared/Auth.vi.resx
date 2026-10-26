@@ -147,4 +147,7 @@
   <data name="Err_AccessDenied" xml:space="preserve">
     <value>Bạn không có quyền truy cập chức năng này!</value>
   </data>
+  <data name="ForcedChangePassword_Notice" xml:space="preserve">
+    <value>Vì lý do bảo mật, vui lòng đổi mật khẩu tạm thời được cấp trước khi sử dụng hệ thống.</value>
+  </data>
 </root>

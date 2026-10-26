@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Nav_Performance" xml:space="preserve">
+    <value>Hiệu suất</value>
+  </data>
+  <data name="Nav_MyPerformance" xml:space="preserve">
+    <value>Hiệu suất của tôi</value>
+  </data>
+  <data name="Index_Title" xml:space="preserve">
+    <value>Đánh giá hiệu suất</value>
+  </data>
+  <data name="Index_Subtitle" xml:space="preserve">
+    <value>Thẻ điểm chuyên cần theo tháng và đánh giá của quản lý cho từng nhân viên</value>
+  </data>
+  <data name="Index_ScopeLabel" xml:space="preserve">
+    <value>Phạm vi:</value>
+  </data>
+  <data name="Index_ScopeAssignedStore" xml:space="preserve">
+    <value>chi nhánh được phân công</value>
+  </data>
+  <data name="Index_Empty" xml:space="preserve">
+    <value>Không có nhân viên nào phù hợp với tháng và bộ lọc đã chọn.</value>
+  </data>
+  <data name="My_Title" xml:space="preserve">
+    <value>Hiệu suất của tôi</value>
+  </data>
+  <data name="My_Subtitle" xml:space="preserve">
+    <value>Thẻ điểm và đánh giá theo tháng của bạn (12 tháng gần nhất)</value>
+  </data>
+  <data name="My_NoProfile" xml:space="preserve">
+    <value>Tài khoản của bạn chưa có hồ sơ nhân viên nên chưa có dữ liệu hiệu suất.</value>
+  </data>
+  <data name="Detail_Title" xml:space="preserve">
+    <value>Hiệu suất - {0}</value>
+  </data>
+  <data name="Detail_AttendedOfDue" xml:space="preserve">
+    <value>Đi làm {0}/{1} ca đến hạn · {2} ca đã duyệt</value>
+  </data>
+  <data name="Detail_LeaveShifts" xml:space="preserve">
+    <value>{0} ca nghỉ phép đã duyệt</value>
+  </data>
+  <data name="Detail_TotalMinutes" xml:space="preserve">
+    <value>Tổng {0} phút</value>
+  </data>
+  <data name="Detail_LeaveDays" xml:space="preserve">
+    <value>Ngày nghỉ đã duyệt</value>
+  </data>
+  <data name="Detail_LeavePaidUnpaid" xml:space="preserve">
+    <value>Có lương / không lương</value>
+  </data>
+  <data name="Detail_ShiftsTitle" xml:space="preserve">
+    <value>Danh sách ca {0}</value>
+  </data>
+  <data name="Detail_NoShifts" xml:space="preserve">
+    <value>Không có ca làm việc nào trong tháng này.</value>
+  </data>
+  <data name="Detail_Unscheduled" xml:space="preserve">
+    <value>ngoài lịch đã duyệt</value>
+  </data>
+  <data name="Detail_ReviewTitle" xml:space="preserve">
+    <value>Đánh giá {0}</value>
+  </data>
+  <data name="Detail_ReviewedBy" xml:space="preserve">
+    <value>Đánh giá bởi {0} lúc {1}</value>
+  </data>
+  <data name="Detail_NoComment" xml:space="preserve">
+    <value>Không có nhận xét.</value>
+  </data>
+  <data name="Detail_TrendTitle" xml:space="preserve">
+    <value>Xu hướng 6 tháng</value>
+  </data>
+  <data name="Card_AvgAttendanceRate" xml:space="preserve">
+    <value>Tỉ lệ đi làm TB</value>
+  </data>
+  <data name="Card_TotalLates" xml:space="preserve">
+    <value>Tổng lượt đi muộn</value>
+  </data>
+  <data name="Card_TotalAbsences" xml:space="preserve">
+    <value>Tổng buổi vắng</value>
+  </data>
+  <data name="Card_Reviewed" xml:space="preserve">
+    <value>Đã đánh giá</value>
+  </data>
+  <data name="Filter_Month" xml:space="preserve">
+    <value>Tháng</value>
+  </data>
+  <data name="Filter_Year" xml:space="preserve">
+    <value>Năm</value>
+  </data>
+  <data name="Filter_Store" xml:space="preserve">
+    <value>Chi nhánh</value>
+  </data>
+  <data name="Filter_AllStores" xml:space="preserve">
+    <value>-- Tất cả chi nhánh --</value>
+  </data>
+  <data name="Filter_Search" xml:space="preserve">
+    <value>Nhân viên</value>
+  </data>
+  <data name="Filter_SearchPlaceholder" xml:space="preserve">
+    <value>Tìm theo tên, mã NV hoặc tài khoản...</value>
+  </data>
+  <data name="MonthLabel" xml:space="preserve">
+    <value>Tháng {0}/{1}</value>
+  </data>
+  <data name="MonthOption" xml:space="preserve">
+    <value>Tháng {0}</value>
+  </data>
+  <data name="Minutes" xml:space="preserve">
+    <value>{0} phút</value>
+  </data>
+  <data name="NotReviewed" xml:space="preserve">
+    <value>Chưa đánh giá</value>
+  </data>
+  <data name="NoData" xml:space="preserve">
+    <value>Chưa đủ dữ liệu</value>
+  </data>
+  <data name="Unassigned" xml:space="preserve">
+    <value>Chưa phân công</value>
+  </data>
+  <data name="UnknownShift" xml:space="preserve">
+    <value>Ca không xác định</value>
+  </data>
+  <data name="Formula_Short" xml:space="preserve">
+    <value>Điểm chuyên cần gợi ý = 5 − 1×vắng − 0,5×đi muộn − 0,5×về sớm − 0,25×thiếu check-out (tối thiểu 1)</value>
+  </data>
+  <data name="Formula_Description" xml:space="preserve">
+    <value>Tỉ lệ đi làm = số ca đã duyệt có check-in / số ca đến hạn (ca đã kết thúc hoặc đã check-in, không tính ngày nghỉ phép đã duyệt). Đi muộn = check-in sau giờ bắt đầu ca + thời gian cho phép; về sớm = check-out trước giờ kết thúc ca − số phút cho phép (hỗ trợ ca qua đêm). Vắng = ca đã duyệt đã kết thúc, không check-in và không có nghỉ phép đã duyệt.</value>
+  </data>
+  <data name="Col_Employee" xml:space="preserve">
+    <value>Nhân viên</value>
+  </data>
+  <data name="Col_EmployeeCode" xml:space="preserve">
+    <value>Mã NV</value>
+  </data>
+  <data name="Col_FullName" xml:space="preserve">
+    <value>Họ tên</value>
+  </data>
+  <data name="Col_Store" xml:space="preserve">
+    <value>Chi nhánh</value>
+  </data>
+  <data name="Col_Shifts" xml:space="preserve">
+    <value>Đi làm / ca duyệt</value>
+  </data>
+  <data name="Col_ApprovedShifts" xml:space="preserve">
+    <value>Ca đã duyệt</value>
+  </data>
+  <data name="Col_AttendedShifts" xml:space="preserve">
+    <value>Ca đi làm</value>
+  </data>
+  <data name="Col_AttendanceRate" xml:space="preserve">
+    <value>Tỉ lệ đi làm</value>
+  </data>
+  <data name="Col_Absences" xml:space="preserve">
+    <value>Vắng</value>
+  </data>
+  <data name="Col_Late" xml:space="preserve">
+    <value>Đi muộn</value>
+  </data>
+  <data name="Col_LateCount" xml:space="preserve">
+    <value>Đi muộn (lần)</value>
+  </data>
+  <data name="Col_LateMinutes" xml:space="preserve">
+    <value>Đi muộn (phút)</value>
+  </data>
+  <data name="Col_Early" xml:space="preserve">
+    <value>Về sớm</value>
+  </data>
+  <data name="Col_EarlyCount" xml:space="preserve">
+    <value>Về sớm (lần)</value>
+  </data>
+  <data name="Col_EarlyMinutes" xml:space="preserve">
+    <value>Về sớm (phút)</value>
+  </data>
+  <data name="Col_MissingCheckOut" xml:space="preserve">
+    <value>Thiếu check-out</value>
+  </data>
+  <data name="Col_WorkedHours" xml:space="preserve">
+    <value>Giờ công</value>
+  </data>
+  <data name="Col_PaidLeaveDays" xml:space="preserve">
+    <value>Nghỉ có lương (ngày)</value>
+  </data>
+  <data name="Col_UnpaidLeaveDays" xml:space="preserve">
+    <value>Nghỉ không lương (ngày)</value>
+  </data>
+  <data name="Col_SuggestedScore" xml:space="preserve">
+    <value>Điểm chuyên cần gợi ý</value>
+  </data>
+  <data name="Col_SuggestedScoreShort" xml:space="preserve">
+    <value>Gợi ý</value>
+  </data>
+  <data name="Col_ReviewScore" xml:space="preserve">
+    <value>Điểm đánh giá</value>
+  </data>
+  <data name="Col_ReviewScoreShort" xml:space="preserve">
+    <value>Đánh giá</value>
+  </data>
+  <data name="Col_Review" xml:space="preserve">
+    <value>Đánh giá</value>
+  </data>
+  <data name="Col_Comment" xml:space="preserve">
+    <value>Nhận xét</value>
+  </data>
+  <data name="Col_Reviewer" xml:space="preserve">
+    <value>Người đánh giá</value>
+  </data>
+  <data name="Col_Month" xml:space="preserve">
+    <value>Tháng</value>
+  </data>
+  <data name="Col_Date" xml:space="preserve">
+    <value>Ngày</value>
+  </data>
+  <data name="Col_Shift" xml:space="preserve">
+    <value>Ca</value>
+  </data>
+  <data name="Col_CheckIn" xml:space="preserve">
+    <value>Giờ vào</value>
+  </data>
+  <data name="Col_CheckOut" xml:space="preserve">
+    <value>Giờ ra</value>
+  </data>
+  <data name="Col_Hours" xml:space="preserve">
+    <value>Giờ công</value>
+  </data>
+  <data name="Col_Status" xml:space="preserve">
+    <value>Trạng thái</value>
+  </data>
+  <data name="Tooltip_Shifts" xml:space="preserve">
+    <value>Ca đã duyệt có check-in / tổng ca đã duyệt trong tháng</value>
+  </data>
+  <data name="Status_OnTime" xml:space="preserve">
+    <value>Đúng giờ</value>
+  </data>
+  <data name="Status_Late" xml:space="preserve">
+    <value>Muộn {0}'</value>
+  </data>
+  <data name="Status_Early" xml:space="preserve">
+    <value>Về sớm {0}'</value>
+  </data>
+  <data name="Status_Absent" xml:space="preserve">
+    <value>Vắng</value>
+  </data>
+  <data name="Status_LeavePaid" xml:space="preserve">
+    <value>Nghỉ phép có lương</value>
+  </data>
+  <data name="Status_LeaveUnpaid" xml:space="preserve">
+    <value>Nghỉ không lương</value>
+  </data>
+  <data name="Status_MissingCheckOut" xml:space="preserve">
+    <value>Thiếu check-out</value>
+  </data>
+  <data name="Status_InProgress" xml:space="preserve">
+    <value>Đang trong ca</value>
+  </data>
+  <data name="Status_Upcoming" xml:space="preserve">
+    <value>Chưa đến ca</value>
+  </data>
+  <data name="Status_Pending" xml:space="preserve">
+    <value>Chưa chấm công</value>
+  </data>
+  <data name="Action_DetailReview" xml:space="preserve">
+    <value>Chi tiết / Đánh giá</value>
+  </data>
+  <data name="Action_ViewDetail" xml:space="preserve">
+    <value>Chi tiết</value>
+  </data>
+  <data name="Action_ExportExcel" xml:space="preserve">
+    <value>Xuất Excel</value>
+  </data>
+  <data name="Action_PrevMonth" xml:space="preserve">
+    <value>Tháng trước</value>
+  </data>
+  <data name="Action_NextMonth" xml:space="preserve">
+    <value>Tháng sau</value>
+  </data>
+  <data name="Review_ScoreLabel" xml:space="preserve">
+    <value>Điểm (1–5)</value>
+  </data>
+  <data name="Review_ScoreHint" xml:space="preserve">
+    <value>1 = kém, 5 = xuất sắc.</value>
+  </data>
+  <data name="Review_SuggestedHint" xml:space="preserve">
+    <value>Điểm chuyên cần gợi ý: {0}.</value>
+  </data>
+  <data name="Review_CommentLabel" xml:space="preserve">
+    <value>Nhận xét</value>
+  </data>
+  <data name="Review_CommentPlaceholder" xml:space="preserve">
+    <value>Điểm mạnh, điểm cần cải thiện, ghi chú cho tháng sau...</value>
+  </data>
+  <data name="Review_Save" xml:space="preserve">
+    <value>Lưu đánh giá</value>
+  </data>
+  <data name="Review_Update" xml:space="preserve">
+    <value>Cập nhật đánh giá</value>
+  </data>
+  <data name="Toast_ReviewSaved" xml:space="preserve">
+    <value>Đã lưu đánh giá hiệu suất.</value>
+  </data>
+  <data name="Err_InvalidMonth" xml:space="preserve">
+    <value>Tháng không hợp lệ.</value>
+  </data>
+  <data name="Err_FutureMonth" xml:space="preserve">
+    <value>Không thể đánh giá tháng trong tương lai.</value>
+  </data>
+  <data name="Err_ScoreRange" xml:space="preserve">
+    <value>Vui lòng chọn điểm từ 1 đến 5.</value>
+  </data>
+  <data name="Err_CommentLength" xml:space="preserve">
+    <value>Nhận xét không được vượt quá {0} ký tự.</value>
+  </data>
+  <data name="Err_EmployeeNotFound" xml:space="preserve">
+    <value>Không tìm thấy nhân viên.</value>
+  </data>
+  <data name="Err_SelfReview" xml:space="preserve">
+    <value>Bạn không thể tự đánh giá chính mình.</value>
+  </data>
+  <data name="Err_NoPermission" xml:space="preserve">
+    <value>Bạn không có quyền đánh giá nhân viên này.</value>
+  </data>
+  <data name="Err_Concurrent" xml:space="preserve">
+    <value>Đánh giá vừa được người khác cập nhật cùng lúc. Vui lòng tải lại trang và thử lại.</value>
+  </data>
+  <data name="Err_ExportFailed" xml:space="preserve">
+    <value>Xuất Excel thất bại: {0}</value>
+  </data>
+  <data name="Excel_SheetName" xml:space="preserve">
+    <value>Hieu suat</value>
+  </data>
+  <data name="Excel_Title" xml:space="preserve">
+    <value>BẢNG ĐÁNH GIÁ HIỆU SUẤT THÁNG {0}/{1}</value>
+  </data>
+  <data name="Excel_FormulaNote" xml:space="preserve">
+    <value>Điểm chuyên cần gợi ý = 5 − 1×vắng − 0,5×đi muộn − 0,5×về sớm − 0,25×thiếu check-out (tối thiểu 1, tối đa 5).</value>
+  </data>
+  <data name="Excel_ColNo" xml:space="preserve">
+    <value>STT</value>
+  </data>
+  <data name="Excel_FileName" xml:space="preserve">
+    <value>DanhGiaHieuSuat_{0}_{1}</value>
+  </data>
+</root>

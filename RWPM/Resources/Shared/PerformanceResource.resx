@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Nav_Performance" xml:space="preserve">
+    <value>Performance</value>
+  </data>
+  <data name="Nav_MyPerformance" xml:space="preserve">
+    <value>My performance</value>
+  </data>
+  <data name="Index_Title" xml:space="preserve">
+    <value>Performance review</value>
+  </data>
+  <data name="Index_Subtitle" xml:space="preserve">
+    <value>Monthly attendance scorecards and manager reviews for every employee</value>
+  </data>
+  <data name="Index_ScopeLabel" xml:space="preserve">
+    <value>Scope:</value>
+  </data>
+  <data name="Index_ScopeAssignedStore" xml:space="preserve">
+    <value>your assigned store</value>
+  </data>
+  <data name="Index_Empty" xml:space="preserve">
+    <value>No employees found for the selected month and filters.</value>
+  </data>
+  <data name="My_Title" xml:space="preserve">
+    <value>My performance</value>
+  </data>
+  <data name="My_Subtitle" xml:space="preserve">
+    <value>Your monthly scorecards and reviews (last 12 months)</value>
+  </data>
+  <data name="My_NoProfile" xml:space="preserve">
+    <value>Your account has no employee profile, so there is no performance data.</value>
+  </data>
+  <data name="Detail_Title" xml:space="preserve">
+    <value>Performance - {0}</value>
+  </data>
+  <data name="Detail_AttendedOfDue" xml:space="preserve">
+    <value>{0}/{1} due shifts attended · {2} approved</value>
+  </data>
+  <data name="Detail_LeaveShifts" xml:space="preserve">
+    <value>{0} shift(s) on approved leave</value>
+  </data>
+  <data name="Detail_TotalMinutes" xml:space="preserve">
+    <value>Total {0} min</value>
+  </data>
+  <data name="Detail_LeaveDays" xml:space="preserve">
+    <value>Approved leave days</value>
+  </data>
+  <data name="Detail_LeavePaidUnpaid" xml:space="preserve">
+    <value>Paid / unpaid</value>
+  </data>
+  <data name="Detail_ShiftsTitle" xml:space="preserve">
+    <value>Shifts in {0}</value>
+  </data>
+  <data name="Detail_NoShifts" xml:space="preserve">
+    <value>No shifts in this month.</value>
+  </data>
+  <data name="Detail_Unscheduled" xml:space="preserve">
+    <value>not in approved schedule</value>
+  </data>
+  <data name="Detail_ReviewTitle" xml:space="preserve">
+    <value>Review {0}</value>
+  </data>
+  <data name="Detail_ReviewedBy" xml:space="preserve">
+    <value>Reviewed by {0} at {1}</value>
+  </data>
+  <data name="Detail_NoComment" xml:space="preserve">
+    <value>No comment.</value>
+  </data>
+  <data name="Detail_TrendTitle" xml:space="preserve">
+    <value>6-month trend</value>
+  </data>
+  <data name="Card_AvgAttendanceRate" xml:space="preserve">
+    <value>Avg. attendance rate</value>
+  </data>
+  <data name="Card_TotalLates" xml:space="preserve">
+    <value>Total late arrivals</value>
+  </data>
+  <data name="Card_TotalAbsences" xml:space="preserve">
+    <value>Total absences</value>
+  </data>
+  <data name="Card_Reviewed" xml:space="preserve">
+    <value>Reviewed</value>
+  </data>
+  <data name="Filter_Month" xml:space="preserve">
+    <value>Month</value>
+  </data>
+  <data name="Filter_Year" xml:space="preserve">
+    <value>Year</value>
+  </data>
+  <data name="Filter_Store" xml:space="preserve">
+    <value>Store</value>
+  </data>
+  <data name="Filter_AllStores" xml:space="preserve">
+    <value>-- All stores --</value>
+  </data>
+  <data name="Filter_Search" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="Filter_SearchPlaceholder" xml:space="preserve">
+    <value>Search by name, code or username...</value>
+  </data>
+  <data name="MonthLabel" xml:space="preserve">
+    <value>Month {0}/{1}</value>
+  </data>
+  <data name="MonthOption" xml:space="preserve">
+    <value>Month {0}</value>
+  </data>
+  <data name="Minutes" xml:space="preserve">
+    <value>{0} min</value>
+  </data>
+  <data name="NotReviewed" xml:space="preserve">
+    <value>Not reviewed</value>
+  </data>
+  <data name="NoData" xml:space="preserve">
+    <value>Not enough data</value>
+  </data>
+  <data name="Unassigned" xml:space="preserve">
+    <value>Unassigned</value>
+  </data>
+  <data name="UnknownShift" xml:space="preserve">
+    <value>Unknown shift</value>
+  </data>
+  <data name="Formula_Short" xml:space="preserve">
+    <value>Suggested attendance score = 5 − 1×absence − 0.5×late − 0.5×early leave − 0.25×missing check-out (min 1)</value>
+  </data>
+  <data name="Formula_Description" xml:space="preserve">
+    <value>Attendance rate = attended approved shifts / due shifts (shifts already ended or attended, excluding approved leave). Late = check-in after shift start + grace period; early leave = check-out before shift end − allowed early minutes (overnight shifts supported). Absence = approved shift already ended with no check-in and no approved leave.</value>
+  </data>
+  <data name="Col_Employee" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="Col_EmployeeCode" xml:space="preserve">
+    <value>Employee code</value>
+  </data>
+  <data name="Col_FullName" xml:space="preserve">
+    <value>Full name</value>
+  </data>
+  <data name="Col_Store" xml:space="preserve">
+    <value>Store</value>
+  </data>
+  <data name="Col_Shifts" xml:space="preserve">
+    <value>Attended / approved</value>
+  </data>
+  <data name="Col_ApprovedShifts" xml:space="preserve">
+    <value>Approved shifts</value>
+  </data>
+  <data name="Col_AttendedShifts" xml:space="preserve">
+    <value>Attended shifts</value>
+  </data>
+  <data name="Col_AttendanceRate" xml:space="preserve">
+    <value>Attendance rate</value>
+  </data>
+  <data name="Col_Absences" xml:space="preserve">
+    <value>Absences</value>
+  </data>
+  <data name="Col_Late" xml:space="preserve">
+    <value>Late</value>
+  </data>
+  <data name="Col_LateCount" xml:space="preserve">
+    <value>Late (times)</value>
+  </data>
+  <data name="Col_LateMinutes" xml:space="preserve">
+    <value>Late (minutes)</value>
+  </data>
+  <data name="Col_Early" xml:space="preserve">
+    <value>Early leave</value>
+  </data>
+  <data name="Col_EarlyCount" xml:space="preserve">
+    <value>Early leave (times)</value>
+  </data>
+  <data name="Col_EarlyMinutes" xml:space="preserve">
+    <value>Early leave (minutes)</value>
+  </data>
+  <data name="Col_MissingCheckOut" xml:space="preserve">
+    <value>Missing check-out</value>
+  </data>
+  <data name="Col_WorkedHours" xml:space="preserve">
+    <value>Worked hours</value>
+  </data>
+  <data name="Col_PaidLeaveDays" xml:space="preserve">
+    <value>Paid leave days</value>
+  </data>
+  <data name="Col_UnpaidLeaveDays" xml:space="preserve">
+    <value>Unpaid leave days</value>
+  </data>
+  <data name="Col_SuggestedScore" xml:space="preserve">
+    <value>Suggested attendance score</value>
+  </data>
+  <data name="Col_SuggestedScoreShort" xml:space="preserve">
+    <value>Suggested</value>
+  </data>
+  <data name="Col_ReviewScore" xml:space="preserve">
+    <value>Review score</value>
+  </data>
+  <data name="Col_ReviewScoreShort" xml:space="preserve">
+    <value>Review</value>
+  </data>
+  <data name="Col_Review" xml:space="preserve">
+    <value>Review</value>
+  </data>
+  <data name="Col_Comment" xml:space="preserve">
+    <value>Comment</value>
+  </data>
+  <data name="Col_Reviewer" xml:space="preserve">
+    <value>Reviewer</value>
+  </data>
+  <data name="Col_Month" xml:space="preserve">
+    <value>Month</value>
+  </data>
+  <data name="Col_Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Col_Shift" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="Col_CheckIn" xml:space="preserve">
+    <value>Check-in</value>
+  </data>
+  <data name="Col_CheckOut" xml:space="preserve">
+    <value>Check-out</value>
+  </data>
+  <data name="Col_Hours" xml:space="preserve">
+    <value>Hours</value>
+  </data>
+  <data name="Col_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Tooltip_Shifts" xml:space="preserve">
+    <value>Approved shifts with check-in / approved shifts in month</value>
+  </data>
+  <data name="Status_OnTime" xml:space="preserve">
+    <value>On time</value>
+  </data>
+  <data name="Status_Late" xml:space="preserve">
+    <value>Late {0}'</value>
+  </data>
+  <data name="Status_Early" xml:space="preserve">
+    <value>Early {0}'</value>
+  </data>
+  <data name="Status_Absent" xml:space="preserve">
+    <value>Absent</value>
+  </data>
+  <data name="Status_LeavePaid" xml:space="preserve">
+    <value>Paid leave</value>
+  </data>
+  <data name="Status_LeaveUnpaid" xml:space="preserve">
+    <value>Unpaid leave</value>
+  </data>
+  <data name="Status_MissingCheckOut" xml:space="preserve">
+    <value>Missing check-out</value>
+  </data>
+  <data name="Status_InProgress" xml:space="preserve">
+    <value>In progress</value>
+  </data>
+  <data name="Status_Upcoming" xml:space="preserve">
+    <value>Upcoming</value>
+  </data>
+  <data name="Status_Pending" xml:space="preserve">
+    <value>Not checked in yet</value>
+  </data>
+  <data name="Action_DetailReview" xml:space="preserve">
+    <value>Details / Review</value>
+  </data>
+  <data name="Action_ViewDetail" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Action_ExportExcel" xml:space="preserve">
+    <value>Export Excel</value>
+  </data>
+  <data name="Action_PrevMonth" xml:space="preserve">
+    <value>Previous month</value>
+  </data>
+  <data name="Action_NextMonth" xml:space="preserve">
+    <value>Next month</value>
+  </data>
+  <data name="Review_ScoreLabel" xml:space="preserve">
+    <value>Score (1–5)</value>
+  </data>
+  <data name="Review_ScoreHint" xml:space="preserve">
+    <value>1 = poor, 5 = excellent.</value>
+  </data>
+  <data name="Review_SuggestedHint" xml:space="preserve">
+    <value>Suggested attendance score: {0}.</value>
+  </data>
+  <data name="Review_CommentLabel" xml:space="preserve">
+    <value>Comment</value>
+  </data>
+  <data name="Review_CommentPlaceholder" xml:space="preserve">
+    <value>Strengths, areas to improve, notes for next month...</value>
+  </data>
+  <data name="Review_Save" xml:space="preserve">
+    <value>Save review</value>
+  </data>
+  <data name="Review_Update" xml:space="preserve">
+    <value>Update review</value>
+  </data>
+  <data name="Toast_ReviewSaved" xml:space="preserve">
+    <value>Performance review saved.</value>
+  </data>
+  <data name="Err_InvalidMonth" xml:space="preserve">
+    <value>Invalid month.</value>
+  </data>
+  <data name="Err_FutureMonth" xml:space="preserve">
+    <value>You cannot review a future month.</value>
+  </data>
+  <data name="Err_ScoreRange" xml:space="preserve">
+    <value>Score is required and must be between 1 and 5.</value>
+  </data>
+  <data name="Err_CommentLength" xml:space="preserve">
+    <value>Comment must not exceed {0} characters.</value>
+  </data>
+  <data name="Err_EmployeeNotFound" xml:space="preserve">
+    <value>Employee not found.</value>
+  </data>
+  <data name="Err_SelfReview" xml:space="preserve">
+    <value>You cannot review yourself.</value>
+  </data>
+  <data name="Err_NoPermission" xml:space="preserve">
+    <value>You do not have permission to review this employee.</value>
+  </data>
+  <data name="Err_Concurrent" xml:space="preserve">
+    <value>The review was changed by someone else at the same time. Please reload and try again.</value>
+  </data>
+  <data name="Err_ExportFailed" xml:space="preserve">
+    <value>Export failed: {0}</value>
+  </data>
+  <data name="Excel_SheetName" xml:space="preserve">
+    <value>Performance</value>
+  </data>
+  <data name="Excel_Title" xml:space="preserve">
+    <value>PERFORMANCE SCORECARD {0}/{1}</value>
+  </data>
+  <data name="Excel_FormulaNote" xml:space="preserve">
+    <value>Suggested attendance score = 5 − 1×absence − 0.5×late − 0.5×early leave − 0.25×missing check-out (min 1, max 5).</value>
+  </data>
+  <data name="Excel_ColNo" xml:space="preserve">
+    <value>No.</value>
+  </data>
+  <data name="Excel_FileName" xml:space="preserve">
+    <value>Performance_{0}_{1}</value>
+  </data>
+</root>

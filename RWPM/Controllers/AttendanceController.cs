@@ -20,13 +20,16 @@ namespace RWPM.Controllers
         private readonly IAttendanceAdjustmentService _attendanceAdjustmentService;
         private readonly IAccService _accService;
         private readonly DefaultDatabaseContext _context;
+        private readonly Microsoft.AspNetCore.Hosting.IWebHostEnvironment _env;
 
         public AttendanceController(
             IAttendanceService attendanceService,
             IAttendanceAdjustmentService attendanceAdjustmentService,
             IAccService accService,
-            DefaultDatabaseContext context)
+            DefaultDatabaseContext context,
+            Microsoft.AspNetCore.Hosting.IWebHostEnvironment env)
         {
+            _env = env;
             _attendanceService = attendanceService;
             _attendanceAdjustmentService = attendanceAdjustmentService;
             _accService = accService;
@@ -160,6 +163,40 @@ namespace RWPM.Controllers
             ViewBag.Employees = empList;
 
             return View(isSystemAdmin ? employeeHistory : myHistory);
+        }
+
+        /// <summary>
+        /// Xem ảnh chấm công: chính chủ, Admin/HR, hoặc Quản lý cửa hàng cùng chi nhánh với nhân viên.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> Photo(int id, string type)
+        {
+            var username = User.Identity?.Name ?? User.FindFirstValue(ClaimTypes.Name);
+            if (string.IsNullOrEmpty(username)) return Challenge();
+
+            var record = await _context.AttendanceRecord.AsNoTracking()
+                .Where(r => r.AttendanceId == id)
+                .Select(r => new { r.Username, r.CheckInPhotoPath, r.CheckOutPhotoPath })
+                .FirstOrDefaultAsync();
+            if (record == null) return NotFound();
+
+            var allowed = record.Username == username
+                || User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin");
+            if (!allowed && User.IsInRole("StoreManager"))
+            {
+                var managerStoreId = await _context.Employee.Where(e => e.Username == username).Select(e => e.StoreId).FirstOrDefaultAsync();
+                var ownerStoreId = await _context.Employee.Where(e => e.Username == record.Username).Select(e => e.StoreId).FirstOrDefaultAsync();
+                allowed = managerStoreId.HasValue && managerStoreId == ownerStoreId;
+            }
+            if (!allowed) return Forbid();
+
+            var stored = string.Equals(type, "out", StringComparison.OrdinalIgnoreCase) ? record.CheckOutPhotoPath : record.CheckInPhotoPath;
+            var physical = RWPM.Infrastructure.Storage.AttendancePhotoStore.ResolvePhysicalPath(_env, stored);
+            if (physical == null) return NotFound();
+
+            Response.Headers["Cache-Control"] = "private, max-age=600";
+            Response.Headers["X-Content-Type-Options"] = "nosniff";
+            return PhysicalFile(physical, RWPM.Infrastructure.Storage.AttendancePhotoStore.ContentType(physical));
         }
 
         [HttpPost]

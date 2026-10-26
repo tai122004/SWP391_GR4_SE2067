@@ -258,6 +258,35 @@ namespace RWPM.Infrastructure.Data
                  .OnDelete(DeleteBehavior.Cascade);
             });
             #endregion
+
+            #region PerformanceReview
+            modelBuilder.Entity<PerformanceReview>(e =>
+            {
+                e.HasIndex(x => new { x.EmployeeId, x.Year, x.Month }).IsUnique();
+                e.HasIndex(x => new { x.StoreId, x.Year, x.Month });
+                e.HasOne(x => x.Employee)
+                 .WithMany()
+                 .HasForeignKey(x => x.EmployeeId)
+                 .OnDelete(DeleteBehavior.Cascade);
+                e.HasOne(x => x.Store)
+                 .WithMany()
+                 .HasForeignKey(x => x.StoreId)
+                 .OnDelete(DeleteBehavior.Restrict);
+                e.HasCheckConstraint("CK_PerformanceReview_Score", "[Score] BETWEEN 1 AND 5");
+                e.HasCheckConstraint("CK_PerformanceReview_Month", "[Month] BETWEEN 1 AND 12");
+            });
+            #endregion
+
+            #region Notification
+            modelBuilder.Entity<Notification>(e =>
+            {
+                e.HasIndex(x => new { x.Username, x.IsRead, x.CreatedDate });
+                e.HasOne(x => x.Account)
+                 .WithMany()
+                 .HasForeignKey(x => x.Username)
+                 .OnDelete(DeleteBehavior.Cascade);
+            });
+            #endregion
         }
 
         public DbSet<Acc> Acc { get; set; } = default!;
@@ -277,6 +306,8 @@ namespace RWPM.Infrastructure.Data
         public DbSet<PayrollDetail> PayrollDetail { get; set; } = default!;
         public DbSet<PayrollItemSnapshot> PayrollItemSnapshot { get; set; } = default!;
         public DbSet<PayrollAuditLog> PayrollAuditLog { get; set; } = default!;
+        public DbSet<PerformanceReview> PerformanceReview { get; set; } = default!;
+        public DbSet<Notification> Notification { get; set; } = default!;
 
         //public DbSet<IdCounter> IdCounter { get; set; } = default!;
 

@@ -1,31 +1,693 @@
-@using NavigationBarResource = RWPM.Resources.Shared.NavigationBarResource
+@using System.Globalization
+@using RWPM.Common.Helper
+@using RWPM.Models.ViewModels.Dashboard
+@using RWPM.Models.ViewModels.Payroll
 @using RWPM.Resources.Shared
+@using D = RWPM.Resources.Shared.DashboardResource
+@model RWPM.Models.ViewModels.Dashboard.DashboardVM
+
 @{
-    ViewData["Title"] = "RWPM";
-}
-<div class="mb-4">
-    <h1 class="h3 fw-bold mb-1">RWPM</h1>
-    <p class="text-muted mb-0">@User.Identity?.Name</p>
-</div>
-<div class="row g-3">
-    @if ((!User.IsInRole("Admin") && !User.IsInRole("SuperAdmin")) || User.IsInRole("HR") || User.IsInRole("StoreManager"))
+    ViewData["Title"] = D.Title;
+    var today = Model.Now.Date;
+    var dayName = Model.Now.ToString("dddd", CultureInfo.CurrentCulture);
+    if (dayName.Length > 0) { dayName = char.ToUpper(dayName[0], CultureInfo.CurrentCulture) + dayName.Substring(1); }
+    string subtitle = Model.Mode switch
     {
-        <div class="col-md-6 col-xl-4"><a class="card dashboard-link h-100 text-decoration-none" asp-controller="Attendance" asp-action="Index"><div class="card-body d-flex align-items-center gap-3"><i class="bi bi-calendar-check fs-3 text-primary"></i><span class="fw-semibold">@NavigationBarResource.Attendance</span><i class="bi bi-chevron-right ms-auto text-muted"></i></div></a></div>
-        <div class="col-md-6 col-xl-4"><a class="card dashboard-link h-100 text-decoration-none" asp-controller="ShiftRegistration" asp-action="Index"><div class="card-body d-flex align-items-center gap-3"><i class="bi bi-calendar-week fs-3 text-primary"></i><span class="fw-semibold">@ShiftRegistrationResource.ShiftRegistration</span><i class="bi bi-chevron-right ms-auto text-muted"></i></div></a></div>
+        DashboardMode.Chain => D.Subtitle_Chain,
+        DashboardMode.Store => string.Format(D.Subtitle_Store, Model.Store?.StoreName),
+        _ => D.Subtitle_Employee
+    };
+
+    string PendingUrl(PendingSummaryVM p) => Url.Action("Index", "Request", new
+    {
+        status = 0,
+        start = p.RangeStart?.ToString("yyyy-MM-dd"),
+        end = p.RangeEnd?.ToString("yyyy-MM-dd")
+    }) ?? "#";
+
+    string TimeRange(DateTime workDate, DateTime startAt, DateTime endAt)
+    {
+        var text = $"{startAt:HH:mm} - {endAt:HH:mm}";
+        var days = (endAt.Date - workDate.Date).Days;
+        return days > 0 ? $"{text} (+{days})" : text;
     }
-    <div class="col-md-6 col-xl-4"><a class="card dashboard-link h-100 text-decoration-none" asp-controller="Request" asp-action="Index"><div class="card-body d-flex align-items-center gap-3"><i class="bi bi-inbox fs-3 text-primary"></i><span class="fw-semibold">@RequestResource.RequestsAndApprovals</span><i class="bi bi-chevron-right ms-auto text-muted"></i></div></a></div>
-    @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("AreaManager") || User.IsInRole("SuperAdmin") || User.IsInRole("StoreManager"))
+
+    string FormatTime(TimeSpan? t) => t.HasValue ? t.Value.ToString(@"hh\:mm") : "--:--";
+
+    (string Color, string Icon, string Text) StateInfo(ShiftAttendanceState state, int lateMinutes) => state switch
     {
-        @if (!User.IsInRole("StoreManager") || User.IsInRole("Admin") || User.IsInRole("HR"))
+        ShiftAttendanceState.NotStarted => ("secondary", "bi-clock", D.State_NotStarted),
+        ShiftAttendanceState.AwaitingCheckIn => ("info", "bi-hourglass-split", D.State_AwaitingCheckIn),
+        ShiftAttendanceState.Late => ("warning", "bi-exclamation-triangle", string.Format(D.State_Late, lateMinutes)),
+        ShiftAttendanceState.CheckedIn => ("success", "bi-box-arrow-in-right", D.State_CheckedIn),
+        ShiftAttendanceState.CheckedOut => ("primary", "bi-box-arrow-right", D.State_CheckedOut),
+        _ => ("danger", "bi-x-circle", D.State_Absent)
+    };
+}
+
+@functions {
+    // Stat card identical to Payroll/Index metric cards; optional link turns the whole card into a link.
+    void StatCard(string color, string title, string value, string? sub, string icon, string? href)
+    {
+        <div class="col-12 col-sm-6 col-xl-3">
+            @if (!string.IsNullOrEmpty(href))
+            {
+                @:<a href="@href" class="card dashboard-link border-0 shadow-sm rounded-3 h-100 border-start border-4 border-@color text-decoration-none">
+            }
+            else
+            {
+                @:<div class="card border-0 shadow-sm rounded-3 h-100 border-start border-4 border-@color">
+            }
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center gap-2">
+                        <div>
+                            <span class="text-muted text-uppercase fw-semibold small">@title</span>
+                            <h3 class="fw-bold mb-0 mt-1 text-@color">@value</h3>
+                            @if (!string.IsNullOrEmpty(sub))
+                            {
+                                <div class="small text-muted mt-1">@sub</div>
+                            }
+                        </div>
+                        <div class="bg-@color bg-opacity-10 rounded-circle p-3 text-@color flex-shrink-0">
+                            <i class="bi @icon fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            @if (!string.IsNullOrEmpty(href))
+            {
+                @:</a>
+            }
+            else
+            {
+                @:</div>
+            }
+        </div>
+    }
+
+    void EmptyState(string icon, string text)
+    {
+        <div class="text-center py-5 text-muted">
+            <i class="bi @icon fs-2 d-block mb-2 text-secondary"></i>
+            @text
+        </div>
+    }
+
+    void PendingBreakdown(PendingSummaryVM p)
+    {
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                <span><i class="bi bi-calendar-plus text-primary me-2"></i>@D.Pending_Reg</span>
+                <span class="badge rounded-pill @(p.ShiftRegistration > 0 ? "bg-warning-subtle text-warning-emphasis" : "bg-light text-muted")">@p.ShiftRegistration</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                <span><i class="bi bi-arrow-left-right text-primary me-2"></i>@D.Pending_Swap</span>
+                <span class="badge rounded-pill @(p.Swap > 0 ? "bg-warning-subtle text-warning-emphasis" : "bg-light text-muted")">@p.Swap</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                <span><i class="bi bi-airplane text-primary me-2"></i>@D.Pending_Leave</span>
+                <span class="badge rounded-pill @(p.Leave > 0 ? "bg-warning-subtle text-warning-emphasis" : "bg-light text-muted")">@p.Leave</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                <span><i class="bi bi-clock-history text-primary me-2"></i>@D.Pending_Adjustment</span>
+                <span class="badge rounded-pill @(p.Adjustment > 0 ? "bg-warning-subtle text-warning-emphasis" : "bg-light text-muted")">@p.Adjustment</span>
+            </li>
+        </ul>
+    }
+
+    void LeaveTable(List<LeaveTodayVM> items, int total, bool showStore)
+    {
+        if (items.Count == 0)
         {
-            <div class="col-md-6 col-xl-4"><a class="card dashboard-link h-100 text-decoration-none" asp-controller="Acc" asp-action="Index"><div class="card-body d-flex align-items-center gap-3"><i class="bi bi-person-vcard fs-3 text-primary"></i><span class="fw-semibold">@NavigationBarResource.AccountManagement</span><i class="bi bi-chevron-right ms-auto text-muted"></i></div></a></div>
+            EmptyState("bi-emoji-smile", D.Empty_OnLeave);
+            return;
         }
-        <div class="col-md-6 col-xl-4"><a class="card dashboard-link h-100 text-decoration-none" asp-controller="Employee" asp-action="Index"><div class="card-body d-flex align-items-center gap-3"><i class="bi bi-people fs-3 text-primary"></i><span class="fw-semibold">@NavigationBarResource.EmployeeManagement</span><i class="bi bi-chevron-right ms-auto text-muted"></i></div></a></div>
-        @if (!User.IsInRole("StoreManager") || User.IsInRole("Admin") || User.IsInRole("HR"))
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>@D.Col_Employee</th>
+                        @if (showStore)
+                        {
+                            <th>@D.Col_Store</th>
+                        }
+                        <th>@D.Col_LeaveType</th>
+                        <th class="text-nowrap">@D.Col_Period</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var l in items)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">@l.FullName</div>
+                                <small class="text-muted">@l.EmployeeCode</small>
+                            </td>
+                            @if (showStore)
+                            {
+                                <td><small>@l.StoreName</small></td>
+                            }
+                            <td>
+                                @if (l.LeaveType == RWPM.Common.Enums.LeaveType.Paid)
+                                {
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle">@UIHelper.GetDisplayName(l.LeaveType)</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">@UIHelper.GetDisplayName(l.LeaveType)</span>
+                                }
+                            </td>
+                            <td class="text-nowrap"><small class="text-muted">@l.StartDate.ToString("dd/MM") - @l.EndDate.ToString("dd/MM/yyyy")</small></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        if (total > items.Count)
         {
-            <div class="col-md-6 col-xl-4"><a class="card dashboard-link h-100 text-decoration-none" asp-controller="Store" asp-action="Index"><div class="card-body d-flex align-items-center gap-3"><i class="bi bi-shop fs-3 text-primary"></i><span class="fw-semibold">@NavigationBarResource.StoreList</span><i class="bi bi-chevron-right ms-auto text-muted"></i></div></a></div>
-            <div class="col-md-6 col-xl-4"><a class="card dashboard-link h-100 text-decoration-none" asp-controller="Shift" asp-action="Index"><div class="card-body d-flex align-items-center gap-3"><i class="bi bi-clock-history fs-3 text-primary"></i><span class="fw-semibold">@NavigationBarResource.ShiftManagement</span><i class="bi bi-chevron-right ms-auto text-muted"></i></div></a></div>
+            <div class="card-footer bg-white small text-muted text-end">@string.Format(D.List_Showing, items.Count, total)</div>
         }
-        <div class="col-md-6 col-xl-4"><a class="card dashboard-link h-100 text-decoration-none" asp-controller="Payroll" asp-action="Index"><div class="card-body d-flex align-items-center gap-3"><i class="bi bi-cash-stack fs-3 text-primary"></i><span class="fw-semibold">@NavigationBarResource.Payroll</span><i class="bi bi-chevron-right ms-auto text-muted"></i></div></a></div>
+    }
+}
+
+<div class="container-fluid px-0">
+    <!-- Header -->
+    <div class="app-page-header">
+        <div>
+            <h4 class="fw-bold text-dark d-flex align-items-center mb-1">
+                <i class="bi bi-grid-1x2-fill text-primary me-2"></i>@D.Title
+            </h4>
+            <div class="text-muted small">
+                @string.Format(D.Greeting, Model.FullName) &middot; @dayName, @Model.Now.ToString("dd/MM/yyyy") &middot; @subtitle
+            </div>
+        </div>
+        <div class="app-page-actions">
+            <span class="small text-muted"><i class="bi bi-clock me-1"></i>@string.Format(D.UpdatedAt, Model.Now.ToString("HH:mm"))</span>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary btn-sm shadow-sm d-flex align-items-center gap-1">
+                <i class="bi bi-arrow-clockwise"></i><span>@D.Refresh</span>
+            </a>
+        </div>
+    </div>
+
+    @* ============================ STORE MANAGER ============================ *@
+    @if (Model.Mode == DashboardMode.Store && Model.Store != null)
+    {
+        var s = Model.Store;
+        int assignments = s.Shifts.Sum(x => x.ApprovedCount);
+        int checkedIn = s.Shifts.Sum(x => x.CheckedInCount);
+
+        <div class="row g-3 mb-4">
+            @{
+                StatCard("primary", D.Card_ShiftsToday, s.Shifts.Count.ToString(), string.Format(D.Card_CheckedInRatio, checkedIn, assignments), "bi-calendar-week", null);
+                StatCard("warning", D.Card_PendingRequests, s.Pending.Total.ToString(), s.Pending.Total > 0 ? D.Action_Review : D.Pending_None, "bi-inbox", PendingUrl(s.Pending));
+                StatCard("info", D.Card_OnLeaveToday, s.OnLeave.Count.ToString(), null, "bi-airplane", null);
+                StatCard("success", D.Card_ActiveHeadcount, s.ActiveHeadcount.ToString(), s.StoreName, "bi-people", null);
+            }
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-xl-8">
+                <div class="card border-0 shadow-sm rounded-3 h-100">
+                    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <h5 class="card-title mb-0 fw-bold text-dark fs-6"><i class="bi bi-calendar-check text-primary me-2"></i>@D.Section_TodayShifts</h5>
+                        <span class="badge bg-secondary-subtle text-secondary">@string.Format(D.Card_CheckedInRatio, checkedIn, assignments)</span>
+                    </div>
+                    @if (s.Shifts.Count == 0)
+                    {
+                        EmptyState("bi-calendar-x", D.Empty_TodayShifts);
+                    }
+                    else
+                    {
+                        <div class="card-body">
+                            @foreach (var shift in s.Shifts)
+                            {
+                                <div class="border rounded-3 mb-3 overflow-hidden">
+                                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 px-3 py-2 bg-light border-bottom">
+                                        <div class="d-flex flex-wrap align-items-center gap-2">
+                                            <span class="fw-bold text-dark">@shift.ShiftName</span>
+                                            <span class="small text-muted"><i class="bi bi-clock me-1"></i>@TimeRange(shift.WorkDate, shift.StartAt, shift.EndAt)</span>
+                                            @if (shift.IsCarryOver)
+                                            {
+                                                <span class="badge bg-dark-subtle text-dark border"><i class="bi bi-moon-stars me-1"></i>@D.Shift_CarryOver</span>
+                                            }
+                                        </div>
+                                        <div class="d-flex flex-wrap align-items-center gap-2 small">
+                                            <span class="badge @(shift.CheckedInCount == shift.ApprovedCount ? "bg-success-subtle text-success border border-success-subtle" : "bg-primary-subtle text-primary border border-primary-subtle")">
+                                                <i class="bi bi-person-check me-1"></i>@string.Format(D.Card_CheckedInRatio, shift.CheckedInCount, shift.ApprovedCount)
+                                            </span>
+                                            <span class="text-muted">@string.Format(D.Shift_Grace, shift.GraceMinutes)</span>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle mb-0">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th class="text-nowrap">@D.Col_Code</th>
+                                                    <th>@D.Col_Employee</th>
+                                                    <th>@D.Col_Status</th>
+                                                    <th class="text-center text-nowrap">@D.Col_CheckIn</th>
+                                                    <th class="text-center text-nowrap">@D.Col_CheckOut</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var e in shift.Employees)
+                                                {
+                                                    var st = StateInfo(e.State, e.LateMinutes);
+                                                    <tr>
+                                                        <td class="text-nowrap"><small class="text-muted">@e.EmployeeCode</small></td>
+                                                        <td class="fw-semibold">@e.FullName</td>
+                                                        <td class="text-nowrap">
+                                                            <span class="badge bg-@(st.Color)-subtle text-@(st.Color)-emphasis border border-@(st.Color)-subtle px-2 py-1">
+                                                                <i class="bi @st.Icon me-1"></i>@st.Text
+                                                            </span>
+                                                            @if ((e.State == ShiftAttendanceState.CheckedIn || e.State == ShiftAttendanceState.CheckedOut) && e.LateMinutes > 0)
+                                                            {
+                                                                <small class="text-warning-emphasis ms-1">@string.Format(D.State_CheckedInLate, e.LateMinutes)</small>
+                                                            }
+                                                        </td>
+                                                        <td class="text-center">@FormatTime(e.CheckInTime)</td>
+                                                        <td class="text-center">@FormatTime(e.CheckOutTime)</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="col-12 col-xl-4 d-flex flex-column gap-3">
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-header bg-white py-3 border-bottom">
+                        <h5 class="card-title mb-0 fw-bold text-dark fs-6"><i class="bi bi-lightning-charge text-primary me-2"></i>@D.Quick_Title</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="@PendingUrl(s.Pending)" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
+                            <i class="bi bi-inbox fs-5 text-primary"></i>
+                            <span class="fw-semibold">@D.Card_PendingRequests</span>
+                            @if (s.Pending.Total > 0)
+                            {
+                                <span class="badge rounded-pill bg-warning text-dark ms-auto">@s.Pending.Total</span>
+                            }
+                            else
+                            {
+                                <i class="bi bi-chevron-right ms-auto text-muted"></i>
+                            }
+                        </a>
+                        <a asp-controller="ShiftRegistration" asp-action="Index" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
+                            <i class="bi bi-calendar-week fs-5 text-primary"></i>
+                            <span class="fw-semibold">@ShiftRegistrationResource.ShiftRegistration</span>
+                            <i class="bi bi-chevron-right ms-auto text-muted"></i>
+                        </a>
+                        <a asp-controller="Attendance" asp-action="Index" asp-route-view="employees" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
+                            <i class="bi bi-calendar-check fs-5 text-primary"></i>
+                            <span class="fw-semibold">@NavigationBarResource.Attendance</span>
+                            <i class="bi bi-chevron-right ms-auto text-muted"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0 fw-bold text-dark fs-6"><i class="bi bi-hourglass-split text-primary me-2"></i>@D.Card_PendingRequests</h5>
+                        <a href="@PendingUrl(s.Pending)" class="small text-decoration-none">@D.ViewAll</a>
+                    </div>
+                    <div class="card-body py-1">
+                        @{ PendingBreakdown(s.Pending); }
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0 fw-bold text-dark fs-6"><i class="bi bi-airplane text-primary me-2"></i>@D.Section_OnLeave</h5>
+                        <span class="badge bg-secondary-subtle text-secondary">@s.OnLeave.Count</span>
+                    </div>
+                    @{ LeaveTable(s.OnLeave, s.OnLeave.Count, false); }
+                </div>
+            </div>
+        </div>
+    }
+
+    @* ============================ HR / ADMIN ============================ *@
+    @if (Model.Mode == DashboardMode.Chain && Model.Chain != null)
+    {
+        var c = Model.Chain;
+
+        if (c.PreviousMonthMissing)
+        {
+            <div class="alert alert-warning border-0 shadow-sm rounded-3 mb-4 d-flex align-items-center flex-wrap gap-2">
+                <i class="bi bi-exclamation-triangle-fill fs-4 me-2 text-warning"></i>
+                <strong class="flex-grow-1">@string.Format(D.Payroll_MissingPrevMonth, c.PreviousMonth.ToString("MM/yyyy"))</strong>
+                <a asp-controller="Payroll" asp-action="Index" class="btn btn-sm btn-outline-dark"><i class="bi bi-calculator me-1"></i>@D.Payroll_GoTo</a>
+            </div>
+        }
+
+        <div class="row g-3 mb-4">
+            @{
+                StatCard("primary", D.Card_ActiveHeadcount, c.ActiveHeadcount.ToString(),
+                    c.UnassignedHeadcount > 0 ? string.Format(D.Card_Unassigned, c.UnassignedHeadcount) : string.Format(D.Card_CheckedInNow, c.CheckedInNow),
+                    "bi-people", Url.Action("Index", "Employee"));
+                StatCard("warning", D.Card_PendingRequests, c.Pending.Total.ToString(), c.Pending.Total > 0 ? D.Action_Review : D.Pending_None, "bi-inbox", PendingUrl(c.Pending));
+                StatCard("info", D.Card_OnLeaveToday, c.OnLeaveTotal.ToString(), null, "bi-airplane", null);
+                StatCard("success", D.Card_NewHires, c.NewHiresTotal.ToString(), null, "bi-person-plus", null);
+            }
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-xl-8">
+                <div class="card border-0 shadow-sm rounded-3 h-100">
+                    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <h5 class="card-title mb-0 fw-bold text-dark fs-6"><i class="bi bi-shop text-primary me-2"></i>@D.Section_Stores</h5>
+                        <span class="badge bg-secondary-subtle text-secondary">@string.Format(D.Card_CheckedInNow, c.CheckedInNow)</span>
+                    </div>
+                    @if (c.Stores.Count == 0)
+                    {
+                        EmptyState("bi-shop", D.Empty_Stores);
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>@D.Col_Store</th>
+                                        <th class="text-center text-nowrap">@D.Col_Headcount</th>
+                                        <th class="text-center text-nowrap">@D.Col_TodayShifts</th>
+                                        <th class="text-center text-nowrap">@D.Col_CheckedInNow</th>
+                                        <th class="text-center text-nowrap">@D.Col_Pending</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var row in c.Stores)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a asp-controller="Store" asp-action="Details" asp-route-id="@row.StoreId" class="fw-semibold text-decoration-none text-dark">@row.StoreName</a>
+                                                <small class="d-block text-muted">@row.StoreCode</small>
+                                            </td>
+                                            <td class="text-center fw-semibold">@row.Headcount</td>
+                                            <td class="text-center">@row.TodayAssignments</td>
+                                            <td class="text-center">
+                                                @if (row.CheckedInNow > 0)
+                                                {
+                                                    <span class="badge bg-success-subtle text-success border border-success-subtle">@row.CheckedInNow</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">0</span>
+                                                }
+                                            </td>
+                                            <td class="text-center">
+                                                @if (row.PendingCount > 0)
+                                                {
+                                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">@row.PendingCount</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">0</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot class="table-light">
+                                    <tr class="fw-bold">
+                                        <td>@D.Total</td>
+                                        <td class="text-center">@c.Stores.Sum(x => x.Headcount)</td>
+                                        <td class="text-center">@c.Stores.Sum(x => x.TodayAssignments)</td>
+                                        <td class="text-center">@c.Stores.Sum(x => x.CheckedInNow)</td>
+                                        <td class="text-center">@c.Stores.Sum(x => x.PendingCount)</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        @if (c.UnassignedHeadcount > 0)
+                        {
+                            <div class="card-footer bg-white small text-muted"><i class="bi bi-info-circle me-1"></i>@string.Format(D.Card_Unassigned, c.UnassignedHeadcount)</div>
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="col-12 col-xl-4 d-flex flex-column gap-3">
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0 fw-bold text-dark fs-6"><i class="bi bi-cash-stack text-primary me-2"></i>@D.Payroll_Latest</h5>
+                        <a asp-controller="Payroll" asp-action="Index" class="small text-decoration-none">@D.ViewAll</a>
+                    </div>
+                    @if (c.Payroll == null)
+                    {
+                        EmptyState("bi-cash-stack", D.Payroll_Empty);
+                    }
+                    else
+                    {
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                <a asp-controller="Payroll" asp-action="Detail" asp-route-id="@c.Payroll.PayrollId" class="fw-bold text-primary text-decoration-none">@PayrollDisplayText.Title(c.Payroll.Title)</a>
+                                @if (c.Payroll.Status == RWPM.Common.Enums.PayrollStatus.Locked)
+                                {
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 text-nowrap"><i class="bi bi-lock-fill me-1"></i>@PayrollResource.Status_Locked</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1 text-nowrap"><i class="bi bi-pencil me-1"></i>@PayrollResource.Status_Draft</span>
+                                }
+                            </div>
+                            <div class="small text-muted mb-3"><i class="bi bi-calendar3 me-1"></i>@c.Payroll.StartDate.ToString("dd/MM/yyyy") - @c.Payroll.EndDate.ToString("dd/MM/yyyy") &middot; @string.Format(D.Payroll_Employees, c.Payroll.TotalEmployees)</div>
+                            <span class="text-muted text-uppercase fw-semibold small">@D.Payroll_TotalSalary</span>
+                            <h3 class="fw-bold mb-3 mt-1 text-success">@c.Payroll.TotalGrossSalary.ToString("#,##0") <small class="fs-6">@PayrollResource.Unit_Vnd</small></h3>
+                            <a asp-controller="Payroll" asp-action="Detail" asp-route-id="@c.Payroll.PayrollId" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye me-1"></i>@PayrollResource.Action_ViewDetail</a>
+                        </div>
+                    }
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0 fw-bold text-dark fs-6"><i class="bi bi-hourglass-split text-primary me-2"></i>@D.Card_PendingRequests</h5>
+                        <a href="@PendingUrl(c.Pending)" class="small text-decoration-none">@D.ViewAll</a>
+                    </div>
+                    <div class="card-body py-1">
+                        @{ PendingBreakdown(c.Pending); }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-lg-6">
+                <div class="card border-0 shadow-sm rounded-3 h-100">
+                    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0 fw-bold text-dark fs-6"><i class="bi bi-airplane text-primary me-2"></i>@D.Section_OnLeave</h5>
+                        <span class="badge bg-secondary-subtle text-secondary">@c.OnLeaveTotal</span>
+                    </div>
+                    @{ LeaveTable(c.OnLeave, c.OnLeaveTotal, true); }
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="card border-0 shadow-sm rounded-3 h-100">
+                    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0 fw-bold text-dark fs-6"><i class="bi bi-person-plus text-primary me-2"></i>@D.Section_NewHires</h5>
+                        <span class="badge bg-secondary-subtle text-secondary">@c.NewHiresTotal</span>
+                    </div>
+                    @if (c.NewHires.Count == 0)
+                    {
+                        EmptyState("bi-person-plus", D.Empty_NewHires);
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>@D.Col_Employee</th>
+                                        <th>@D.Col_Store</th>
+                                        <th class="text-nowrap">@D.Col_JoinDate</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var h in c.NewHires)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="fw-semibold">@h.FullName</div>
+                                                <small class="text-muted">@h.EmployeeCode</small>
+                                            </td>
+                                            <td><small>@(string.IsNullOrEmpty(h.StoreName) ? D.NoStore : h.StoreName)</small></td>
+                                            <td class="text-nowrap"><small class="text-muted">@h.JoinDate.ToString("dd/MM/yyyy")</small></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        @if (c.NewHiresTotal > c.NewHires.Count)
+                        {
+                            <div class="card-footer bg-white small text-muted text-end">@string.Format(D.List_Showing, c.NewHires.Count, c.NewHiresTotal)</div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    @* ============================ CỦA TÔI / EMPLOYEE ============================ *@
+    @if (Model.Mode == DashboardMode.Employee && User.IsInRole("StoreManager") && Model.HasProfile)
+    {
+        <div class="alert alert-info border-0 shadow-sm rounded-3 mb-4"><i class="bi bi-info-circle me-2"></i>@D.My_ManagerNoStore</div>
+    }
+
+    @if (Model.My == null)
+    {
+        if (Model.Mode == DashboardMode.Employee)
+        {
+            <div class="card border-0 shadow-sm rounded-3">
+                @{ EmptyState("bi-person-exclamation", D.My_NoProfile); }
+            </div>
+        }
+    }
+    else
+    {
+        var my = Model.My;
+
+        if (Model.Mode != DashboardMode.Employee)
+        {
+            <div class="d-flex align-items-center gap-2 mb-3 mt-2">
+                <h5 class="fw-bold text-dark mb-0"><i class="bi bi-person-circle text-primary me-2"></i>@D.Section_My</h5>
+                <span class="small text-muted">@(string.IsNullOrEmpty(my.StoreName) ? my.EmployeeCode : my.EmployeeCode + " · " + my.StoreName)</span>
+                <hr class="flex-grow-1 my-0 ms-2" />
+            </div>
+        }
+
+        <div class="row g-3 mb-4">
+            @{
+                StatCard("primary", D.My_TodayShifts, my.Today.Count.ToString(), null, "bi-calendar-day", null);
+                StatCard("success", D.My_LeaveBalance, $"{my.AnnualLeaveBalance} {D.Unit_Days}", null, "bi-airplane", null);
+                StatCard("warning", D.My_Pending, my.Pending.Total.ToString(), null, "bi-hourglass-split", PendingUrl(my.Pending));
+                if (my.LatestPayslip != null)
+                {
+                    StatCard("info", D.My_LatestPayslip, $"{my.LatestPayslip.TotalSalary:#,##0} {PayrollResource.Unit_Vnd}",
+                        PayrollDisplayText.Title(my.LatestPayslip.Title), "bi-receipt",
+                        Url.Action("MyPayslipDetail", "Payroll", new { payrollId = my.LatestPayslip.PayrollId }));
+                }
+                else
+                {
+                    StatCard("info", D.My_LatestPayslip, "—", D.My_NoPayslip, "bi-receipt", Url.Action("MyPayslips", "Payroll"));
+                }
+            }
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-lg-6">
+                <div class="card border-0 shadow-sm rounded-3 h-100">
+                    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <h5 class="card-title mb-0 fw-bold text-dark fs-6"><i class="bi bi-calendar-day text-primary me-2"></i>@D.My_TodayShifts</h5>
+                        @if (Model.CanUseAttendance)
+                        {
+                            <a asp-controller="Attendance" asp-action="Index" class="btn btn-primary btn-sm shadow-sm d-flex align-items-center gap-1">
+                                <i class="bi bi-fingerprint"></i><span>@D.My_GoAttendance</span>
+                            </a>
+                        }
+                    </div>
+                    @if (my.Today.Count == 0)
+                    {
+                        EmptyState("bi-calendar-x", D.My_EmptyToday);
+                    }
+                    else
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var t in my.Today)
+                            {
+                                var st = StateInfo(t.State, t.LateMinutes);
+                                <li class="list-group-item py-3">
+                                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                        <div>
+                                            <div class="fw-bold text-dark">
+                                                @t.ShiftName
+                                                @if (t.IsCarryOver)
+                                                {
+                                                    <span class="badge bg-dark-subtle text-dark border ms-1"><i class="bi bi-moon-stars me-1"></i>@D.Shift_CarryOver</span>
+                                                }
+                                            </div>
+                                            <div class="small text-muted"><i class="bi bi-clock me-1"></i>@TimeRange(t.WorkDate, t.StartAt, t.EndAt) &middot; <i class="bi bi-shop me-1"></i>@t.StoreName</div>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge bg-@(st.Color)-subtle text-@(st.Color)-emphasis border border-@(st.Color)-subtle px-2 py-1">
+                                                <i class="bi @st.Icon me-1"></i>@st.Text
+                                            </span>
+                                            <div class="small text-muted mt-1">
+                                                @D.Col_CheckIn: @FormatTime(t.CheckInTime) &middot; @D.Col_CheckOut: @FormatTime(t.CheckOutTime)
+                                                @if ((t.State == ShiftAttendanceState.CheckedIn || t.State == ShiftAttendanceState.CheckedOut) && t.LateMinutes > 0)
+                                                {
+                                                    <span class="text-warning-emphasis ms-1">(@string.Format(D.State_CheckedInLate, t.LateMinutes))</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="card border-0 shadow-sm rounded-3 h-100">
+                    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0 fw-bold text-dark fs-6"><i class="bi bi-calendar-week text-primary me-2"></i>@D.My_Upcoming</h5>
+                        <a asp-controller="ShiftRegistration" asp-action="Index" class="small text-decoration-none">@ShiftRegistrationResource.ShiftRegistration</a>
+                    </div>
+                    @if (my.Upcoming.Count == 0)
+                    {
+                        EmptyState("bi-calendar", D.My_EmptyUpcoming);
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-nowrap">@D.Col_Date</th>
+                                        <th>@D.Col_Shift</th>
+                                        <th class="text-nowrap">@D.Col_Period</th>
+                                        <th>@D.Col_Store</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var u in my.Upcoming)
+                                    {
+                                        <tr>
+                                            <td class="text-nowrap">
+                                                <span class="fw-semibold">@u.WorkDate.ToString("dd/MM")</span>
+                                                <small class="text-muted ms-1">@u.WorkDate.ToString("ddd", CultureInfo.CurrentCulture)</small>
+                                            </td>
+                                            <td class="fw-semibold">@u.ShiftName</td>
+                                            <td class="text-nowrap"><small class="text-muted">@TimeRange(u.WorkDate, u.StartAt, u.EndAt)</small></td>
+                                            <td><small>@u.StoreName</small></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        if (my.Pending.Total > 0)
+        {
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-lg-6">
+                    <div class="card border-0 shadow-sm rounded-3">
+                        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0 fw-bold text-dark fs-6"><i class="bi bi-hourglass-split text-primary me-2"></i>@D.My_Pending</h5>
+                            <a href="@PendingUrl(my.Pending)" class="small text-decoration-none">@D.ViewAll</a>
+                        </div>
+                        <div class="card-body py-1">
+                            @{ PendingBreakdown(my.Pending); }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
     }
 </div>

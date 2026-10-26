@@ -6,5 +6,6 @@ namespace RWPM.Services.Abstraction
     {
         Task LoginAsync(LoginVM viewModel);
         Task<bool> UserAuthenticatedAsync(string username, string password);
+        Task RefreshSignInAsync(string username);
     }
 }

@@ -37,5 +37,13 @@
         {
             <a class="app-nav-link" asp-controller="Payroll" asp-action="MyPayslips" data-nav-controller="Payroll" data-nav-actions="MyPayslips,MyPayslipDetail"><i class="bi bi-receipt"></i><span>@NavigationBarResource.MyPayslips</span></a>
         }
+        @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("SuperAdmin") || User.IsInRole("StoreManager"))
+        {
+            <a class="app-nav-link" asp-controller="Performance" asp-action="Index" data-nav-controller="Performance" data-nav-exclude-actions="My,MyDetail"><i class="bi bi-graph-up-arrow"></i><span>@PerformanceResource.Nav_Performance</span></a>
+        }
+        @if ((!User.IsInRole("Admin") && !User.IsInRole("SuperAdmin")) || User.IsInRole("HR") || User.IsInRole("StoreManager"))
+        {
+            <a class="app-nav-link" asp-controller="Performance" asp-action="My" data-nav-controller="Performance" data-nav-actions="My,MyDetail"><i class="bi bi-person-check"></i><span>@PerformanceResource.Nav_MyPerformance</span></a>
+        }
     </nav>
 </aside>

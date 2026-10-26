@@ -18,13 +18,16 @@ namespace RWPM.Controllers
     {
         private readonly IShiftRegistrationService _registrationService;
         private readonly DefaultDatabaseContext _context;
+        private readonly INotificationService _notificationService;
 
         public ShiftRegistrationController(
             IShiftRegistrationService registrationService,
-            DefaultDatabaseContext context)
+            DefaultDatabaseContext context,
+            INotificationService notificationService)
         {
             _registrationService = registrationService;
             _context = context;
+            _notificationService = notificationService;
         }
 
         // GET: ShiftRegistration
@@ -221,7 +224,10 @@ namespace RWPM.Controllers
                     entitiesToCreate.Add(entity);
                 }
 
-                await _registrationService.CreateBatchAsync(entitiesToCreate);
+                var created = await _registrationService.CreateBatchAsync(entitiesToCreate);
+                // Một thông báo gộp cho người duyệt (không gửi từng ca)
+                await _notificationService.NotifyShiftRegistrationsSubmittedAsync(employee.EmployeeId,
+                    created.Select(x => x.ShiftRegistrationId).ToList(), User.Identity?.Name);
 
                 return Ok(new { success = true });
             }
@@ -254,6 +260,7 @@ namespace RWPM.Controllers
                 }
                 
                 await _registrationService.UpdateStatusAsync(id, status, reason, User.Identity?.Name);
+                await _notificationService.NotifyRequestDecisionAsync(NotificationRequestTypes.ShiftReg, new[] { id }, User.Identity?.Name);
                 return Ok(new { success = true });
             }
             catch (Exception ex)
@@ -340,6 +347,9 @@ namespace RWPM.Controllers
                 var entities = viewModel.Registrations.Select(x => x.ToEntity()).ToList();
                 
                 await _registrationService.SyncWeeklyRegistrationAsync(employee.EmployeeId, storeId, viewModel.StartOfWeek, entities);
+                // Các ca mới được thêm sẽ có Id sau khi lưu; gộp thành một thông báo cho mỗi lần đồng bộ
+                await _notificationService.NotifyShiftRegistrationsSubmittedAsync(employee.EmployeeId,
+                    entities.Where(x => x.ShiftRegistrationId > 0).Select(x => x.ShiftRegistrationId).ToList(), username);
 
                 return Ok(new { success = true });
             }

@@ -60,6 +60,9 @@ namespace RWPM.Infrastructure.DependencyInjection
 
                     options.LoginPath = "/Auth/Login";
                     options.AccessDeniedPath = "/Auth/AccessDenied";
+
+                    // Kiểm tra lại tài khoản định kỳ: bị khóa/nghỉ việc, đổi vai trò, đổi mật khẩu -> phiên cũ bị đăng xuất
+                    options.Events.OnValidatePrincipal = RWPM.Common.Security.SessionSecurity.ValidatePrincipalAsync;
                 });
             services.AddAuthorization();
 
@@ -102,6 +105,9 @@ namespace RWPM.Infrastructure.DependencyInjection
             services.AddScoped<IShiftSwapService, ShiftSwapService>();
             services.AddScoped<ILeaveRequestService, LeaveRequestService>();
             services.AddScoped<IPayrollService, PayrollService>();
+            services.AddScoped<IPerformanceService, PerformanceService>();
+            services.AddScoped<IDashboardService, DashboardService>();
+            services.AddScoped<INotificationService, NotificationService>();
             //services.AddScoped<IIdCounterService, IdCounterService>();
 
             return services;

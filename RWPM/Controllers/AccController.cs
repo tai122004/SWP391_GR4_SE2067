@@ -28,15 +28,18 @@ namespace RWPM.Controllers
         private readonly IStoreService _storeService;
         private readonly IEmployeeService _employeeService;
         private readonly DefaultDatabaseContext _context;
+        private readonly IAuthService _authService;
 
         public AccController(
             IStringLocalizer<ErrorServerDefinition> localizer,
             IAccService accService,
             IStoreService storeService,
             IEmployeeService employeeService,
-            DefaultDatabaseContext context
+            DefaultDatabaseContext context,
+            IAuthService authService
             )
         {
+            _authService = authService;
             _localizer = localizer;
             _accService = accService;
             _storeService = storeService;
@@ -680,6 +683,8 @@ namespace RWPM.Controllers
                 await _accService.ChangePasswordAsync(viewModel.OldPassword,
                                                       viewModel.NewPassword,
                                                       viewModel.ConfirmPassword);
+                // Cấp lại cookie với SecurityStamp mới và gỡ cờ bắt buộc đổi mật khẩu cho phiên hiện tại
+                await _authService.RefreshSignInAsync(AccountHelper.GetCurrentUsername(HttpContext.User));
 
                 AlertHelper.AddSuccessMessage(TempData, _localizer["Acc_ChangePasswordSuccess"]);
             }

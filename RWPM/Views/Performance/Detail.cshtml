@@ -1,0 +1,358 @@
+@model RWPM.Models.ViewModels.Performance.PerformanceDetailVM
+@using RWPM.Models.ViewModels.Performance
+@using R = RWPM.Resources.Shared.PerformanceResource
+
+@{
+    var emp = Model.Employee;
+    var m = emp.Metrics;
+    var review = emp.Review;
+    var monthLabel = string.Format(R.MonthLabel, Model.Month.ToString("D2"), Model.Year);
+    ViewData["Title"] = Model.IsOwnView ? R.My_Title : string.Format(R.Detail_Title, emp.FullName);
+    var selfAction = Model.IsOwnView ? "MyDetail" : "Detail";
+    var current = new DateTime(Model.Year, Model.Month, 1);
+    var prev = current.AddMonths(-1);
+    var next = current.AddMonths(1);
+    var today = DateTime.Today;
+    var hasNext = next <= new DateTime(today.Year, today.Month, 1);
+    byte? defaultScore = review?.Score ?? (m.SuggestedScore.HasValue ? (byte)Math.Clamp((int)Math.Round(m.SuggestedScore.Value, MidpointRounding.AwayFromZero), 1, 5) : null);
+    string FormatTime(TimeSpan? t) => t.HasValue ? t.Value.ToString(@"hh\:mm") : "--:--";
+}
+
+<div class="container-fluid px-0">
+    <nav aria-label="breadcrumb" class="mb-2">
+        <ol class="breadcrumb small mb-0">
+            @if (Model.IsOwnView)
+            {
+                <li class="breadcrumb-item"><a asp-action="My" class="text-decoration-none">@R.My_Title</a></li>
+            }
+            else
+            {
+                <li class="breadcrumb-item"><a asp-action="Index" asp-route-year="@Model.Year" asp-route-month="@Model.Month" class="text-decoration-none">@R.Index_Title</a></li>
+                <li class="breadcrumb-item">@emp.FullName</li>
+            }
+            <li class="breadcrumb-item active" aria-current="page">@monthLabel</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="app-page-header">
+        <div>
+            <h4 class="fw-bold text-dark d-flex align-items-center mb-1">
+                <i class="bi bi-person-lines-fill text-primary me-2"></i>
+                @emp.FullName
+            </h4>
+            <div class="text-muted small">
+                @emp.EmployeeCode · @emp.Username · <i class="bi bi-shop me-1"></i>@(emp.StoreName ?? R.Unassigned)
+            </div>
+        </div>
+        <div class="app-page-actions">
+            <a asp-action="@selfAction" asp-route-employeeId="@(Model.IsOwnView ? null : emp.EmployeeId)" asp-route-year="@prev.Year" asp-route-month="@prev.Month"
+               class="btn btn-sm btn-outline-secondary" title="@R.Action_PrevMonth"><i class="bi bi-chevron-left"></i></a>
+            <form asp-action="@selfAction" method="get" class="d-flex gap-1 align-items-center">
+                @if (!Model.IsOwnView)
+                {
+                    <input type="hidden" name="employeeId" value="@emp.EmployeeId" />
+                }
+                <select name="month" class="form-select form-select-sm" aria-label="@R.Filter_Month" onchange="this.form.submit()">
+                    @for (var mm = 1; mm <= 12; mm++)
+                    {
+                        <option value="@mm" selected="@(mm == Model.Month)">@string.Format(R.MonthOption, mm.ToString("D2"))</option>
+                    }
+                </select>
+                <select name="year" class="form-select form-select-sm" aria-label="@R.Filter_Year" onchange="this.form.submit()">
+                    @foreach (var yy in Model.AvailableYears)
+                    {
+                        <option value="@yy" selected="@(yy == Model.Year)">@yy</option>
+                    }
+                </select>
+            </form>
+            @if (hasNext)
+            {
+                <a asp-action="@selfAction" asp-route-employeeId="@(Model.IsOwnView ? null : emp.EmployeeId)" asp-route-year="@next.Year" asp-route-month="@next.Month"
+                   class="btn btn-sm btn-outline-secondary" title="@R.Action_NextMonth"><i class="bi bi-chevron-right"></i></a>
+            }
+            else
+            {
+                <button type="button" class="btn btn-sm btn-outline-secondary" disabled><i class="bi bi-chevron-right"></i></button>
+            }
+        </div>
+    </div>
+
+    <!-- Metrics -->
+    <div class="row g-3 mb-3">
+        <div class="col-6 col-md-4 col-xl-3">
+            <div class="summary-card summary-card-blue p-3 h-100">
+                <div class="text-muted small fw-semibold text-uppercase">@R.Col_AttendanceRate</div>
+                <div class="fs-4 fw-bold text-dark mt-1">@(m.AttendanceRate.HasValue ? m.AttendanceRate.Value.ToString("0.0") + "%" : "—")</div>
+                <div class="small text-muted">@string.Format(R.Detail_AttendedOfDue, m.AttendedShifts, m.DueShifts, m.ApprovedShifts)</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-3">
+            <div class="summary-card summary-card-amber p-3 h-100">
+                <div class="text-muted small fw-semibold text-uppercase">@R.Col_Absences</div>
+                <div class="fs-4 fw-bold @(m.Absences > 0 ? "text-danger" : "text-dark") mt-1">@m.Absences</div>
+                <div class="small text-muted">@string.Format(R.Detail_LeaveShifts, m.LeaveShifts)</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-3">
+            <div class="summary-card summary-card-amber p-3 h-100">
+                <div class="text-muted small fw-semibold text-uppercase">@R.Col_Late</div>
+                <div class="fs-4 fw-bold @(m.LateCount > 0 ? "text-warning" : "text-dark") mt-1">@m.LateCount</div>
+                <div class="small text-muted">@string.Format(R.Detail_TotalMinutes, m.LateMinutes)</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-3">
+            <div class="summary-card summary-card-amber p-3 h-100">
+                <div class="text-muted small fw-semibold text-uppercase">@R.Col_Early</div>
+                <div class="fs-4 fw-bold @(m.EarlyLeaveCount > 0 ? "text-warning" : "text-dark") mt-1">@m.EarlyLeaveCount</div>
+                <div class="small text-muted">@string.Format(R.Detail_TotalMinutes, m.EarlyLeaveMinutes)</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-3">
+            <div class="summary-card summary-card-cyan p-3 h-100">
+                <div class="text-muted small fw-semibold text-uppercase">@R.Col_MissingCheckOut</div>
+                <div class="fs-4 fw-bold @(m.MissingCheckOutCount > 0 ? "text-warning" : "text-dark") mt-1">@m.MissingCheckOutCount</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-3">
+            <div class="summary-card summary-card-cyan p-3 h-100">
+                <div class="text-muted small fw-semibold text-uppercase">@R.Col_WorkedHours</div>
+                <div class="fs-4 fw-bold text-dark mt-1">@m.WorkedHours.ToString("#,##0.00") <small class="fs-6 text-muted">h</small></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-3">
+            <div class="summary-card summary-card-green p-3 h-100">
+                <div class="text-muted small fw-semibold text-uppercase">@R.Detail_LeaveDays</div>
+                <div class="fs-5 fw-bold text-dark mt-1">
+                    <span class="text-success" title="@R.Col_PaidLeaveDays">@m.PaidLeaveDays</span>
+                    <span class="text-muted fs-6">/</span>
+                    <span class="text-secondary" title="@R.Col_UnpaidLeaveDays">@m.UnpaidLeaveDays</span>
+                </div>
+                <div class="small text-muted">@R.Detail_LeavePaidUnpaid</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-3">
+            <div class="summary-card summary-card-blue p-3 h-100">
+                <div class="text-muted small fw-semibold text-uppercase">@R.Col_SuggestedScore</div>
+                <div class="fs-4 fw-bold text-primary mt-1">@(m.SuggestedScore.HasValue ? m.SuggestedScore.Value.ToString("0.0") : "—") <small class="fs-6 text-muted">/ 5</small></div>
+                <div class="small text-muted" title="@R.Formula_Description">@R.Formula_Short</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <!-- Shift list -->
+        <div class="col-12 col-xl-8">
+            <div class="app-content-card mb-3">
+                <div class="card-header bg-white fw-semibold text-dark">
+                    <i class="bi bi-list-check me-1 text-primary"></i>@string.Format(R.Detail_ShiftsTitle, monthLabel)
+                </div>
+                <div class="table-responsive">
+                    <table class="table modern-table align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>@R.Col_Date</th>
+                                <th>@R.Col_Shift</th>
+                                <th class="text-center">@R.Col_CheckIn</th>
+                                <th class="text-center">@R.Col_CheckOut</th>
+                                <th class="text-end">@R.Col_Hours</th>
+                                <th>@R.Col_Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Shifts.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary"></i>@R.Detail_NoShifts
+                                    </td>
+                                </tr>
+                            }
+                            @foreach (var s in Model.Shifts)
+                            {
+                                <tr>
+                                    <td class="text-nowrap">@s.Date.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        <div class="text-dark">@(s.ShiftName ?? R.UnknownShift)</div>
+                                        <div class="small text-muted">
+                                            @(s.StartTime.HasValue ? $"{FormatTime(s.StartTime)} - {FormatTime(s.EndTime)}" : "")
+                                            @if (!s.IsScheduled && s.State == PerformanceShiftState.Worked)
+                                            {
+                                                <span class="ms-1 fst-italic">(@R.Detail_Unscheduled)</span>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td class="text-center">@(s.CheckInTime.HasValue ? FormatTime(s.CheckInTime) : "—")</td>
+                                    <td class="text-center">@(s.CheckOutTime.HasValue ? FormatTime(s.CheckOutTime) : "—")</td>
+                                    <td class="text-end">@(s.State == PerformanceShiftState.Worked ? s.WorkedHours.ToString("0.00") : "—")</td>
+                                    <td>
+                                        @switch (s.State)
+                                        {
+                                            case PerformanceShiftState.Absent:
+                                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle"><i class="bi bi-x-circle me-1"></i>@R.Status_Absent</span>
+                                                break;
+                                            case PerformanceShiftState.Leave:
+                                                <span class="badge bg-info-subtle text-info border border-info-subtle"><i class="bi bi-airplane me-1"></i>@(s.LeaveType == LeaveType.Unpaid ? R.Status_LeaveUnpaid : R.Status_LeavePaid)</span>
+                                                break;
+                                            case PerformanceShiftState.Upcoming:
+                                                <span class="badge bg-light text-secondary border">@R.Status_Upcoming</span>
+                                                break;
+                                            case PerformanceShiftState.Pending:
+                                                <span class="badge bg-light text-secondary border">@R.Status_Pending</span>
+                                                break;
+                                            default:
+                                                var anyIssue = s.IsLate || s.IsEarlyLeave || s.IsMissingCheckOut || s.IsInProgress;
+                                                if (!anyIssue)
+                                                {
+                                                    <span class="badge bg-success-subtle text-success border border-success-subtle"><i class="bi bi-check-circle me-1"></i>@R.Status_OnTime</span>
+                                                }
+                                                if (s.IsLate)
+                                                {
+                                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle">@string.Format(R.Status_Late, s.LateMinutes)</span>
+                                                }
+                                                if (s.IsEarlyLeave)
+                                                {
+                                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle">@string.Format(R.Status_Early, s.EarlyLeaveMinutes)</span>
+                                                }
+                                                if (s.IsMissingCheckOut)
+                                                {
+                                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle">@R.Status_MissingCheckOut</span>
+                                                }
+                                                if (s.IsInProgress)
+                                                {
+                                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle">@R.Status_InProgress</span>
+                                                }
+                                                break;
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review + trend -->
+        <div class="col-12 col-xl-4">
+            <div class="app-content-card mb-3">
+                <div class="card-header bg-white fw-semibold text-dark">
+                    <i class="bi bi-star me-1 text-primary"></i>@string.Format(R.Detail_ReviewTitle, monthLabel)
+                </div>
+                <div class="card-body">
+                    @if (review != null)
+                    {
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="fs-4 fw-bold text-success">@review.Score<span class="fs-6 text-muted">/5</span></span>
+                            <span class="text-warning">
+                                @for (var i = 1; i <= 5; i++)
+                                {
+                                    <i class="bi @(i <= review.Score ? "bi-star-fill" : "bi-star")"></i>
+                                }
+                            </span>
+                        </div>
+                        <div class="small text-muted mb-3">
+                            @string.Format(R.Detail_ReviewedBy, review.ReviewerName ?? review.ReviewedBy, review.ReviewedAt.ToString("dd/MM/yyyy HH:mm"))
+                        </div>
+                        @if (!Model.CanReview || Model.IsOwnView)
+                        {
+                            <div class="border rounded p-2 bg-light small" style="white-space: pre-line">@(string.IsNullOrWhiteSpace(review.Comment) ? R.Detail_NoComment : review.Comment)</div>
+                        }
+                    }
+                    else if (Model.IsOwnView || !Model.CanReview)
+                    {
+                        <div class="text-muted small"><i class="bi bi-hourglass me-1"></i>@R.NotReviewed</div>
+                    }
+
+                    @if (!Model.IsOwnView && !string.IsNullOrEmpty(Model.ReviewBlockedReason))
+                    {
+                        <div class="alert alert-warning small py-2 mt-2 mb-0">@Model.ReviewBlockedReason</div>
+                    }
+
+                    @if (Model.CanReview && !Model.IsOwnView)
+                    {
+                        <form asp-action="Review" method="post" id="reviewForm" class="@(review != null ? "border-top pt-3" : "")">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="EmployeeId" value="@emp.EmployeeId" />
+                            <input type="hidden" name="Year" value="@Model.Year" />
+                            <input type="hidden" name="Month" value="@Model.Month" />
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">@R.Review_ScoreLabel <span class="text-danger">*</span></label>
+                                <div class="btn-group w-100" role="group" aria-label="@R.Review_ScoreLabel">
+                                    @for (var i = 1; i <= 5; i++)
+                                    {
+                                        <input type="radio" class="btn-check" name="Score" id="score@(i)" value="@i" autocomplete="off" required checked="@(defaultScore == i)" />
+                                        <label class="btn btn-outline-primary" for="score@(i)">@i</label>
+                                    }
+                                </div>
+                                <div class="form-text">
+                                    @R.Review_ScoreHint
+                                    @if (m.SuggestedScore.HasValue)
+                                    {
+                                        <span>@string.Format(R.Review_SuggestedHint, m.SuggestedScore.Value.ToString("0.0"))</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" for="reviewComment">@R.Review_CommentLabel</label>
+                                <textarea id="reviewComment" name="Comment" class="form-control" rows="4" maxlength="1000" placeholder="@R.Review_CommentPlaceholder">@review?.Comment</textarea>
+                                <div class="form-text text-end"><span id="commentCount">@(review?.Comment?.Length ?? 0)</span>/1000</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm w-100">
+                                <i class="bi bi-save me-1"></i>@(review != null ? R.Review_Update : R.Review_Save)
+                            </button>
+                        </form>
+                    }
+                </div>
+            </div>
+
+            <div class="app-content-card mb-3">
+                <div class="card-header bg-white fw-semibold text-dark">
+                    <i class="bi bi-graph-up me-1 text-primary"></i>@R.Detail_TrendTitle
+                </div>
+                <div class="table-responsive">
+                    <table class="table modern-table align-middle mb-0 small">
+                        <thead class="table-light">
+                            <tr>
+                                <th>@R.Col_Month</th>
+                                <th class="text-center">@R.Col_AttendanceRate</th>
+                                <th class="text-center">@R.Col_Late</th>
+                                <th class="text-center">@R.Col_SuggestedScoreShort</th>
+                                <th class="text-center">@R.Col_ReviewScoreShort</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var t in Model.Trend.OrderByDescending(x => x.Year * 12 + x.Month))
+                            {
+                                var isCurrent = t.Year == Model.Year && t.Month == Model.Month;
+                                <tr class="@(isCurrent ? "table-primary" : "")">
+                                    <td class="text-nowrap">
+                                        <a asp-action="@selfAction" asp-route-employeeId="@(Model.IsOwnView ? null : emp.EmployeeId)" asp-route-year="@t.Year" asp-route-month="@t.Month" class="text-decoration-none">
+                                            @t.Month.ToString("D2")/@t.Year
+                                        </a>
+                                    </td>
+                                    <td class="text-center">@(t.Metrics.AttendanceRate.HasValue ? t.Metrics.AttendanceRate.Value.ToString("0.0") + "%" : "—")</td>
+                                    <td class="text-center">@t.Metrics.LateCount</td>
+                                    <td class="text-center">@(t.Metrics.SuggestedScore.HasValue ? t.Metrics.SuggestedScore.Value.ToString("0.0") : "—")</td>
+                                    <td class="text-center">@(t.ReviewScore.HasValue ? t.ReviewScore.Value.ToString() : "—")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var comment = document.getElementById('reviewComment');
+            var counter = document.getElementById('commentCount');
+            if (comment && counter) {
+                comment.addEventListener('input', function () { counter.textContent = comment.value.length; });
+            }
+        })();
+    </script>
+}

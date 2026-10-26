@@ -15,11 +15,13 @@ namespace RWPM.Controllers
     {
         private readonly IPayrollService _payrollService;
         private readonly DefaultDatabaseContext _context;
+        private readonly INotificationService _notificationService;
 
-        public PayrollController(IPayrollService payrollService, DefaultDatabaseContext context)
+        public PayrollController(IPayrollService payrollService, DefaultDatabaseContext context, INotificationService notificationService)
         {
             _payrollService = payrollService;
             _context = context;
+            _notificationService = notificationService;
         }
 
         private string CurrentUsername => User.FindFirstValue(ClaimTypes.Name) ?? User.Identity?.Name ?? string.Empty;
@@ -183,8 +185,15 @@ namespace RWPM.Controllers
 
             try
             {
+                var wasLocked = await _context.Payroll.AsNoTracking()
+                    .AnyAsync(p => p.PayrollId == id && p.Status == PayrollStatus.Locked);
                 await _payrollService.LockPayrollAsync(id, CurrentUsername);
                 TempData["SuccessMessage"] = PayrollResource.Toast_LockSuccess;
+                if (!wasLocked)
+                {
+                    // Sau khi chốt (đã commit): báo phiếu lương cho toàn bộ nhân viên trong bảng lương. Lỗi chỉ ghi log.
+                    await _notificationService.NotifyPayslipsAvailableAsync(id, CurrentUsername);
+                }
             }
             catch (Exception ex)
             {

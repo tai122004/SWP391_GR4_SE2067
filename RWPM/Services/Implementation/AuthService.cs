@@ -43,19 +43,11 @@ namespace RWPM.Services.Implementation
             if (!account.IsActive)
                 throw new ModelValidationException("Acc_IsLock", account.Username);
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, account.Username),
-                new Claim(ClaimTypes.Role, account.Role.ToString())
-            };
+            // Tài khoản cũ chưa có SecurityStamp -> sinh mới để có thể vô hiệu phiên khi đổi mật khẩu
+            if (string.IsNullOrEmpty(account.SecurityStamp))
+                account.SecurityStamp = RWPM.Common.Security.SessionSecurity.NewStamp();
 
-            if (account.Role == AccountRole.Admin)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, "Admin"));
-            }
-
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var principal = new ClaimsPrincipal(claimsIdentity);
+            var principal = RWPM.Common.Security.SessionSecurity.BuildPrincipal(account);
 
             var httpContext = _httpContextAccessor.HttpContext ?? throw new InvalidOperationException("HttpContext is not available.");
             var authProperties = new AuthenticationProperties
@@ -67,6 +59,19 @@ namespace RWPM.Services.Implementation
 
             account.LastLogin = DateTime.Now;
             await _ctx.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Cấp lại cookie đăng nhập với claim mới nhất (sau khi chính người dùng đổi mật khẩu).
+        /// </summary>
+        public async Task RefreshSignInAsync(string username)
+        {
+            var account = await _ctx.Acc.AsNoTracking().FirstOrDefaultAsync(x => x.Username == username)
+                ?? throw new ModelValidationException("Auth_InvalidCredentials");
+            var httpContext = _httpContextAccessor.HttpContext ?? throw new InvalidOperationException("HttpContext is not available.");
+            await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                RWPM.Common.Security.SessionSecurity.BuildPrincipal(account),
+                new AuthenticationProperties { IsPersistent = true, ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7) });
         }
 
         public async Task<bool> UserAuthenticatedAsync(string username, string password)

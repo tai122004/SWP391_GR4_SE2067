@@ -597,6 +597,9 @@ namespace RWPM.Services.Implementation
                 var acc = new Acc { Username = item.Username, FullName = item.FullName, Email = item.Email, PhoneNumber = item.Phone,
                     DateOfBirth = item.DateOfBirth, Gender = item.Gender, Role = item.Role, IsActive = true, CreatedDate = DateTime.Now, CreatedBy = currentUsername };
                 acc.Password = hasher.HashPassword(acc, "Aa@123456");
+                // Mật khẩu mặc định dùng chung -> bắt buộc đổi ở lần đăng nhập đầu tiên
+                acc.MustChangePassword = true;
+                acc.SecurityStamp = RWPM.Common.Security.SessionSecurity.NewStamp();
                 _ctx.Acc.Add(acc);
                 _ctx.Employee.Add(new Employee { EmployeeCode = item.EmployeeCode, Username = item.Username, Account = acc, StoreId = item.StoreId,
                     EmploymentType = item.EmploymentType, Status = EmploymentStatus.Official, JoinDate = item.JoinDate, HourlyRate = item.HourlyRate,
