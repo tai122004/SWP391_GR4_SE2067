@@ -80,7 +80,11 @@ namespace RWPM.Services.Implementation
                 })
                 .OrderBy(r => Math.Abs((nowAt - r.WorkDate.Date.Add(r.Shift.StartTime)).TotalMinutes))
                 .FirstOrDefault();
-            if (matchedRegistration == null)
+            if (matchedRegistration != null)
+            {
+                isValid = true;
+            }
+            else
             {
                 // Chỉ xét các ca chưa kết thúc và chưa có bản ghi chấm công
                 var checkedShifts = await _context.AttendanceRecord

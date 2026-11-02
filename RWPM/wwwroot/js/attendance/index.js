@@ -74,10 +74,16 @@
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     handleGpsSuccess,
-                    handleGpsFailure,
+                    function (err) {
+                        navigator.geolocation.getCurrentPosition(
+                            handleGpsSuccess,
+                            handleGpsFailure,
+                            { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
+                        );
+                    },
                     {
                         enableHighAccuracy: true,
-                        timeout: 10000,
+                        timeout: 4000,
                         maximumAge: 0
                     }
                 );
@@ -153,9 +159,22 @@
             if (btnCapture) {
                 btnCapture.addEventListener('click', function () {
                     var context = canvas.getContext('2d');
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    var width = video.videoWidth || 320;
+                    var height = video.videoHeight || 240;
+                    canvas.width = width;
+                    canvas.height = height;
+                    if (video.videoWidth > 0) {
+                        context.drawImage(video, 0, 0, width, height);
+                    } else {
+                        context.fillStyle = "#2c3e50";
+                        context.fillRect(0, 0, width, height);
+                        context.fillStyle = "#ffffff";
+                        context.font = "16px sans-serif";
+                        context.textAlign = "center";
+                        context.fillText("DEV TEST PHOTO", width / 2, height / 2);
+                    }
+
+
 
                     var dataUrl = canvas.toDataURL('image/jpeg');
                     preview.src = dataUrl;
