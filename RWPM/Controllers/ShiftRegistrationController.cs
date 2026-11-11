@@ -17,15 +17,18 @@ namespace RWPM.Controllers
         private readonly IShiftRegistrationService _registrationService;
         private readonly DefaultDatabaseContext _context;
         private readonly INotificationService _notificationService;
+        private readonly IShiftDemandService _shiftDemandService;
 
         public ShiftRegistrationController(
             IShiftRegistrationService registrationService,
             DefaultDatabaseContext context,
-            INotificationService notificationService)
+            INotificationService notificationService,
+            IShiftDemandService shiftDemandService)
         {
             _registrationService = registrationService;
             _context = context;
             _notificationService = notificationService;
+            _shiftDemandService = shiftDemandService;
         }
 
         /// <summary>Hồ sơ nhân viên của người đang đăng nhập (theo Username); null nếu chưa có.</summary>
@@ -154,7 +157,12 @@ namespace RWPM.Controllers
                 var blocked = currentEmployee?.StoreId != null
                     ? await _registrationService.GetBlockedSlotsAsync(currentEmployee.EmployeeId, currentEmployee.StoreId.Value, start, end)
                     : new Dictionary<string, string>();
-                return Json(new { events = eventVMs, blocked });
+                var coverage = currentEmployee?.StoreId != null
+                    ? await _shiftDemandService.GetCoverageAsync(currentEmployee.StoreId.Value, start.Date, end.Date.AddDays(-1))
+                    : new List<ShiftCoverageRow>();
+                return Json(new { events = eventVMs, blocked, coverage = coverage.Select(row => new {
+                    row.ShiftId, row.Date, row.Required, row.Approved, row.Pending
+                }) });
             }
 
             return Json(eventVMs);

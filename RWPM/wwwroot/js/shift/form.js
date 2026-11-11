@@ -1,6 +1,5 @@
 // Views/Shift/Create.cshtml, Views/Shift/Edit.cshtml (partial _Form.cshtml)
 // - Bộ chọn nhiều chi nhánh (.shift-store-picker): tìm kiếm, chọn tất cả / bỏ chọn, hiển thị tên đã chọn.
-// - Nút khung giờ gợi ý (.shift-preset): điền giờ bắt đầu/kết thúc/nghỉ giữa ca.
 // Không cần cấu hình; nhãn lấy từ data-* trên markup.
 
 (function () {
@@ -40,24 +39,4 @@
         update();
     });
 
-    // ---- Khung giờ gợi ý ----
-    // Khung giờ gợi ý cho ca làm việc (hiển thị theo định dạng 12h dùng chung)
-    document.addEventListener('DOMContentLoaded', function () {
-        var fmt = (window.AppTimePicker && AppTimePicker.format12) || function (v) { return v; };
-        function setVal(id, v) { var el = document.getElementById(id); if (el) { el.value = v; el.dispatchEvent(new Event('change', { bubbles: true })); } }
-        function setChecked(id, on) { var el = document.getElementById(id); if (el) el.checked = !!on; }
-        document.querySelectorAll('.shift-preset').forEach(function (btn) {
-            var d = btn.dataset;
-            btn.textContent = d.label + ' · ' + fmt(d.start) + ' – ' + fmt(d.end);
-            btn.addEventListener('click', function () {
-                setVal('StartTime', d.start);
-                setVal('EndTime', d.end);
-                setChecked('EndsNextDay', d.nextDay === 'true');
-                setVal('BreakStartTime', d.breakStart || '');
-                setVal('BreakEndTime', d.breakEnd || '');
-                setChecked('BreakStartsNextDay', false);
-                setChecked('BreakEndsNextDay', false);
-            });
-        });
-    });
 })();

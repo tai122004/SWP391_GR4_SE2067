@@ -381,12 +381,15 @@
                                 <span>@SharedResource.Req_ShiftReg</span>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="request-type-card active-card-btn" role="button" tabindex="0" onclick="openSwapModal()">
-                                <i class="bi bi-arrow-left-right"></i>
-                                <span>@SharedResource.Req_ChangeShift</span>
+                        @if (User.IsEmployeeRole())
+                        {
+                            <div class="col-md-4">
+                                <div class="request-type-card active-card-btn" role="button" tabindex="0" onclick="openSwapModal()">
+                                    <i class="bi bi-arrow-left-right"></i>
+                                    <span>@SharedResource.Req_ChangeShift</span>
+                                </div>
                             </div>
-                        </div>
+                        }
                     </div>
                 </div>
 
@@ -630,7 +633,6 @@
 
                     <!-- Cảnh báo nếu số ngày vượt quá phép năm -->
                     <div class="alert alert-danger py-2 small mb-3 d-none" id="leaveBalanceAlert">
-                        <i class="bi bi-exclamation-triangle me-1"></i>
                         <span id="leaveBalanceAlertText"></span>
                     </div>
 

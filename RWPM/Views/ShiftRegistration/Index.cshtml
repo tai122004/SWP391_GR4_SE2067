@@ -362,7 +362,6 @@
                 </div>
 
                 <div id="vRejectionReasonRow" class="alert alert-danger py-2 px-3 mb-3 small" style="display: none;">
-                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
                     <strong>@ShiftRegistrationResource.View_RejectionReason</strong>
                     <span id="vRejectionReason" class="ms-1"></span>
                 </div>
@@ -545,6 +544,13 @@
     .shift-slot .slot-sub-text {
         font-size: 0.72rem;
         margin-top: 2px;
+    }
+    .shift-slot .slot-personnel {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #334155;
+        white-space: nowrap;
+        margin-top: 3px;
     }
     .shift-slot .btn-view-slot {
         cursor: pointer;
@@ -765,6 +771,8 @@
                 modalLoadingShifts: @Json.Serialize(ShiftRegistrationResource.Modal_LoadingShifts),
                 modalNoShiftsForDay: @Json.Serialize(ShiftRegistrationResource.Modal_NoShiftsForDay),
                 pastDateError: @Json.Serialize(ShiftRegistrationResource.PastDateError),
+                personnelLabel: @Json.Serialize(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "vi" ? "Nhân sự" : "Staff"),
+                personnelBreakdown: @Json.Serialize(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "vi" ? "Đã duyệt: {0}; chờ duyệt: {1}; cần: {2}" : "Approved: {0}; pending: {1}; required: {2}"),
                 pickerMonthYearFormat: @Json.Serialize(ShiftRegistrationResource.Picker_MonthYearFormat),
                 searchBtn: @Json.Serialize(ShiftRegistrationResource.SearchBtn),
                 shiftErrLoadPrev: @Json.Serialize(SharedResource.ResourceManager.GetString("Shift_ErrLoadPrev")),

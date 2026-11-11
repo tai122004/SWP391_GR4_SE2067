@@ -1,11 +1,10 @@
 // =======================================================
-// BỘ CHỌN GIỜ DÙNG CHUNG CHO TOÀN DỰ ÁN (định dạng 12 giờ: 07:30 SA / 07:30 AM)
+// BỘ CHỌN GIỜ DÙNG CHUNG: ba cột giờ / phút / AM-PM
 //
 // Áp dụng tự động cho: <input type="time">, <input data-time-picker>
 //  - Ô gốc (giữ nguyên name/id/validate) vẫn chứa giá trị 24h "HH:mm" để gửi lên server
 //    và để code JS cũ đọc/ghi bằng $(...).val() như trước -> không phải sửa backend.
-//  - Hiển thị cho người dùng là ô 12h + nút "Gợi ý khung giờ" (giờ thường dùng + mỗi 30 phút).
-//  - data-time-suggestions="06:00,14:00,22:00" : danh sách giờ gợi ý riêng cho từng ô.
+//  - Hiển thị cho người dùng là ô 12h + bộ chọn ba cột.
 //  - Gõ được nhiều kiểu: 7, 730, 7:30, 7h30, 7:30 pm, 7:30 CH, 19:30 ...
 // API: AppTimePicker.init(root), AppTimePicker.format12(hhmm), AppTimePicker.parse(text)
 // =======================================================
@@ -13,13 +12,12 @@
     'use strict';
 
     var t = window.AppText || function (k, f) { return f || k; };
-    var DEFAULT_SUGGESTIONS = ['06:00', '07:00', '07:30', '08:00', '09:00', '12:00', '13:00', '14:00', '17:00', '18:00', '21:00', '22:00'];
     var valueDescriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
 
     function pad(n) { return (n < 10 ? '0' : '') + n; }
 
-    function amLabel() { return t('timeAm', 'AM'); }
-    function pmLabel() { return t('timePm', 'PM'); }
+    function amLabel() { return 'AM'; }
+    function pmLabel() { return 'PM'; }
 
     // "19:30" -> "07:30 CH" (vi) / "07:30 PM" (en)
     function format12(hhmm) {
@@ -87,76 +85,79 @@
 
     function buildMenu(real, display) {
         var menu = document.createElement('div');
-        menu.className = 'dropdown-menu dropdown-menu-end app-time-menu p-2';
+        menu.className = 'dropdown-menu app-time-menu p-2';
+        menu.setAttribute('aria-label', t('timeSuggestions', 'Choose time'));
 
-        function header(text) {
-            var h = document.createElement('div');
-            h.className = 'dropdown-header px-1 pt-1 pb-1 small text-uppercase';
-            h.textContent = text;
-            return h;
+        var columns = document.createElement('div');
+        columns.className = 'app-time-columns';
+        function column(label, part, values) {
+            var wrap = document.createElement('div');
+            wrap.className = 'app-time-column-wrap';
+            var heading = document.createElement('div');
+            heading.className = 'app-time-column-heading';
+            heading.textContent = label;
+            wrap.appendChild(heading);
+            var list = document.createElement('div');
+            list.className = 'app-time-column';
+            list.setAttribute('role', 'group');
+            list.setAttribute('aria-label', label);
+            values.forEach(function (value) {
+                var button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'app-time-option';
+                button.textContent = value;
+                button.dataset.part = part;
+                button.dataset.value = value;
+                list.appendChild(button);
+            });
+            wrap.appendChild(list);
+            return wrap;
         }
-
-        function item(v24) {
-            var b = document.createElement('button');
-            b.type = 'button';
-            b.className = 'btn btn-sm btn-light border app-time-chip';
-            b.textContent = format12(v24);
-            b.setAttribute('data-value', v24);
-            return b;
-        }
-
-        var custom = (real.getAttribute('data-time-suggestions') || '').split(',').map(normalize24).filter(Boolean);
-        var common = custom.length ? custom : DEFAULT_SUGGESTIONS;
-
-        menu.appendChild(header(t('timeCommon', 'Common times')));
-        var commonWrap = document.createElement('div');
-        commonWrap.className = 'd-flex flex-wrap gap-1 px-1 mb-2';
-        common.forEach(function (v) { commonWrap.appendChild(item(v)); });
-        menu.appendChild(commonWrap);
-
-        menu.appendChild(header(t('timeAll', 'All times')));
-        var allWrap = document.createElement('div');
-        allWrap.className = 'app-time-all d-grid gap-1 px-1';
-        for (var h = 0; h < 24; h++) {
-            allWrap.appendChild(item(pad(h) + ':00'));
-            allWrap.appendChild(item(pad(h) + ':30'));
-        }
-        menu.appendChild(allWrap);
-
-        var clear = document.createElement('button');
-        clear.type = 'button';
-        clear.className = 'btn btn-sm btn-link text-danger w-100 mt-1';
-        clear.textContent = t('timeClear', 'Clear');
-        clear.setAttribute('data-value', '');
-        menu.appendChild(clear);
+        var hours = Array.from({ length: 12 }, function (_, i) { return pad(i + 1); });
+        var minutes = Array.from({ length: 60 }, function (_, i) { return pad(i); });
+        var isVietnamese = document.documentElement.lang.toLowerCase().startsWith('vi');
+        columns.appendChild(column(isVietnamese ? 'Giờ' : 'Hour', 'hour', hours));
+        columns.appendChild(column(isVietnamese ? 'Phút' : 'Minute', 'minute', minutes));
+        columns.appendChild(column('AM/PM', 'period', [amLabel(), pmLabel()]));
+        menu.appendChild(columns);
 
         menu.addEventListener('click', function (e) {
-            var btn = e.target.closest('[data-value]');
-            if (!btn) return;
-            var v = btn.getAttribute('data-value');
+            var btn = e.target.closest('[data-part]');
+            if (!btn || !menu.contains(btn)) return;
+            var current = normalize24(real.value) || '08:00';
+            var hour24 = parseInt(current.slice(0, 2), 10);
+            var hour12 = hour24 % 12 || 12;
+            var minute = parseInt(current.slice(3, 5), 10);
+            var isPm = hour24 >= 12;
+            if (btn.dataset.part === 'hour') hour12 = parseInt(btn.dataset.value, 10);
+            if (btn.dataset.part === 'minute') minute = parseInt(btn.dataset.value, 10);
+            if (btn.dataset.part === 'period') isPm = btn.dataset.value === pmLabel();
+            var v = pad((hour12 % 12) + (isPm ? 12 : 0)) + ':' + pad(minute);
             setRealValue(real, v, true);
             display.value = format12(v);
             display.classList.remove('is-invalid');
-            if (window.bootstrap && bootstrap.Dropdown) {
-                var dd = bootstrap.Dropdown.getInstance(menu.previousElementSibling);
-                if (dd) dd.hide();
-            }
-            display.focus();
+            highlightCurrent(menu, v);
         });
         return menu;
     }
 
     function highlightCurrent(menu, v24) {
-        menu.querySelectorAll('.app-time-chip').forEach(function (b) {
-            var on = b.getAttribute('data-value') === v24;
-            b.classList.toggle('btn-primary', on);
-            b.classList.toggle('text-white', on);
-            b.classList.toggle('btn-light', !on);
+        var current = normalize24(v24) || '08:00';
+        var hour24 = parseInt(current.slice(0, 2), 10);
+        var selected = {
+            hour: pad(hour24 % 12 || 12),
+            minute: current.slice(3, 5),
+            period: hour24 < 12 ? amLabel() : pmLabel()
+        };
+        menu.querySelectorAll('.app-time-option').forEach(function (button) {
+            var on = selected[button.dataset.part] === button.dataset.value;
+            button.classList.toggle('is-selected', on);
+            button.setAttribute('aria-pressed', String(on));
         });
-        var target = menu.querySelector('.app-time-all [data-value="' + (v24 || '08:00') + '"]')
-            || menu.querySelector('.app-time-all [data-value="' + (v24 ? v24.slice(0, 2) + ':00' : '08:00') + '"]');
-        var all = menu.querySelector('.app-time-all');
-        if (target && all) all.scrollTop = Math.max(0, target.offsetTop - all.offsetTop - 40);
+        menu.querySelectorAll('.app-time-column').forEach(function (list) {
+            var active = list.querySelector('.is-selected');
+            if (active) list.scrollTop = Math.max(0, active.offsetTop - list.offsetTop - list.clientHeight / 2 + active.clientHeight / 2);
+        });
     }
 
     function enhance(real) {
@@ -174,7 +175,7 @@
         var display = document.createElement('input');
         display.type = 'text';
         display.className = 'form-control app-time-display';
-        display.placeholder = t('timePlaceholder', 'hh:mm AM');
+        display.placeholder = 'hh:mm AM';
         display.autocomplete = 'off';
         display.setAttribute('inputmode', 'text');
         if (real.id) {

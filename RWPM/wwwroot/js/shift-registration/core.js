@@ -21,6 +21,7 @@
         employeesList: cfg.employees || [{ id: 'me', name: L.shiftMe }],
         // Ô bị chặn theo thời gian có thể làm việc ("shiftId_yyyy-MM-dd" -> lý do), chỉ ở tab "Đăng ký ca của tôi"
         blockedSlots: {},
+        coverageBySlot: {},
         coverageReqSeq: 0
     };
 
@@ -46,6 +47,8 @@
         details: escAttr(L.slotDetails),
         blockedBadge: escAttr(L.slotBlockedBadge),
         blockedPendingHint: L.slotBlockedPendingHint,
+        personnelLabel: escAttr(L.personnelLabel),
+        personnelBreakdown: L.personnelBreakdown,
         coverageTitle: escAttr(L.coverageTitle),
         coverageTooltip: L.coverageTooltip,
         coverageNotConfigured: L.coverageNotConfigured,

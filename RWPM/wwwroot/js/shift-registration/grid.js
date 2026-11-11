@@ -129,6 +129,16 @@
         let today = new Date();
         today.setHours(0, 0, 0, 0);
 
+        function personnelFor(shiftId, date) {
+            const row = S.coverageBySlot[shiftId + '_' + date];
+            if (!row || row.required === null || row.required === undefined) return '';
+            const registered = row.approved + row.pending;
+            const detail = String(T.personnelBreakdown).replace('{0}', row.approved)
+                .replace('{1}', row.pending).replace('{2}', row.required);
+            return `<div class="slot-personnel" title="${escAttr(detail)}">` +
+                `${T.personnelLabel} ${registered}/${row.required}</div>`;
+        }
+
         if (S.activeMode === 'manager') {
             var selectedEmpId = $('#filterEmployeeId').val();
             var empsToRender = S.employeesList;
@@ -266,6 +276,7 @@
                                                 <i class="bi bi-info-circle text-success small btn-view-slot" title="${T.viewDetails}"></i>
                                             </div>
                                             <div class="slot-time-text">${shift.start} – ${shift.end}</div>
+                                            ${personnelFor(shift.id, cellDateStr)}
                                             <input type="checkbox" class="form-check-input weekly-shift-cb d-none" 
                                                 value="${shift.id}_${cellDateStr}" checked disabled>
                                         </div>
@@ -282,6 +293,7 @@
                                                 <i class="bi bi-info-circle text-danger small btn-view-slot" title="${T.viewDetails}"></i>
                                             </div>
                                             <div class="slot-time-text">${shift.start} – ${shift.end}</div>
+                                            ${personnelFor(shift.id, cellDateStr)}
                                             <input type="checkbox" class="form-check-input weekly-shift-cb d-none" 
                                                 value="${shift.id}_${cellDateStr}">
                                         </div>
@@ -306,6 +318,7 @@
                                                 <span class="d-inline-flex align-items-center">${pendingWarn}<i class="bi bi-info-circle text-warning-emphasis small btn-view-slot ms-1" title="${T.details}" onclick='event.stopPropagation(); openViewModal(${eJson})'></i></span>
                                             </div>
                                             <div class="slot-time-text">${shift.start} – ${shift.end}</div>
+                                            ${personnelFor(shift.id, cellDateStr)}
                                         </div>
                                     </td>
                                 `;
@@ -320,6 +333,7 @@
                                             </span>
                                         </div>
                                         <div class="slot-time-text text-muted">${shift.start} – ${shift.end}</div>
+                                        ${personnelFor(shift.id, cellDateStr)}
                                         <input type="checkbox" class="form-check-input weekly-shift-cb d-none" 
                                             value="${shift.id}_${cellDateStr}" disabled>
                                     </div>
@@ -335,6 +349,7 @@
                                             </span>
                                         </div>
                                         <div class="slot-time-text text-muted">${shift.start} – ${shift.end}</div>
+                                        ${personnelFor(shift.id, cellDateStr)}
                                         <input type="checkbox" class="form-check-input weekly-shift-cb d-none" 
                                             value="${shift.id}_${cellDateStr}" disabled>
                                     </div>
@@ -352,6 +367,7 @@
                                             </span>
                                         </div>
                                         <div class="slot-time-text text-muted">${shift.start} – ${shift.end}</div>
+                                        ${personnelFor(shift.id, cellDateStr)}
                                         <input type="checkbox" class="form-check-input weekly-shift-cb d-none"
                                             value="${shift.id}_${cellDateStr}" disabled>
                                     </div>
@@ -373,6 +389,7 @@
                                             </div>
                                         </div>
                                         <div class="slot-time-text">${shift.start} – ${shift.end}</div>
+                                        ${personnelFor(shift.id, cellDateStr)}
                                     </div>
                                 </td>
                             `;

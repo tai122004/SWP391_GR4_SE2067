@@ -83,9 +83,12 @@
         el.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
         el.setAttribute('data-toast-type', type);
 
-        var icon = document.createElement('i');
-        icon.className = 'bi ' + style.icon + ' app-toast-icon';
-        icon.setAttribute('aria-hidden', 'true');
+        var icon = null;
+        if (type !== 'error') {
+            icon = document.createElement('i');
+            icon.className = 'bi ' + style.icon + ' app-toast-icon';
+            icon.setAttribute('aria-hidden', 'true');
+        }
 
         var body = document.createElement('div');
         body.className = 'app-toast-body';
@@ -107,7 +110,7 @@
         btn.className = 'btn-close app-toast-close';
         btn.setAttribute('aria-label', t('close', 'Close'));
 
-        el.appendChild(icon);
+        if (icon) el.appendChild(icon);
         el.appendChild(body);
         el.appendChild(btn);
         getContainer().appendChild(el);

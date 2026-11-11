@@ -155,7 +155,7 @@ namespace RWPM.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Shift/Delete/5 (Chính sách Bảo toàn dữ liệu - Không hỗ trợ xóa cứng)
+        // GET: Shift/Delete/5 (Không hỗ trợ xóa cứng)
         [HttpGet]
         [Authorize(Roles = ShiftEditors)]
         public IActionResult Delete(int id)
@@ -164,7 +164,7 @@ namespace RWPM.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // POST: Shift/DeleteConfirmed (Chính sách Bảo toàn dữ liệu - Chặn xóa cứng)
+        // POST: Shift/DeleteConfirmed ( Chặn xóa cứng)
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = ShiftEditors)]

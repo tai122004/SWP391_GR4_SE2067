@@ -41,18 +41,6 @@
         <div class="col-md-4"><label asp-for="StartTime" class="form-label required">@M.StartTime</label><input asp-for="StartTime" data-time-suggestions="06:00,07:00,08:00,09:00,13:00,14:00,17:00,18:00,22:00" asp-format="{0:hh\:mm}" type="text" class="form-control shift-time" data-time-picker pattern="([01][0-9]|2[0-3]):[0-5][0-9]" autocomplete="off" required /><span asp-validation-for="StartTime" class="text-danger small"></span></div>
         <div class="col-md-4"><label asp-for="EndTime" class="form-label required">@M.EndTime</label><input asp-for="EndTime" data-time-suggestions="12:00,13:00,14:00,17:00,18:00,21:00,22:00,23:00,06:00" asp-format="{0:hh\:mm}" type="text" class="form-control shift-time" data-time-picker pattern="([01][0-9]|2[0-3]):[0-5][0-9]" autocomplete="off" required /><span asp-validation-for="EndTime" class="text-danger small"></span></div>
         <div class="col-md-4 d-flex align-items-end"><div class="form-check mb-2"><input asp-for="EndsNextDay" class="form-check-input" /><label asp-for="EndsNextDay" class="form-check-label">@T("EndsNextDay")</label></div></div>
-        <div class="col-12">
-            @* Khung giờ gợi ý: bấm để điền nhanh giờ bắt đầu/kết thúc, qua ngày và giờ nghỉ *@
-            <div class="shift-presets d-flex flex-wrap align-items-center gap-2">
-                <span class="small text-muted me-1">@R.Preset_Title:</span>
-                <button type="button" class="btn btn-sm btn-outline-secondary shift-preset" data-start="06:00" data-end="14:00" data-label="@R.Preset_Morning"></button>
-                <button type="button" class="btn btn-sm btn-outline-secondary shift-preset" data-start="14:00" data-end="22:00" data-label="@R.Preset_Afternoon"></button>
-                <button type="button" class="btn btn-sm btn-outline-secondary shift-preset" data-start="18:00" data-end="22:00" data-label="@R.Preset_Evening"></button>
-                <button type="button" class="btn btn-sm btn-outline-secondary shift-preset" data-start="22:00" data-end="06:00" data-next-day="true" data-label="@R.Preset_Night"></button>
-                <button type="button" class="btn btn-sm btn-outline-secondary shift-preset" data-start="08:00" data-end="17:00" data-break-start="12:00" data-break-end="13:00" data-label="@R.Preset_Office"></button>
-            </div>
-            <div class="form-text">@R.Preset_Hint</div>
-        </div>
     </div>
 </div></div>
 <div class="card mb-3"><div class="card-header">@T("UnpaidBreak")</div><div class="card-body row g-3">

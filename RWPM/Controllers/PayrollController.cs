@@ -49,6 +49,7 @@ namespace RWPM.Controllers
         }
 
         // GET: /Payroll/Index
+        // lấy danh sách bảng lương theo năm. Admin/HR và Store Manager được xem; nhân viên được chuyển đến trang phiếu lương cá nhân.
         public async Task<IActionResult> Index(int? year)
         {
             if (!IsAdminOrHR && !IsStoreManager)

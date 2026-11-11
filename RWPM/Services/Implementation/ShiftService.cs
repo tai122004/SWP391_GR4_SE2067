@@ -20,7 +20,7 @@ public class ShiftService : IShiftService
     private bool IsStoreManager => _accessor.HttpContext?.User.IsInRole("StoreManager") == true
         && _accessor.HttpContext.User.IsInRole("Admin") == false;
     private bool IsAdmin => _accessor.HttpContext?.User.IsInRole("Admin") == true;
-    public async Task<int?> GetManagedStoreIdAsync()
+    public async Task<int?> GetManagedStoreIdAsync() // lay chi nhanh của store manage chi hiẹn chi nhanh do
     {
         if (!IsStoreManager) return null;
         var username = _accessor.HttpContext?.User.Identity?.Name;
