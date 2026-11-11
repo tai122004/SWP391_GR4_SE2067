@@ -99,6 +99,12 @@
                 // withAvailability -> { events, blocked }; ngược lại -> mảng sự kiện
                 let events = Array.isArray(res) ? res : ((res && res.events) || []);
                 S.blockedSlots = (!Array.isArray(res) && res && res.blocked) ? res.blocked : {};
+                S.coverageBySlot = {};
+                if (!Array.isArray(res) && res && Array.isArray(res.coverage)) {
+                    res.coverage.forEach(function(row) {
+                        S.coverageBySlot[row.shiftId + '_' + String(row.date).split('T')[0]] = row;
+                    });
+                }
                 app.renderGrid(events);
                 app.updateWeeklySummary();
             },

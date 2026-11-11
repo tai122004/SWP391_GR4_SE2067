@@ -678,8 +678,13 @@ namespace RWPM.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordVM viewModel)
         {
+            var isAjax = string.Equals(Request.Headers["X-Requested-With"].ToString(),
+                "XMLHttpRequest", StringComparison.OrdinalIgnoreCase);
             if (!ModelState.IsValid)
             {
+                if (isAjax) return BadRequest(new { success = false, errors = ModelState
+                    .Where(x => x.Value?.Errors.Count > 0)
+                    .ToDictionary(x => x.Key, x => x.Value!.Errors.Select(e => e.ErrorMessage).ToArray()) });
                 return View(viewModel);
             }
 
@@ -692,16 +697,20 @@ namespace RWPM.Controllers
                 await _authService.RefreshSignInAsync(AccountHelper.GetCurrentUsername(HttpContext.User));
 
                 AlertHelper.AddSuccessMessage(TempData, _localizer["Acc_ChangePasswordSuccess"]);
+                if (isAjax) return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
             }
             catch (InputValidationException ex)
             {
                 ModelState.AddModelError(ex.Field, ex.Message);
-
+                if (isAjax) return BadRequest(new { success = false, errors = new Dictionary<string, string[]>
+                    { [ex.Field] = new[] { ex.Message } } });
                 return View(viewModel);
             }
             catch (ModelValidationException ex)
             {
-                AlertHelper.AddErrorMessage(TempData, ex.GetErrorString(_localizer));
+                var message = ex.GetErrorString(_localizer);
+                if (isAjax) return BadRequest(new { success = false, message });
+                AlertHelper.AddErrorMessage(TempData, message);
                 return View(viewModel);
             }
 

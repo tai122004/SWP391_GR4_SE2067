@@ -358,11 +358,18 @@ body {
 /* Lỗi validate: viền đỏ cho ô nhập lỗi (jQuery Validation dùng class input-validation-error) */
 .input-validation-error, .input-validation-error + .select2 .select2-selection { border-color: var(--bs-danger, #dc3545) !important; }
 .field-validation-error, .app-field-error { display: block; margin-top: .25rem; }
+/* Giữ viền và nội dung lỗi; bỏ biểu tượng cảnh báo mặc định bên trong ô nhập. */
+.form-control.is-invalid, .was-validated .form-control:invalid { background-image: none; }
 
 /* Bộ chọn giờ dùng chung (12h + gợi ý khung giờ) */
-.app-time-menu { width: 300px; max-width: 92vw; }
-.app-time-menu .app-time-all { grid-template-columns: repeat(3, 1fr); max-height: 210px; overflow-y: auto; }
-.app-time-menu .app-time-chip { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.app-time-menu { width: 252px; max-width: 92vw; }
+.app-time-columns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; }
+.app-time-column-wrap { min-width: 0; }
+.app-time-column-heading { color: #64748b; font-size: .72rem; text-align: center; padding: 2px 0 6px; }
+.app-time-column { height: 212px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.app-time-option { display: block; width: 100%; min-height: 34px; border: 0; border-radius: 4px; background: transparent; color: inherit; text-align: center; font-variant-numeric: tabular-nums; }
+.app-time-option:hover, .app-time-option:focus-visible { background: #e8f0ff; outline: none; }
+.app-time-option.is-selected { background: #0d6efd; color: #fff; font-weight: 600; }
 .app-time-picker .app-time-display { font-variant-numeric: tabular-nums; }
 .shift-presets .shift-preset { font-variant-numeric: tabular-nums; }
 

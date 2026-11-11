@@ -331,6 +331,7 @@ namespace RWPM.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = AppRoles.Employee)]
         public async Task<IActionResult> GetSwapFormData()
         {
             var username = User.Identity?.Name;
@@ -369,6 +370,7 @@ namespace RWPM.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = AppRoles.Employee)]
         public async Task<IActionResult> GetCoworkerShifts(int coworkerId)
         {
             if (!User.IsChainManager())
@@ -396,6 +398,7 @@ namespace RWPM.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = AppRoles.Employee)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateSwap([FromBody] ShiftSwapCreateVM model)
         {

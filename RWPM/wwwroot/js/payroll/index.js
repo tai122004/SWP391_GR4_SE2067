@@ -59,7 +59,7 @@
         }
 
         if (errors.length) {
-            errorEl.innerHTML = '<i class="bi bi-x-circle me-1"></i>' + errors[0];
+            errorEl.textContent = errors[0];
             errorEl.classList.remove('d-none');
             endEl.classList.add('is-invalid');
             summaryEl.innerHTML = '';

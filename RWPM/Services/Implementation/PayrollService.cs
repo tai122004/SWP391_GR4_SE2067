@@ -260,7 +260,7 @@ namespace RWPM.Services.Implementation
             var periodMonth = startDate.Month;
             var periodYear = startDate.Year;
 
-            // Load dữ liệu hoạt động trong kỳ
+            // Load dữ liệu hoạt động trong kỳ (ca qua ngày)
             var attendanceRecords = await _context.AttendanceRecord
                 .Include(a => a.Shift)
                 .Where(a => a.Date >= startDate && a.Date <= endDate)

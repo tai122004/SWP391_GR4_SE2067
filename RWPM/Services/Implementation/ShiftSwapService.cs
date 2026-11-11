@@ -20,6 +20,25 @@ namespace RWPM.Services.Implementation
             _schedules = schedules;
         }
 
+        private static void RequireStaff(Employee? employee, string field)
+        {
+            InputRules.Require(employee != null && employee.IsActive && employee.Account != null
+                && employee.Account.IsActive && employee.Account.Role == AccountRole.Employee,
+                field, "Chỉ nhân viên được tham gia đổi ca; không thể đổi ca với quản lý.",
+                "Only employees may swap shifts; managers cannot participate.");
+        }
+
+        private async Task EnsureCanReceiveShiftAsync(int employeeId, int shiftId, DateTime workDate)
+        {
+            var issues = await _schedules.GetAvailabilityIssuesAsync(employeeId, new[] { (shiftId, workDate.Date) });
+            if (issues.Count == 0) return;
+
+            var issue = issues[0];
+            throw new InvalidOperationException(InputRules.Text(
+                $"Không thể đổi ca: {issue.EmployeeName} không thể nhận ca {issue.ShiftName} ngày {issue.Date:dd/MM/yyyy}. {issue.Message}",
+                $"Cannot swap shifts: {issue.EmployeeName} cannot take {issue.ShiftName} on {issue.Date:dd/MM/yyyy}. {issue.Message}"));
+        }
+
         public async Task<List<ShiftRegistration>> GetEligibleShiftsToSwapAsync(int employeeId)
         {
             var today = DateTime.Today;
@@ -27,6 +46,8 @@ namespace RWPM.Services.Implementation
                 .Include(x => x.Shift)
                 .Include(x => x.Store)
                 .Where(x => x.EmployeeId == employeeId 
+                         && x.Employee.IsActive && x.Employee.Account.IsActive
+                         && x.Employee.Account.Role == AccountRole.Employee
                          && x.Status == RegistrationStatus.Approved 
                          && x.WorkDate >= today)
                 .OrderBy(x => x.WorkDate)
@@ -40,7 +61,8 @@ namespace RWPM.Services.Implementation
                 .Include(x => x.Account)
                 .Where(x => x.StoreId == storeId 
                          && x.EmployeeId != employeeId 
-                         && x.IsActive)
+                         && x.IsActive && x.Account.IsActive
+                         && x.Account.Role == AccountRole.Employee)
                 .OrderBy(x => x.EmployeeCode)
                 .ToListAsync();
         }
@@ -51,6 +73,8 @@ namespace RWPM.Services.Implementation
             return await _context.ShiftRegistration
                 .Include(x => x.Shift)
                 .Where(x => x.EmployeeId == coworkerId 
+                         && x.Employee.IsActive && x.Employee.Account.IsActive
+                         && x.Employee.Account.Role == AccountRole.Employee
                          && x.Status == RegistrationStatus.Approved 
                          && x.WorkDate >= date)
                 .OrderBy(x => x.WorkDate)
@@ -65,7 +89,7 @@ namespace RWPM.Services.Implementation
             InputRules.Require(model.SwapType is "peer" or "direct", "SwapType", "Loại đổi ca không hợp lệ.", "Invalid swap type.");
             await using var createTransaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
             var sourceReg = await _context.ShiftRegistration
-                .Include(x => x.Employee)
+                .Include(x => x.Employee).ThenInclude(e => e.Account)
                 .Include(x => x.Shift)
                 .FirstOrDefaultAsync(x => x.ShiftRegistrationId == model.SourceRegistrationId);
 
@@ -73,6 +97,8 @@ namespace RWPM.Services.Implementation
             {
                 throw new InvalidOperationException(SR.Swap_SourceNotFound);
             }
+
+            RequireStaff(sourceReg.Employee, "SourceRegistrationId");
 
             if (sourceReg.Status != RegistrationStatus.Approved)
             {
@@ -112,7 +138,7 @@ namespace RWPM.Services.Implementation
 
                 var targetReg = await _context.ShiftRegistration
                     .Include(x => x.Shift)
-                    .Include(x => x.Employee)
+                    .Include(x => x.Employee).ThenInclude(e => e.Account)
                     .FirstOrDefaultAsync(x => x.ShiftRegistrationId == model.TargetRegistrationId.Value 
                                            && x.EmployeeId == model.TargetEmployeeId.Value);
 
@@ -120,6 +146,8 @@ namespace RWPM.Services.Implementation
                 {
                     throw new InvalidOperationException(SR.Swap_PeerShiftNotFound);
                 }
+
+                RequireStaff(targetReg.Employee, "TargetEmployeeId");
 
                 if (targetReg.Status != RegistrationStatus.Approved)
                 {
@@ -454,14 +482,22 @@ namespace RWPM.Services.Implementation
 
         private async Task ValidateSwapScheduleAsync(ShiftSwapRequest req, ShiftRegistration source)
         {
+            RequireStaff(source.Employee, "SourceRegistrationId");
             InputRules.Require(source.WorkDate.Date >= DateTime.Today, "WorkDate", "Không được đổi ca đã qua.", "Cannot swap a past shift.");
             await WorkflowGuard.UnlockedPeriodAsync(_context, source.WorkDate.Date, source.WorkDate.Date);
             var ignored = new List<int> { source.ShiftRegistrationId };
             if (req.TargetRegistrationId.HasValue)
             {
-                var target = await _context.ShiftRegistration.AsNoTracking().SingleOrDefaultAsync(x => x.ShiftRegistrationId == req.TargetRegistrationId.Value);
+                var target = await _context.ShiftRegistration.AsNoTracking()
+                    .Include(x => x.Employee).ThenInclude(e => e.Account)
+                    .SingleOrDefaultAsync(x => x.ShiftRegistrationId == req.TargetRegistrationId.Value);
                 InputRules.Require(target != null && target.Status == RegistrationStatus.Approved && target.EmployeeId == req.TargetEmployeeId
                     && target.StoreId == source.StoreId && target.EmployeeId != source.EmployeeId, "TargetRegistrationId", "Ca đồng nghiệp không còn hợp lệ.", "Peer registration is no longer valid.");
+                RequireStaff(target!.Employee, "TargetEmployeeId");
+                // Đổi ca hai chiều: cả hai người phải có thể làm ca mình sắp nhận.
+                // Kiểm tra ở đây dùng chung cho lúc gửi đơn và lúc duyệt, phòng khi khung giờ đã thay đổi.
+                await EnsureCanReceiveShiftAsync(target.EmployeeId, source.ShiftId, source.WorkDate);
+                await EnsureCanReceiveShiftAsync(source.EmployeeId, target.ShiftId, target.WorkDate);
                 ignored.Add(target!.ShiftRegistrationId);
                 await _schedules.ValidateScheduleConstraintsAsync(source.EmployeeId, new() { new ShiftRegistration
                     { EmployeeId = source.EmployeeId, StoreId = source.StoreId, ShiftId = target.ShiftId, WorkDate = target.WorkDate } }, ignored);
