@@ -128,6 +128,8 @@
         let tbody = '';
         let today = new Date();
         today.setHours(0, 0, 0, 0);
+        let todayIso = getISODateString(today);
+        let now = new Date();
 
         function personnelFor(shiftId, date) {
             const row = S.coverageBySlot[shiftId + '_' + date];
@@ -174,7 +176,7 @@
                     let cellDateStr = getISODateString(tempDate);
                     let cellDateObj = new Date(tempDate);
                     cellDateObj.setHours(0, 0, 0, 0);
-                    let isPast = cellDateObj <= today;
+                    let isPast = cellDateObj < today;
                     let dayEvents = events.filter(e => {
                         let eDate = e.start.split('T')[0];
                         return (e.employeeId == emp.id || !emp.id) && eDate === cellDateStr;
@@ -268,7 +270,19 @@
                             return e.shiftId == shift.id && eDate === cellDateStr;
                         });
 
-                        let isPast = cellDateObj <= today;
+                        let isPast = false;
+                        if (cellDateObj < today) {
+                            isPast = true;
+                        } else if (cellDateStr === todayIso) {
+                            if (shift.start) {
+                                let parts = shift.start.split(':');
+                                let shiftStartTime = new Date();
+                                shiftStartTime.setHours(parseInt(parts[0], 10), parseInt(parts[1], 10), 0, 0);
+                                if (now >= shiftStartTime) {
+                                    isPast = true;
+                                }
+                            }
+                        }
                         let isUnavailable = cellDateStr < shift.from || (shift.to && cellDateStr > shift.to);
 
                         if (dayEvent) {

@@ -143,11 +143,7 @@ namespace RWPM.Services.Implementation
             entity.StoreName = entity.StoreName.Trim();
             await ValidateStoreAsync(entity);
 
-            if (await ExistsByCodeAsync(entity.StoreCode))
-            {
-                throw new InputValidationException("StoreCode", InputRules.Text("Mã chi nhánh đã tồn tại.", "Store code already exists."));
-            }
-
+          1
             entity.CreatedDate = DateTime.Now;
             entity.CreatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor);
 

@@ -90,7 +90,7 @@
         var today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        if (dateObj <= today) {
+        if (dateObj < today) {
             showAppToast('warning', L.pastDateError);
             return;
         }

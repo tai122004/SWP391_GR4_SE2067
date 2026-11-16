@@ -119,18 +119,42 @@ namespace RWPM.Controllers
 
             // Thời gian có thể làm việc: tự đăng ký -> ca không phù hợp bị khóa (blocked); quản lý xếp cho người khác -> chỉ cảnh báo (warning)
             var isSelf = current != null && current.EmployeeId == employee.EmployeeId;
-            if (isSelf && day <= DateTime.Today)
+            if (isSelf && day < DateTime.Today)
             {
                 return Json(new List<object>());
             }
-            var issues = day > DateTime.Today
+            var issues = day >= DateTime.Today
                 ? (await _registrationService.GetAvailabilityIssuesAsync(employee.EmployeeId, shifts.Select(x => (x.ShiftId, day))))
                     .ToDictionary(x => x.ShiftId, x => x.Message)
                 : new Dictionary<int, string>();
-            return Json(shifts.Select(x => new { id = x.ShiftId, name = x.ShiftName,
-                time = $"{x.StartTime:hh\\:mm} – {x.EndTime:hh\\:mm}{(x.EndDayOffset == 1 ? " (+1)" : "")}",
-                blocked = isSelf && issues.ContainsKey(x.ShiftId) ? issues[x.ShiftId] : null,
-                warning = !isSelf && issues.ContainsKey(x.ShiftId) ? issues[x.ShiftId] : null }));
+
+            var now = DateTime.Now;
+            return Json(shifts.Select(x => {
+                var isStartedOrPassed = (day == DateTime.Today && now >= day.Add(x.StartTime));
+                string? blockedReason = null;
+                string? warningReason = null;
+
+                if (isStartedOrPassed)
+                {
+                    blockedReason = SR.Err_PastDateRegistration;
+                }
+                else if (isSelf && issues.ContainsKey(x.ShiftId))
+                {
+                    blockedReason = issues[x.ShiftId];
+                }
+                else if (!isSelf && issues.ContainsKey(x.ShiftId))
+                {
+                    warningReason = issues[x.ShiftId];
+                }
+
+                return new {
+                    id = x.ShiftId,
+                    name = x.ShiftName,
+                    time = $"{x.StartTime:hh\\:mm} – {x.EndTime:hh\\:mm}{(x.EndDayOffset == 1 ? " (+1)" : "")}",
+                    blocked = blockedReason,
+                    warning = warningReason
+                };
+            }));
         }
 
         // GET: ShiftRegistration/GetEvents
@@ -182,7 +206,7 @@ namespace RWPM.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (viewModel.WorkDate.Date <= DateTime.Today)
+            if (viewModel.WorkDate.Date < DateTime.Today)
             {
                 return BadRequest(new { success = false, message = SR.Err_PastDateRegistration });
             }
@@ -228,6 +252,18 @@ namespace RWPM.Controllers
 
                 // Nạp toàn bộ ca + liên kết chi nhánh bằng 2 truy vấn (thay vì 2 truy vấn cho mỗi ca)
                 var shiftsById = await _context.Shift.Where(s => shiftIds.Contains(s.ShiftId)).ToDictionaryAsync(s => s.ShiftId);
+
+                if (viewModel.WorkDate.Date == DateTime.Today)
+                {
+                    var now = DateTime.Now;
+                    foreach (var sId in shiftIds)
+                    {
+                        if (shiftsById.TryGetValue(sId, out var shift) && now >= viewModel.WorkDate.Date.Add(shift.StartTime))
+                        {
+                            return BadRequest(new { success = false, message = SR.Err_PastDateRegistration });
+                        }
+                    }
+                }
                 var appliedShiftIds = (await _context.StoreShift
                     .Where(link => shiftIds.Contains(link.ShiftId) && link.StoreId == storeId && link.IsActive && link.Store.IsActive)
                     .Select(link => link.ShiftId).ToListAsync()).ToHashSet();

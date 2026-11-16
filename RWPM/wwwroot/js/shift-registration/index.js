@@ -200,6 +200,7 @@
                 $('.weekly-shift-cb:not(:disabled)').prop('checked', false);
                 let today = new Date();
                 today.setHours(0,0,0,0);
+                let todayIso = getISODateString(today);
                 let checkedCount = 0;
 
                 events.forEach(e => {
@@ -207,7 +208,7 @@
                     eDate.setDate(eDate.getDate() + 7);
                     let targetDateStr = getISODateString(eDate);
 
-                    if (eDate > today) {
+                    if (targetDateStr >= todayIso) {
                         let cb = $(`.weekly-shift-cb[value="${e.shiftId}_${targetDateStr}"]`);
                         if (cb.length > 0 && !cb.prop('disabled')) {
                             cb.prop('checked', true).trigger('change');
