@@ -89,8 +89,13 @@
   <data name="ValidationTime" xml:space="preserve"><value>Invalid shift time or end day.</value></data>
   <data name="ValidationDuration" xml:space="preserve"><value>Shift duration must be 2 to 12 hours. Check the next-day option.</value></data>
   <data name="ValidationBreakFields" xml:space="preserve"><value>Enter both break times and their days.</value></data>
-  <data name="ValidationBreakRange" xml:space="preserve"><value>Break must be within the shift, end after it starts, and last no more than 60 minutes.</value></data>
+  <data name="BreakSettings" xml:space="preserve"><value>Break settings</value></data>
+  <data name="ValidationBreakRange" xml:space="preserve"><value>Break must be within and shorter than the shift, and cannot exceed 120 minutes.</value></data>
   <data name="ValidationWorkDuration" xml:space="preserve"><value>Work time after subtracting the break must be at least 2 hours.</value></data>
+  <data name="ValidationBreakRequiredNight" xml:space="preserve"><value>A shift of at least 6 hours with at least 3 working hours between 22:00 and 06:00 requires a continuous break of at least 45 minutes.</value></data>
+  <data name="ValidationBreakRequiredStandard" xml:space="preserve"><value>A shift of at least 6 hours requires a continuous break of at least 30 minutes.</value></data>
+  <data name="ValidationBreakMinimumNight" xml:space="preserve"><value>This night shift requires a continuous break of at least 45 minutes (3 or more working hours between 22:00 and 06:00).</value></data>
+  <data name="ValidationBreakMinimumStandard" xml:space="preserve"><value>The break is too short; this shift requires a continuous break of at least 30 minutes.</value></data>
   <data name="ValidationDates" xml:space="preserve"><value>Invalid effective dates.</value></data>
   <data name="ValidationTolerance" xml:space="preserve"><value>Lateness and early-departure tolerances must be 0 to 60 minutes.</value></data>
   <data name="ValidationGraceThreshold" xml:space="preserve"><value>Lateness tolerance must be less than the company absence threshold.</value></data>

@@ -89,8 +89,13 @@
   <data name="ValidationTime" xml:space="preserve"><value>Giờ ca và ngày kết thúc không hợp lệ.</value></data>
   <data name="ValidationDuration" xml:space="preserve"><value>Thời lượng ca phải từ 2 đến 12 giờ. Kiểm tra lựa chọn kết thúc ngày hôm sau.</value></data>
   <data name="ValidationBreakFields" xml:space="preserve"><value>Vui lòng nhập đầy đủ khoảng nghỉ và ngày nghỉ.</value></data>
-  <data name="ValidationBreakRange" xml:space="preserve"><value>Khoảng nghỉ phải nằm trong ca, kết thúc sau bắt đầu và không vượt quá 60 phút.</value></data>
+  <data name="BreakSettings" xml:space="preserve"><value>Thiết lập giờ nghỉ</value></data>
+  <data name="ValidationBreakRange" xml:space="preserve"><value>Khoảng nghỉ phải nằm trong ca, ngắn hơn thời lượng ca và không vượt quá 120 phút.</value></data>
   <data name="ValidationWorkDuration" xml:space="preserve"><value>Thời gian làm việc sau khi trừ nghỉ phải từ 2 giờ.</value></data>
+  <data name="ValidationBreakRequiredNight" xml:space="preserve"><value>Ca từ 6 giờ có ít nhất 3 giờ làm trong khung 22:00–06:00 phải có giờ nghỉ liên tục tối thiểu 45 phút.</value></data>
+  <data name="ValidationBreakRequiredStandard" xml:space="preserve"><value>Ca từ 6 giờ phải có giờ nghỉ liên tục tối thiểu 30 phút.</value></data>
+  <data name="ValidationBreakMinimumNight" xml:space="preserve"><value>Ca đêm này cần giờ nghỉ liên tục tối thiểu 45 phút (ca đêm từ 3 giờ trong khung 22:00–06:00).</value></data>
+  <data name="ValidationBreakMinimumStandard" xml:space="preserve"><value>Giờ nghỉ chưa đủ; ca này cần nghỉ liên tục tối thiểu 30 phút.</value></data>
   <data name="ValidationDates" xml:space="preserve"><value>Ngày hiệu lực không hợp lệ.</value></data>
   <data name="ValidationTolerance" xml:space="preserve"><value>Dung sai đi muộn và về sớm phải từ 0 đến 60 phút.</value></data>
   <data name="ValidationGraceThreshold" xml:space="preserve"><value>Dung sai đi muộn phải nhỏ hơn ngưỡng vắng mặt chung.</value></data>
