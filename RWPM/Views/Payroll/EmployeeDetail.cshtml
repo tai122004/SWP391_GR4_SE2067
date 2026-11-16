@@ -116,10 +116,6 @@
     <div class="app-content-card management-table-card mb-3">
         <div class="card-header d-flex justify-content-between align-items-center">
             <span>@string.Format(PayrollResource.Emp_DailyTitle, hasSnapshots ? Model.ItemSnapshots!.Count : Model.AttendanceRecords.Count)</span>
-            @if (hasSnapshots)
-            {
-                <span class="app-badge app-badge-info"><i class="bi bi-camera"></i>@PayrollResource.Emp_SnapshotBadge</span>
-            }
         </div>
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">

@@ -33,45 +33,58 @@ namespace RWPM.Models.ViewModels.Payroll
         public const string DefaultUnlockReason = "HR mở khóa bảng lương";
         public const string StoredLegacyLeaveNoEvidence = "Đơn nghỉ có lương cũ thiếu dữ liệu ca gốc, cần rà soát.";
         private const string LegacyLeaveNoEvidenceEn = "Legacy paid leave has no schedule evidence; review required.";
-
-        public static string StoredTitle(DateTime start, DateTime end) => $"{StoredTitlePrefix}{start:dd/MM/yyyy} - {end:dd/MM/yyyy}";
+        public static string StoredTitle(DateTime start,
+             DateTime end) => $"{StoredTitlePrefix}{start:dd/MM/yyyy} - {end:dd/MM/yyyy}";
         public static string StoredLeaveApprovedNote(int leaveRequestId) => $"Đơn nghỉ phép #{leaveRequestId} đã duyệt";
         public static string StoredShiftNoAttendanceNote(string? shiftName) => $"Ca {shiftName ?? ""} đã duyệt nhưng không có chấm công";
-        public static string StoredAbnormalWarning(int count, string dates) => $"Có {count} ca bất thường/thiếu chấm công ({dates}).";
-        public static string StoredAuditCalculate(bool isRecalculate, int employees, double hours, decimal amount)
-            => $"{(isRecalculate ? "Tính lại" : "Khởi tạo")} bảng lương: {employees} nhân viên, tổng giờ công: {hours:N2}h, tổng tiền: {amount:N0} VNĐ";
-        public static string StoredAuditLock(int employees, decimal amount)
-            => $"Chốt bảng lương thành công với {employees} nhân viên, tổng quỹ lương: {amount:N0} VNĐ";
+        public static string StoredAbnormalWarning(int count,
+             string dates) => $"Có {count} ca bất thường/thiếu chấm công ({dates}).";
+        public static string StoredAuditCalculate(bool isRecalculate,
+             int employees,
+             double hours,
+             decimal amount) => $"{(isRecalculate ? "Tính lại" : "Khởi tạo")} bảng lương: {employees} nhân viên, tổng giờ công: {hours:N2}h, tổng tiền: {amount:N0} VNĐ";
+        public static string StoredAuditLock(int employees,
+             decimal amount) => $"Chốt bảng lương thành công với {employees} nhân viên, tổng quỹ lương: {amount:N0} VNĐ";
         public static string StoredAuditUnlock(string reason) => $"Mở khóa bảng lương về trạng thái Nháp. Lý do: {reason}";
-        public static string StoredUnlockNote(string operatorUsername, DateTime at, string reason)
-            => $"[Mở khóa bởi {operatorUsername} lúc {at:dd/MM/yyyy HH:mm}]: {reason}";
-
-        private static readonly Regex TitleRx = new(@"^Bảng lương (\d{2}/\d{2}/\d{4}) - (\d{2}/\d{2}/\d{4})$", RegexOptions.Compiled);
-        private static readonly Regex LeaveNoteRx = new(@"^Đơn nghỉ phép #(\d+) đã duyệt$", RegexOptions.Compiled);
-        private static readonly Regex ShiftNoteRx = new(@"^Ca (.*) đã duyệt nhưng không có chấm công$", RegexOptions.Compiled | RegexOptions.Singleline);
-        private static readonly Regex AbnormalRx = new(@"^Có (\d+) ca bất thường/thiếu chấm công \((.*)\)\.$", RegexOptions.Compiled | RegexOptions.Singleline);
-        private static readonly Regex AuditCalcRx = new(@"^(Tính lại|Khởi tạo) bảng lương: (\d+) nhân viên, tổng giờ công: (.+)h, tổng tiền: (.+) VNĐ$", RegexOptions.Compiled | RegexOptions.Singleline);
-        private static readonly Regex AuditLockRx = new(@"^Chốt bảng lương thành công với (\d+) nhân viên, tổng quỹ lương: (.+) VNĐ$", RegexOptions.Compiled | RegexOptions.Singleline);
-        private static readonly Regex UnlockNoteRx = new(@"^\[Mở khóa bởi (.*?) lúc (\d{2}/\d{2}/\d{4} \d{2}:\d{2})\]: (.*)$", RegexOptions.Compiled | RegexOptions.Singleline);
-        private static readonly Regex AuditUnlockRx = new(@"^Mở khóa bảng lương về trạng thái Nháp\. Lý do: (.*)$", RegexOptions.Compiled | RegexOptions.Singleline);
-
+        public static string StoredUnlockNote(string operatorUsername,
+             DateTime at,
+             string reason) => $"[Mở khóa bởi {operatorUsername} lúc {at:dd/MM/yyyy HH:mm}]: {reason}";
+        private static readonly Regex TitleRx = new(@"^Bảng lương (\d{2}/\d{2}/\d{4}) - (\d{2}/\d{2}/\d{4})$",
+             RegexOptions.Compiled);
+        private static readonly Regex LeaveNoteRx = new(@"^Đơn nghỉ phép #(\d+) đã duyệt$",
+             RegexOptions.Compiled);
+        private static readonly Regex ShiftNoteRx = new(@"^Ca (.*) đã duyệt nhưng không có chấm công$",
+             RegexOptions.Compiled | RegexOptions.Singleline);
+        private static readonly Regex AbnormalRx = new(@"^Có (\d+) ca bất thường/thiếu chấm công \((.*)\)\.$",
+             RegexOptions.Compiled | RegexOptions.Singleline);
+        private static readonly Regex AuditCalcRx = new(@"^(Tính lại|Khởi tạo) bảng lương: (\d+) nhân viên, tổng giờ công: (.+)h, tổng tiền: (.+) VNĐ$",
+             RegexOptions.Compiled | RegexOptions.Singleline);
+        private static readonly Regex AuditLockRx = new(@"^Chốt bảng lương thành công với (\d+) nhân viên, tổng quỹ lương: (.+) VNĐ$",
+             RegexOptions.Compiled | RegexOptions.Singleline);
+        private static readonly Regex UnlockNoteRx = new(@"^\[Mở khóa bởi (.*?) lúc (\d{2}/\d{2}/\d{4} \d{2}:\d{2})\]: (.*)$",
+             RegexOptions.Compiled | RegexOptions.Singleline);
+        private static readonly Regex AuditUnlockRx = new(@"^Mở khóa bảng lương về trạng thái Nháp\. Lý do: (.*)$",
+             RegexOptions.Compiled | RegexOptions.Singleline);
         /// <summary>Payroll title (auto-generated "Bảng lương dd/MM/yyyy - dd/MM/yyyy").</summary>
         public static string Title(string? title)
         {
-            if (string.IsNullOrEmpty(title)) return title ?? string.Empty;
+            if (string.IsNullOrEmpty(title))
+            {
+                return title ?? string.Empty;
+            }
+
             var m = TitleRx.Match(title);
-            return m.Success ? string.Format(R.Payroll_AutoTitle, m.Groups[1].Value, m.Groups[2].Value) : title;
+            return m.Success ? string.Format(R.Payroll_AutoTitle,
+                 m.Groups[1].Value,
+                 m.Groups[2].Value) : title;
         }
 
         public static string PayrollStatusText(PayrollStatus status) => status switch
         {
             PayrollStatus.Locked => R.Status_Locked,
             PayrollStatus.Draft => R.Status_Draft,
-            _ => status.ToString()
-        };
-
+            _ => status.ToString()};
         public static string PayrollStatusText(PayrollStatus? status) => status.HasValue ? PayrollStatusText(status.Value) : string.Empty;
-
         public static string DetailStatusText(PayrollDetailStatus status) => status switch
         {
             PayrollDetailStatus.Valid => R.DetailStatus_Valid,
@@ -79,7 +92,6 @@ namespace RWPM.Models.ViewModels.Payroll
             PayrollDetailStatus.HasWarnings => R.DetailStatus_HasWarnings,
             _ => string.Empty
         };
-
         public static string SnapshotStatus(string? status) => status switch
         {
             null => string.Empty,
@@ -93,38 +105,63 @@ namespace RWPM.Models.ViewModels.Payroll
             SnapAbsentMissing => R.Snap_AbsentMissing,
             _ => status
         };
-
         public static string SnapshotNote(string? note)
         {
-            if (string.IsNullOrEmpty(note)) return note ?? string.Empty;
+            if (string.IsNullOrEmpty(note))
+            {
+                return note ?? string.Empty;
+            }
+
             switch (note)
             {
-                case NoteAttendanceIncomplete: return R.Note_AttendanceIncomplete;
-                case NoteUnpaidLeave: return R.Note_UnpaidLeave;
-                case NoteUnpaidLeaveNonEligible: return R.Note_UnpaidLeaveNonEligible;
+                case NoteAttendanceIncomplete:
+                    return R.Note_AttendanceIncomplete;
+                case NoteUnpaidLeave:
+                    return R.Note_UnpaidLeave;
+                case NoteUnpaidLeaveNonEligible:
+                    return R.Note_UnpaidLeaveNonEligible;
             }
+
             var m = LeaveNoteRx.Match(note);
-            if (m.Success) return string.Format(R.Note_LeaveApproved, m.Groups[1].Value);
+            if (m.Success)
+            {
+                return string.Format(R.Note_LeaveApproved, m.Groups[1].Value);
+            }
+
             m = ShiftNoteRx.Match(note);
-            if (m.Success) return string.Format(R.Note_ShiftNoAttendance, m.Groups[1].Value);
+            if (m.Success)
+            {
+                return string.Format(R.Note_ShiftNoAttendance, m.Groups[1].Value);
+            }
+
             return note;
         }
 
         public static string ShiftName(string? shiftName) => shiftName == ShiftUnknown ? R.Shift_Unknown : shiftName ?? string.Empty;
-
         public static string StoreName(string? storeName) => storeName == StoreOfficeHR ? R.Store_OfficeHR : storeName ?? string.Empty;
-
         public static string WarningNotes(string? notes)
         {
-            if (string.IsNullOrEmpty(notes)) return notes ?? string.Empty;
-            if (notes == WarnMissingRate) return R.Warn_MissingRate;
+            if (string.IsNullOrEmpty(notes))
+            {
+                return notes ?? string.Empty;
+            }
+
+            if (notes == WarnMissingRate)
+            {
+                return R.Warn_MissingRate;
+            }
+
             var m = AbnormalRx.Match(notes);
-            if (!m.Success) return notes;
-            var dates = m.Groups[2].Value
-                .Replace(MissingInOutTag, "(" + R.Warn_MissingInOutTag + ")")
-                .Replace("(" + ShiftFallback + ")", "(" + R.Warn_ShiftFallback + ")")
-                .Replace(StoredLegacyLeaveNoEvidence, LegacyLeaveNoEvidenceText)
-                .Replace(LegacyLeaveNoEvidenceEn, LegacyLeaveNoEvidenceText);
+            if (!m.Success)
+            {
+                return notes;
+            }
+
+            var dates = m.Groups[2].Value.Replace(MissingInOutTag,
+                 "(" + R.Warn_MissingInOutTag + ")").Replace("(" + ShiftFallback + ")",
+                 "(" + R.Warn_ShiftFallback + ")").Replace(StoredLegacyLeaveNoEvidence,
+                 LegacyLeaveNoEvidenceText).Replace(LegacyLeaveNoEvidenceEn,
+                 LegacyLeaveNoEvidenceText);
             return string.Format(R.Warn_Abnormal, m.Groups[1].Value, dates);
         }
 
@@ -138,28 +175,50 @@ namespace RWPM.Models.ViewModels.Payroll
             "Unlock" => R.AuditAction_Unlock,
             _ => action ?? string.Empty
         };
-
         public static string AuditReason(string? reason) => reason == DefaultUnlockReason ? R.Unlock_DefaultReason : reason ?? string.Empty;
-
         /// <summary>Payroll.Note written at unlock time ("[Mở khóa bởi {user} lúc {time}]: {reason}").</summary>
         public static string PayrollNote(string? note)
         {
-            if (string.IsNullOrEmpty(note)) return note ?? string.Empty;
+            if (string.IsNullOrEmpty(note))
+            {
+                return note ?? string.Empty;
+            }
+
             var m = UnlockNoteRx.Match(note);
-            return m.Success ? string.Format(R.Note_UnlockedBy, m.Groups[1].Value, m.Groups[2].Value, AuditReason(m.Groups[3].Value)) : note;
+            return m.Success ? string.Format(R.Note_UnlockedBy,
+                 m.Groups[1].Value,
+                 m.Groups[2].Value,
+                 AuditReason(m.Groups[3].Value)) : note;
         }
 
         public static string AuditDetails(string? details)
         {
-            if (string.IsNullOrEmpty(details)) return details ?? string.Empty;
+            if (string.IsNullOrEmpty(details))
+            {
+                return details ?? string.Empty;
+            }
+
             var m = AuditCalcRx.Match(details);
             if (m.Success)
+            {
                 return string.Format(m.Groups[1].Value == "Tính lại" ? R.AuditDetail_Recalculate : R.AuditDetail_Calculate,
-                    m.Groups[2].Value, m.Groups[3].Value, m.Groups[4].Value);
+                     m.Groups[2].Value,
+                     m.Groups[3].Value,
+                     m.Groups[4].Value);
+            }
+
             m = AuditLockRx.Match(details);
-            if (m.Success) return string.Format(R.AuditDetail_Lock, m.Groups[1].Value, m.Groups[2].Value);
+            if (m.Success)
+            {
+                return string.Format(R.AuditDetail_Lock, m.Groups[1].Value, m.Groups[2].Value);
+            }
+
             m = AuditUnlockRx.Match(details);
-            if (m.Success) return string.Format(R.AuditDetail_Unlock, AuditReason(m.Groups[1].Value));
+            if (m.Success)
+            {
+                return string.Format(R.AuditDetail_Unlock, AuditReason(m.Groups[1].Value));
+            }
+
             return details;
         }
     }

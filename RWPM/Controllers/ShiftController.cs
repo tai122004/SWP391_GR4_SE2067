@@ -15,16 +15,14 @@ namespace RWPM.Controllers
     {
         /// <summary>Chỉ Admin và Quản lý cửa hàng được tạo/sửa ca (HR chỉ xem).</summary>
         private const string ShiftEditors = AppRoles.Admin + "," + AppRoles.StoreManager;
-
         private readonly IStringLocalizer _localizer;
         private readonly IShiftService _shiftService;
         private readonly IStoreService _storeService;
         private bool IsStoreManager => User.IsStoreManager() && !User.IsAdmin();
 
-        public ShiftController(
-            IStringLocalizer<ErrorServerDefinition> localizer,
-            IShiftService shiftService,
-            IStoreService storeService)
+        public ShiftController(IStringLocalizer<ErrorServerDefinition> localizer,
+             IShiftService shiftService,
+             IStoreService storeService)
         {
             _localizer = localizer;
             _shiftService = shiftService;
@@ -36,12 +34,21 @@ namespace RWPM.Controllers
         public async Task<IActionResult> Index(ShiftSearch searchObject)
         {
             var managedStoreId = IsStoreManager ? await _shiftService.GetManagedStoreIdAsync() : null;
-            if (IsStoreManager && !managedStoreId.HasValue) return Forbid();
+            if (IsStoreManager && !managedStoreId.HasValue)
+            {
+                return Forbid();
+            }
+
             var result = await _shiftService.SearchAsync(searchObject);
             var storeSelectList = await _storeService.GetSelectListAsync();
             if (managedStoreId.HasValue)
-                storeSelectList = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(
-                    storeSelectList.Where(x => x.Value == managedStoreId.Value.ToString()), "Value", "Text");
+            {
+                storeSelectList = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(storeSelectList
+                    .Where(x => x.Value == managedStoreId.Value.ToString()),
+                     "Value",
+                     "Text");
+            }
+
             ViewBag.ManagedStoreId = managedStoreId;
             ViewBag.CanManageShifts = !User.IsHR() || User.IsAdmin() || IsStoreManager;
             return View(new ShiftListVM(result, searchObject, storeSelectList));
@@ -52,10 +59,18 @@ namespace RWPM.Controllers
         public async Task<IActionResult> Create()
         {
             var managedStoreId = IsStoreManager ? await _shiftService.GetManagedStoreIdAsync() : null;
-            if (IsStoreManager && !managedStoreId.HasValue) return Forbid();
+            if (IsStoreManager && !managedStoreId.HasValue)
+            {
+                return Forbid();
+            }
+
             ViewBag.StoreList = await _storeService.GetSelectListAsync();
             ViewBag.ManagedStoreId = managedStoreId;
-            return View(new ShiftCreateVM { StoreIds = managedStoreId.HasValue ? new List<int> { managedStoreId.Value } : new List<int>() });
+            return View(new ShiftCreateVM {
+                 StoreIds = managedStoreId.HasValue ? new List<int> {
+                 managedStoreId.Value
+                } : new List<int>()
+                });
         }
 
         // POST: Shift/Create
@@ -65,7 +80,14 @@ namespace RWPM.Controllers
         public async Task<IActionResult> Create(ShiftCreateVM viewModel)
         {
             var managedStoreId = IsStoreManager ? await _shiftService.GetManagedStoreIdAsync() : null;
-            if (IsStoreManager && (!managedStoreId.HasValue || viewModel.StoreIds.Count != 1 || viewModel.StoreIds[0] != managedStoreId.Value)) return Forbid();
+            if (IsStoreManager
+                && (!managedStoreId.HasValue
+                || viewModel.StoreIds.Count != 1
+                || viewModel.StoreIds[0] != managedStoreId.Value))
+            {
+                return Forbid();
+            }
+
             ViewBag.ManagedStoreId = managedStoreId;
             if (!ModelState.IsValid)
             {
@@ -80,11 +102,15 @@ namespace RWPM.Controllers
             }
             catch (ModelValidationException ex)
             {
-                AlertHelper.AddErrorMessage(TempData, _localizer[ex.ErrorCode].ResourceNotFound ? ex.ErrorDetail : ex.GetErrorString(_localizer));
+                AlertHelper.AddErrorMessage(TempData,
+                     _localizer[ex.ErrorCode].ResourceNotFound ? ex.ErrorDetail : ex.GetErrorString(_localizer));
                 ViewBag.StoreList = await _storeService.GetSelectListAsync();
                 return View(viewModel);
             }
-            catch (UnauthorizedAccessException) { return Forbid(); }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
+            }
             catch (Exception ex)
             {
                 AlertHelper.AddErrorMessage(TempData, ex.Message);
@@ -101,11 +127,18 @@ namespace RWPM.Controllers
         {
             var shift = await _shiftService.GetByIdAsync(id);
             if (shift == null)
+            {
                 return NotFound();
+            }
 
             var managedStoreId = IsStoreManager ? await _shiftService.GetManagedStoreIdAsync() : null;
-            if (IsStoreManager && (!managedStoreId.HasValue || shift.StoreShifts.Count != 1
-                || shift.StoreShifts.Single().StoreId != managedStoreId.Value)) return Forbid();
+            if (IsStoreManager
+                && (!managedStoreId.HasValue
+                || shift.StoreShifts.Count != 1
+                || shift.StoreShifts.Single().StoreId != managedStoreId.Value))
+            {
+                return Forbid();
+            }
 
             ViewBag.StoreList = await _storeService.GetSelectListAsync();
             ViewBag.ManagedStoreId = managedStoreId;
@@ -119,12 +152,20 @@ namespace RWPM.Controllers
         public async Task<IActionResult> Edit(int id, ShiftEditVM viewModel)
         {
             if (id != viewModel.ShiftId)
+            {
                 return BadRequest();
+            }
 
             var managedStoreId = IsStoreManager ? await _shiftService.GetManagedStoreIdAsync() : null;
-            if (IsStoreManager && (!managedStoreId.HasValue || viewModel.StoreIds.Count != 1 || viewModel.StoreIds[0] != managedStoreId.Value)) return Forbid();
-            ViewBag.ManagedStoreId = managedStoreId;
+            if (IsStoreManager
+                && (!managedStoreId.HasValue
+                || viewModel.StoreIds.Count != 1
+                || viewModel.StoreIds[0] != managedStoreId.Value))
+            {
+                return Forbid();
+            }
 
+            ViewBag.ManagedStoreId = managedStoreId;
             if (!ModelState.IsValid)
             {
                 ViewBag.StoreList = await _storeService.GetSelectListAsync();
@@ -133,18 +174,25 @@ namespace RWPM.Controllers
 
             try
             {
-                var candidate = new RWPM.Models.Entities.Shift { ShiftId = id };
+                var candidate = new RWPM.Models.Entities.Shift
+                {
+                    ShiftId = id
+                };
                 viewModel.ApplyToEntity(candidate);
                 await _shiftService.UpdateAsync(candidate);
                 AlertHelper.EditSuccess(TempData);
             }
             catch (ModelValidationException ex)
             {
-                AlertHelper.AddErrorMessage(TempData, _localizer[ex.ErrorCode].ResourceNotFound ? ex.ErrorDetail : ex.GetErrorString(_localizer));
+                AlertHelper.AddErrorMessage(TempData,
+                     _localizer[ex.ErrorCode].ResourceNotFound ? ex.ErrorDetail : ex.GetErrorString(_localizer));
                 ViewBag.StoreList = await _storeService.GetSelectListAsync();
                 return View(viewModel);
             }
-            catch (UnauthorizedAccessException) { return Forbid(); }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
+            }
             catch (Exception ex)
             {
                 AlertHelper.AddErrorMessage(TempData, ex.Message);
@@ -178,29 +226,36 @@ namespace RWPM.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = ShiftEditors)]
-        public async Task<IActionResult> UpdateActiveStatus(int id, [FromBody] ShiftUpdateActiveStatusVM viewModel)
+        public async Task<IActionResult> UpdateActiveStatus(int id,
+             [FromBody] ShiftUpdateActiveStatusVM viewModel)
         {
             if (id != viewModel.ShiftId)
+            {
                 return BadRequest();
+            }
 
             if (!ModelState.IsValid)
             {
-                var errors = string.Join("; ", ModelState.Values
-                                    .SelectMany(v => v.Errors)
-                                    .Select(e => e.ErrorMessage));
+                var errors = string.Join("; ",
+                     ModelState.Values.SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage));
                 return BadRequest(errors);
             }
 
             try
             {
-                await _shiftService.UpdateActiveStatusAsync(viewModel.ShiftId!.Value, viewModel.IsActive!.Value);
+                await _shiftService.UpdateActiveStatusAsync(viewModel.ShiftId!.Value,
+                     viewModel.IsActive!.Value);
                 return Ok();
             }
             catch (ModelValidationException ex)
             {
                 return BadRequest(_localizer[ex.ErrorCode].ResourceNotFound ? ex.ErrorDetail : ex.GetErrorString(_localizer));
             }
-            catch (UnauthorizedAccessException) { return Forbid(); }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
+            }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
