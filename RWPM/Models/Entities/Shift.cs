@@ -50,6 +50,9 @@ public class Shift : AuditableEntity, IActivatable
     public double BreakMinutes => BreakStartTime.HasValue
         && BreakEndTime.HasValue ? (BreakEndTime.Value.Add(TimeSpan.FromDays(BreakEndDayOffset ?? 0)) - BreakStartTime.Value.Add(TimeSpan.FromDays(BreakStartDayOffset ?? 0))).TotalMinutes : 0;
 
+    [NotMapped]
+    public double ScheduledProductiveHours => Math.Max(0, Duration.TotalHours - BreakMinutes / 60d);
+
     // Every configured break is unpaid; use the same calculation as attendance.
     [NotMapped]
     public double ScheduledWorkHours

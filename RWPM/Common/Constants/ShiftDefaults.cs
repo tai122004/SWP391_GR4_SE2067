@@ -7,6 +7,16 @@ namespace RWPM.Common.Constants
     /// </summary>
     public static class ShiftDefaults
     {
+        /// <summary>Maximum configured break duration for one shift.</summary>
+        public const int MaximumBreakMinutes = 120;
+        /// <summary>Minimum actual work time retained in a configured shift.</summary>
+        public const int MinimumProductiveWorkMinutes = 120;
+        /// <summary>Daily scheduled work threshold that requires a continuous break.</summary>
+        public const int WorkMinutesRequiringBreak = 360;
+        public const int MinimumBreakMinutes = 30;
+        public const int MinimumNightBreakMinutes = 45;
+        public const int NightWorkMinutesForLongerBreak = 180;
+
         /// <summary>
         /// Số phút cho phép nhân viên quẹt thẻ TRƯỚC giờ bắt đầu ca làm việc.
         /// Mặc định:15 phút.
@@ -18,17 +28,14 @@ namespace RWPM.Common.Constants
         /// Mặc định: 15 phút.
         /// Ví dụ: Ca 08:00, quẹt thẻ lúc 08:05 vẫn được ghi nhận là "Đúng giờ".
         /// </summary>
-        public const int GracePeriodMinutes = 15;
+        public const int GracePeriodMinutes = 30;
         /// <summary>
         /// Số phút cho phép nhân viên quẹt thẻ về sớm trước khi hết ca mà KHÔNG bị tính là "Về sớm".
         /// Mặc định: 15 phút.
         /// Ví dụ: Ca kết thúc 16:00, quẹt thẻ từ 15:45 vẫn được ghi nhận là hoàn thành ca đúng giờ.
         /// </summary>
-        public const int EarlyCheckOutMinutes = 15;
-        /// <summary>
-        /// Số phút tối đa được phép đi muộn trước khi hệ thống đánh dấu là "Vắng mặt" (Bỏ ca).
-        /// Đã nới lỏng thành 480 phút (8 tiếng) để cho phép check-in bất cứ lúc nào.
-        /// </summary>
-        public const int LateThresholdMinutes = 480;
+        public const int EarlyCheckOutMinutes = 30;
+
+        //public const int LateThresholdMinutes = 480;
     }
 }

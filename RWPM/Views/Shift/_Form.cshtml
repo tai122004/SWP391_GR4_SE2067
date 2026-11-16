@@ -43,7 +43,7 @@
         <div class="col-md-4 d-flex align-items-end"><div class="form-check mb-2"><input asp-for="EndsNextDay" class="form-check-input" /><label asp-for="EndsNextDay" class="form-check-label">@T("EndsNextDay")</label></div></div>
     </div>
 </div></div>
-<div class="card mb-3"><div class="card-header">@T("UnpaidBreak")</div><div class="card-body row g-3">
+<div class="card mb-3"><div class="card-header">@T("BreakSettings")</div><div class="card-body row g-3">
     <div class="col-md-6"><label asp-for="BreakStartTime" class="form-label">@T("BreakStart")</label><input asp-for="BreakStartTime" data-time-suggestions="11:30,12:00,12:30,17:30,18:00,02:00" asp-format="{0:hh\:mm}" type="text" class="form-control shift-time" data-time-picker pattern="([01][0-9]|2[0-3]):[0-5][0-9]" autocomplete="off" /><span asp-validation-for="BreakStartTime" class="text-danger small"></span><div class="form-check mt-2"><input asp-for="BreakStartsNextDay" class="form-check-input" /><label asp-for="BreakStartsNextDay" class="form-check-label">@T("NextDay")</label></div></div>
     <div class="col-md-6"><label asp-for="BreakEndTime" class="form-label">@T("BreakEnd")</label><input asp-for="BreakEndTime" data-time-suggestions="12:30,13:00,13:30,18:00,18:30,03:00" asp-format="{0:hh\:mm}" type="text" class="form-control shift-time" data-time-picker pattern="([01][0-9]|2[0-3]):[0-5][0-9]" autocomplete="off" /><span asp-validation-for="BreakEndTime" class="text-danger small"></span><div class="form-check mt-2"><input asp-for="BreakEndsNextDay" class="form-check-input" /><label asp-for="BreakEndsNextDay" class="form-check-label">@T("NextDay")</label></div></div>
 </div></div>
