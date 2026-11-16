@@ -78,6 +78,15 @@ namespace RWPM.Services.Implementation
                 throw new InvalidOperationException(SR.Err_PastDateRegistration);
             }
 
+            if (entity.WorkDate.Date == DateTime.Today)
+            {
+                var shift = await _context.Shift.FindAsync(entity.ShiftId);
+                if (shift != null && DateTime.Now >= entity.WorkDate.Date.Add(shift.StartTime))
+                {
+                    throw new InvalidOperationException(SR.Err_PastDateRegistration);
+                }
+            }
+
             await ValidateScheduleConstraintsAsync(entity.EmployeeId, new List<ShiftRegistration> { entity });
 
             var exists = await _context.ShiftRegistration.AnyAsync(x => 
@@ -103,9 +112,27 @@ namespace RWPM.Services.Implementation
 
             if (!entities.Any()) return entities;
 
-            if (entities.Any(e => e.WorkDate.Date <= DateTime.Today))
+            if (entities.Any(e => e.WorkDate.Date < DateTime.Today))
             {
                 throw new InvalidOperationException(SR.Err_PastDateRegistration);
+            }
+
+            var todayEntities = entities.Where(e => e.WorkDate.Date == DateTime.Today).ToList();
+            if (todayEntities.Any())
+            {
+                var todayShiftIds = todayEntities.Select(e => e.ShiftId).Distinct().ToList();
+                var todayShifts = await _context.Shift.AsNoTracking()
+                    .Where(s => todayShiftIds.Contains(s.ShiftId))
+                    .ToDictionaryAsync(s => s.ShiftId);
+
+                var now = DateTime.Now;
+                foreach (var entity in todayEntities)
+                {
+                    if (todayShifts.TryGetValue(entity.ShiftId, out var shift) && now >= entity.WorkDate.Date.Add(shift.StartTime))
+                    {
+                        throw new InvalidOperationException(SR.Err_PastDateRegistration);
+                    }
+                }
             }
 
             var employeeId = entities.First().EmployeeId;
@@ -280,9 +307,27 @@ namespace RWPM.Services.Implementation
                 .Where(x => !existingKeys.Contains($"{x.ShiftId}_{x.WorkDate:yyyy-MM-dd}"))
                 .ToList();
 
-            if (toAdd.Any(x => x.WorkDate.Date <= DateTime.Today))
+            if (toAdd.Any(x => x.WorkDate.Date < DateTime.Today))
             {
                 throw new InvalidOperationException(SR.Err_PastDateRegistration);
+            }
+
+            var todayToAdd = toAdd.Where(x => x.WorkDate.Date == DateTime.Today).ToList();
+            if (todayToAdd.Any())
+            {
+                var todayShiftIds = todayToAdd.Select(x => x.ShiftId).Distinct().ToList();
+                var todayShifts = await _context.Shift.AsNoTracking()
+                    .Where(s => todayShiftIds.Contains(s.ShiftId))
+                    .ToDictionaryAsync(s => s.ShiftId);
+
+                var now = DateTime.Now;
+                foreach (var item in todayToAdd)
+                {
+                    if (todayShifts.TryGetValue(item.ShiftId, out var shift) && now >= item.WorkDate.Date.Add(shift.StartTime))
+                    {
+                        throw new InvalidOperationException(SR.Err_PastDateRegistration);
+                    }
+                }
             }
 
             foreach (var item in toAdd)
