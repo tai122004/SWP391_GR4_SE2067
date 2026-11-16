@@ -17,8 +17,9 @@ namespace RWPM.Controllers
         private readonly IPayrollService _payrollService;
         private readonly DefaultDatabaseContext _context;
         private readonly INotificationService _notificationService;
-
-        public PayrollController(IPayrollService payrollService, DefaultDatabaseContext context, INotificationService notificationService)
+        public PayrollController(IPayrollService payrollService,
+             DefaultDatabaseContext context,
+             INotificationService notificationService)
         {
             _payrollService = payrollService;
             _context = context;
@@ -26,13 +27,16 @@ namespace RWPM.Controllers
         }
 
         private string CurrentUsername => User.FindFirstValue(ClaimTypes.Name) ?? User.Identity?.Name ?? string.Empty;
-
         private bool IsAdminOrHR => User.IsChainManager();
         private bool IsStoreManager => User.IsStoreManager();
 
         private async Task<int?> GetCurrentStoreIdAsync()
         {
-            if (IsAdminOrHR) return null;
+            if (IsAdminOrHR)
+            {
+                return null;
+            }
+
             var emp = await _context.Employee.FirstOrDefaultAsync(e => e.Username == CurrentUsername);
             return emp?.StoreId;
         }
@@ -43,9 +47,13 @@ namespace RWPM.Controllers
         /// </summary>
         private async Task<(bool Allowed, int? StoreId)> ResolveStoreScopeAsync(int? requestedStoreId)
         {
-            if (!IsStoreManager) return (true, requestedStoreId);
+            if (!IsStoreManager)
+            {
+                return (true, requestedStoreId);
+            }
+
             var mgrStoreId = await GetCurrentStoreIdAsync();
-            return mgrStoreId is > 0 ? (true, mgrStoreId) : (false, null);
+            return mgrStoreId is> 0 ? (true, mgrStoreId) : (false, null);
         }
 
         // GET: /Payroll/Index
@@ -57,7 +65,7 @@ namespace RWPM.Controllers
                 return RedirectToAction(nameof(MyPayslips));
             }
 
-            var (allowed, effectiveStoreId) = await ResolveStoreScopeAsync(null);
+            var(allowed, effectiveStoreId) = await ResolveStoreScopeAsync(null);
             if (!allowed)
             {
                 return Forbid();
@@ -65,13 +73,11 @@ namespace RWPM.Controllers
 
             var currentYear = year ?? DateTime.Now.Year;
             var payrolls = await _payrollService.GetPayrollsAsync(currentYear, effectiveStoreId);
-
             var availableYears = await _context.Payroll
                 .Select(p => p.PeriodYear)
                 .Distinct()
                 .OrderByDescending(y => y)
                 .ToListAsync();
-
             if (!availableYears.Contains(DateTime.Now.Year))
             {
                 availableYears.Insert(0, DateTime.Now.Year);
@@ -84,14 +90,16 @@ namespace RWPM.Controllers
                 AvailableYears = availableYears,
                 NextPeriod = await _payrollService.GetNextPeriodSuggestionAsync()
             };
-
             ViewBag.IsAdminOrHR = IsAdminOrHR;
             ViewBag.IsStoreManager = IsStoreManager;
             return View(vm);
         }
 
         // GET: /Payroll/Detail/{id}
-        public async Task<IActionResult> Detail(int id, int? storeId, string? search, PayrollDetailStatus? status)
+        public async Task<IActionResult> Detail(int id,
+             int? storeId,
+             string? search,
+             PayrollDetailStatus? status)
         {
             if (!IsAdminOrHR && !IsStoreManager)
             {
@@ -99,7 +107,7 @@ namespace RWPM.Controllers
             }
 
             // Luôn áp dụng store của Store Manager
-            var (allowed, effectiveStoreId) = await ResolveStoreScopeAsync(storeId);
+            var(allowed, effectiveStoreId) = await ResolveStoreScopeAsync(storeId);
             if (!allowed)
             {
                 return Forbid();
@@ -111,9 +119,7 @@ namespace RWPM.Controllers
                 ViewBag.IsAdminOrHR = IsAdminOrHR;
                 ViewBag.IsStoreManager = IsStoreManager;
                 // Lịch sử thao tác chứa tổng quỹ lương toàn công ty -> chỉ Admin/HR được xem
-                ViewBag.AuditLogs = IsAdminOrHR
-                    ? await _payrollService.GetPayrollAuditLogsAsync(id)
-                    : new List<RWPM.Models.Entities.PayrollAuditLog>();
+                ViewBag.AuditLogs = IsAdminOrHR ? await _payrollService.GetPayrollAuditLogsAsync(id) : new List<RWPM.Models.Entities.PayrollAuditLog>();
                 return View(vm);
             }
             catch (KeyNotFoundException)
@@ -135,8 +141,13 @@ namespace RWPM.Controllers
 
             try
             {
-                var payroll = await _payrollService.CalculatePayrollAsync(startDate, endDate, CurrentUsername);
-                TempData["SuccessMessage"] = string.Format(PayrollResource.Toast_CalculateSuccess, payroll.StartDate.ToString("dd/MM/yyyy"), payroll.EndDate.ToString("dd/MM/yyyy"), payroll.TotalEmployees);
+                var payroll = await _payrollService.CalculatePayrollAsync(startDate,
+                     endDate,
+                     CurrentUsername);
+                TempData["SuccessMessage"] = string.Format(PayrollResource.Toast_CalculateSuccess,
+                     payroll.StartDate.ToString("dd/MM/yyyy"),
+                     payroll.EndDate.ToString("dd/MM/yyyy"),
+                     payroll.TotalEmployees);
                 return RedirectToAction(nameof(Detail), new { id = payroll.PayrollId });
             }
             catch (Exception ex)
@@ -165,8 +176,12 @@ namespace RWPM.Controllers
 
             try
             {
-                await _payrollService.CalculatePayrollAsync(payroll.StartDate, payroll.EndDate, CurrentUsername);
-                TempData["SuccessMessage"] = string.Format(PayrollResource.Toast_RecalculateSuccess, payroll.StartDate.ToString("dd/MM/yyyy"), payroll.EndDate.ToString("dd/MM/yyyy"));
+                await _payrollService.CalculatePayrollAsync(payroll.StartDate,
+                     payroll.EndDate,
+                     CurrentUsername);
+                TempData["SuccessMessage"] = string.Format(PayrollResource.Toast_RecalculateSuccess,
+                     payroll.StartDate.ToString("dd/MM/yyyy"),
+                     payroll.EndDate.ToString("dd/MM/yyyy"));
             }
             catch (Exception ex)
             {
@@ -188,8 +203,8 @@ namespace RWPM.Controllers
 
             try
             {
-                var wasLocked = await _context.Payroll.AsNoTracking()
-                    .AnyAsync(p => p.PayrollId == id && p.Status == PayrollStatus.Locked);
+                var wasLocked = await _context.Payroll.AsNoTracking().AnyAsync(p => p.PayrollId == id
+                    && p.Status == PayrollStatus.Locked);
                 await _payrollService.LockPayrollAsync(id, CurrentUsername);
                 TempData["SuccessMessage"] = PayrollResource.Toast_LockSuccess;
                 if (!wasLocked)
@@ -253,7 +268,9 @@ namespace RWPM.Controllers
         }
 
         // GET: /Payroll/EmployeeDetail?payrollId=1&employeeId=2
-        public async Task<IActionResult> EmployeeDetail(int payrollId, int? employeeId = null, string? username = null)
+        public async Task<IActionResult> EmployeeDetail(int payrollId,
+             int? employeeId = null,
+             string? username = null)
         {
             if (!IsAdminOrHR && !IsStoreManager)
             {
@@ -261,7 +278,6 @@ namespace RWPM.Controllers
             }
 
             EmployeePayslipVM? vm = null;
-
             if (employeeId.HasValue && employeeId.Value > 0)
             {
                 vm = await _payrollService.GetEmployeePayslipByIdAsync(payrollId, employeeId.Value);
@@ -279,7 +295,7 @@ namespace RWPM.Controllers
 
             if (IsStoreManager)
             {
-                var (allowed, mgrStoreId) = await ResolveStoreScopeAsync(null);
+                var(allowed, mgrStoreId) = await ResolveStoreScopeAsync(null);
                 if (!allowed || vm.Detail.StoreId != mgrStoreId)
                 {
                     return Forbid();
@@ -299,7 +315,7 @@ namespace RWPM.Controllers
             }
 
             // Luôn áp dụng store của Store Manager
-            var (allowed, effectiveStoreId) = await ResolveStoreScopeAsync(storeId);
+            var(allowed, effectiveStoreId) = await ResolveStoreScopeAsync(storeId);
             if (!allowed)
             {
                 return Forbid();
@@ -315,8 +331,12 @@ namespace RWPM.Controllers
                 }
 
                 var excelBytes = await _payrollService.ExportPayrollToExcelAsync(id, effectiveStoreId);
-                var fileName = string.Format(PayrollResource.Excel_FileName, payroll.StartDate.ToString("ddMMyy"), payroll.EndDate.ToString("ddMMyy")) + ".xlsx";
-                return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+                var fileName = string.Format(PayrollResource.Excel_FileName,
+                     payroll.StartDate.ToString("ddMMyy"),
+                     payroll.EndDate.ToString("ddMMyy")) + ".xlsx";
+                return File(excelBytes,
+                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                     fileName);
             }
             catch (Exception ex)
             {

@@ -15,24 +15,16 @@ namespace RWPM.Models.Entities
         [Required]
         [Column(TypeName = "date")]
         public DateTime Date { get; set; }
-
         public int? ShiftId { get; set; }
 
         [MaxLength(100)]
         public string? ShiftName { get; set; }
-
         public TimeSpan? StartTime { get; set; }
-
         public TimeSpan? EndTime { get; set; }
-
         public TimeSpan? CheckInTime { get; set; }
-
         public TimeSpan? CheckOutTime { get; set; }
-
         public double ActualWorkHours { get; set; } = 0; // Giờ làm thực tế từ chấm công
-
         public double PaidLeaveHours { get; set; } = 0; // Giờ nghỉ phép hưởng lương
-
         public double TotalPayableHours { get; set; } = 0; // Tổng giờ được tính lương (Actual + PaidLeave)
 
         [Column(TypeName = "decimal(18,2)")]
@@ -47,14 +39,14 @@ namespace RWPM.Models.Entities
 
         [Required]
         [MaxLength(50)]
-        public string Status { get; set; } = "Valid"; // Valid, Late, Early, Warning, ApprovedLeave, Missing
+        public string Status { get; set; } = "Valid"; // Giá trị mặc định; khi tính lương sử dụng các hằng snapshot của PayrollDisplayText.
 
         [MaxLength(255)]
         public string? Note { get; set; }
 
         // Navigation
         [ForeignKey("PayrollDetailId")]
-        public virtual PayrollDetail PayrollDetail { get; set; } = null!;
+        public virtual PayrollDetail PayrollDetail { get; set; } = null !;
 
         [ForeignKey("ShiftId")]
         public virtual Shift? Shift { get; set; }

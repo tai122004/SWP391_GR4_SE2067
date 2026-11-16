@@ -10,36 +10,57 @@ using RWPM.Models.ViewModels.Shift;
 using RWPM.Services.Abstraction;
 
 namespace RWPM.Services.Implementation;
-
 public class ShiftService : IShiftService
 {
     private readonly DefaultDatabaseContext _ctx;
     private readonly IHttpContextAccessor _accessor;
     public ShiftService(DefaultDatabaseContext ctx, IHttpContextAccessor accessor)
-    { _ctx = ctx; _accessor = accessor; }
+    {
+        _ctx = ctx;
+        _accessor = accessor;
+    }
+
     private bool IsStoreManager => _accessor.HttpContext?.User.IsInRole("StoreManager") == true
         && _accessor.HttpContext.User.IsInRole("Admin") == false;
     private bool IsAdmin => _accessor.HttpContext?.User.IsInRole("Admin") == true;
+
     public async Task<int?> GetManagedStoreIdAsync() // lay chi nhanh của store manage chi hiẹn chi nhanh do
     {
-        if (!IsStoreManager) return null;
+        if (!IsStoreManager)
+        {
+            return null;
+        }
+
         var username = _accessor.HttpContext?.User.Identity?.Name;
-        if (string.IsNullOrWhiteSpace(username)) return null;
+        if (string.IsNullOrWhiteSpace(username))
+        {
+            return null;
+        }
+
         return await _ctx.Employee.AsNoTracking()
-            .Where(x => x.Username == username && x.IsActive && x.Store!.IsActive
-                && x.Account.IsActive && x.Account.Role == AccountRole.StoreManager)
-            .Select(x => (int?)x.StoreId).FirstOrDefaultAsync();
+            .Where(x => x.Username == username
+            && x.IsActive
+            && x.Store!.IsActive
+            && x.Account.IsActive
+            && x.Account.Role == AccountRole.StoreManager)
+            .Select(x => (int? )x.StoreId).FirstOrDefaultAsync();
     }
-    private async Task<int> RequireManagerStoreAsync() => await GetManagedStoreIdAsync()
-        ?? throw new UnauthorizedAccessException(RWPM.Resources.Shared.Shift.Err_ManagerNoStore);
+
+    private async Task<int> RequireManagerStoreAsync() => await GetManagedStoreIdAsync() ?? throw new UnauthorizedAccessException(RWPM.Resources.Shared.Shift.Err_ManagerNoStore);
     private IQueryable<Shift> Query() => _ctx.Shift.Include(x => x.StoreShifts).ThenInclude(x => x.Store);
-    public async Task<Shift?> GetByIdAsync(int id, QueryOptions<Shift>? options = null) =>
-        await QueryHelper.ApplyQueryOptions(Query().Where(x => x.ShiftId == id), options).FirstOrDefaultAsync();
-    public async Task<Shift> GetRequiredByIdAsync(int id, QueryOptions<Shift>? options = null) =>
-        await GetByIdAsync(id, options) ?? throw new KeyNotFoundException(string.Format(RWPM.Resources.Shared.Shift.Err_ShiftNotFound, id));
-    public async Task<List<Shift>> GetAllAsync(QueryOptions<Shift>? options = null) =>
-        await QueryHelper.ApplyQueryOptions(Query(), options).ToListAsync();
-    public async Task<PaginationRes<Shift>> SearchAsync(ShiftSearch search, QueryOptions<Shift>? options = null)
+    public async Task<Shift?> GetByIdAsync(int id,
+         QueryOptions<Shift>? options = null) => await QueryHelper.ApplyQueryOptions(Query()
+        .Where(x => x.ShiftId == id),
+         options).FirstOrDefaultAsync();
+    public async Task<Shift> GetRequiredByIdAsync(int id,
+         QueryOptions<Shift>? options = null) => await GetByIdAsync(id,
+         options) ?? throw new KeyNotFoundException(string.Format(RWPM.Resources.Shared.Shift.Err_ShiftNotFound,
+         id));
+    public async Task<List<Shift>> GetAllAsync(QueryOptions<Shift>? options = null) => await QueryHelper.ApplyQueryOptions(Query(),
+         options)
+        .ToListAsync();
+    public async Task<PaginationRes<Shift>> SearchAsync(ShiftSearch search,
+         QueryOptions<Shift>? options = null)
     {
         var query = Query();
         int? managerStoreId = null;
@@ -50,129 +71,269 @@ public class ShiftService : IShiftService
             query = query.Where(s => s.StoreShifts.Any(x => x.StoreId == managedStoreId));
             search.StoreId = managedStoreId;
         }
+
         if (!string.IsNullOrWhiteSpace(search.Search))
         {
             var term = search.Search.Trim();
-            query = query.Where(s => s.ShiftName.Contains(term) || (s.Description != null && s.Description.Contains(term)));
+            query = query
+                .Where(s => s.ShiftName.Contains(term)
+                || (s.Description != null
+                && s.Description.Contains(term)));
         }
+
         if (managerStoreId.HasValue)
         {
             // StoreManager: giữ cả ca đã tắt ở chi nhánh mình để có thể bật lại; trạng thái = ca active && link chi nhánh active
             if (search.IsActive.HasValue)
             {
                 var wantActive = search.IsActive.Value;
-                query = query.Where(s => (s.IsActive && s.StoreShifts.Any(x => x.StoreId == managerStoreId && x.IsActive)) == wantActive);
+                query = query
+                    .Where(s => (s.IsActive
+                    && s.StoreShifts.Any(x => x.StoreId == managerStoreId
+                    && x.IsActive)) == wantActive);
             }
         }
         else
         {
-            if (search.IsActive.HasValue) query = query.Where(s => s.IsActive == search.IsActive);
-            if (search.StoreId.HasValue) query = query.Where(s => s.StoreShifts.Any(x => x.StoreId == search.StoreId && x.IsActive));
+            if (search.IsActive.HasValue)
+            {
+                query = query.Where(s => s.IsActive == search.IsActive);
+            }
+
+            if (search.StoreId.HasValue)
+            {
+                query = query.Where(s => s.StoreShifts.Any(x => x.StoreId == search.StoreId && x.IsActive));
+            }
         }
+
         if (search.EffectiveOn.HasValue)
         {
             var day = search.EffectiveOn.Value.Date;
-            query = query.Where(s => s.EffectiveFrom <= day && (s.EffectiveTo == null || s.EffectiveTo >= day));
+            query = query
+                .Where(s => s.EffectiveFrom <= day
+                && (s.EffectiveTo == null
+                || s.EffectiveTo >= day));
         }
+
         query = QueryHelper.ApplyQueryOptions(query, options);
         var total = await query.CountAsync();
         var page = Math.Max(1, search.PageNumber);
-        return new PaginationRes<Shift>(await query.OrderBy(s => s.ShiftId).Skip((page - 1) * 10).Take(10).ToListAsync(), page, 10, total);
+        return new PaginationRes<Shift>(await query
+            .OrderBy(s => s.ShiftId)
+            .Skip((page - 1) * 10)
+            .Take(10)
+            .ToListAsync(),
+             page,
+             10,
+             total);
     }
+
     private async Task ValidateAsync(Shift shift)
     {
         var error = ShiftRules.Validate(shift).FirstOrDefault();
-        if (error != null) throw new ModelValidationException("Shift_Invalid", error);
+        if (error != null)
+        {
+            throw new ModelValidationException("Shift_Invalid", error);
+        }
+
         var ids = shift.StoreShifts.Where(x => x.IsActive).Select(x => x.StoreId).Distinct().ToList();
-        if (ids.Count == 0) throw new ModelValidationException("StoreId_Required", RWPM.Resources.Shared.Shift.ValidationStores);
+        if (ids.Count == 0)
+        {
+            throw new ModelValidationException("StoreId_Required",
+                 RWPM.Resources.Shared.Shift.ValidationStores);
+        }
+
         if (await _ctx.Store.CountAsync(x => ids.Contains(x.StoreId) && x.IsActive) != ids.Count)
-            throw new ModelValidationException("Shift_StoreInactive", RWPM.Resources.Shared.Shift.Err_StoreInactive);
+        {
+            throw new ModelValidationException("Shift_StoreInactive",
+                 RWPM.Resources.Shared.Shift.Err_StoreInactive);
+        }
     }
+
     public async Task<Shift> CreateAsync(Shift shift)
     {
         if (!IsAdmin)
         {
-            if (!IsStoreManager) throw new UnauthorizedAccessException(RWPM.Resources.Shared.Shift.Err_NoCreatePermission);
+            if (!IsStoreManager)
+            {
+                throw new UnauthorizedAccessException(RWPM.Resources.Shared.Shift.Err_NoCreatePermission);
+            }
+
             var managedStoreId = await RequireManagerStoreAsync();
             if (shift.StoreShifts.Count != 1 || shift.StoreShifts.Single().StoreId != managedStoreId)
+            {
                 throw new UnauthorizedAccessException(RWPM.Resources.Shared.Shift.Err_CreateOnlyManagedStore);
+            }
         }
+
         await ValidateAsync(shift);
         shift.ShiftName = shift.ShiftName.Trim();
-        shift.CreatedDate = DateTime.Now; shift.CreatedBy = AccountHelper.GetCurrentUsername(_accessor);
-        foreach (var link in shift.StoreShifts) { link.CreatedDate = shift.CreatedDate; link.CreatedBy = shift.CreatedBy; }
+        shift.CreatedDate = DateTime.Now;
+        shift.CreatedBy = AccountHelper.GetCurrentUsername(_accessor);
+        foreach (var link in shift.StoreShifts)
+        {
+            link.CreatedDate = shift.CreatedDate;
+            link.CreatedBy = shift.CreatedBy;
+        }
+
         _ctx.Shift.Add(shift);
         await _ctx.SaveChangesAsync();
         return shift;
     }
+
     public async Task UpdateAsync(Shift candidate)
     {
-        var existing = await GetRequiredByIdAsync(candidate.ShiftId, new QueryOptions<Shift> { NoTracking = false });
+        var existing = await GetRequiredByIdAsync(candidate.ShiftId,
+             new QueryOptions<Shift> {
+             NoTracking = false
+            });
         if (!IsAdmin)
         {
-            if (!IsStoreManager) throw new UnauthorizedAccessException(RWPM.Resources.Shared.Shift.Err_NoEditPermission);
+            if (!IsStoreManager)
+            {
+                throw new UnauthorizedAccessException(RWPM.Resources.Shared.Shift.Err_NoEditPermission);
+            }
+
             var managedStoreId = await RequireManagerStoreAsync();
-            if (existing.StoreShifts.Count != 1 || existing.StoreShifts.Single().StoreId != managedStoreId
-                || candidate.StoreShifts.Count != 1 || candidate.StoreShifts.Single().StoreId != managedStoreId)
+            if (existing.StoreShifts.Count != 1
+                || existing.StoreShifts.Single().StoreId != managedStoreId
+                || candidate.StoreShifts.Count != 1
+                || candidate.StoreShifts.Single().StoreId != managedStoreId)
+            {
                 throw new UnauthorizedAccessException(RWPM.Resources.Shared.Shift.Err_EditSharedOrOtherStore);
+            }
         }
+
         await ValidateAsync(candidate);
         var used = await _ctx.ShiftRegistration.AnyAsync(x => x.ShiftId == existing.ShiftId)
             || await _ctx.AttendanceRecord.AnyAsync(x => x.ShiftId == existing.ShiftId);
-        if (used && (existing.StartTime != candidate.StartTime || existing.EndTime != candidate.EndTime
-            || existing.EndDayOffset != candidate.EndDayOffset || existing.BreakStartTime != candidate.BreakStartTime
-            || existing.BreakEndTime != candidate.BreakEndTime || existing.BreakStartDayOffset != candidate.BreakStartDayOffset
-            || existing.BreakEndDayOffset != candidate.BreakEndDayOffset || existing.GracePeriodMinutes != candidate.GracePeriodMinutes
-            || existing.EarlyCheckOutMinutes != candidate.EarlyCheckOutMinutes
-            || existing.EffectiveFrom.Date != candidate.EffectiveFrom.Date || existing.EffectiveTo?.Date != candidate.EffectiveTo?.Date))
+        if (used && HasProtectedChanges(existing, candidate))
+        {
             throw new ModelValidationException("Shift_Used", RWPM.Resources.Shared.Shift.Err_ShiftUsed);
-        if (existing.IsActive && !candidate.IsActive) await EnsureNoFutureAsync(existing.ShiftId);
+        }
+
+        if (existing.IsActive && !candidate.IsActive)
+        {
+            await EnsureNoFutureAsync(existing.ShiftId);
+        }
+
         var selected = candidate.StoreShifts.Where(x => x.IsActive).Select(x => x.StoreId).ToHashSet();
         foreach (var link in existing.StoreShifts.Where(x => x.IsActive && !selected.Contains(x.StoreId)))
+        {
             await EnsureNoFutureAsync(existing.ShiftId, link.StoreId);
-        var now = DateTime.Now; var username = AccountHelper.GetCurrentUsername(_accessor);
+        }
+
+        var now = DateTime.Now;
+        var username = AccountHelper.GetCurrentUsername(_accessor);
         foreach (var link in existing.StoreShifts)
         {
             if (link.IsActive != selected.Contains(link.StoreId))
-            { link.IsActive = selected.Contains(link.StoreId); link.UpdatedDate = now; link.UpdatedBy = username; }
+            {
+                link.IsActive = selected.Contains(link.StoreId);
+                link.UpdatedDate = now;
+                link.UpdatedBy = username;
+            }
         }
+
         foreach (var storeId in selected.Where(id => !existing.StoreShifts.Any(x => x.StoreId == id)))
-            existing.StoreShifts.Add(new StoreShift { StoreId = storeId, CreatedDate = now, CreatedBy = username });
-        existing.ShiftName = candidate.ShiftName.Trim(); existing.Description = candidate.Description?.Trim();
-        existing.StartTime = candidate.StartTime; existing.EndTime = candidate.EndTime; existing.EndDayOffset = candidate.EndDayOffset;
-        existing.BreakStartTime = candidate.BreakStartTime; existing.BreakEndTime = candidate.BreakEndTime;
-        existing.BreakStartDayOffset = candidate.BreakStartDayOffset; existing.BreakEndDayOffset = candidate.BreakEndDayOffset;
-        existing.GracePeriodMinutes = candidate.GracePeriodMinutes; existing.EarlyCheckOutMinutes = candidate.EarlyCheckOutMinutes;
-        existing.EffectiveFrom = candidate.EffectiveFrom.Date; existing.EffectiveTo = candidate.EffectiveTo?.Date;
-        existing.IsActive = candidate.IsActive; existing.UpdatedDate = now; existing.UpdatedBy = username;
+        {
+            existing.StoreShifts.Add(new StoreShift {
+                 StoreId = storeId,
+                 CreatedDate = now,
+                 CreatedBy = username
+                });
+        }
+
+        ApplyShiftChanges(existing, candidate, now, username);
         await _ctx.SaveChangesAsync();
     }
+
+    private static bool HasProtectedChanges(Shift existing,
+         Shift candidate) => (existing.StartTime != candidate.StartTime
+        || existing.EndTime != candidate.EndTime
+        || existing.EndDayOffset != candidate.EndDayOffset
+        || existing.BreakStartTime != candidate.BreakStartTime
+        || existing.BreakEndTime != candidate.BreakEndTime
+        || existing.BreakStartDayOffset != candidate.BreakStartDayOffset
+        || existing.BreakEndDayOffset != candidate.BreakEndDayOffset
+        || existing.GracePeriodMinutes != candidate.GracePeriodMinutes
+        || existing.EarlyCheckOutMinutes != candidate.EarlyCheckOutMinutes
+        || existing.EffectiveFrom.Date != candidate.EffectiveFrom.Date
+        || existing.EffectiveTo?.Date != candidate.EffectiveTo?.Date);
+    private static void ApplyShiftChanges(Shift existing, Shift candidate, DateTime now, string username)
+    {
+        existing.ShiftName = candidate.ShiftName.Trim();
+        existing.Description = candidate.Description?.Trim();
+        existing.StartTime = candidate.StartTime;
+        existing.EndTime = candidate.EndTime;
+        existing.EndDayOffset = candidate.EndDayOffset;
+        existing.BreakStartTime = candidate.BreakStartTime;
+        existing.BreakEndTime = candidate.BreakEndTime;
+        existing.BreakStartDayOffset = candidate.BreakStartDayOffset;
+        existing.BreakEndDayOffset = candidate.BreakEndDayOffset;
+        existing.GracePeriodMinutes = candidate.GracePeriodMinutes;
+        existing.EarlyCheckOutMinutes = candidate.EarlyCheckOutMinutes;
+        existing.EffectiveFrom = candidate.EffectiveFrom.Date;
+        existing.EffectiveTo = candidate.EffectiveTo?.Date;
+        existing.IsActive = candidate.IsActive;
+        existing.UpdatedDate = now;
+        existing.UpdatedBy = username;
+    }
+
     public async Task UpdateActiveStatusAsync(int id, bool active)
     {
-        var shift = await GetRequiredByIdAsync(id, new QueryOptions<Shift> { NoTracking = false });
+        var shift = await GetRequiredByIdAsync(id, new QueryOptions<Shift> {
+             NoTracking = false
+            });
         if (!IsAdmin)
         {
-            if (!IsStoreManager) throw new UnauthorizedAccessException(RWPM.Resources.Shared.Shift.Err_NoChangePermission);
+            if (!IsStoreManager)
+            {
+                throw new UnauthorizedAccessException(RWPM.Resources.Shared.Shift.Err_NoChangePermission);
+            }
+
             var managedStoreId = await RequireManagerStoreAsync();
-            var link = shift.StoreShifts.SingleOrDefault(x => x.StoreId == managedStoreId)
-                ?? throw new UnauthorizedAccessException(RWPM.Resources.Shared.Shift.Err_NotManagedStore);
+            var link = shift.StoreShifts.SingleOrDefault(x => x.StoreId == managedStoreId) ?? throw new UnauthorizedAccessException(RWPM.Resources.Shared.Shift.Err_NotManagedStore);
             if (active && !shift.IsActive)
-                throw new ModelValidationException("Shift_Inactive", RWPM.Resources.Shared.Shift.Err_InactiveSystemWide);
-            if (link.IsActive && !active) await EnsureNoFutureAsync(id, managedStoreId);
+            {
+                throw new ModelValidationException("Shift_Inactive",
+                     RWPM.Resources.Shared.Shift.Err_InactiveSystemWide);
+            }
+
+            if (link.IsActive && !active)
+            {
+                await EnsureNoFutureAsync(id, managedStoreId);
+            }
+
             link.IsActive = active;
             link.UpdatedDate = DateTime.Now;
             link.UpdatedBy = AccountHelper.GetCurrentUsername(_accessor);
             await _ctx.SaveChangesAsync();
             return;
         }
-        if (shift.IsActive && !active) await EnsureNoFutureAsync(id);
-        shift.IsActive = active; shift.UpdatedDate = DateTime.Now; shift.UpdatedBy = AccountHelper.GetCurrentUsername(_accessor);
+
+        if (shift.IsActive && !active)
+        {
+            await EnsureNoFutureAsync(id);
+        }
+
+        shift.IsActive = active;
+        shift.UpdatedDate = DateTime.Now;
+        shift.UpdatedBy = AccountHelper.GetCurrentUsername(_accessor);
         await _ctx.SaveChangesAsync();
     }
+
     private async Task EnsureNoFutureAsync(int id, int? storeId = null)
     {
-        if (await _ctx.ShiftRegistration.AnyAsync(x => x.ShiftId == id && (!storeId.HasValue || x.StoreId == storeId)
-            && x.WorkDate >= DateTime.Today && (x.Status == RegistrationStatus.Pending || x.Status == RegistrationStatus.Approved)))
-            throw new ModelValidationException("Shift_FutureRegistrations", RWPM.Resources.Shared.Shift.Err_FutureRegistrations);
+        if (await _ctx.ShiftRegistration.AnyAsync(x => x.ShiftId == id
+            && (!storeId.HasValue
+            || x.StoreId == storeId)
+            && x.WorkDate >= DateTime.Today
+            && (x.Status == RegistrationStatus.Pending
+            || x.Status == RegistrationStatus.Approved)))
+        {
+            throw new ModelValidationException("Shift_FutureRegistrations",
+                 RWPM.Resources.Shared.Shift.Err_FutureRegistrations);
+        }
     }
 }
