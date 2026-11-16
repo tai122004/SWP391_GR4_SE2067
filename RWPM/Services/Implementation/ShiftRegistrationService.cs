@@ -103,7 +103,7 @@ namespace RWPM.Services.Implementation
 
             if (!entities.Any()) return entities;
 
-            if (entities.Any(e => e.WorkDate.Date < DateTime.Today))
+            if (entities.Any(e => e.WorkDate.Date <= DateTime.Today))
             {
                 throw new InvalidOperationException(SR.Err_PastDateRegistration);
             }
@@ -279,6 +279,11 @@ namespace RWPM.Services.Implementation
             var toAdd = desiredRegistrations
                 .Where(x => !existingKeys.Contains($"{x.ShiftId}_{x.WorkDate:yyyy-MM-dd}"))
                 .ToList();
+
+            if (toAdd.Any(x => x.WorkDate.Date <= DateTime.Today))
+            {
+                throw new InvalidOperationException(SR.Err_PastDateRegistration);
+            }
 
             foreach (var item in toAdd)
             {

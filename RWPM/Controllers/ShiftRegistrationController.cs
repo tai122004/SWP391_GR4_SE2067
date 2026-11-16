@@ -119,7 +119,11 @@ namespace RWPM.Controllers
 
             // Thời gian có thể làm việc: tự đăng ký -> ca không phù hợp bị khóa (blocked); quản lý xếp cho người khác -> chỉ cảnh báo (warning)
             var isSelf = current != null && current.EmployeeId == employee.EmployeeId;
-            var issues = day >= DateTime.Today
+            if (isSelf && day <= DateTime.Today)
+            {
+                return Json(new List<object>());
+            }
+            var issues = day > DateTime.Today
                 ? (await _registrationService.GetAvailabilityIssuesAsync(employee.EmployeeId, shifts.Select(x => (x.ShiftId, day))))
                     .ToDictionary(x => x.ShiftId, x => x.Message)
                 : new Dictionary<int, string>();
@@ -176,6 +180,11 @@ namespace RWPM.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            if (viewModel.WorkDate.Date <= DateTime.Today)
+            {
+                return BadRequest(new { success = false, message = SR.Err_PastDateRegistration });
             }
 
             try

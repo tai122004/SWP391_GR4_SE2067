@@ -207,7 +207,7 @@
                     eDate.setDate(eDate.getDate() + 7);
                     let targetDateStr = getISODateString(eDate);
 
-                    if (eDate >= today) {
+                    if (eDate > today) {
                         let cb = $(`.weekly-shift-cb[value="${e.shiftId}_${targetDateStr}"]`);
                         if (cb.length > 0 && !cb.prop('disabled')) {
                             cb.prop('checked', true).trigger('change');

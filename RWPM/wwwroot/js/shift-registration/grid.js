@@ -172,13 +172,16 @@
                 let tempDate = new Date(S.currentWeekStart);
                 for (let i = 0; i < 7; i++) {
                     let cellDateStr = getISODateString(tempDate);
+                    let cellDateObj = new Date(tempDate);
+                    cellDateObj.setHours(0, 0, 0, 0);
+                    let isPast = cellDateObj <= today;
                     let dayEvents = events.filter(e => {
                         let eDate = e.start.split('T')[0];
                         return (e.employeeId == emp.id || !emp.id) && eDate === cellDateStr;
                     });
 
                     if (dayEvents.length > 0) {
-                        tbody += `<td class="shift-grid-cell" onclick="openCreateModal(new Date('${cellDateStr}'), '${emp.id}')">`;
+                        tbody += `<td class="shift-grid-cell" onclick="${!isPast ? `openCreateModal(new Date('${cellDateStr}'), '${emp.id}')` : ''}">`;
                         tbody += `<div class="d-flex flex-column gap-1 h-100">`;
                         dayEvents.forEach(dayEvent => {
                             let eJson = JSON.stringify(dayEvent).replace(/'/g, "&#39;");
@@ -200,6 +203,14 @@
                             `;
                         });
                         tbody += `</div></td>`;
+                    } else if (isPast) {
+                        tbody += `
+                            <td class="shift-grid-cell">
+                                <div class="shift-slot is-past justify-content-center align-items-center text-muted" title="${T.slotPastTitle}">
+                                    <i class="bi bi-dash-lg"></i>
+                                </div>
+                            </td>
+                        `;
                     } else {
                         tbody += `
                             <td class="shift-grid-cell" onclick="openCreateModal(new Date('${cellDateStr}'), '${emp.id}')">
@@ -257,7 +268,7 @@
                             return e.shiftId == shift.id && eDate === cellDateStr;
                         });
 
-                        let isPast = cellDateObj < today;
+                        let isPast = cellDateObj <= today;
                         let isUnavailable = cellDateStr < shift.from || (shift.to && cellDateStr > shift.to);
 
                         if (dayEvent) {
@@ -310,8 +321,8 @@
                                                 <div class="form-check mb-0 p-0 d-flex align-items-center">
                                                     <input type="checkbox" class="form-check-input weekly-shift-cb m-0 me-2" 
                                                         id="cb_${shift.id}_${cellDateStr}"
-                                                        value="${shift.id}_${cellDateStr}" checked>
-                                                    <label class="form-check-label badge-status status-pending m-0 cursor-pointer" for="cb_${shift.id}_${cellDateStr}">
+                                                        value="${shift.id}_${cellDateStr}" checked ${isPast ? 'disabled' : ''}>
+                                                    <label class="form-check-label badge-status status-pending m-0 ${isPast ? '' : 'cursor-pointer'}" for="cb_${shift.id}_${cellDateStr}">
                                                         <i class="bi bi-hourglass-split"></i> ${T.pending}
                                                     </label>
                                                 </div>

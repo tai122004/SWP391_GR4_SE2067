@@ -101,7 +101,7 @@
     <value>Hủy đăng ký</value>
   </data>
   <data name="PastDateError" xml:space="preserve">
-    <value>Không thể đăng ký ca cho những ngày trong quá khứ!</value>
+    <value>Chỉ được đăng ký ca từ hôm trước cho ngày hôm sau. Không thể đăng ký ca trong ngày hoặc quá khứ!</value>
   </data>
   <data name="ConfirmCancel" xml:space="preserve">
     <value>Bạn có chắc chắn muốn hủy đăng ký này?</value>
@@ -386,7 +386,7 @@
     <value>Không tìm thấy hồ sơ nhân viên của bạn để đăng ký ca.</value>
   </data>
   <data name="Err_PastDateRegistration" xml:space="preserve">
-    <value>Không thể đăng ký ca cho những ngày trong quá khứ.</value>
+    <value>Chỉ được đăng ký ca từ hôm trước cho ngày hôm sau. Không thể đăng ký ca trong ngày hoặc quá khứ.</value>
   </data>
   <data name="Err_AlreadyRegistered" xml:space="preserve">
     <value>Ca làm việc này đã được đăng ký cho nhân viên vào ngày đã chọn.</value>

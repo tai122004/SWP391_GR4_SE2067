@@ -101,7 +101,7 @@
     <value>Cancel Registration</value>
   </data>
   <data name="PastDateError" xml:space="preserve">
-    <value>Cannot register shift for past dates!</value>
+    <value>Cannot register shifts for the current day or past dates. Shifts must be registered at least one day in advance!</value>
   </data>
   <data name="ConfirmCancel" xml:space="preserve">
     <value>Are you sure you want to cancel this registration?</value>
@@ -386,7 +386,7 @@
     <value>Your employee profile could not be found to register shifts.</value>
   </data>
   <data name="Err_PastDateRegistration" xml:space="preserve">
-    <value>Cannot register shifts for past dates.</value>
+    <value>Cannot register shifts for the current day or past dates. Shifts must be registered at least one day in advance.</value>
   </data>
   <data name="Err_AlreadyRegistered" xml:space="preserve">
     <value>This shift is already registered for this employee on the selected date.</value>
