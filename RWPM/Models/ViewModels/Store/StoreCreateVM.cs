@@ -28,7 +28,7 @@ namespace RWPM.Models.ViewModels.Store
         public string Address { get => _address; set => _address = value?.Trim() ?? string.Empty; }
 
         [Display(Name = "Phone", ResourceType = typeof(Resources.Models.Store))]
-        [MaxLengthLocalized(20)]
+        [MaxLengthLocalized(11)]
         [RegexLocalized(@"^[0-9]*$", "RegularExpression_DigitsOnly")]
         public string Phone { get => _phone; set => _phone = value?.Trim() ?? string.Empty; }
 
