@@ -64,7 +64,7 @@
         </div>
         <div class="col-md-4">
             <label class="form-label" asp-for="Phone">@StoreModelResource.Phone</label>
-            <input class="form-control" asp-for="Phone" type="tel" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="@StoreSharedResource.Placeholder_Phone" autocomplete="off" />
+            <input class="form-control" asp-for="Phone" type="tel" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onkeypress="return (event.charCode >= 48 && event.charCode <= 57)" placeholder="@StoreSharedResource.Placeholder_Phone" autocomplete="off" />
             <span asp-validation-for="Phone" class="text-danger small"></span>
         </div>
     </div>
@@ -128,6 +128,9 @@
                         <input type="text" id="txtAddressSearch" class="form-control" placeholder="@StoreSharedResource.Placeholder_MapSearch" aria-label="@StoreSharedResource.Btn_SearchAddress" autocomplete="off" />
                         <button type="button" id="btnSearchAddress" class="btn btn-outline-secondary">
                             <i class="bi bi-geo-alt me-1"></i> @StoreSharedResource.Btn_SearchAddress
+                        </button>
+                        <button type="button" id="btnGetCurrentLocation" class="btn btn-outline-primary" title="Lấy vị trí GPS hiện tại của thiết bị">
+                            <i class="bi bi-crosshair me-1"></i> Vị trí của tôi
                         </button>
                     </div>
                     <div id="searchSuggestionsList" class="list-group search-suggestions-dropdown d-none"></div>

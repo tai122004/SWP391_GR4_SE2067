@@ -30,8 +30,7 @@ namespace RWPM.Models.ViewModels.Store
         public string Address { get => _address; set => _address = value?.Trim() ?? string.Empty; }
 
         [Display(Name = "Phone", ResourceType = typeof(Resources.Models.Store))]
-        [MaxLengthLocalized(11)]
-        [RegexLocalized(@"^[0-9]*$", "RegularExpression_DigitsOnly")]
+        [RegularExpression(@"^(0[0-9]{10})?$", ErrorMessage = "Số điện thoại phải gồm đúng 11 chữ số và bắt đầu bằng số 0.")]
         public string Phone { get => _phone; set => _phone = value?.Trim() ?? string.Empty; }
 
         [Display(Name = "Latitude", ResourceType = typeof(Resources.Models.Store))]
@@ -118,6 +117,9 @@ namespace RWPM.Models.ViewModels.Store
             if (MinAllowedDistanceMeters >= AllowedRadiusMeters)
                 yield return new ValidationResult(InputRules.Text("Khoảng cách tối thiểu phải nhỏ hơn bán kính cho phép.",
                     "Minimum distance must be smaller than the allowed radius."), new[] { nameof(MinAllowedDistanceMeters) });
+            if (!string.IsNullOrWhiteSpace(Phone) && !System.Text.RegularExpressions.Regex.IsMatch(Phone, @"^0[0-9]{10}$"))
+                yield return new ValidationResult(InputRules.Text("Số điện thoại chi nhánh phải gồm đúng 11 chữ số và bắt đầu bằng số 0.",
+                    "Store phone must contain exactly 11 digits and start with 0."), new[] { nameof(Phone) });
         }
     }
 }

@@ -284,5 +284,66 @@
                 }
             });
         }
+
+        var btnCurrentLoc = document.getElementById("btnGetCurrentLocation");
+        if (btnCurrentLoc) {
+            btnCurrentLoc.addEventListener("click", function () {
+                if (!navigator.geolocation) {
+                    AppToast.error("Trình duyệt không hỗ trợ định vị GPS.");
+                    return;
+                }
+                var originalHtml = btnCurrentLoc.innerHTML;
+                btnCurrentLoc.disabled = true;
+                btnCurrentLoc.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Đang định vị...';
+
+                navigator.geolocation.getCurrentPosition(
+                    function (position) {
+                        btnCurrentLoc.disabled = false;
+                        btnCurrentLoc.innerHTML = originalHtml;
+                        var lat = position.coords.latitude;
+                        var lng = position.coords.longitude;
+                        updateMap(lat, lng);
+                        map.setView([lat, lng], 17);
+                        reverseGeocode(lat, lng);
+                        AppToast.success("Đã lấy được vị trí GPS hiện tại!");
+                    },
+                    function (error) {
+                        btnCurrentLoc.disabled = false;
+                        btnCurrentLoc.innerHTML = originalHtml;
+                        var msg = "Không thể lấy vị trí hiện tại.";
+                        if (error.code === error.PERMISSION_DENIED) {
+                            msg = "Vui lòng cho phép trình duyệt truy cập vị trí (GPS) của bạn.";
+                        } else if (error.code === error.POSITION_UNAVAILABLE) {
+                            msg = "Vị trí không khả dụng.";
+                        } else if (error.code === error.TIMEOUT) {
+                            msg = "Hết thời gian chờ lấy vị trí GPS.";
+                        }
+                        AppToast.warning(msg);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            });
+        }
+
+        var phoneInput = document.getElementById("Phone") || document.querySelector('input[name="Phone"]');
+        if (phoneInput) {
+            phoneInput.addEventListener("input", function () {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                if (window.jQuery && $(this).valid) {
+                    if (this.value.length > 11 || (this.value.length > 0 && !this.value.startsWith('0')) || this.value.length === 11) {
+                        $(this).valid();
+                    }
+                }
+            });
+            phoneInput.addEventListener("blur", function () {
+                if (window.jQuery && $(this).valid) {
+                    $(this).valid();
+                }
+            });
+        }
     });
 })(window.RWPM.storeForm);
