@@ -19,7 +19,7 @@ public class Store : AuditableEntity, IActivatable
     [MaxLength(255)]
     public string Address { get; set; } = string.Empty;
 
-    [MaxLength(20)]
+    [MaxLength(11)]
     public string Phone { get; set; } = string.Empty;
 
     public double? Latitude { get; set; }
