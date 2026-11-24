@@ -49,7 +49,7 @@
         </div>
     </div>
     <div class="row">
-        <!-- Phần bấm giờ -->
+        @* Phần bấm giờ *@
         <div class="col-md-4 col-lg-3 mb-4">
             <h5 class="att-section-title" id="leftPanelHeader">@(canManage && isEmpTabActive ? SharedResource.Attendance_EmployeeList : SharedResource.Attendance_Today)</h5>
 
@@ -105,6 +105,7 @@
                             <i class="bi bi-geo-alt spinner-grow spinner-grow-sm me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_GPSLoading")
                         </div>
 
+                        @* Form chấm công: Video camera WebRTC và nút Vào làm / Tan làm *@
                         <form id="attendanceForm" method="post" enctype="multipart/form-data" class="d-grid gap-2">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="userLatitude" id="userLatitude" />
@@ -119,6 +120,7 @@
                                 </div>
                                 
                                 <div class="d-flex justify-content-center gap-2 mb-2">
+                                    @* Nút Chụp ảnh từ camera *@
                                     <button type="button" id="btnCapture" class="btn btn-sm btn-outline-secondary">
                                         <i class="bi bi-camera-fill"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnCapture")
                                     </button>
@@ -132,9 +134,11 @@
                                 <div class="form-text" style="font-size: 0.75rem;">@SharedResource.ResourceManager.GetString("Attendance_PhotoGuide")</div>
                             </div>
 
+                            @* Nút Vào làm (Check-In) *@
                             <button type="button" id="btnCheckIn" asp-action="CheckIn" class="btn @(canCheckIn ? "btn-primary" : "btn-outline-secondary")" disabled="@(canCheckIn ? null : "disabled")">
                                 <i class="bi bi-box-arrow-in-right me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnCheckIn")
                             </button>
+                            @* Nút Tan làm (Check-Out) *@
                             <button type="button" id="btnCheckOut" asp-action="CheckOut" class="btn @(canCheckOut ? "btn-primary" : "btn-outline-secondary")" disabled="@(canCheckOut ? null : "disabled")">
                                 <i class="bi bi-box-arrow-right me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_BtnCheckOut")
                             </button>
@@ -171,11 +175,11 @@
             </div>
         </div>
 
-        <!-- Phần Lịch sử -->
+        @* Phần Lịch sử *@
         <div class="col-md-8 col-lg-9 mb-4">
             @if (canManage)
             {
-                <!-- 1. DÀNH CHO HR & QUẢN LÝ CỬA HÀNG: Có 2 Tab chuyển đổi giữa cá nhân và nhân viên -->
+                @* 1. DÀNH CHO HR & QUẢN LÝ CỬA HÀNG: Có 2 Tab chuyển đổi giữa cá nhân và nhân viên *@
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <div class="nav att-tabs w-100" id="attendanceTabs" role="tablist">
                         <button class="nav-link @(isEmpTabActive ? "" : "active") " 
@@ -204,10 +208,11 @@
                 </div>
 
                 <div class="tab-content" id="attendanceTabsContent">
-                    <!-- Tab 1: Lịch sử của tôi -->
+                    @* Tab 1: Lịch sử của tôi *@
                     <div class="tab-pane fade @(isEmpTabActive ? "" : "show active")" id="my-history-pane" role="tabpanel" aria-labelledby="my-history-tab" tabindex="0">
                         <div class="modern-card overflow-hidden mb-3">
                             <div class="table-responsive">
+                                @* Bảng lịch sử chấm công của cá nhân *@
                                 <table class="table modern-table align-middle mb-0" id="myAttendanceTable">
                                     <thead>
                                         <tr>
@@ -298,9 +303,9 @@
                         </div>
                     </div>
 
-                    <!-- Tab 2: Lịch sử nhân viên -->
+                    @* Tab 2: Lịch sử nhân viên *@
                     <div class="tab-pane fade @(isEmpTabActive ? "show active" : "")" id="emp-history-pane" role="tabpanel" aria-labelledby="emp-history-tab" tabindex="0">
-                        <!-- Search form -->
+                        @* Search form *@
                         <div class="app-filter-panel p-3 mb-3">
                             <form asp-action="Index" method="get" class="row g-2 align-items-center">
                                 <input type="hidden" name="view" value="employees" />
@@ -323,6 +328,7 @@
 
                         <div class="modern-card overflow-hidden mb-3">
                             <div class="table-responsive">
+                                @* Bảng lịch sử chấm công nhân viên (cho Quản lý / HR) *@
                                 <table class="table modern-table align-middle mb-0" id="empAttendanceTable">
                                     <thead>
                                         <tr>
@@ -426,7 +432,7 @@
             }
             else
             {
-                <!-- 2. DÀNH CHO NHÂN VIÊN: Chỉ xem lịch sử của mình -->
+                @* 2. DÀNH CHO NHÂN VIÊN: Chỉ xem lịch sử của mình *@
                 <h5 class="att-section-title">@SharedResource.ResourceManager.GetString("Attendance_MyHistory")</h5>
 
                 <div class="modern-card overflow-hidden mb-3">
@@ -534,6 +540,7 @@
 {
     foreach (var item in distinctModalRecords)
     {
+        @* Modal xem lịch sử điều chỉnh chấm công (Audit Trail) *@
         <div class="modal fade" id="historyModal_@item.AttendanceId" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
