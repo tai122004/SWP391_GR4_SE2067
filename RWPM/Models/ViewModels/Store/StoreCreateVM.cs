@@ -38,12 +38,13 @@ namespace RWPM.Models.ViewModels.Store
         public string? Longitude { get; set; }
 
         [Display(Name = "MinAllowedDistanceMeters", ResourceType = typeof(Resources.Models.Store))]
-        [RangeLocalized(0, 200)]
-        public int MinAllowedDistanceMeters { get; set; } = 0;
+        [Range(0, 10000, ErrorMessage = "Khoảng cách tối thiểu phải từ 0 đến 10.000 mét.")]
+        public int? MinAllowedDistanceMeters { get; set; } = 0;
 
         [Display(Name = "AllowedRadiusMeters", ResourceType = typeof(Resources.Models.Store))]
-        [RangeLocalized(10,400)]
-        public int AllowedRadiusMeters { get; set; } = 100;
+        [Required(ErrorMessage = "Vui lòng nhập bán kính tối đa chấm công (mét).")]
+        [Range(10, 10000, ErrorMessage = "Bán kính tối đa chấm công phải từ 10 đến 10.000 mét.")]
+        public int? AllowedRadiusMeters { get; set; } = 100;
 
         [Display(Name = "IsActive", ResourceType = typeof(Resources.Models.Store))]
         public bool IsActive { get; set; } = true;
@@ -90,7 +91,7 @@ namespace RWPM.Models.ViewModels.Store
             if (IsActive && string.IsNullOrWhiteSpace(Latitude) && string.IsNullOrWhiteSpace(Longitude))
                 yield return new ValidationResult(InputRules.Text("Vui lòng chọn vị trí chi nhánh trên bản đồ trước khi kích hoạt.",
                     "Select the store location on the map before activating it."), new[] { nameof(Latitude) });
-            if (MinAllowedDistanceMeters >= AllowedRadiusMeters)
+            if ((MinAllowedDistanceMeters ?? 0) >= (AllowedRadiusMeters ?? 100))
                 yield return new ValidationResult(InputRules.Text("Khoảng cách tối thiểu phải nhỏ hơn bán kính cho phép.",
                     "Minimum distance must be smaller than the allowed radius."), new[] { nameof(MinAllowedDistanceMeters) });
             if (!string.IsNullOrWhiteSpace(Phone) && !System.Text.RegularExpressions.Regex.IsMatch(Phone, @"^0[0-9]{9}$"))
@@ -111,8 +112,8 @@ namespace RWPM.Models.ViewModels.Store
                 Phone = Phone?.Trim() ?? string.Empty,
                 Latitude = lat,
                 Longitude = lng,
-                MinAllowedDistanceMeters = MinAllowedDistanceMeters >= 0 ? MinAllowedDistanceMeters : 0,
-                AllowedRadiusMeters = AllowedRadiusMeters >= 10 ? AllowedRadiusMeters : 100,
+                MinAllowedDistanceMeters = MinAllowedDistanceMeters.HasValue && MinAllowedDistanceMeters.Value >= 0 ? MinAllowedDistanceMeters.Value : 0,
+                AllowedRadiusMeters = AllowedRadiusMeters.HasValue && AllowedRadiusMeters.Value >= 10 ? AllowedRadiusMeters.Value : 100,
                 IsActive = IsActive,
                 ManagerId = ManagerId,
                 OpeningTime = OpeningTime,

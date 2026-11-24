@@ -36,7 +36,7 @@ using (var scope = app.Services.CreateScope())
 #region Support multiple language
 var supportedCultures = new[] { "en", "vi" };
 var localizationOptions = new RequestLocalizationOptions()
-    .SetDefaultCulture("en")
+    .SetDefaultCulture("vi")
     .AddSupportedCultures(supportedCultures)
     .AddSupportedUICultures(supportedCultures);
 localizationOptions.RequestCultureProviders.Clear();

@@ -18,6 +18,10 @@ namespace RWPM.Common.Localization
             foreach (var item in context.ValidationMetadata.ValidatorMetadata)
             {
                 if (item is not ValidationAttribute attr) continue;
+                if (attr is RequiredAttribute && !string.IsNullOrEmpty(attr.ErrorMessage) && attr.ErrorMessage.Contains("field is required"))
+                {
+                    attr.ErrorMessage = null;
+                }
                 if (!string.IsNullOrEmpty(attr.ErrorMessage) || !string.IsNullOrEmpty(attr.ErrorMessageResourceName)) continue;
 
                 var key = attr switch
