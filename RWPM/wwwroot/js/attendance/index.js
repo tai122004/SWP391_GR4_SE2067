@@ -1,13 +1,4 @@
-/*
- * Chấm công — Views/Attendance/Index.cshtml
- * Chấm vào/ra kèm GPS + ảnh chụp từ camera, ẩn/hiện camera & danh sách nhân viên khi đổi tab,
- * phân trang phía client (10 dòng/trang) cho các bảng lịch sử.
- * Config: window.RWPM.attendanceIndex = {
- *   urls: { checkIn, checkOut },
- *   i18n: { photoRequired, gpsLoading, gpsDenied, gpsUnknown, gpsNotSupported, camError, processing,
- *           locateFailed, employeeList, today, totalRecordBar, paginationPrevious, paginationNext }
- * }
- */
+﻿// Chấm công: GPS + chụp ảnh camera, phân trang bảng lịch sử
 (function ($, cfg) {
     'use strict';
 
@@ -21,9 +12,11 @@
         var lngInput = document.getElementById("userLongitude");
         var gpsStatus = document.getElementById("gpsStatus");
 
+        // Lấy vị trí GPS và submit form
         function submitWithGPS(actionName, btnElement) {
             if (!form) return;
 
+            // Kiểm tra ảnh chụp bắt buộc
             if (!photoInput.files || photoInput.files.length === 0) {
                 AppToast.warning(attI18n.photoRequired);
                 return;
@@ -31,7 +24,7 @@
 
             var targetUrl = actionName === "CheckIn" ? cfg.urls.checkIn : cfg.urls.checkOut;
 
-            // Ngăn chặn click đúp
+            // Tránh click đúp
             if (btnElement) {
                 btnElement.disabled = true;
                 var originalText = btnElement.innerHTML;
@@ -60,7 +53,7 @@
                 }
 
                 var errorMsg = "";
-                if (error && error.code === 1) { // PERMISSION_DENIED
+                if (error && error.code === 1) { // Người dùng từ chối quyền vị trí
                     errorMsg = attI18n.gpsDenied;
                 } else if (error) {
                     var template = attI18n.gpsUnknown;
@@ -71,6 +64,7 @@
                 AppToast.error(errorMsg);
             }
 
+            // Thử lấy GPS độ chính xác cao trước, nếu timeout thì fallback sang mạng thường
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     handleGpsSuccess,
@@ -104,7 +98,7 @@
             });
         }
 
-        // --- CAMERA WEBRTC LOGIC ---
+        // Camera WebRTC
         var video = document.getElementById('camera-stream');
         var preview = document.getElementById('camera-preview');
         var canvas = document.getElementById('camera-canvas');
@@ -115,9 +109,9 @@
         var personalClockInArea = document.getElementById('personalClockInArea');
         var cameraStream = null;
 
+        // Bật camera
         function startCamera() {
             if (!video || cameraStream) return;
-            // Nếu đã chụp ảnh và đang xem trước thì không bật lại video
             if (preview && preview.style.display === 'block') {
                 return;
             }
@@ -137,6 +131,7 @@
                 });
         }
 
+        // Tắt camera khi chuyển tab để đỡ tốn tài nguyên
         function stopCamera() {
             if (cameraStream) {
                 cameraStream.getTracks().forEach(function (track) {
@@ -150,12 +145,12 @@
         }
 
         if (video) {
-            // Chỉ khởi động camera khi khu vực chấm công cá nhân đang hiển thị
             var isAreaHidden = personalClockInArea && personalClockInArea.classList.contains('d-none');
             if (!isAreaHidden) {
                 startCamera();
             }
 
+            // Chụp ảnh từ video, vẽ lên canvas rồi convert sang blob
             if (btnCapture) {
                 btnCapture.addEventListener('click', function () {
                     var context = canvas.getContext('2d');
@@ -163,6 +158,7 @@
                     var height = video.videoHeight || 240;
                     canvas.width = width;
                     canvas.height = height;
+
                     if (video.videoWidth > 0) {
                         context.drawImage(video, 0, 0, width, height);
                     } else {
@@ -173,8 +169,6 @@
                         context.textAlign = "center";
                         context.fillText("DEV TEST PHOTO", width / 2, height / 2);
                     }
-
-
 
                     var dataUrl = canvas.toDataURL('image/jpeg');
                     preview.src = dataUrl;
@@ -195,6 +189,7 @@
                 });
             }
 
+            // Chụp lại
             if (btnRetake) {
                 btnRetake.addEventListener('click', function () {
                     video.style.display = 'block';
@@ -207,7 +202,7 @@
             }
         }
 
-        // Xử lý ẩn/hiện camera & danh sách nhân viên khi Quản lý & HR chuyển đổi tab
+        // Tắt/bật camera khi chuyển đổi tab
         var empTabBtn = document.getElementById("emp-history-tab");
         var myTabBtn = document.getElementById("my-history-tab");
         var managerEmpList = document.getElementById("managerEmpListContainer");
@@ -221,6 +216,7 @@
                 stopCamera();
             });
         }
+
         if (myTabBtn) {
             myTabBtn.addEventListener("shown.bs.tab", function () {
                 if (personalClockInArea) personalClockInArea.classList.remove("d-none");
@@ -230,7 +226,7 @@
             });
         }
 
-        // --- PHÂN TRANG CHO TẤT CẢ CÁC BẢNG LỊCH SỬ (10 DÒNG / TRANG) ---
+        // Phân trang 10 dòng/trang cho các bảng lịch sử
         var totalRecordBarTemplate = attI18n.totalRecordBar;
         var previousAriaLabel = attI18n.paginationPrevious;
         var nextAriaLabel = attI18n.paginationNext;
@@ -244,7 +240,6 @@
             var tbody = table.querySelector('tbody');
             if (!tbody) return;
 
-            // Lấy tất cả các hàng dữ liệu thực tế (bỏ qua hàng "không có dữ liệu" với td có colspan)
             var allRows = Array.from(tbody.querySelectorAll('tr')).filter(function (tr) {
                 return !tr.querySelector('td[colspan]');
             });
@@ -265,7 +260,6 @@
                 var startIndex = (page - 1) * pageSize;
                 var endIndex = Math.min(startIndex + pageSize, totalRecords);
 
-                // Ẩn/hiện các hàng tương ứng với trang
                 allRows.forEach(function (row, index) {
                     if (index >= startIndex && index < endIndex) {
                         row.style.display = '';
@@ -274,7 +268,6 @@
                     }
                 });
 
-                // Tạo text thông tin bản ghi
                 var startDisplay = startIndex + 1;
                 var endDisplay = endIndex;
                 var infoText = totalRecordBarTemplate
@@ -295,7 +288,6 @@
                             </li>
                 `;
 
-                // Thuật toán hiển thị các số trang (tối đa 5 nút, có dấu ... nếu quá dài)
                 var maxButtons = 5;
                 var startPage = Math.max(1, currentPage - 2);
                 var endPage = Math.min(totalPages, startPage + maxButtons - 1);
@@ -337,7 +329,6 @@
 
                 container.innerHTML = paginationHtml;
 
-                // Gán sự kiện click cho các link phân trang
                 var pageLinks = container.querySelectorAll('a.page-link');
                 pageLinks.forEach(function (link) {
                     link.addEventListener('click', function (e) {
@@ -353,7 +344,6 @@
             renderPage(1);
         }
 
-        // Khởi tạo phân trang (10 dòng/trang) cho tất cả các bảng
         initTablePagination("myAttendanceTable", "myAttendancePagination", 10);
         initTablePagination("empAttendanceTable", "empAttendancePagination", 10);
         initTablePagination("employeeSelfAttendanceTable", "employeeSelfAttendancePagination", 10);

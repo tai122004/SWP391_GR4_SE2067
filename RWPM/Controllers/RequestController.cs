@@ -1,4 +1,4 @@
-using RWPM.Common.Validation;
+﻿using RWPM.Common.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -87,7 +87,7 @@ namespace RWPM.Controllers
             // 3. Fetch Leave Requests
             var allLeaves = await _leaveRequestService.GetLeaveRequestsAsync(startDate, endDate, storeFilter, null);
 
-            // 4. Fetch Attendance Adjustment Requests
+// Lấy danh sách đơn điều chỉnh chấm công
             var allAdjustments = await _attendanceAdjustmentService.GetRequestsAsync(startDate, endDate, storeFilter, null);
 
             // Filter for regular employees (only see own requests)
@@ -212,6 +212,7 @@ namespace RWPM.Controllers
                 });
             }
 
+// Lấy danh sách đơn điều chỉnh chấm công
             foreach (var a in allAdjustments)
             {
                 string inOutDesc = string.Format(RequestResource.Adj_InOutSummary,
@@ -567,6 +568,10 @@ namespace RWPM.Controllers
                         return Json(new { success = true, message = RequestResource.Leave_RejectSuccess });
                     }
                 }
+                // ==============================================================================================
+                // Xử lý duyệt/từ chối đơn điều chỉnh công
+                // Không cho phép tự duyệt; đơn của SM/HR thì chỉ Admin duyệt
+                // ==============================================================================================
                 else if (requestType == "Attendance")
                 {
                     InputRules.Decision((RegistrationStatus)status);
@@ -675,8 +680,13 @@ namespace RWPM.Controllers
                     await _leaveRequestService.DeleteLeaveRequestAsync(id, User.Identity?.Name ?? "system");
                     return Json(new { success = true, message = RequestResource.Leave_DeleteSuccess });
                 }
+                // ==============================================================================================
+                // Xử lý duyệt/từ chối đơn điều chỉnh công
+                // Không cho phép tự duyệt; đơn của SM/HR thì chỉ Admin duyệt
+                // ==============================================================================================
                 else if (requestType == "Attendance")
                 {
+                    // Xóa đơn điều chỉnh chấm công (chỉ xóa khi đơn còn Pending)
                     await _attendanceAdjustmentService.DeleteAsync(id, User.Identity?.Name ?? "system");
                     return Json(new { success = true, message = RequestResource.Adj_DeleteSuccess });
                 }
@@ -786,6 +796,10 @@ namespace RWPM.Controllers
                     return Json(new { success = true });
                 }
 
+                // ==============================================================================================
+                // Duyệt/từ chối hàng loạt đơn điều chỉnh công
+                // Kiểm tra quyền toàn bộ đơn rồi commit cùng 1 transaction
+                // ==============================================================================================
                 if (model.RequestType == "Attendance")
                 {
                     ValidateBulkDecision(model);
@@ -1113,6 +1127,9 @@ namespace RWPM.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        // Nhận đơn yêu cầu điều chỉnh chấm công từ modal
+
+
         public async Task<IActionResult> CreateAttendanceAdjustment([FromBody] AttendanceAdjustmentCreateVM? model)
         {
             try
