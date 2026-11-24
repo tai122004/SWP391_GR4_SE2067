@@ -188,7 +188,7 @@ namespace RWPM.Controllers
             return PhysicalFile(physical, RWPM.Infrastructure.Storage.AttendancePhotoStore.ContentType(physical));
         }
 
-        // Tiếp nhận chấm công vào
+        //B2: Tiếp nhận chấm công vào
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CheckIn(string? userLatitude = null, string? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)

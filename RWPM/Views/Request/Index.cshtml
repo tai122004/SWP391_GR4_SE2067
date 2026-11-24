@@ -1,4 +1,4 @@
-@using RWPM.Common.Enums
+﻿@using RWPM.Common.Enums
 @using RWPM.Resources.Shared
 @using RWPM.Models.ViewModels.ShiftRegistration
 @model List<RequestItemVM>
@@ -297,9 +297,11 @@
                         <i class="bi bi-trash3"></i>
                         <span>@RequestResource.Delete</span>
                     </button>
+                    <!-- Nút Từ chối đơn (dành cho Quản lý) -->
                     <button type="button" class="btn btn-outline-danger action-btn-detail" id="btnRejectDetail" onclick="updateSelectedStatus(2)" style="display: none;">
                         <span>@RequestResource.Reject</span>
                     </button>
+                    <!-- Nút Phê duyệt đơn (dành cho Quản lý) -->
                     <button type="button" class="btn btn-primary action-btn-detail" id="btnApproveDetail" onclick="updateSelectedStatus(1)" style="display: none;">
                         <i class="bi bi-check2"></i>
                         <span>@RequestResource.Approve</span>
@@ -364,6 +366,7 @@
                     <div class="req-modal-group">@SharedResource.Req_Shift</div>
                     <div class="row g-2">
                         <div class="col-md-4">
+                            <!-- Nút chọn loại yêu cầu: Đổi giờ vào / ra (Điều chỉnh chấm công) -->
                             <div class="request-type-card active-card-btn" role="button" tabindex="0" onclick="openAttendanceModal()">
                                 <i class="bi bi-clock-history"></i>
                                 <span>@SharedResource.Req_ChangeInOut</span>
@@ -676,6 +679,7 @@
 </div>
 
 <!-- Modal 6: Yêu Cầu Điều Chỉnh Chấm Công (Nested) -->
+<!-- Modal tạo đơn yêu cầu điều chỉnh chấm công -->
 <div class="modal fade" id="createAttendanceModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -722,6 +726,7 @@
 </div>
 
 <!-- Modal 7: Phê Duyệt Điều Chỉnh Chấm Công -->
+<!-- Modal xác nhận Phê duyệt điều chỉnh chấm công của Quản lý -->
 <div class="modal fade" id="approveAttendanceModal" tabindex="-1" aria-hidden="true" style="z-index: 1070;">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
