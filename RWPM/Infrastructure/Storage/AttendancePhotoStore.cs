@@ -1,18 +1,15 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using RWPM.Infrastructure.Data;
 
 namespace RWPM.Infrastructure.Storage
 {
-    /// <summary>
-    /// Ảnh chấm công (ảnh khuôn mặt) là dữ liệu cá nhân nhạy cảm: lưu NGOÀI wwwroot (App_Data/attendance)
-    /// và chỉ xem được qua AttendanceController.Photo có kiểm tra quyền.
-    /// Giá trị lưu trong DB: "secure/{tên file}". Đường dẫn cũ "/images/attendance/..." được chuyển dần khi khởi động.
-    /// </summary>
+    // Quản lý lưu trữ ảnh chấm công vào thư mục bảo mật App_Data (ngoài wwwroot)
     public static class AttendancePhotoStore
     {
         public const string SecurePrefix = "secure/";
         private const string LegacyPrefix = "/images/attendance/";
 
+        // Thư mục lưu ảnh nội bộ: App_Data/attendance
         public static string PrivateRoot(IWebHostEnvironment env)
         {
             var root = Path.Combine(env.ContentRootPath, "App_Data", "attendance");
@@ -20,9 +17,10 @@ namespace RWPM.Infrastructure.Storage
             return root;
         }
 
+        // Lưu file ảnh vào App_Data
         public static async Task<string> SaveAsync(IWebHostEnvironment env, IFormFile photo, string fileName)
         {
-            var safeName = Path.GetFileName(fileName);
+            var safeName = Path.GetFileName(fileName); // Tránh path traversal
             var filePath = Path.Combine(PrivateRoot(env), safeName);
             await using (var stream = new FileStream(filePath, FileMode.CreateNew))
             {
@@ -31,11 +29,12 @@ namespace RWPM.Infrastructure.Storage
             return SecurePrefix + safeName;
         }
 
-        /// <summary>Đường dẫn vật lý của ảnh; null nếu giá trị không hợp lệ (chặn path traversal).</summary>
+        // Lấy đường dẫn vật lý an toàn từ chuỗi lưu trong database
         public static string? ResolvePhysicalPath(IWebHostEnvironment env, string? storedPath)
         {
             if (string.IsNullOrWhiteSpace(storedPath)) return null;
             string? name = null, root = null;
+
             if (storedPath.StartsWith(SecurePrefix, StringComparison.Ordinal))
             {
                 name = storedPath[SecurePrefix.Length..];
@@ -59,10 +58,7 @@ namespace RWPM.Infrastructure.Storage
                 _ => "application/octet-stream"
             };
 
-        /// <summary>
-        /// Chạy khi khởi động: chuyển ảnh cũ từ wwwroot/images/attendance sang App_Data/attendance và cập nhật DB.
-        /// An toàn khi chạy nhiều lần.
-        /// </summary>
+        // Chuyển ảnh cũ từ wwwroot sang App_Data/attendance khi khởi động
         public static async Task MigrateLegacyAsync(DefaultDatabaseContext db, IWebHostEnvironment env, ILogger logger)
         {
             var records = await db.AttendanceRecord
@@ -85,7 +81,7 @@ namespace RWPM.Infrastructure.Storage
                         if (!File.Exists(target)) File.Move(source, target);
                         else File.Delete(source);
                     }
-                    if (!File.Exists(target)) return stored; // không tìm thấy file -> giữ nguyên giá trị cũ
+                    if (!File.Exists(target)) return stored;
                     moved++;
                     return SecurePrefix + name;
                 }

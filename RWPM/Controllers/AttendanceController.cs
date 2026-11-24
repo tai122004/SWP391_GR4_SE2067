@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RWPM.Models.Entities;
 using RWPM.Resources.Shared;
@@ -30,12 +30,13 @@ namespace RWPM.Controllers
 
         private string? CurrentUsername => User.Identity?.Name ?? User.FindFirstValue(ClaimTypes.Name);
 
+        // Màn hình chấm công và lịch sử chấm công
         public async Task<IActionResult> Index(string? searchQuery = null, string? view = null)
         {
             var username = CurrentUsername;
             if (string.IsNullOrEmpty(username)) return Challenge();
 
-            // Pure System Admin has no requirement to clock in or manage daily attendance.
+            // Admin hệ thống không cần chấm công
             if (User.IsAdmin() && !User.IsHR() && !User.IsStoreManager())
             {
                 return RedirectToAction("Index", "Acc");
@@ -50,6 +51,7 @@ namespace RWPM.Controllers
             var currentEmployee = await _context.Employee
                 .Include(e => e.Store)
                 .FirstOrDefaultAsync(e => e.Username == username);
+
             if (currentEmployee != null)
             {
                 var todayRegistrations = await _context.Set<ShiftRegistration>()
@@ -80,11 +82,11 @@ namespace RWPM.Controllers
             bool isEmployeeTab = view == "employees" || !string.IsNullOrWhiteSpace(searchQuery);
             ViewBag.ActiveTab = isEmployeeTab ? "employees" : "my";
 
-            // 1. Luôn tải lịch sử cá nhân của người đang đăng nhập (Quản trị viên hệ thống đã được chuyển hướng ở trên)
+            // 1. Tải lịch sử chấm công của bản thân
             var myHistory = await _attendanceService.GetHistoryAsync(username);
             ViewBag.MyHistory = myHistory;
 
-            // 2. Nếu có quyền quản lý (HR, Quản lý cửa hàng, Admin): Tải lịch sử nhân viên
+            // 2. Nếu có quyền quản lý: tải lịch sử chấm công của nhân viên
             var employeeHistory = new List<AttendanceRecord>();
             var empList = new List<RWPM.Models.Entities.Acc>();
             if (canManage)
@@ -99,13 +101,12 @@ namespace RWPM.Controllers
                     .Include(e => e.Account)
                     .Where(e => e.IsActive);
 
-                // Nếu là StoreManager (không phải Admin/HR): Chỉ xem nhân viên thuộc cùng cửa hàng
+                // Quản lý cửa hàng chỉ xem nhân viên cùng cửa hàng
                 if (User.IsStoreScoped())
                 {
                     if (currentEmployee != null && currentEmployee.StoreId.HasValue)
                     {
                         var managerStoreId = currentEmployee.StoreId;
-                        // Subquery (IN (SELECT ...)) thay vì tải danh sách username về rồi Contains
                         var storeUsernames = _context.Employee
                             .Where(e => e.StoreId == managerStoreId)
                             .Select(e => e.Username);
@@ -113,7 +114,6 @@ namespace RWPM.Controllers
                         empQuery = empQuery.Where(x => storeUsernames.Contains(x.Username));
                         empListQuery = empListQuery.Where(e => e.StoreId == managerStoreId);
 
-                        // Store đã được Include khi tải currentEmployee
                         var store = currentEmployee.Store;
                         ViewBag.ScopeTitle = store != null ? string.Format(SharedResource.Attendance_Scope_Branch, store.StoreName) : SharedResource.Attendance_Scope_YourStore;
                     }
@@ -157,9 +157,7 @@ namespace RWPM.Controllers
             return View(myHistory);
         }
 
-        /// <summary>
-        /// Xem ảnh chấm công: chính chủ, Admin/HR, hoặc Quản lý cửa hàng cùng chi nhánh với nhân viên.
-        /// </summary>
+        // Xem ảnh chấm công: chỉ chính chủ, admin/hr hoặc quản lý cùng chi nhánh
         [HttpGet]
         public async Task<IActionResult> Photo(int id, string type)
         {
@@ -190,6 +188,7 @@ namespace RWPM.Controllers
             return PhysicalFile(physical, RWPM.Infrastructure.Storage.AttendancePhotoStore.ContentType(physical));
         }
 
+        // Tiếp nhận chấm công vào
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CheckIn(string? userLatitude = null, string? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
@@ -203,7 +202,7 @@ namespace RWPM.Controllers
                 var result = await _attendanceService.CheckInAsync(username, parsedLat, parsedLng, photo);
                 if (!string.IsNullOrEmpty(result.WarningMessage))
                 {
-                    TempData["WarningMessage"] = result.WarningMessage; // Chấm công thành công nhưng có cảnh báo -> toast vàng
+                    TempData["WarningMessage"] = result.WarningMessage;
                 }
                 else
                 {
@@ -218,6 +217,7 @@ namespace RWPM.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // Tiếp nhận chấm công tan ca
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CheckOut(string? userLatitude = null, string? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
@@ -264,6 +264,7 @@ namespace RWPM.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // Quản lý điều chỉnh giờ công trực tiếp
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = AppRoles.ChainManagers)]
@@ -273,6 +274,7 @@ namespace RWPM.Controllers
             {
                 if (!ModelState.IsValid)
                     throw new InputValidationException("Time", InputRules.Text("Giờ điều chỉnh không hợp lệ.", "Invalid adjustment time."));
+                
                 var username = User.Identity?.Name ?? "System";
                 if (string.IsNullOrWhiteSpace(reason))
                 {

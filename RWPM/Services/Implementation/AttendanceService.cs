@@ -1,4 +1,4 @@
-using RWPM.Common.Helper;
+﻿using RWPM.Common.Helper;
 using Microsoft.EntityFrameworkCore;
 using RWPM.Infrastructure.Data;
 using RWPM.Models.Entities;
@@ -20,6 +20,7 @@ namespace RWPM.Services.Implementation
             _env = env;
         }
 
+        // Lấy bản ghi chấm công của hôm nay hoặc ca đêm hôm qua chưa checkout
         public async Task<AttendanceRecord?> GetTodayRecordAsync(string username, int? shiftId = null)
         {
             var query = _context.AttendanceRecord
@@ -35,14 +36,23 @@ namespace RWPM.Services.Implementation
             var records = await query
                 .OrderByDescending(r => r.AttendanceId)
                 .ToListAsync();
+
             return records.FirstOrDefault(r => r.Date.Date == DateTime.Today
                 || r.Shift?.EndDayOffset == 1);
         }
 
-        public async Task<(AttendanceRecord Record, string? WarningMessage)> CheckInAsync(string username, double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
+        // Xử lý chấm công vào ca (Check-In)
+        public async Task<(AttendanceRecord Record, string? WarningMessage)> CheckInAsync(
+            string username, 
+            double? userLatitude = null, 
+            double? userLongitude = null, 
+            Microsoft.AspNetCore.Http.IFormFile? photo = null)
         {
             var errorMessage = SharedResource.Attendance_Err_NotInAllowedTime;
             bool isValid = false;
+            string? warningMsg = null;
+
+            // Bắt buộc phải có ảnh chụp
             if (photo == null || photo.Length == 0)
             {
                 throw new InvalidOperationException(SharedResource.Attendance_Err_NoPhotoIn);
@@ -51,12 +61,14 @@ namespace RWPM.Services.Implementation
 
             var today = DateTime.Today;
 
+            // Lấy thông tin nhân viên
             var employee = await _context.Employee.Include(e => e.Store).FirstOrDefaultAsync(e => e.Username == username);
             if (employee == null)
             {
                 throw new InvalidOperationException(SharedResource.Attendance_Err_NoEmployee);
             }
 
+            // Lấy các ca đã duyệt từ hôm qua đến ngày mai (để tính cả ca đêm)
             var registrations = await _context.Set<ShiftRegistration>()
                 .Include(sr => sr.Shift)
                 .Include(sr => sr.Store)
@@ -71,6 +83,8 @@ namespace RWPM.Services.Implementation
 
             var nowAt = DateTime.Now;
             var now = nowAt.TimeOfDay;
+
+            // Tìm ca phù hợp với giờ hiện tại (cho phép vào sớm trước ca)
             var matchedRegistration = registrations
                 .Where(r => r.Shift != null)
                 .Where(r => {
@@ -80,6 +94,7 @@ namespace RWPM.Services.Implementation
                 })
                 .OrderBy(r => Math.Abs((nowAt - r.WorkDate.Date.Add(r.Shift.StartTime)).TotalMinutes))
                 .FirstOrDefault();
+
             if (matchedRegistration != null)
             {
                 isValid = true;
@@ -91,10 +106,12 @@ namespace RWPM.Services.Implementation
                     .Where(r => r.Username == username && r.Date >= today.AddDays(-1) && r.Date <= today.AddDays(1))
                     .Select(r => new { r.Date, r.ShiftId })
                     .ToListAsync();
+
                 var candidates = registrations
                     .Where(r => ShiftTimeHelper.GetDateTimeRange(r.WorkDate, r.Shift).EndAt >= nowAt)
                     .Where(r => !checkedShifts.Any(c => c.Date.Date == r.WorkDate.Date && c.ShiftId == r.ShiftId))
                     .ToList();
+
                 if (!candidates.Any())
                 {
                     throw new InvalidOperationException(errorMessage);
@@ -131,11 +148,14 @@ namespace RWPM.Services.Implementation
             }
 
             var matchedShift = matchedRegistration.Shift;
-            var targetStore = matchedRegistration.Store ?? employee.Store; // Fallback to employee store if null
+
+            // Xác định chi nhánh làm việc
+            var targetStore = matchedRegistration.Store ?? employee.Store;
             InputRules.Require(targetStore != null && targetStore.Latitude.HasValue && targetStore.Longitude.HasValue,
                 "Latitude", "Chi nhánh chưa cấu hình GPS để chấm công.", "Store GPS is not configured for attendance.");
             if (targetStore != null) AttendanceInputRules.ValidateCoordinates(targetStore.Latitude, targetStore.Longitude);
 
+            // Kiểm tra tránh chấm công 2 lần cho cùng một ca trong ngày
             var existingRecordForShift = await _context.AttendanceRecord
                 .FirstOrDefaultAsync(r => r.Username == username && r.Date == matchedRegistration.WorkDate.Date && r.ShiftId == matchedShift.ShiftId);
 
@@ -144,7 +164,7 @@ namespace RWPM.Services.Implementation
                 throw new InvalidOperationException(string.Format(SharedResource.Attendance_Err_AlreadyCompleted, matchedShift.ShiftName));
             }
 
-            // GeoLocation Validation
+            // Kiểm tra khoảng cách GPS tới chi nhánh
             double? calculatedDistance = null;
             if (targetStore != null && targetStore.Latitude.HasValue && targetStore.Longitude.HasValue)
             {
@@ -153,19 +173,11 @@ namespace RWPM.Services.Implementation
                     throw new InvalidOperationException(SharedResource.Attendance_Err_NoGPS);
                 }
 
+                // Tính khoảng cách bằng công thức Haversine
                 double distance = GeoLocationHelper.CalculateDistanceMeters(
                     userLatitude.Value, userLongitude.Value, 
                     targetStore.Latitude.Value, targetStore.Longitude.Value);
 
-                // Anti-Fake GPS: Chỉ kiểm tra chặt chẽ ngoài môi trường Development
-                bool isExactMatch = Math.Abs(userLatitude.Value - targetStore.Latitude.Value) < 0.000001 
-                                 && Math.Abs(userLongitude.Value - targetStore.Longitude.Value) < 0.000001;
-                if (isExactMatch && !_env.IsDevelopment())
-                {
-                    throw new InvalidOperationException(SharedResource.Attendance_Err_FakeGPS);
-                }
-
-                // Reject invalid store configuration instead of silently skipping the minimum distance.
                 int minDistance = targetStore.MinAllowedDistanceMeters;
                 int allowedRadius = targetStore.AllowedRadiusMeters;
                 AttendanceInputRules.ValidateRadius(minDistance, allowedRadius);
@@ -174,7 +186,7 @@ namespace RWPM.Services.Implementation
                     throw new InvalidOperationException(string.Format(SharedResource.Attendance_Err_MinDistance, targetStore.StoreName, Math.Round(distance), minDistance));
                 }
 
-                // Kiểm tra bán kính tối đa — phải nằm trong phạm vi cho phép
+                // Kiểm tra bán kính cho phép (mặc định 400m)
                 if (distance > allowedRadius)
                 {
                     throw new InvalidOperationException(string.Format(SharedResource.Attendance_Err_MaxRadius, targetStore.StoreName, Math.Round(distance), allowedRadius));
@@ -183,6 +195,7 @@ namespace RWPM.Services.Implementation
                 calculatedDistance = distance;
             }
 
+            // Lưu bản ghi chấm công và ảnh chụp
             var record = new AttendanceRecord
             {
                 Username = username,
@@ -198,7 +211,7 @@ namespace RWPM.Services.Implementation
             _context.AttendanceRecord.Add(record);
             await _context.SaveChangesAsync();
 
-            string? warningMsg = null;
+            // Tính đi muộn nếu vượt quá thời gian ân hạn
             var shiftRange = RWPM.Common.Helper.ShiftTimeHelper.GetDateTimeRange(record.Date, matchedShift);
             var checkInActual = new[] { -1, 0, 1 }.Select(day => record.Date.AddDays(day).Add(record.CheckInTime.Value))
                 .OrderBy(time => Math.Abs((time - shiftRange.StartAt).TotalMinutes)).First();
@@ -213,8 +226,14 @@ namespace RWPM.Services.Implementation
             return (record, warningMsg);
         }
 
-        public async Task<(AttendanceRecord Record, string? WarningMessage)> CheckOutAsync(string username, double? userLatitude = null, double? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
+        // Xử lý chấm công tan ca (Check-Out)
+        public async Task<(AttendanceRecord Record, string? WarningMessage)> CheckOutAsync(
+            string username, 
+            double? userLatitude = null, 
+            double? userLongitude = null, 
+            Microsoft.AspNetCore.Http.IFormFile? photo = null)
         {
+            string? warningMsg = null;
             if (photo == null || photo.Length == 0)
             {
                 throw new InvalidOperationException(SharedResource.Attendance_Err_NoPhotoOut);
@@ -232,7 +251,11 @@ namespace RWPM.Services.Implementation
                 throw new InvalidOperationException(SharedResource.Attendance_Err_AlreadyCheckedOut);
             }
             if (!record.CheckInTime.HasValue)
+            {
                 throw new InvalidOperationException(SharedResource.Attendance_Err_NotCheckedIn);
+            }
+
+            // Giờ ra phải sau giờ vào
             (DateTime StartAt, DateTime EndAt)? checkInRange = record.Shift == null
                 ? null : ShiftTimeHelper.GetDateTimeRange(record.Date, record.Shift);
             var actualCheckIn = new[] { -1, 0, 1 }
@@ -242,11 +265,9 @@ namespace RWPM.Services.Implementation
             InputRules.Require(DateTime.Now > actualCheckIn, "CheckOutTime",
                 "Giờ ra phải sau giờ vào.", "Check-out must follow check-in.");
 
-            // Time Validation for CheckOut (Early Check-Out)
-            // Người dùng có thể check out bất cứ lúc nào. Việc tính lương sẽ phạt nếu về quá sớm.
             var shift = await _context.Shift.FindAsync(record.ShiftId);
 
-            // GeoLocation Validation for CheckOut
+            // Kiểm tra GPS chi nhánh khi checkout
             var employee = await _context.Employee.Include(e => e.Store).FirstOrDefaultAsync(e => e.Username == username);
             
             var registration = await _context.Set<ShiftRegistration>()
@@ -269,15 +290,6 @@ namespace RWPM.Services.Implementation
                     userLatitude.Value, userLongitude.Value, 
                     targetStore.Latitude.Value, targetStore.Longitude.Value);
 
-                // Anti-Fake GPS: Chỉ kiểm tra chặt chẽ ngoài môi trường Development
-                bool isExactMatch = Math.Abs(userLatitude.Value - targetStore.Latitude.Value) < 0.000001 
-                                 && Math.Abs(userLongitude.Value - targetStore.Longitude.Value) < 0.000001;
-                if (isExactMatch && !_env.IsDevelopment())
-                {
-                    throw new InvalidOperationException(SharedResource.Attendance_Err_FakeGPS);
-                }
-
-                // Reject invalid store configuration instead of silently skipping the minimum distance.
                 int minDistance = targetStore.MinAllowedDistanceMeters;
                 int allowedRadius = targetStore.AllowedRadiusMeters;
                 AttendanceInputRules.ValidateRadius(minDistance, allowedRadius);
@@ -286,7 +298,6 @@ namespace RWPM.Services.Implementation
                     throw new InvalidOperationException(string.Format(SharedResource.Attendance_Err_MinDistance, targetStore.StoreName, Math.Round(distance), minDistance));
                 }
 
-                // Kiểm tra bán kính tối đa — phải nằm trong phạm vi cho phép
                 if (distance > allowedRadius)
                 {
                     throw new InvalidOperationException(string.Format(SharedResource.Attendance_Err_MaxRadius, targetStore.StoreName, Math.Round(distance), allowedRadius));
@@ -300,7 +311,7 @@ namespace RWPM.Services.Implementation
 
             await _context.SaveChangesAsync();
 
-            string? warningMsg = null;
+            // Cảnh báo về sớm nếu checkout trước khi hết ca
             if (shift != null)
             {
                 var shiftRange = RWPM.Common.Helper.ShiftTimeHelper.GetDateTimeRange(record.Date, shift);
@@ -318,6 +329,7 @@ namespace RWPM.Services.Implementation
             return (record, warningMsg);
         }
 
+        // Lấy lịch sử chấm công của nhân viên
         public async Task<List<AttendanceRecord>> GetHistoryAsync(string username)
         {
             return await _context.AttendanceRecord
@@ -331,6 +343,7 @@ namespace RWPM.Services.Implementation
                 .ToListAsync();
         }
 
+        // Quản lý điều chỉnh trực tiếp giờ chấm công
         public async Task AdjustAttendanceAsync(int recordId, TimeSpan? newCheckIn, TimeSpan? newCheckOut, string reason, string modifierUsername)
         {
             var record = await _context.AttendanceRecord.Include(r => r.Shift)
@@ -341,12 +354,13 @@ namespace RWPM.Services.Implementation
                 throw new InvalidOperationException(SharedResource.Attendance_Err_RecordNotFound);
             }
 
+            // Chặn sửa nếu kỳ lương đã chốt
             await AttendanceAdjustmentService.EnsurePeriodUnlockedAsync(_context, record.Date);
 
             var effectiveIn = newCheckIn ?? record.CheckInTime;
             var effectiveOut = newCheckOut ?? record.CheckOutTime;
 
-            // Ghi lại lịch sử
+            // Ghi lại lịch sử ai sửa và lý do sửa
             var history = new AttendanceAdjustmentHistory
             {
                 AttendanceRecordId = recordId,
@@ -361,7 +375,7 @@ namespace RWPM.Services.Implementation
 
             _context.AttendanceAdjustmentHistory.Add(history);
 
-            // Cập nhật bản ghi gốc
+            // Cập nhật lại bản ghi gốc
             record.CheckInTime = effectiveIn;
             record.CheckOutTime = effectiveOut;
             record.IsAdjusted = true;
@@ -369,6 +383,7 @@ namespace RWPM.Services.Implementation
             await _context.SaveChangesAsync();
         }
 
+        // Xóa bản ghi chấm công
         public async Task DeleteRecordAsync(int attendanceId)
         {
             var record = await _context.AttendanceRecord.FindAsync(attendanceId);
@@ -382,7 +397,7 @@ namespace RWPM.Services.Implementation
 
         private const long MaxPhotoBytes = 5 * 1024 * 1024;
 
-        // Chỉ chấp nhận ảnh JPEG/PNG (kiểm tra content-type và chữ ký file), tối đa 5MB; trả về phần mở rộng cố định
+        // Kiểm tra ảnh: tối đa 5MB, check header byte (JPEG: FF D8 FF, PNG: 89 50 4E 47)
         private static string ValidatePhoto(Microsoft.AspNetCore.Http.IFormFile photo)
         {
             if (photo.Length > MaxPhotoBytes)
@@ -408,11 +423,10 @@ namespace RWPM.Services.Implementation
             throw new InvalidOperationException(RWPM.Common.Validation.InputRules.Text("Ảnh chấm công phải là file JPEG hoặc PNG.", "Attendance photo must be a JPEG or PNG image."));
         }
 
+        // Lưu ảnh ra file ngoài wwwroot
         private async Task<string> SavePhotoAsync(Microsoft.AspNetCore.Http.IFormFile photo, string type)
         {
             var extension = ValidatePhoto(photo);
-
-            // Lưu ngoài wwwroot; chỉ xem qua Attendance/Photo có kiểm tra quyền
             var uniqueFileName = $"{type}_{Guid.NewGuid():N}{extension}";
             return await RWPM.Infrastructure.Storage.AttendancePhotoStore.SaveAsync(_env, photo, uniqueFileName);
         }

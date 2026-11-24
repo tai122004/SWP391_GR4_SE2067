@@ -296,33 +296,44 @@
                 btnCurrentLoc.disabled = true;
                 btnCurrentLoc.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Đang định vị...';
 
+                function handleSuccess(position) {
+                    btnCurrentLoc.disabled = false;
+                    btnCurrentLoc.innerHTML = originalHtml;
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
+                    updateMap(lat, lng);
+                    map.setView([lat, lng], 17);
+                    reverseGeocode(lat, lng);
+                    AppToast.success("Đã lấy được vị trí GPS hiện tại!");
+                }
+
+                function handleFailure(error) {
+                    btnCurrentLoc.disabled = false;
+                    btnCurrentLoc.innerHTML = originalHtml;
+                    var msg = "Không thể lấy vị trí hiện tại.";
+                    if (error && error.code === error.PERMISSION_DENIED) {
+                        msg = "Vui lòng cho phép trình duyệt truy cập vị trí (GPS) của bạn.";
+                    } else if (error && error.code === error.POSITION_UNAVAILABLE) {
+                        msg = "Vị trí không khả dụng.";
+                    } else if (error && error.code === error.TIMEOUT) {
+                        msg = "Hết thời gian chờ lấy vị trí GPS.";
+                    }
+                    AppToast.warning(msg);
+                }
+
                 navigator.geolocation.getCurrentPosition(
-                    function (position) {
-                        btnCurrentLoc.disabled = false;
-                        btnCurrentLoc.innerHTML = originalHtml;
-                        var lat = position.coords.latitude;
-                        var lng = position.coords.longitude;
-                        updateMap(lat, lng);
-                        map.setView([lat, lng], 17);
-                        reverseGeocode(lat, lng);
-                        AppToast.success("Đã lấy được vị trí GPS hiện tại!");
-                    },
-                    function (error) {
-                        btnCurrentLoc.disabled = false;
-                        btnCurrentLoc.innerHTML = originalHtml;
-                        var msg = "Không thể lấy vị trí hiện tại.";
-                        if (error.code === error.PERMISSION_DENIED) {
-                            msg = "Vui lòng cho phép trình duyệt truy cập vị trí (GPS) của bạn.";
-                        } else if (error.code === error.POSITION_UNAVAILABLE) {
-                            msg = "Vị trí không khả dụng.";
-                        } else if (error.code === error.TIMEOUT) {
-                            msg = "Hết thời gian chờ lấy vị trí GPS.";
-                        }
-                        AppToast.warning(msg);
+                    handleSuccess,
+                    function (err) {
+                        // Fallback sang định vị Wi-Fi/IP nếu không có GPS vệ tinh
+                        navigator.geolocation.getCurrentPosition(
+                            handleSuccess,
+                            handleFailure,
+                            { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
+                        );
                     },
                     {
                         enableHighAccuracy: true,
-                        timeout: 10000,
+                        timeout: 4000,
                         maximumAge: 0
                     }
                 );

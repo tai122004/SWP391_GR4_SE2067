@@ -1,12 +1,12 @@
-namespace RWPM.Common.Helper
+﻿namespace RWPM.Common.Helper
 {
+    // Hỗ trợ tính khoảng cách giữa 2 tọa độ GPS theo công thức Haversine
     public static class GeoLocationHelper
     {
-        private const double EarthRadiusMeters = 6371000.0; // Bán kính trái đất (mét)
+        // Bán kính trái đất xấp xỉ 6,371 km = 6,371,000 mét
+        private const double EarthRadiusMeters = 6371000.0;
 
-        /// <summary>
-        /// Tính khoảng cách giữa 2 tọa độ GPS (Kinh độ, Vĩ độ) theo công thức Haversine (tính bằng mét).
-        /// </summary>
+        // Tính khoảng cách giữa 2 tọa độ (mét)
         public static double CalculateDistanceMeters(double lat1, double lon1, double lat2, double lon2)
         {
             var dLat = ToRadians(lat2 - lat1);
@@ -15,6 +15,7 @@ namespace RWPM.Common.Helper
             var radLat1 = ToRadians(lat1);
             var radLat2 = ToRadians(lat2);
 
+            // Công thức haversine tính khoảng cách cung tròn trên mặt cầu
             var a = Math.Sin(dLat / 2.0) * Math.Sin(dLat / 2.0) +
                     Math.Sin(dLon / 2.0) * Math.Sin(dLon / 2.0) * Math.Cos(radLat1) * Math.Cos(radLat2);
 
@@ -23,9 +24,10 @@ namespace RWPM.Common.Helper
             return EarthRadiusMeters * c;
         }
 
+        // Đổi từ độ sang radian
         private static double ToRadians(double angleDegrees)
         {
-            return (Math.PI / 180.0) * angleDegrees;
+            return angleDegrees * (Math.PI / 180.0);
         }
     }
 }
