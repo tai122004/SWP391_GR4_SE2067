@@ -61,10 +61,7 @@ namespace RWPM.Services.Implementation
                 throw new InvalidOperationException(RequestResource.Leave_ErrEmployeeNotFound);
             }
 
-            InputRules.Require(emp.IsActive && emp.Account.IsActive && emp.Store != null && emp.Store.IsActive
-                && model.StartDate.Date >= emp.JoinDate.Date && (!emp.ResignDate.HasValue || model.EndDate.Date < emp.ResignDate.Value.Date),
-                "EmployeeId", "Nhân viên, chi nhánh hoặc ngày nghỉ không hợp lệ.", "Employee, store or leave dates are invalid.");
-            await WorkflowGuard.UnlockedPeriodAsync(_context, model.StartDate.Date, model.EndDate.Date);
+            // Validate ngày trước khi gọi bất kỳ guard nào
             if (model.EndDate.Date < model.StartDate.Date)
             {
                 throw new InvalidOperationException(RequestResource.Leave_EndBeforeStart);
@@ -74,6 +71,11 @@ namespace RWPM.Services.Implementation
             {
                 throw new InvalidOperationException(RequestResource.Leave_ErrPastDates);
             }
+
+            InputRules.Require(emp.IsActive && emp.Account.IsActive && emp.Store != null && emp.Store.IsActive
+                && model.StartDate.Date >= emp.JoinDate.Date && (!emp.ResignDate.HasValue || model.EndDate.Date < emp.ResignDate.Value.Date),
+                "EmployeeId", "Nhân viên, chi nhánh hoặc ngày nghỉ không hợp lệ.", "Employee, store or leave dates are invalid.");
+            await WorkflowGuard.UnlockedPeriodAsync(_context, model.StartDate.Date, model.EndDate.Date);
 
             // Kiểm tra trùng lặp với đơn nghỉ phép đã có (đang chờ duyệt hoặc đã duyệt)
             var hasOverlap = await _context.LeaveRequest.AnyAsync(x =>
@@ -245,6 +247,9 @@ namespace RWPM.Services.Implementation
             }
 
             await _context.Entry(leaveReq).ReloadAsync();
+            if (leaveReq.Employee != null)
+                await _context.Entry(leaveReq.Employee).ReloadAsync();
+
             if (leaveReq.Status != RegistrationStatus.Pending)
             {
                 throw new InvalidOperationException(RequestResource.Leave_ErrDeleteOnlyPending);

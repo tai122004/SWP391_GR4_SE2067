@@ -178,6 +178,15 @@ namespace RWPM.Services.Implementation
                     userLatitude.Value, userLongitude.Value, 
                     targetStore.Latitude.Value, targetStore.Longitude.Value);
 
+                // 1. Chống Fake GPS: Phát hiện tọa độ giả lập trùng khít tuyệt đối với tâm cửa hàng
+                bool isExactMatch = Math.Abs(userLatitude.Value - targetStore.Latitude.Value) < 0.000001 
+                                 && Math.Abs(userLongitude.Value - targetStore.Longitude.Value) < 0.000001;
+                if (isExactMatch)
+                {
+                    throw new InvalidOperationException(SharedResource.Attendance_Err_FakeGPS);
+                }
+
+                // 2. Chống Fake GPS: Kiểm tra khoảng cách tối thiểu (MinAllowedDistanceMeters)
                 int minDistance = targetStore.MinAllowedDistanceMeters;
                 int allowedRadius = targetStore.AllowedRadiusMeters;
                 AttendanceInputRules.ValidateRadius(minDistance, allowedRadius);
@@ -290,6 +299,15 @@ namespace RWPM.Services.Implementation
                     userLatitude.Value, userLongitude.Value, 
                     targetStore.Latitude.Value, targetStore.Longitude.Value);
 
+                // 1. Chống Fake GPS: Phát hiện tọa độ giả lập trùng khít tuyệt đối với tâm cửa hàng
+                bool isExactMatch = Math.Abs(userLatitude.Value - targetStore.Latitude.Value) < 0.000001 
+                                 && Math.Abs(userLongitude.Value - targetStore.Longitude.Value) < 0.000001;
+                if (isExactMatch)
+                {
+                    throw new InvalidOperationException(SharedResource.Attendance_Err_FakeGPS);
+                }
+
+                // 2. Chống Fake GPS: Kiểm tra khoảng cách tối thiểu (MinAllowedDistanceMeters)
                 int minDistance = targetStore.MinAllowedDistanceMeters;
                 int allowedRadius = targetStore.AllowedRadiusMeters;
                 AttendanceInputRules.ValidateRadius(minDistance, allowedRadius);
