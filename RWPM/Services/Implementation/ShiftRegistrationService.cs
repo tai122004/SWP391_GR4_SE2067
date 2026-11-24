@@ -229,6 +229,11 @@ namespace RWPM.Services.Implementation
                 entity.ApprovedBy = approver;
                 entity.ApprovedAt = DateTime.Now;
                 await _context.SaveChangesAsync();
+
+                if (status == RegistrationStatus.Approved)
+                {
+                    await AutoRegisterAndApproveRemainingWeeksOfMonthAsync(new List<ShiftRegistration> { entity }, approver);
+                }
             }
             if (transaction != null) await transaction.CommitAsync();
         }
@@ -276,7 +281,190 @@ namespace RWPM.Services.Implementation
             }
 
             await _context.SaveChangesAsync();
+
+            if (status == RegistrationStatus.Approved)
+            {
+                await AutoRegisterAndApproveRemainingWeeksOfMonthAsync(entities, approver);
+            }
+
             if (transaction != null) await transaction.CommitAsync();
+        }
+
+        /// <summary>
+        /// Khi duyệt ca cho tuần đó, tự động đăng ký và duyệt luôn các ca tương ứng ở những tuần sau trong cùng tháng.
+        /// </summary>
+        private async Task AutoRegisterAndApproveRemainingWeeksOfMonthAsync(List<ShiftRegistration> approvedRegistrations, string? approver)
+        {
+            if (approvedRegistrations == null || !approvedRegistrations.Any()) return;
+
+            var employeeIds = approvedRegistrations.Select(x => x.EmployeeId).Distinct().ToList();
+            var shiftIds = approvedRegistrations.Select(x => x.ShiftId).Distinct().ToList();
+
+            var employees = await _context.Employee.AsNoTracking()
+                .Include(e => e.Account)
+                .Include(e => e.Store)
+                .Where(e => employeeIds.Contains(e.EmployeeId))
+                .ToDictionaryAsync(e => e.EmployeeId);
+
+            var shifts = await _context.Shift.AsNoTracking()
+                .Where(s => shiftIds.Contains(s.ShiftId))
+                .ToDictionaryAsync(s => s.ShiftId);
+
+            var today = DateTime.Today;
+            bool hasChanges = false;
+
+            foreach (var reg in approvedRegistrations)
+            {
+                if (!employees.TryGetValue(reg.EmployeeId, out var employee)) continue;
+                if (!employee.IsActive || !employee.Account.IsActive || employee.Store == null || !employee.Store.IsActive) continue;
+                if (!shifts.TryGetValue(reg.ShiftId, out var shift) || !shift.IsActive) continue;
+
+                var baseDate = reg.WorkDate.Date;
+                var currentMonth = baseDate.Month;
+                var currentYear = baseDate.Year;
+
+                var targetDates = new List<DateTime>();
+                var nextDate = baseDate.AddDays(7);
+                while (nextDate.Month == currentMonth && nextDate.Year == currentYear)
+                {
+                    targetDates.Add(nextDate);
+                    nextDate = nextDate.AddDays(7);
+                }
+
+                if (!targetDates.Any()) continue;
+
+                foreach (var targetDate in targetDates)
+                {
+                    if (targetDate < today) continue;
+                    if (targetDate < employee.JoinDate.Date) continue;
+                    if (employee.ResignDate.HasValue && targetDate >= employee.ResignDate.Value.Date) continue;
+
+                    // 1. Kiểm tra kỳ lương có bị khóa không
+                    var isPayrollLocked = await _context.Payroll.AnyAsync(p =>
+                        p.Status == PayrollStatus.Locked && p.StartDate <= targetDate && p.EndDate >= targetDate);
+                    if (isPayrollLocked) continue;
+
+                    // 2. Kiểm tra nghỉ phép đã duyệt
+                    var onLeave = await _context.LeaveRequest.AnyAsync(l =>
+                        l.EmployeeId == reg.EmployeeId &&
+                        l.Status == RegistrationStatus.Approved &&
+                        l.StartDate.Date <= targetDate &&
+                        l.EndDate.Date >= targetDate);
+                    if (onLeave) continue;
+
+                    // 3. Kiểm tra ca có mở vào ngày đó và chi nhánh có áp dụng
+                    if (!shift.IsAvailableOn(targetDate)) continue;
+                    var isStoreShiftActive = await _context.StoreShift.AnyAsync(ss =>
+                        ss.ShiftId == reg.ShiftId &&
+                        ss.StoreId == reg.StoreId &&
+                        ss.IsActive &&
+                        ss.Store.IsActive);
+                    if (!isStoreShiftActive) continue;
+
+                    // 4. Kiểm tra ca đã có chưa (DB + Local)
+                    var existing = await _context.ShiftRegistration
+                        .FirstOrDefaultAsync(x => x.EmployeeId == reg.EmployeeId
+                                               && x.ShiftId == reg.ShiftId
+                                               && x.WorkDate.Date == targetDate);
+                    if (existing == null)
+                    {
+                        existing = _context.ShiftRegistration.Local
+                            .FirstOrDefault(x => x.EmployeeId == reg.EmployeeId
+                                              && x.ShiftId == reg.ShiftId
+                                              && x.WorkDate.Date == targetDate);
+                    }
+
+                    if (existing != null)
+                    {
+                        if (existing.Status == RegistrationStatus.Pending)
+                        {
+                            existing.Status = RegistrationStatus.Approved;
+                            existing.ApprovedBy = approver;
+                            existing.ApprovedAt = DateTime.Now;
+                            existing.RejectionReason = null;
+                            hasChanges = true;
+                        }
+                        continue;
+                    }
+
+                    // 5. Kiểm tra trùng giờ với ca khác của nhân viên vào targetDate
+                    var rangeStart = targetDate.AddDays(-1);
+                    var rangeEnd = targetDate.AddDays(1);
+
+                    var nearbyRegs = await _context.ShiftRegistration
+                        .Include(x => x.Shift)
+                        .Where(x => x.EmployeeId == reg.EmployeeId
+                                 && x.WorkDate >= rangeStart
+                                 && x.WorkDate <= rangeEnd
+                                 && x.Status != RegistrationStatus.Rejected)
+                        .ToListAsync();
+
+                    var localNearby = _context.ShiftRegistration.Local
+                        .Where(x => x.EmployeeId == reg.EmployeeId
+                                 && x.WorkDate >= rangeStart
+                                 && x.WorkDate <= rangeEnd
+                                 && x.Status != RegistrationStatus.Rejected
+                                 && !nearbyRegs.Any(n => n.ShiftRegistrationId == x.ShiftRegistrationId && x.ShiftRegistrationId > 0))
+                        .ToList();
+
+                    nearbyRegs.AddRange(localNearby);
+
+                    var newStart = targetDate.Add(shift.StartTime);
+                    var newEnd = targetDate.AddDays(shift.EndDayOffset).Add(shift.EndTime);
+                    bool isOverlap = false;
+
+                    foreach (var other in nearbyRegs)
+                    {
+                        var otherShift = other.Shift;
+                        if (otherShift == null)
+                        {
+                            if (shifts.TryGetValue(other.ShiftId, out var s))
+                            {
+                                otherShift = s;
+                            }
+                            else
+                            {
+                                otherShift = await _context.Shift.AsNoTracking().FirstOrDefaultAsync(s => s.ShiftId == other.ShiftId);
+                            }
+                        }
+                        if (otherShift == null) continue;
+
+                        var otherStart = other.WorkDate.Date.Add(otherShift.StartTime);
+                        var otherEnd = other.WorkDate.Date.AddDays(otherShift.EndDayOffset).Add(otherShift.EndTime);
+
+                        if (newStart < otherEnd && otherStart < newEnd)
+                        {
+                            isOverlap = true;
+                            break;
+                        }
+                    }
+
+                    if (isOverlap) continue;
+
+                    // 6. Thêm bản ghi mới tự động đăng ký và duyệt luôn
+                    var newReg = new ShiftRegistration
+                    {
+                        EmployeeId = reg.EmployeeId,
+                        ShiftId = reg.ShiftId,
+                        StoreId = reg.StoreId,
+                        WorkDate = targetDate,
+                        Status = RegistrationStatus.Approved,
+                        Note = reg.Note ?? string.Empty,
+                        ApprovedBy = approver,
+                        ApprovedAt = DateTime.Now,
+                        CreatedBy = approver ?? "system",
+                        CreatedDate = DateTime.Now
+                    };
+
+                    _context.ShiftRegistration.Add(newReg);
+                    hasChanges = true;
+                }
+            }
+
+            if (hasChanges)
+            {
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task SyncWeeklyRegistrationAsync(int employeeId, int storeId, DateTime startOfWeek, List<ShiftRegistration> desiredRegistrations, bool enforceAvailability = false)
