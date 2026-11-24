@@ -41,7 +41,7 @@ namespace RWPM.Services.Implementation
                 || r.Shift?.EndDayOffset == 1);
         }
 
-        // Xử lý chấm công vào ca (Check-In)
+        //B3: Xử lý chấm công vào ca (Check-In)
         public async Task<(AttendanceRecord Record, string? WarningMessage)> CheckInAsync(
             string username, 
             double? userLatitude = null, 

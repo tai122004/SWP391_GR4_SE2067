@@ -345,7 +345,7 @@
             phoneInput.addEventListener("input", function () {
                 this.value = this.value.replace(/[^0-9]/g, '');
                 if (window.jQuery && $(this).valid) {
-                    if (this.value.length > 11 || (this.value.length > 0 && !this.value.startsWith('0')) || this.value.length === 11) {
+                    if (this.value.length > 10 || (this.value.length > 0 && !this.value.startsWith('0')) || this.value.length === 10) {
                         $(this).valid();
                     }
                 }

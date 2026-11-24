@@ -109,7 +109,7 @@
         var personalClockInArea = document.getElementById('personalClockInArea');
         var cameraStream = null;
 
-        // Bật camera
+        //B1: Bật camera
         function startCamera() {
             if (!video || cameraStream) return;
             if (preview && preview.style.display === 'block') {

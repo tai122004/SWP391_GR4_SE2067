@@ -123,8 +123,8 @@ namespace RWPM.Services.Implementation
                     && entity.ClosingTime >= TimeSpan.Zero && entity.ClosingTime < TimeSpan.FromDays(1)
                     && entity.OpeningTime != entity.ClosingTime, "ClosingTime", "Giờ mở/đóng không hợp lệ hoặc trùng nhau.", "Opening/closing times are invalid or identical.");
             InputRules.Require((entity.Address?.Length ?? 0) <= 255, "Address", "Địa chỉ không được vượt quá 255 ký tự.", "Address cannot exceed 255 characters.");
-            InputRules.Require(string.IsNullOrEmpty(entity.Phone) || System.Text.RegularExpressions.Regex.IsMatch(entity.Phone, @"^0[0-9]{10}$"),
-                "Phone", "Số điện thoại chi nhánh phải gồm đúng 11 chữ số và bắt đầu bằng số 0.", "Store phone must contain exactly 11 digits and start with 0.");
+            InputRules.Require(string.IsNullOrEmpty(entity.Phone) || System.Text.RegularExpressions.Regex.IsMatch(entity.Phone, @"^0[0-9]{9}$"),
+                "Phone", "Số điện thoại chi nhánh phải gồm đúng 10 chữ số và bắt đầu bằng số 0.", "Store phone must contain exactly 10 digits and start with 0.");
             // Closing before opening denotes overnight operation; never silently swap the values.
             InputRules.Require(entity.StoreCode.Length is > 0 and <= 20 && System.Text.RegularExpressions.Regex.IsMatch(entity.StoreCode, RWPM.Common.RegexHelper.CodeRegex), "StoreCode", "Mã chi nhánh không hợp lệ.", "Invalid store code.");
             InputRules.Require(!string.IsNullOrWhiteSpace(entity.StoreName) && entity.StoreName.Length <= 100, "StoreName", "Tên chi nhánh không hợp lệ.", "Invalid store name.");
@@ -247,7 +247,7 @@ namespace RWPM.Services.Implementation
         public async Task UpdateActiveStatusAsync(int storeId, bool active)
         {
             var store = await GetRequiredByIdAsync(storeId, new QueryOptions<global::Store> { NoTracking = false });
-            store.IsActive = active;
+            store.IsActive = active; // Chỉ đổi trạng thái chi nhánh, hồ sơ nhân viên vẫn hoạt động bình thường!
             store.UpdatedDate = DateTime.Now;
             store.UpdatedBy = AccountHelper.GetCurrentUsername(_httpContextAccessor);
             await _ctx.SaveChangesAsync();
