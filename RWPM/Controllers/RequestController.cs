@@ -1127,9 +1127,8 @@ namespace RWPM.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        // Nhận đơn yêu cầu điều chỉnh chấm công từ modal
 
-
+        //B2L2: Nhận đơn yêu cầu điều chỉnh chấm công từ modal
         public async Task<IActionResult> CreateAttendanceAdjustment([FromBody] AttendanceAdjustmentCreateVM? model)
         {
             try

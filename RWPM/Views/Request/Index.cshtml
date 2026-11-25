@@ -1,4 +1,4 @@
-﻿@using RWPM.Common.Enums
+@using RWPM.Common.Enums
 @using RWPM.Resources.Shared
 @using RWPM.Models.ViewModels.ShiftRegistration
 @model List<RequestItemVM>
@@ -34,7 +34,7 @@
 </form>
 
 <div class="container-fluid px-0 request-management-page">
-    <!-- Header -->
+    @* Header *@
     <div class="app-page-header">
         <div>
             <h4>@RequestResource.RequestsAndApprovals</h4>
@@ -52,7 +52,7 @@
         </div>
     </div>
 
-    <!-- Status tabs (underline) with counts -->
+    @* Status tabs (underline) with counts *@
     <nav class="req-tabs" aria-label="@RequestResource.Status">
         <a href="@TabUrl(null)" class="req-tab @(!currentStatus.HasValue ? "active" : "")" aria-current="@(!currentStatus.HasValue ? "page" : null)">
             @RequestResource.All <span class="req-tab-count">@totalCount</span>
@@ -68,7 +68,7 @@
         </a>
     </nav>
 
-    <!-- One-row filter bar -->
+    @* One-row filter bar *@
     <div class="app-filter-panel req-filter-bar">
         <div class="req-filter-search">
             <div class="input-group input-group-sm">
@@ -99,9 +99,9 @@
         }
     </div>
 
-    <!-- Two columns: list + detail -->
+    @* Two columns: list + detail *@
     <div class="row g-3 align-items-start">
-        <!-- Left: compact request list -->
+        @* Left: compact request list *@
         <div class="col-lg-5 col-md-12">
             <div class="app-content-card">
                 <div class="req-list-header">
@@ -112,7 +112,7 @@
                     <div class="text-muted small">@RequestResource.List_Title <span class="app-badge app-badge-neutral ms-1" id="filteredCountBadge">@totalFiltered</span></div>
                 </div>
 
-                <!-- Bulk action bar: shown when at least one row is checked -->
+                @* Bulk action bar: shown when at least one row is checked *@
                 <div class="req-bulk-bar" id="bulkActionBar" style="display: none;">
                     <span class="fw-medium" id="bulkSelectedText">@string.Format(RequestResource.Bulk_SelectedCount, 0)</span>
                     <span class="d-none" id="bulkSelectedCount">0</span>
@@ -214,7 +214,7 @@
             </div>
         </div>
 
-        <!-- Right: detail panel -->
+        @* Right: detail panel *@
         <div class="col-lg-7 col-md-12 req-detail-col">
             <div class="app-content-card detail-card" id="requestDetailPane" style="display: none;">
                 <div class="req-detail-header">
@@ -229,7 +229,7 @@
                 <div class="req-detail-body detail-content-scroll">
                     <h5 class="mb-3" id="detailTypeName">@RequestResource.ShiftRegistration</h5>
 
-                    <!-- Notice for permissions -->
+                    @* Notice for permissions *@
                     <div id="requestApprovalNotice" class="alert alert-warning py-2 px-3 small mb-3" style="display: none;"></div>
 
                     <dl class="req-dl">
@@ -275,20 +275,20 @@
                         </div>
                     </dl>
 
-                    <!-- Warnings before approval (from the same checks the approve endpoint uses) -->
+                    @* Warnings before approval (from the same checks the approve endpoint uses) *@
                     <div class="req-warn-box" id="detailWarningsBox" style="display: none;">
                         <div class="req-warn-title"><i class="bi bi-exclamation-triangle me-1"></i>@RequestResource.Detail_WarningsTitle</div>
                         <ul class="mb-0 ps-3" id="detailWarningsList"></ul>
                     </div>
 
-                    <!-- Decision (pending + allowed to approve) -->
+                    @* Decision (pending + allowed to approve) *@
                     <div id="detailDecisionArea" style="display: none;">
                         <label for="detailApproverNote" class="form-label">@RequestResource.Detail_ApproverNote</label>
                         <textarea class="form-control" id="detailApproverNote" rows="2" placeholder="@RequestResource.Detail_ApproverNotePlaceholder"></textarea>
                         <div class="form-text">@RequestResource.Detail_ApproverNoteHint</div>
                     </div>
 
-                    <!-- Result (processed requests): who / when / reason -->
+                    @* Result (processed requests): who / when / reason *@
                     <div id="detailResultBanner" style="display: none;"></div>
                 </div>
 
@@ -297,11 +297,11 @@
                         <i class="bi bi-trash3"></i>
                         <span>@RequestResource.Delete</span>
                     </button>
-                    <!-- Nút Từ chối đơn (dành cho Quản lý) -->
+                    @*B4L2:: Nút Từ chối đơn (dành cho Quản lý) *@
                     <button type="button" class="btn btn-outline-danger action-btn-detail" id="btnRejectDetail" onclick="updateSelectedStatus(2)" style="display: none;">
                         <span>@RequestResource.Reject</span>
                     </button>
-                    <!-- Nút Phê duyệt đơn (dành cho Quản lý) -->
+                    @* Nút Phê duyệt đơn (dành cho Quản lý) *@
                     <button type="button" class="btn btn-primary action-btn-detail" id="btnApproveDetail" onclick="updateSelectedStatus(1)" style="display: none;">
                         <i class="bi bi-check2"></i>
                         <span>@RequestResource.Approve</span>
@@ -309,7 +309,7 @@
                 </div>
             </div>
 
-            <!-- Empty detail state (no request selected yet) -->
+            @* Empty detail state (no request selected yet) *@
             <div class="app-content-card" id="emptyDetailPane">
                 <div class="d-flex flex-column justify-content-center align-items-center p-5 text-center" style="min-height: 360px;">
                     <div class="text-muted mb-2"><i class="bi bi-card-text fs-2"></i></div>
@@ -321,9 +321,9 @@
     </div>
 </div>
 
-<!-- All Required Modals -->
+@* All Required Modals *@
 
-<!-- Modal 1: Tạo Mới Yêu Cầu (Chọn loại) -->
+@* Modal 1: Tạo Mới Yêu Cầu (Chọn loại) *@
 <div class="modal fade" id="createRequestModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -366,7 +366,7 @@
                     <div class="req-modal-group">@SharedResource.Req_Shift</div>
                     <div class="row g-2">
                         <div class="col-md-4">
-                            <!-- Nút chọn loại yêu cầu: Đổi giờ vào / ra (Điều chỉnh chấm công) -->
+                            @*B1L1: Nút chọn loại yêu cầu: Đổi giờ vào / ra (Điều chỉnh chấm công) *@
                             <div class="request-type-card active-card-btn" role="button" tabindex="0" onclick="openAttendanceModal()">
                                 <i class="bi bi-clock-history"></i>
                                 <span>@SharedResource.Req_ChangeInOut</span>
@@ -409,7 +409,7 @@
     </div>
 </div>
 
-<!-- Modal 2: Đăng Ký Ca Làm (Nested) -->
+@* Modal 2: Đăng Ký Ca Làm (Nested) *@
 <div class="modal fade" id="createShiftRequestModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -476,7 +476,7 @@
     </div>
 </div>
 
-<!-- Modal 3: Đổi Ca Làm (Nested) -->
+@* Modal 3: Đổi Ca Làm (Nested) *@
 <div class="modal fade" id="createSwapShiftModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -490,7 +490,7 @@
                         <i class="bi bi-exclamation-triangle me-1"></i> @RequestResource.Swap_NoEligibleShifts
                     </div>
 
-                    <!-- Chọn ca của tôi -->
+                    @* Chọn ca của tôi *@
                     <div class="mb-3">
                         <label class="form-label required" for="swapSourceRegistrationId">@RequestResource.Swap_SourceShift</label>
                         <select class="form-select form-select-sm" id="swapSourceRegistrationId" required>
@@ -498,7 +498,7 @@
                         </select>
                     </div>
 
-                    <!-- Chọn hình thức đổi ca -->
+                    @* Chọn hình thức đổi ca *@
                     <div class="mb-3">
                         <label class="form-label">@RequestResource.Swap_SwapType</label>
                         <div class="d-flex gap-4">
@@ -513,7 +513,7 @@
                         </div>
                     </div>
 
-                    <!-- Nhánh 1: Đổi với đồng nghiệp -->
+                    @* Nhánh 1: Đổi với đồng nghiệp *@
                     <div id="swapPeerSection">
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
@@ -531,7 +531,7 @@
                         </div>
                     </div>
 
-                    <!-- Nhánh 2: Đổi sang ngày / ca khác của chính mình -->
+                    @* Nhánh 2: Đổi sang ngày / ca khác của chính mình *@
                     <div id="swapDirectSection" style="display: none;">
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
@@ -547,7 +547,7 @@
                         </div>
                     </div>
 
-                    <!-- Lý do đổi ca -->
+                    @* Lý do đổi ca *@
                     <div>
                         <label class="form-label required" for="swapReason">@RequestResource.Swap_Reason</label>
                         <textarea class="form-control form-control-sm" id="swapReason" rows="2" required placeholder="@RequestResource.Swap_ReasonPlaceholder"></textarea>
@@ -564,7 +564,7 @@
     </div>
 </div>
 
-<!-- Modal 4: Xin Nghỉ Phép (Nested) -->
+@* Modal 4: Xin Nghỉ Phép (Nested) *@
 <div class="modal fade" id="createLeaveRequestModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -595,13 +595,13 @@
                         <input type="hidden" id="leaveEmployeeId" value="0" />
                     }
 
-                    <!-- Số ngày phép năm còn lại -->
+                    @* Số ngày phép năm còn lại *@
                     <div class="d-flex justify-content-between align-items-center p-2 px-3 mb-3 border req-soft-row">
                         <span class="small text-muted">@RequestResource.Leave_AnnualLeaveBalance</span>
                         <strong class="tabular"><span id="leaveAnnualBalanceDisplay">0</span> @RequestResource.Leave_DaysUnit</strong>
                     </div>
 
-                    <!-- Chọn loại nghỉ phép -->
+                    @* Chọn loại nghỉ phép *@
                     <div class="mb-3">
                         <label class="form-label">@RequestResource.Leave_Type</label>
                         <div class="d-flex gap-4 flex-wrap">
@@ -616,7 +616,7 @@
                         </div>
                     </div>
 
-                    <!-- Chọn ngày bắt đầu và kết thúc -->
+                    @* Chọn ngày bắt đầu và kết thúc *@
                     <div class="row g-2 mb-3">
                         <div class="col-6">
                             <label class="form-label required" for="leaveStartDate">@RequestResource.Leave_StartDate</label>
@@ -628,18 +628,18 @@
                         </div>
                     </div>
 
-                    <!-- Tổng số ngày xin nghỉ -->
+                    @* Tổng số ngày xin nghỉ *@
                     <div class="d-flex justify-content-between align-items-center mb-3 p-2 px-3 border req-soft-row">
                         <span class="small text-muted">@RequestResource.Leave_Duration</span>
                         <strong class="tabular"><span id="leaveDaysCount">1</span> @RequestResource.Leave_DaysUnit</strong>
                     </div>
 
-                    <!-- Cảnh báo nếu số ngày vượt quá phép năm -->
+                    @* Cảnh báo nếu số ngày vượt quá phép năm *@
                     <div class="alert alert-danger py-2 small mb-3 d-none" id="leaveBalanceAlert">
                         <span id="leaveBalanceAlertText"></span>
                     </div>
 
-                    <!-- Lý do xin nghỉ -->
+                    @* Lý do xin nghỉ *@
                     <div>
                         <label class="form-label required" for="leaveReason">@RequestResource.Leave_Reason</label>
                         <textarea class="form-control form-control-sm" id="leaveReason" rows="2" required placeholder="@RequestResource.Leave_ReasonPlaceholder"></textarea>
@@ -656,7 +656,7 @@
     </div>
 </div>
 
-<!-- Modal 5: Nhập Lý Do Từ Chối -->
+@* Modal 5: Nhập Lý Do Từ Chối *@
 <div class="modal fade" id="rejectReasonModal" tabindex="-1" aria-hidden="true" style="z-index: 1070;">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
         <div class="modal-content">
@@ -678,8 +678,8 @@
     </div>
 </div>
 
-<!-- Modal 6: Yêu Cầu Điều Chỉnh Chấm Công (Nested) -->
-<!-- Modal tạo đơn yêu cầu điều chỉnh chấm công -->
+@* Modal 6: Yêu Cầu Điều Chỉnh Chấm Công (Nested) *@
+@* Modal tạo đơn yêu cầu điều chỉnh chấm công *@
 <div class="modal fade" id="createAttendanceModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -725,8 +725,8 @@
     </div>
 </div>
 
-<!-- Modal 7: Phê Duyệt Điều Chỉnh Chấm Công -->
-<!-- Modal xác nhận Phê duyệt điều chỉnh chấm công của Quản lý -->
+@* Modal 7: Phê Duyệt Điều Chỉnh Chấm Công *@
+@* Modal xác nhận Phê duyệt điều chỉnh chấm công của Quản lý *@
 <div class="modal fade" id="approveAttendanceModal" tabindex="-1" aria-hidden="true" style="z-index: 1070;">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">

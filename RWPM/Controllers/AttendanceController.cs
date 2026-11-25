@@ -157,7 +157,7 @@ namespace RWPM.Controllers
             return View(myHistory);
         }
 
-        // Xem ảnh chấm công: chỉ chính chủ, admin/hr hoặc quản lý cùng chi nhánh
+        //B5: Xem ảnh chấm công: chỉ chính chủ, admin/hr hoặc quản lý cùng chi nhánh
         [HttpGet]
         public async Task<IActionResult> Photo(int id, string type)
         {
@@ -188,7 +188,7 @@ namespace RWPM.Controllers
             return PhysicalFile(physical, RWPM.Infrastructure.Storage.AttendancePhotoStore.ContentType(physical));
         }
 
-        //B2: Tiếp nhận chấm công vào
+        //B3: Tiếp nhận chấm công vào
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CheckIn(string? userLatitude = null, string? userLongitude = null, Microsoft.AspNetCore.Http.IFormFile? photo = null)
