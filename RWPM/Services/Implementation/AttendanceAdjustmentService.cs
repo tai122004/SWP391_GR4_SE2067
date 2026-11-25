@@ -30,7 +30,7 @@ namespace RWPM.Services.Implementation
             _context = context;
         }
 
-        // Tạo yêu cầu điều chỉnh từ nhân viên
+        //B3L2: Tạo yêu cầu điều chỉnh từ nhân viên
         public async Task<AttendanceAdjustmentRequest> CreateRequestAsync(AttendanceAdjustmentCreateVM model, string username)
         {
             if (model == null)
@@ -243,7 +243,7 @@ namespace RWPM.Services.Implementation
                 .FirstOrDefaultAsync(r => r.AttendanceAdjustmentRequestId == id);
         }
 
-        // Phê duyệt yêu cầu điều chỉnh (dùng transaction serializable để tránh xung đột)
+        //B5L2: Phê duyệt yêu cầu điều chỉnh (dùng transaction serializable để tránh xung đột)
         public async Task ApproveAsync(int id, string approverUsername, TimeSpan? finalCheckInTime = null, TimeSpan? finalCheckOutTime = null, string? approverNote = null)
         {
             await using var transaction = _context.Database.CurrentTransaction == null

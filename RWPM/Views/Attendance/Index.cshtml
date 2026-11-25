@@ -105,7 +105,7 @@
                             <i class="bi bi-geo-alt spinner-grow spinner-grow-sm me-1"></i> @SharedResource.ResourceManager.GetString("Attendance_GPSLoading")
                         </div>
 
-                        @* Form chấm công: Video camera WebRTC và nút Vào làm / Tan làm *@
+                        @*B1: Form chấm công: Video camera WebRTC và nút Vào làm / Tan làm *@
                         <form id="attendanceForm" method="post" enctype="multipart/form-data" class="d-grid gap-2">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="userLatitude" id="userLatitude" />
@@ -540,7 +540,7 @@
 {
     foreach (var item in distinctModalRecords)
     {
-        @* Modal xem lịch sử điều chỉnh chấm công (Audit Trail) *@
+        @*B6L2: Modal xem lịch sử điều chỉnh chấm công (Audit Trail) *@
         <div class="modal fade" id="historyModal_@item.AttendanceId" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
